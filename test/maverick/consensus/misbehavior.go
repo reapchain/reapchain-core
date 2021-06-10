@@ -5,7 +5,7 @@ import (
 
 	tmcon "github.com/tendermint/tendermint/consensus"
 	cstypes "github.com/tendermint/tendermint/consensus/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
 	"github.com/tendermint/tendermint/types"
 )
 

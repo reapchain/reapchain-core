@@ -11,9 +11,9 @@ import (
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
-	cryptoproto "github.com/tendermint/tendermint/proto/tendermint/crypto"
-	privvalproto "github.com/tendermint/tendermint/proto/tendermint/privval"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	cryptoproto "github.com/tendermint/tendermint/proto/reapchain/crypto"
+	privvalproto "github.com/tendermint/tendermint/proto/reapchain/privval"
+	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
 	"github.com/tendermint/tendermint/types"
 )
 

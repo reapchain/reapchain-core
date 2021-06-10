@@ -13,10 +13,10 @@ import (
 )
 
 func ExampleHTTP_simple() {
-	// Start a tendermint node (and kvstore) in the background to test against
+	// Start a reapchain node (and kvstore) in the background to test against
 	app := kvstore.NewApplication()
-	node := rpctest.StartTendermint(app, rpctest.SuppressStdout, rpctest.RecreateConfig)
-	defer rpctest.StopTendermint(node)
+	node := rpctest.StartReapchain(app, rpctest.SuppressStdout, rpctest.RecreateConfig)
+	defer rpctest.StopReapchain(node)
 
 	// Create our RPC client
 	rpcAddr := rpctest.GetConfig().RPC.ListenAddress
@@ -66,9 +66,9 @@ func ExampleHTTP_simple() {
 }
 
 func ExampleHTTP_batching() {
-	// Start a tendermint node (and kvstore) in the background to test against
+	// Start a reapchain node (and kvstore) in the background to test against
 	app := kvstore.NewApplication()
-	node := rpctest.StartTendermint(app, rpctest.SuppressStdout, rpctest.RecreateConfig)
+	node := rpctest.StartReapchain(app, rpctest.SuppressStdout, rpctest.RecreateConfig)
 
 	// Create our RPC client
 	rpcAddr := rpctest.GetConfig().RPC.ListenAddress
@@ -77,7 +77,7 @@ func ExampleHTTP_batching() {
 		log.Fatal(err)
 	}
 
-	defer rpctest.StopTendermint(node)
+	defer rpctest.StopReapchain(node)
 
 	// Create our two transactions
 	k1 := []byte("firstName")

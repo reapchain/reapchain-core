@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/tendermint/tendermint/crypto"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
 	"github.com/tendermint/tendermint/types"
 )
 

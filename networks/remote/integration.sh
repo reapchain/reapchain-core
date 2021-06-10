@@ -21,20 +21,20 @@ echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.profile
 mkdir goApps
 echo "export GOPATH=/root/goApps" >> ~/.profile
 echo "export PATH=\$PATH:\$GOPATH/bin" >> ~/.profile
-# **turn on the go module, default is auto. The value is off, if tendermint source code
+# **turn on the go module, default is auto. The value is off, if reapchain source code
 #is downloaded under $GOPATH/src directory
 echo "export GO111MODULE=on" >> ~/.profile
 
 source ~/.profile
 
-mkdir -p $GOPATH/src/github.com/tendermint
-cd $GOPATH/src/github.com/tendermint
+mkdir -p $GOPATH/src/github.com/reapchain
+cd $GOPATH/src/github.com/reapchain
 # ** use git clone instead of go get.
 # once go module is on, go get will download source code to
 # specific version directory under $GOPATH/pkg/mod the make
 # script will not work
 git clone https://github.com/tendermint/tendermint.git
-cd tendermint
+cd reapchain
 ## build
 make tools
 make build
@@ -91,10 +91,10 @@ ip3=$(strip $ip3)
 cd $GOPATH/src/github.com/tendermint/tendermint/networks/remote/ansible
 
 # create config dirs
-tendermint testnet
+reapchain testnet
 
 ansible-playbook -i inventory/digital_ocean.py -l sentrynet install.yml
-ansible-playbook -i inventory/digital_ocean.py -l sentrynet config.yml -e BINARY=$GOPATH/src/github.com/tendermint/tendermint/build/tendermint -e CONFIGDIR=$GOPATH/src/github.com/tendermint/tendermint/networks/remote/ansible/mytestnet
+ansible-playbook -i inventory/digital_ocean.py -l sentrynet config.yml -e BINARY=$GOPATH/src/github.com/tendermint/tendermint/build/reapchain -e CONFIGDIR=$GOPATH/src/github.com/tendermint/tendermint/networks/remote/ansible/mytestnet
 
 sleep 10
 
@@ -124,7 +124,7 @@ Restart=on-failure
 User={{service}}
 Group={{service}}
 PermissionsStartOnly=true
-ExecStart=/usr/bin/tendermint node --proxy_app=kvstore --p2p.persistent_peers=$id0@$ip0:26656,$id1@$ip1:26656,$id2@$ip2:26656,$id3@$ip3:26656
+ExecStart=/usr/bin/reapchain node --proxy_app=kvstore --p2p.persistent_peers=$id0@$ip0:26656,$id1@$ip1:26656,$id2@$ip2:26656,$id3@$ip3:26656
 ExecReload=/bin/kill -HUP \$MAINPID
 KillSignal=SIGTERM
 

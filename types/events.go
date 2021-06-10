@@ -46,16 +46,16 @@ type TMEventData interface {
 }
 
 func init() {
-	tmjson.RegisterType(EventDataNewBlock{}, "tendermint/event/NewBlock")
-	tmjson.RegisterType(EventDataNewBlockHeader{}, "tendermint/event/NewBlockHeader")
-	tmjson.RegisterType(EventDataNewEvidence{}, "tendermint/event/NewEvidence")
-	tmjson.RegisterType(EventDataTx{}, "tendermint/event/Tx")
-	tmjson.RegisterType(EventDataRoundState{}, "tendermint/event/RoundState")
-	tmjson.RegisterType(EventDataNewRound{}, "tendermint/event/NewRound")
-	tmjson.RegisterType(EventDataCompleteProposal{}, "tendermint/event/CompleteProposal")
-	tmjson.RegisterType(EventDataVote{}, "tendermint/event/Vote")
-	tmjson.RegisterType(EventDataValidatorSetUpdates{}, "tendermint/event/ValidatorSetUpdates")
-	tmjson.RegisterType(EventDataString(""), "tendermint/event/ProposalString")
+	tmjson.RegisterType(EventDataNewBlock{}, "reapchain/event/NewBlock")
+	tmjson.RegisterType(EventDataNewBlockHeader{}, "reapchain/event/NewBlockHeader")
+	tmjson.RegisterType(EventDataNewEvidence{}, "reapchain/event/NewEvidence")
+	tmjson.RegisterType(EventDataTx{}, "reapchain/event/Tx")
+	tmjson.RegisterType(EventDataRoundState{}, "reapchain/event/RoundState")
+	tmjson.RegisterType(EventDataNewRound{}, "reapchain/event/NewRound")
+	tmjson.RegisterType(EventDataCompleteProposal{}, "reapchain/event/CompleteProposal")
+	tmjson.RegisterType(EventDataVote{}, "reapchain/event/Vote")
+	tmjson.RegisterType(EventDataValidatorSetUpdates{}, "reapchain/event/ValidatorSetUpdates")
+	tmjson.RegisterType(EventDataString(""), "reapchain/event/ProposalString")
 }
 
 // Most event messages are basic types (a block, a transaction)

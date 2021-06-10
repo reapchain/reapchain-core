@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmcrypto "github.com/tendermint/tendermint/proto/tendermint/crypto"
+	tmcrypto "github.com/tendermint/tendermint/proto/reapchain/crypto"
 )
 
 const ProofOpValue = "simple:v"
@@ -13,7 +13,7 @@ const ProofOpValue = "simple:v"
 // ValueOp takes a key and a single value as argument and
 // produces the root hash.  The corresponding tree structure is
 // the SimpleMap tree.  SimpleMap takes a Hasher, and currently
-// Tendermint uses tmhash.  SimpleValueOp should support
+// Reapchain uses tmhash.  SimpleValueOp should support
 // the hash function as used in tmhash.  TODO support
 // additional hash functions here as options/args to this
 // operator.

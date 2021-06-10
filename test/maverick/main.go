@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	cmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
-	"github.com/tendermint/tendermint/cmd/tendermint/commands/debug"
+	cmd "github.com/tendermint/tendermint/cmd/reapchain/commands"
+	"github.com/tendermint/tendermint/cmd/reapchain/commands/debug"
 	cfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/libs/cli"
 	tmflags "github.com/tendermint/tendermint/libs/cli/flags"
@@ -51,11 +51,11 @@ func ParseConfig() (*cfg.Config, error) {
 	return conf, err
 }
 
-// RootCmd is the root command for Tendermint core.
+// RootCmd is the root command for Reapchain core.
 var RootCmd = &cobra.Command{
 	Use:   "maverick",
-	Short: "Tendermint Maverick Node",
-	Long: "Tendermint Maverick Node for testing with faulty consensus misbehaviors in a testnet. Contains " +
+	Short: "Reapchain Maverick Node",
+	Long: "Reapchain Maverick Node for testing with faulty consensus misbehaviors in a testnet. Contains " +
 		"all the functionality of a normal node but custom misbehaviors can be injected when running the node " +
 		"through a flag. See maverick node --help for how the misbehavior flag is constructured",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -125,7 +125,7 @@ func main() {
 			"e.g. --misbehaviors double-prevote,3\n"+
 			"You can also have multiple misbehaviors: e.g. double-prevote,3,no-vote,5")
 
-	cmd := cli.PrepareBaseCmd(rootCmd, "TM", os.ExpandEnv(filepath.Join("$HOME", cfg.DefaultTendermintDir)))
+	cmd := cli.PrepareBaseCmd(rootCmd, "TM", os.ExpandEnv(filepath.Join("$HOME", cfg.DefaultReapchainDir)))
 	if err := cmd.Execute(); err != nil {
 		panic(err)
 	}
@@ -163,7 +163,7 @@ func startNode(config *cfg.Config, logger log.Logger, misbehaviorFlag string) er
 
 var InitFilesCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize Tendermint",
+	Short: "Initialize Reapchain",
 	RunE:  initFiles,
 }
 

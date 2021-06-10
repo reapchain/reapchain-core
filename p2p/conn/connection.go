@@ -21,7 +21,7 @@ import (
 	"github.com/tendermint/tendermint/libs/service"
 	tmsync "github.com/tendermint/tendermint/libs/sync"
 	"github.com/tendermint/tendermint/libs/timer"
-	tmp2p "github.com/tendermint/tendermint/proto/tendermint/p2p"
+	tmp2p "github.com/tendermint/tendermint/proto/reapchain/p2p"
 )
 
 const (

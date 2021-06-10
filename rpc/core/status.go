@@ -10,9 +10,9 @@ import (
 	"github.com/tendermint/tendermint/types"
 )
 
-// Status returns Tendermint status including node info, pubkey, latest block
+// Status returns Reapchain status including node info, pubkey, latest block
 // hash, app hash, block height and time.
-// More: https://docs.tendermint.com/master/rpc/#/Info/status
+// More: https://docs.reapchain.com/master/rpc/#/Info/status
 func Status(ctx *rpctypes.Context) (*ctypes.ResultStatus, error) {
 	var (
 		earliestBlockHeight   int64

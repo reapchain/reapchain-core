@@ -17,8 +17,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmsync "github.com/tendermint/tendermint/libs/sync"
 	"github.com/tendermint/tendermint/p2p"
-	tmcons "github.com/tendermint/tendermint/proto/tendermint/consensus"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmcons "github.com/tendermint/tendermint/proto/reapchain/consensus"
+	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
 	sm "github.com/tendermint/tendermint/state"
 	"github.com/tendermint/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
@@ -1398,15 +1398,15 @@ func (ps *PeerState) StringIndented(indent string) string {
 //-----------------------------------------------------------------------------
 
 // func init() {
-// 	tmjson.RegisterType(&NewRoundStepMessage{}, "tendermint/NewRoundStepMessage")
-// 	tmjson.RegisterType(&NewValidBlockMessage{}, "tendermint/NewValidBlockMessage")
-// 	tmjson.RegisterType(&ProposalMessage{}, "tendermint/Proposal")
-// 	tmjson.RegisterType(&ProposalPOLMessage{}, "tendermint/ProposalPOL")
-// 	tmjson.RegisterType(&BlockPartMessage{}, "tendermint/BlockPart")
-// 	tmjson.RegisterType(&VoteMessage{}, "tendermint/Vote")
-// 	tmjson.RegisterType(&HasVoteMessage{}, "tendermint/HasVote")
-// 	tmjson.RegisterType(&VoteSetMaj23Message{}, "tendermint/VoteSetMaj23")
-// 	tmjson.RegisterType(&VoteSetBitsMessage{}, "tendermint/VoteSetBits")
+// 	tmjson.RegisterType(&NewRoundStepMessage{}, "reapchain/NewRoundStepMessage")
+// 	tmjson.RegisterType(&NewValidBlockMessage{}, "reapchain/NewValidBlockMessage")
+// 	tmjson.RegisterType(&ProposalMessage{}, "reapchain/Proposal")
+// 	tmjson.RegisterType(&ProposalPOLMessage{}, "reapchain/ProposalPOL")
+// 	tmjson.RegisterType(&BlockPartMessage{}, "reapchain/BlockPart")
+// 	tmjson.RegisterType(&VoteMessage{}, "reapchain/Vote")
+// 	tmjson.RegisterType(&HasVoteMessage{}, "reapchain/HasVote")
+// 	tmjson.RegisterType(&VoteSetMaj23Message{}, "reapchain/VoteSetMaj23")
+// 	tmjson.RegisterType(&VoteSetBitsMessage{}, "reapchain/VoteSetBits")
 // }
 
 func decodeMsg(bz []byte) (msg tmcon.Message, err error) {

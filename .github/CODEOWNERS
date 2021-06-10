@@ -13,7 +13,7 @@
 .github/ @marbar3778 @alexanderbez @ebuchman @melekes @tessr
 DOCKER/ @marbar3778 @alexanderbez @ebuchman @melekes @tessr
 
-# Overrides for core Tendermint packages
+# Overrides for core Reapchain packages
 abci/  @marbar3778 @alexanderbez @ebuchman @melekes @tessr
 evidence/ @cmwaters @ebuchman @melekes @tessr
 light/ @cmwaters @melekes @ebuchman @tessr

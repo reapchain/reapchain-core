@@ -11,8 +11,8 @@ import (
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
+	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
+	tmversion "github.com/tendermint/tendermint/proto/reapchain/version"
 	"github.com/tendermint/tendermint/version"
 )
 

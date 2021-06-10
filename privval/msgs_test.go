@@ -12,9 +12,9 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	cryptoenc "github.com/tendermint/tendermint/crypto/encoding"
 	"github.com/tendermint/tendermint/crypto/tmhash"
-	cryptoproto "github.com/tendermint/tendermint/proto/tendermint/crypto"
-	privproto "github.com/tendermint/tendermint/proto/tendermint/privval"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	cryptoproto "github.com/tendermint/tendermint/proto/reapchain/crypto"
+	privproto "github.com/tendermint/tendermint/proto/reapchain/privval"
+	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
 	"github.com/tendermint/tendermint/types"
 )
 

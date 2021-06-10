@@ -17,7 +17,7 @@ import (
 	"github.com/tendermint/tendermint/crypto/merkle"
 	"github.com/tendermint/tendermint/libs/bytes"
 	lcmock "github.com/tendermint/tendermint/light/rpc/mocks"
-	tmcrypto "github.com/tendermint/tendermint/proto/tendermint/crypto"
+	tmcrypto "github.com/tendermint/tendermint/proto/reapchain/crypto"
 	rpcmock "github.com/tendermint/tendermint/rpc/client/mocks"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"github.com/tendermint/tendermint/types"

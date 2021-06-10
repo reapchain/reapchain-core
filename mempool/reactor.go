@@ -11,7 +11,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmsync "github.com/tendermint/tendermint/libs/sync"
 	"github.com/tendermint/tendermint/p2p"
-	protomem "github.com/tendermint/tendermint/proto/tendermint/mempool"
+	protomem "github.com/tendermint/tendermint/proto/reapchain/mempool"
 	"github.com/tendermint/tendermint/types"
 )
 

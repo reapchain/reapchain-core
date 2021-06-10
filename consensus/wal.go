@@ -16,7 +16,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/libs/service"
-	tmcons "github.com/tendermint/tendermint/proto/tendermint/consensus"
+	tmcons "github.com/tendermint/tendermint/proto/reapchain/consensus"
 	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
@@ -46,9 +46,9 @@ type EndHeightMessage struct {
 type WALMessage interface{}
 
 func init() {
-	tmjson.RegisterType(msgInfo{}, "tendermint/wal/MsgInfo")
-	tmjson.RegisterType(timeoutInfo{}, "tendermint/wal/TimeoutInfo")
-	tmjson.RegisterType(EndHeightMessage{}, "tendermint/wal/EndHeightMessage")
+	tmjson.RegisterType(msgInfo{}, "reapchain/wal/MsgInfo")
+	tmjson.RegisterType(timeoutInfo{}, "reapchain/wal/TimeoutInfo")
+	tmjson.RegisterType(EndHeightMessage{}, "reapchain/wal/EndHeightMessage")
 }
 
 //--------------------------------------------------------

@@ -14,9 +14,9 @@ plugins=grpc,paths=source_relative:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 done
 
-cp -r ./tendermint/* ./proto/*
-rm -rf tendermint
+cp -r ./reapchain/* ./proto/*
+rm -rf reapchain
 
-mv ./proto/tendermint/abci/types.pb.go ./abci/types
+mv ./proto/reapchain/abci/types.pb.go ./abci/types
 
-mv ./proto/tendermint/rpc/grpc/types.pb.go ./rpc/grpc
+mv ./proto/reapchain/rpc/grpc/types.pb.go ./rpc/grpc

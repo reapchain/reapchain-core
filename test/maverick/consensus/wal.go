@@ -17,7 +17,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/libs/service"
-	tmcons "github.com/tendermint/tendermint/proto/tendermint/consensus"
+	tmcons "github.com/tendermint/tendermint/proto/reapchain/consensus"
 	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
@@ -32,9 +32,9 @@ const (
 //--------------------------------------------------------
 // types and functions for savings consensus messages
 // func init() {
-// 	tmjson.RegisterType(msgInfo{}, "tendermint/wal/MsgInfo")
-// 	tmjson.RegisterType(timeoutInfo{}, "tendermint/wal/TimeoutInfo")
-// 	tmjson.RegisterType(tmcon.EndHeightMessage  {}, "tendermint/wal/EndHeightMessage  ")
+// 	tmjson.RegisterType(msgInfo{}, "reapchain/wal/MsgInfo")
+// 	tmjson.RegisterType(timeoutInfo{}, "reapchain/wal/TimeoutInfo")
+// 	tmjson.RegisterType(tmcon.EndHeightMessage  {}, "reapchain/wal/EndHeightMessage  ")
 // }
 
 // Write ahead logger writes msgs to disk before they are processed.

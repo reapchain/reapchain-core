@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
+	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
+	tmversion "github.com/tendermint/tendermint/proto/reapchain/version"
 	"github.com/tendermint/tendermint/version"
 )
 

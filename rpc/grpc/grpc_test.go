@@ -13,14 +13,14 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	// start a tendermint node in the background to test against
+	// start a reapchain node in the background to test against
 	app := kvstore.NewApplication()
-	node := rpctest.StartTendermint(app)
+	node := rpctest.StartReapchain(app)
 
 	code := m.Run()
 
 	// and shut down proper at the end
-	rpctest.StopTendermint(node)
+	rpctest.StopReapchain(node)
 	os.Exit(code)
 }
 

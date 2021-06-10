@@ -27,7 +27,7 @@ import (
 	"github.com/tendermint/tendermint/libs/async"
 	"github.com/tendermint/tendermint/libs/protoio"
 	tmsync "github.com/tendermint/tendermint/libs/sync"
-	tmp2p "github.com/tendermint/tendermint/proto/tendermint/p2p"
+	tmp2p "github.com/tendermint/tendermint/proto/reapchain/p2p"
 )
 
 // 4 + 1024 == 1028 total frame size

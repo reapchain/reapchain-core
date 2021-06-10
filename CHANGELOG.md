@@ -5,14 +5,14 @@
 *April 8, 2021*
 
 This release fixes a moderate severity security issue, Security Advisory Alderfly, 
-which impacts all networks that rely on Tendermint light clients.
+which impacts all networks that rely on Reapchain light clients.
 Further details will be released once networks have upgraded.
 
 This release also includes a small Go API-breaking change, to reduce panics in the RPC layer.
 
 Special thanks to our external contributors on this release: @gchaincl
 
-Friendly reminder: We have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder: We have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES
 
@@ -36,7 +36,7 @@ Friendly reminder: We have a [bug bounty program](https://hackerone.com/tendermi
 This release, in conjunction with [a fix in the Cosmos SDK](https://github.com/cosmos/cosmos-sdk/pull/8641),
 introduces changes that should mean the logs are much, much quieter. 🎉
 
-Friendly reminder: We have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder: We have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### IMPROVEMENTS
 
@@ -61,21 +61,21 @@ Users who fulfill all the above criteria were susceptible to leaking
 private key material in the logs. All other users are unaffected.
 
 The root cause was a discrepancy
-between the Tendermint Core (untyped) logger and the Cosmos SDK (typed) logger:
-Tendermint Core's logger automatically stringifies Go interfaces whenever possible;
+between the Reapchain Core (untyped) logger and the Cosmos SDK (typed) logger:
+Reapchain Core's logger automatically stringifies Go interfaces whenever possible;
 however, the Cosmos SDK's logger uses reflection to log the fields within a Go interface.
 
 The introduction of the typed logger meant that previously un-logged fields within
 interfaces are now sometimes logged, including the private key material inside the
 `FilePV` struct.
 
-Tendermint Core v0.34.7 fixes this issue; however, we strongly recommend that all validators
+Reapchain Core v0.34.7 fixes this issue; however, we strongly recommend that all validators
 use remote signer implementations instead of `FilePV` in production.
 
 Thank you to @joe-bowman for his assistance with this vulnerability and a particular
 shout-out to @marbar3778 for diagnosing it quickly.
 
-Friendly reminder: We have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder: We have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### BUG FIXES
 
@@ -85,19 +85,19 @@ Friendly reminder: We have a [bug bounty program](https://hackerone.com/tendermi
 
 *February 18, 2021*
 
-_Tendermint Core v0.34.5 and v0.34.6 have been recalled due to build tooling problems._
+_Reapchain Core v0.34.5 and v0.34.6 have been recalled due to build tooling problems._
 
 ## v0.34.4
 
 *February 11, 2021*
 
 This release includes a fix for a memory leak in the evidence reactor (see #6068, below).
-All Tendermint clients are recommended to upgrade.
+All Reapchain clients are recommended to upgrade.
 Thank you to our friends at Crypto.com for the initial report of this memory leak!
 
 Special thanks to other external contributors on this release: @yayajacky, @odidev, @laniehei, and @c29r3!
 
-Friendly reminder: We have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder: We have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### BUG FIXES
 
@@ -111,14 +111,14 @@ Friendly reminder: We have a [bug bounty program](https://hackerone.com/tendermi
 *January 19, 2021*
 
 This release includes a fix for a high-severity security vulnerability,
-a DoS-vector that impacted Tendermint Core v0.34.0-v0.34.2. For more details, see
+a DoS-vector that impacted Reapchain Core v0.34.0-v0.34.2. For more details, see
 [Security Advisory Mulberry](https://github.com/tendermint/tendermint/security/advisories/GHSA-p658-8693-mhvg)
 or https://nvd.nist.gov/vuln/detail/CVE-2021-21271.
 
-Tendermint Core v0.34.3 also updates GoGo Protobuf to 1.3.2 in order to pick up the fix for
+Reapchain Core v0.34.3 also updates GoGo Protobuf to 1.3.2 in order to pick up the fix for
 https://nvd.nist.gov/vuln/detail/CVE-2021-3121.
 
-Friendly reminder: We have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder: We have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### BUG FIXES
 
@@ -133,7 +133,7 @@ This release fixes a substantial bug in evidence handling where evidence could
 sometimes be broadcast before the block containing that evidence was fully committed,
 resulting in some nodes panicking when trying to verify said evidence.
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder, we have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES
 
@@ -144,7 +144,7 @@ Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermi
 
 - [evidence] [\#5890](https://github.com/tendermint/tendermint/pull/5890) Add a buffer to evidence from consensus to avoid broadcasting and proposing evidence before the
   height of such an evidence has finished (@cmwaters)
-- [statesync] [\#5889](https://github.com/tendermint/tendermint/issues/5889) Set `LastHeightConsensusParamsChanged` when bootstrapping Tendermint state (@cmwaters)
+- [statesync] [\#5889](https://github.com/tendermint/tendermint/issues/5889) Set `LastHeightConsensusParamsChanged` when bootstrapping Reapchain state (@cmwaters)
 
 ## v0.34.1
 
@@ -158,7 +158,7 @@ disconnecting from this node. As a temporary remedy (until the mempool package
 is refactored), the `max-batch-bytes` was disabled. Transactions will be sent
 one by one without batching.
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder, we have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES
 
@@ -188,7 +188,7 @@ Holy smokes, this is a big one! For a more reader-friendly overview of the chang
 Special thanks to external contributors on this release: @james-ray, @fedekunze, @favadi, @alessio,
 @joe-bowman, @cuonglm, @SadPencil and @dongsam.
 
-And as always, friendly reminder, that we have a [bug bounty program](https://hackerone.com/tendermint).
+And as always, friendly reminder, that we have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES
 
@@ -196,7 +196,7 @@ And as always, friendly reminder, that we have a [bug bounty program](https://ha
 
    - [config] [\#5315](https://github.com/tendermint/tendermint/pull/5315) Rename `prof_laddr` to `pprof_laddr` and move it to `rpc` section (@melekes)
   - [evidence] [\#4959](https://github.com/tendermint/tendermint/pull/4959) Add JSON tags to `DuplicateVoteEvidence` (@marbar3778)
-  - [light] [\#4946](https://github.com/tendermint/tendermint/pull/4946) `tendermint lite` command has been renamed to `tendermint light` (@marbar3778)
+  - [light] [\#4946](https://github.com/tendermint/tendermint/pull/4946) `reapchain lite` command has been renamed to `reapchain light` (@marbar3778)
   - [privval] [\#4582](https://github.com/tendermint/tendermint/pull/4582) `round` in private_validator_state.json is no longer JSON string; instead it is a number (@marbar3778)
   - [rpc] [\#4792](https://github.com/tendermint/tendermint/pull/4792) `/validators` are now sorted by voting power (@melekes)
   - [rpc] [\#4947](https://github.com/tendermint/tendermint/pull/4947) Return an error when `page` pagination param is 0 in `/validators`, `tx_search` (@melekes)
@@ -264,7 +264,7 @@ And as always, friendly reminder, that we have a [bug bounty program](https://ha
   - [crypto] [\#5214](https://github.com/tendermint/tendermint/pull/5214) Change `GenPrivKeySecp256k1` to `GenPrivKeyFromSecret` to be consistent with other keys (@marbar3778)
   - [crypto] [\#5236](https://github.com/tendermint/tendermint/pull/5236) `VerifyBytes` is now `VerifySignature` on the `crypto.PubKey` interface (@marbar3778)
   - [evidence] [\#5361](https://github.com/tendermint/tendermint/pull/5361) Add LightClientAttackEvidence and change evidence interface (@cmwaters)
-  - [libs] [\#4831](https://github.com/tendermint/tendermint/pull/4831) Remove `Bech32` pkg from Tendermint. This pkg now lives in the [cosmos-sdk](https://github.com/cosmos/cosmos-sdk/tree/4173ea5ebad906dd9b45325bed69b9c655504867/types/bech32) (@marbar3778)
+  - [libs] [\#4831](https://github.com/tendermint/tendermint/pull/4831) Remove `Bech32` pkg from Reapchain. This pkg now lives in the [cosmos-sdk](https://github.com/cosmos/cosmos-sdk/tree/4173ea5ebad906dd9b45325bed69b9c655504867/types/bech32) (@marbar3778)
   - [light] [\#4946](https://github.com/tendermint/tendermint/pull/4946) Rename `lite2` pkg to `light`. Remove `lite` implementation. (@marbar3778)
   - [light] [\#5347](https://github.com/tendermint/tendermint/pull/5347) `NewClient`, `NewHTTPClient`, `VerifyHeader` and `VerifyLightBlockAtHeight` now accept `context.Context` as 1st param (@melekes)
   - [merkle] [\#5193](https://github.com/tendermint/tendermint/pull/5193) `HashFromByteSlices` and `ProofsFromByteSlices` now return a hash for empty inputs, following RFC6962 (@erikgrinaker)
@@ -349,12 +349,12 @@ And as always, friendly reminder, that we have a [bug bounty program](https://ha
 - [consensus] [\#5329](https://github.com/tendermint/tendermint/pull/5329) Fix wrong proposer schedule for validators returned by `InitChain` (@erikgrinaker)
 - [docker] [\#5385](https://github.com/tendermint/tendermint/pull/5385) Fix incorrect `time_iota_ms` default setting causing block timestamp drift (@erikgrinaker)
 - [evidence] [\#5170](https://github.com/tendermint/tendermint/pull/5170) Change ABCI evidence time to the time the infraction happened not the time the evidence was committed on the block (@cmwaters)
-- [evidence] [\#5610](https://github.com/tendermint/tendermint/pull/5610) Make it possible for ABCI evidence to be formed from Tendermint evidence (@cmwaters)
+- [evidence] [\#5610](https://github.com/tendermint/tendermint/pull/5610) Make it possible for ABCI evidence to be formed from Reapchain evidence (@cmwaters)
 - [libs/rand] [\#5215](https://github.com/tendermint/tendermint/pull/5215) Fix out-of-memory error on unexpected argument of Str() (@SadPencil)
 - [light] [\#5307](https://github.com/tendermint/tendermint/pull/5307) Persist correct proposer priority in light client validator sets (@cmwaters)
 - [p2p] [\#5136](https://github.com/tendermint/tendermint/pull/5136) Fix error for peer with the same ID but different IPs (@valardragon)
 - [privval] [\#5638](https://github.com/tendermint/tendermint/pull/5638) Increase read/write timeout to 5s and calculate ping interval based on it (@JoeKash)
-- [proxy] [\#5078](https://github.com/tendermint/tendermint/pull/5078) Force Tendermint to exit when ABCI app crashes  (@melekes)
+- [proxy] [\#5078](https://github.com/tendermint/tendermint/pull/5078) Force Reapchain to exit when ABCI app crashes  (@melekes)
 - [rpc] [\#5660](https://github.com/tendermint/tendermint/pull/5660) Set `application/json` as the `Content-Type` header in RPC responses. (@alexanderbez)
 - [store] [\#5382](https://github.com/tendermint/tendermint/pull/5382) Fix race conditions when loading/saving/pruning blocks (@erikgrinaker)
 
@@ -364,8 +364,8 @@ And as always, friendly reminder, that we have a [bug bounty program](https://ha
 
 ### Go security update
 
-Go reported a security vulnerability that affected the `encoding/binary` package. The most recent binary for tendermint is using 1.14.6, for this
-reason the Tendermint engineering team has opted to conduct a release to aid users in using the correct version of Go. Read more about the security issue [here](https://github.com/golang/go/issues/40618).
+Go reported a security vulnerability that affected the `encoding/binary` package. The most recent binary for reapchain is using 1.14.6, for this
+reason the Reapchain engineering team has opted to conduct a release to aid users in using the correct version of Go. Read more about the security issue [here](https://github.com/golang/go/issues/40618).
 
 
 ## v0.33.7
@@ -386,32 +386,32 @@ This security release fixes:
 
 ### Denial of service
 
-Tendermint 0.33.0 and above allow block proposers to include signatures for the
+Reapchain 0.33.0 and above allow block proposers to include signatures for the
 wrong block. This may happen naturally if you start a network, have it run for
 some time and restart it **without changing the chainID**. (It is a
-[misconfiguration](https://docs.tendermint.com/master/tendermint-core/using-tendermint.html)
+[misconfiguration](https://docs.reapchain.com/master/reapchain-core/using-reapchain.html)
 to reuse chainIDs.) Correct block proposers will accidentally include signatures
 for the wrong block if they see these signatures, and then commits won't validate,
 making all proposed blocks invalid. A malicious validator (even with a minimal
 amount of stake) can use this vulnerability to completely halt the network.
 
-Tendermint 0.33.6 checks all the signatures are for the block with +2/3
+Reapchain 0.33.6 checks all the signatures are for the block with +2/3
 majority before creating a commit.
 
 ### False Witness
 
-Tendermint 0.33.1 and above are no longer fully verifying commit signatures
+Reapchain 0.33.1 and above are no longer fully verifying commit signatures
 during block execution - they stop after +2/3. This means proposers can propose
 blocks that contain valid +2/3 signatures and then the rest of the signatures
 can be whatever they want. They can claim that all the other validators signed
 just by including a CommitSig with arbitrary signature data. While this doesn't
-seem to impact safety of Tendermint per se, it means that Commits may contain a
+seem to impact safety of Reapchain per se, it means that Commits may contain a
 lot of invalid data.
 
 _This was already true of blocks, since they could include invalid txs filled
 with garbage, but in that case the application knew that they are invalid and
 could punish the proposer. But since applications didn't--and don't--
-verify commit signatures directly (they trust Tendermint to do that),
+verify commit signatures directly (they trust Reapchain to do that),
 they won't be able to detect it._
 
 This can impact incentivization logic in the application that depends on the
@@ -421,7 +421,7 @@ of the signatures. But a proposer can now claim that bonus just by including
 arbitrary data for the final -1/3 of validators without actually waiting for
 their signatures. There may be other tricks that can be played because of this.
 
-Tendermint 0.33.6 verifies all the signatures during block execution.
+Reapchain 0.33.6 verifies all the signatures during block execution.
 
 _Please note that the light client does not check nil votes and exits as soon
 as 2/3+ of the signatures are checked._
@@ -431,7 +431,7 @@ as 2/3+ of the signatures are checked._
 Special thanks to @njmurarka at Bluzelle Networks for reporting this.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### SECURITY:
 
@@ -448,7 +448,7 @@ need to update your code.**
 
 Special thanks to external contributors on this release: @tau3,
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder, we have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -509,7 +509,7 @@ Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermi
 
 Special thanks to external contributors on this release: @whylee259, @greg-szabo
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder, we have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -521,7 +521,7 @@ Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermi
 ### FEATURES:
 
 - [abci] [\#4588](https://github.com/tendermint/tendermint/issues/4588) Add `ResponseCommit.retain_height` field, which will automatically remove blocks below this height. This bumps the ABCI version to 0.16.2 (@erikgrinaker).
-- [cmd] [\#4665](https://github.com/tendermint/tendermint/pull/4665) New `tendermint completion` command to generate Bash/Zsh completion scripts (@alessio).
+- [cmd] [\#4665](https://github.com/tendermint/tendermint/pull/4665) New `reapchain completion` command to generate Bash/Zsh completion scripts (@alessio).
 - [rpc] [\#4588](https://github.com/tendermint/tendermint/issues/4588) Add `/status` response fields for the earliest block available on the node (@erikgrinaker).
 - [rpc] [\#4611](https://github.com/tendermint/tendermint/pull/4611) Add `codespace` to `ResultBroadcastTx` (@whylee259).
 
@@ -552,28 +552,28 @@ This security release fixes:
 
 ### Denial of service 1
 
-Tendermint 0.33.2 and earlier does not limit P2P connection requests number.
-For each p2p connection, Tendermint allocates ~0.5MB. Even though this
+Reapchain 0.33.2 and earlier does not limit P2P connection requests number.
+For each p2p connection, Reapchain allocates ~0.5MB. Even though this
 memory is garbage collected once the connection is terminated (due to duplicate
 IP or reaching a maximum number of inbound peers), temporary memory spikes can
 lead to OOM (Out-Of-Memory) exceptions.
 
-Tendermint 0.33.3 (and 0.32.10) limits the total number of P2P incoming
+Reapchain 0.33.3 (and 0.32.10) limits the total number of P2P incoming
 connection requests to to `p2p.max_num_inbound_peers +
 len(p2p.unconditional_peer_ids)`.
 
 Notes:
 
-- Tendermint does not rate limit P2P connection requests per IP (an attacker
+- Reapchain does not rate limit P2P connection requests per IP (an attacker
   can saturate all the inbound slots);
-- Tendermint does not rate limit HTTP(S) requests. If you expose any RPC
+- Reapchain does not rate limit HTTP(S) requests. If you expose any RPC
   endpoints to the public, please make sure to put in place some protection
   (https://www.nginx.com/blog/rate-limiting-nginx/). We may implement this in
   the future ([\#1696](https://github.com/tendermint/tendermint/issues/1696)).
 
 ### Denial of service 2
 
-Tendermint 0.33.2 and earlier does not reclaim `activeID` of a peer after it's
+Reapchain 0.33.2 and earlier does not reclaim `activeID` of a peer after it's
 removed in `Mempool` reactor. This does not happen all the time. It only
 happens when a connection fails (for any reason) before the Peer is created and
 added to all reactors. `RemovePeer` is therefore called before `AddPeer`, which
@@ -582,7 +582,7 @@ maximum size of 65535 and the node will panic if this map reaches the maximum.
 An attacker can create a lot of connection attempts (exploiting Denial of
 service 1), which ultimately will lead to the node panicking.
 
-Tendermint 0.33.3 (and 0.32.10) claims `activeID` for a peer in `InitPeer`,
+Reapchain 0.33.3 (and 0.32.10) claims `activeID` for a peer in `InitPeer`,
 which is executed before `MConnection` is started.
 
 Notes:
@@ -598,7 +598,7 @@ Special thanks to [fudongbai](https://hackerone.com/fudongbai) for finding
 and reporting this.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### SECURITY:
 
@@ -612,12 +612,12 @@ program](https://hackerone.com/tendermint).
 Special thanks to external contributors on this release:
 @antho1404, @michaelfig, @gterzian, @tau3, @Shivani912
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder, we have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
 - CLI/RPC/Config
-  - [cli] [\#4505](https://github.com/tendermint/tendermint/pull/4505) `tendermint lite` sub-command new syntax (@melekes):
+  - [cli] [\#4505](https://github.com/tendermint/tendermint/pull/4505) `reapchain lite` sub-command new syntax (@melekes):
     `lite cosmoshub-3 -p 52.57.29.196:26657 -w public-seed-node.cosmoshub.certus.one:26657
     --height 962118 --hash 28B97BE9F6DE51AC69F70E0B7BFD7E5C9CD1A595B7DC31AFF27C50D4948`
 
@@ -631,7 +631,7 @@ Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermi
 ### IMPROVEMENTS:
 
 - [blockchain/v2] [\#4361](https://github.com/tendermint/tendermint/pull/4361) Add reactor (@brapse)
-- [cmd] [\#4515](https://github.com/tendermint/tendermint/issues/4515) Change `tendermint debug dump` sub-command archives filename's format (@melekes)
+- [cmd] [\#4515](https://github.com/tendermint/tendermint/issues/4515) Change `reapchain debug dump` sub-command archives filename's format (@melekes)
 - [consensus] [\#3583](https://github.com/tendermint/tendermint/issues/3583) Reduce `non-deterministic signature` log noise (@tau3)
 - [examples/kvstore] [\#4507](https://github.com/tendermint/tendermint/issues/4507) ABCI query now returns the proper height (@erikgrinaker)
 - [lite2] [\#4462](https://github.com/tendermint/tendermint/issues/4462) Add `NewHTTPClient` and `NewHTTPClientFromTrustedStore` (@cmwaters)
@@ -648,8 +648,8 @@ Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermi
 
 ### BUG FIXES:
 
-- [cmd] [\#4303](https://github.com/tendermint/tendermint/issues/4303) Show useful error when Tendermint is not initialized (@melekes)
-- [cmd] [\#4515](https://github.com/tendermint/tendermint/issues/4515) **Fix `tendermint debug kill` sub-command** (@melekes)
+- [cmd] [\#4303](https://github.com/tendermint/tendermint/issues/4303) Show useful error when Reapchain is not initialized (@melekes)
+- [cmd] [\#4515](https://github.com/tendermint/tendermint/issues/4515) **Fix `reapchain debug kill` sub-command** (@melekes)
 - [rpc] [\#3935](https://github.com/tendermint/tendermint/issues/3935) **Create buffered subscriptions on `/subscribe`** (@melekes)
 - [rpc] [\#4375](https://github.com/tendermint/tendermint/issues/4375) Stop searching for txs in `/tx_search` upon client timeout (@gterzian)
 - [rpc] [\#4406](https://github.com/tendermint/tendermint/pull/4406) Fix issue with multiple subscriptions on the websocket (@antho1404)
@@ -665,7 +665,7 @@ Special thanks to external contributors on this release:
 @princesinha19
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### FEATURES:
 
@@ -686,7 +686,7 @@ program](https://hackerone.com/tendermint).
 Special thanks to external contributors on this release: @mrekucci, @PSalant726, @princesinha19, @greg-szabo, @dongsam, @cuonglm, @jgimeno, @yenkhoon
 
 Friendly reminder, we have a [bug bounty
-program.](https://hackerone.com/tendermint).
+program.](https://hackerone.com/reapchain).
 
 *January 14, 2020*
 
@@ -706,7 +706,7 @@ and a validator address plus a timestamp. Note we may remove the validator
 address & timestamp fields in the future (see ADR-25).
 
 `lite2` package has been added to solve `lite` issues and introduce weak
-subjectivity interface. Refer to the [spec](https://github.com/tendermint/spec/blob/master/spec/consensus/light-client.md) for complete details.
+subjectivity interface. Refer to the [spec](https://github.com/reapchain/spec/blob/master/spec/consensus/light-client.md) for complete details.
 `lite` package is now deprecated and will be removed in v0.34 release.
 
 ### BREAKING CHANGES:
@@ -743,10 +743,10 @@ subjectivity interface. Refer to the [spec](https://github.com/tendermint/spec/b
     - Request.ID is now optional. Notification is a Request without an ID. Previously ID="" or ID=0 were considered as notifications.
 
   - [config] [\#4046](https://github.com/tendermint/tendermint/issues/4046) Rename tag(s) to CompositeKey & places where tag is still present it was renamed to event or events. Find how a compositeKey is constructed [here](https://github.com/tendermint/tendermint/blob/6d05c531f7efef6f0619155cf10ae8557dd7832f/docs/app-dev/indexing-transactions.md)
-    - You will have to generate a new config for your Tendermint node(s)
+    - You will have to generate a new config for your Reapchain node(s)
   - [genesis] [\#2565](https://github.com/tendermint/tendermint/issues/2565) Add `consensus_params.evidence.max_age_duration`. Rename
     `consensus_params.evidence.max_age` to `max_age_num_blocks`.
-  - [cli] [\#1771](https://github.com/tendermint/tendermint/issues/1771) `tendermint lite` now uses new light client package (`lite2`)
+  - [cli] [\#1771](https://github.com/tendermint/tendermint/issues/1771) `reapchain lite` now uses new light client package (`lite2`)
     and has 3 more flags: `--trusting-period`, `--trusted-height` and
     `--trusted-hash`
 
@@ -790,17 +790,17 @@ subjectivity interface. Refer to the [spec](https://github.com/tendermint/spec/b
   - [p2p] [\#3668](https://github.com/tendermint/tendermint/pull/3668) Make `SecretConnection` non-malleable
 
 - [proto] [\#3986](https://github.com/tendermint/tendermint/pull/3986) Prefix protobuf types to avoid name conflicts.
-  - ABCI becomes `tendermint.abci.types` with the new API endpoint `/tendermint.abci.types.ABCIApplication/`
-  - core_grpc becomes `tendermint.rpc.grpc` with the new API endpoint `/tendermint.rpc.grpc.BroadcastAPI/`
-  - merkle becomes `tendermint.crypto.merkle`
-  - libs.common becomes `tendermint.libs.common`
-  - proto3 becomes `tendermint.types.proto3`
+  - ABCI becomes `reapchain.abci.types` with the new API endpoint `/reapchain.abci.types.ABCIApplication/`
+  - core_grpc becomes `reapchain.rpc.grpc` with the new API endpoint `/reapchain.rpc.grpc.BroadcastAPI/`
+  - merkle becomes `reapchain.crypto.merkle`
+  - libs.common becomes `reapchain.libs.common`
+  - proto3 becomes `reapchain.types.proto3`
 
 ### FEATURES:
 
 - [p2p] [\#4053](https://github.com/tendermint/tendermint/issues/4053) Add `unconditional_peer_ids` and `persistent_peers_max_dial_period` config variables (see ADR-050) (@dongsam)
-- [tools] [\#4227](https://github.com/tendermint/tendermint/pull/4227) Implement `tendermint debug kill` and
-  `tendermint debug dump` commands for Tendermint node debugging functionality. See `--help` in both
+- [tools] [\#4227](https://github.com/tendermint/tendermint/pull/4227) Implement `reapchain debug kill` and
+  `reapchain debug dump` commands for Reapchain node debugging functionality. See `--help` in both
   commands for further documentation and usage.
 - [cli] [\#4234](https://github.com/tendermint/tendermint/issues/4234) Add `--db_backend and --db_dir` flags (@princesinha19)
 - [cli] [\#4113](https://github.com/tendermint/tendermint/issues/4113) Add optional `--genesis_hash` flag to check genesis hash upon startup
@@ -871,28 +871,28 @@ This security release fixes:
 
 ### Denial of Service 1
 
-Tendermint 0.33.2 and earlier does not limit the number of P2P connection
-requests. For each p2p connection, Tendermint allocates ~0.5MB. Even though
+Reapchain 0.33.2 and earlier does not limit the number of P2P connection
+requests. For each p2p connection, Reapchain allocates ~0.5MB. Even though
 this memory is garbage collected once the connection is terminated (due to
 duplicate IP or reaching a maximum number of inbound peers), temporary memory
 spikes can lead to OOM (Out-Of-Memory) exceptions.
 
-Tendermint 0.33.3 (and 0.32.10) limits the total number of P2P incoming
+Reapchain 0.33.3 (and 0.32.10) limits the total number of P2P incoming
 connection requests to to `p2p.max_num_inbound_peers +
 len(p2p.unconditional_peer_ids)`.
 
 Notes:
 
-- Tendermint does not rate limit P2P connection requests per IP (an attacker
+- Reapchain does not rate limit P2P connection requests per IP (an attacker
   can saturate all the inbound slots);
-- Tendermint does not rate limit HTTP(S) requests. If you expose any RPC
+- Reapchain does not rate limit HTTP(S) requests. If you expose any RPC
   endpoints to the public, please make sure to put in place some protection
   (https://www.nginx.com/blog/rate-limiting-nginx/). We may implement this in
   the future ([\#1696](https://github.com/tendermint/tendermint/issues/1696)).
 
 ### Denial of Service 2
 
-Tendermint 0.33.2 and earlier does not reclaim `activeID` of a peer after it's
+Reapchain 0.33.2 and earlier does not reclaim `activeID` of a peer after it's
 removed in `Mempool` reactor. This does not happen all the time. It only
 happens when a connection fails (for any reason) before the Peer is created and
 added to all reactors. `RemovePeer` is therefore called before `AddPeer`, which
@@ -901,7 +901,7 @@ maximum size of 65535 and the node will panic if this map reaches the maximum.
 An attacker can create a lot of connection attempts (exploiting Denial of
 Service 1), which ultimately will lead to the node panicking.
 
-Tendermint 0.33.3 (and 0.32.10) claims `activeID` for a peer in `InitPeer`,
+Reapchain 0.33.3 (and 0.32.10) claims `activeID` for a peer in `InitPeer`,
 which is executed before `MConnection` is started.
 
 Notes:
@@ -917,7 +917,7 @@ Special thanks to [fudongbai](https://hackerone.com/fudongbai) for finding
 and reporting this.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### SECURITY:
 
@@ -931,7 +931,7 @@ _January, 9, 2020_
 Special thanks to external contributors on this release: @greg-szabo, @gregzaitsev, @yenkhoon
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### FEATURES:
 
@@ -955,7 +955,7 @@ program](https://hackerone.com/tendermint).
 Special thanks to external contributors on this release: @erikgrinaker, @guagualvcha, @hsyis, @cosmostuba, @whunmr, @austinabell
 
 Friendly reminder, we have a [bug bounty
-program.](https://hackerone.com/tendermint).
+program.](https://hackerone.com/reapchain).
 
 
 ### BREAKING CHANGES:
@@ -997,7 +997,7 @@ Special thanks to [elvishacker](https://hackerone.com/elvishacker) for finding
 and reporting this.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -1026,7 +1026,7 @@ Special thanks to [fudongbai](https://hackerone.com/fudongbai) for pointing
 this out.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### SECURITY:
 
@@ -1044,7 +1044,7 @@ Special thanks to [fudongbai](https://hackerone.com/fudongbai) for discovering
 and reporting this issue.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### SECURITY:
 
@@ -1057,7 +1057,7 @@ program](https://hackerone.com/tendermint).
 Special thanks to external contributors on this release: @jon-certik, @gracenoah, @PSalant726, @gchaincl
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -1087,7 +1087,7 @@ program](https://hackerone.com/tendermint).
 
 *August 28, 2019*
 
-@climber73 wrote the [Writing a Tendermint Core application in Java
+@climber73 wrote the [Writing a Reapchain Core application in Java
 (gRPC)](https://github.com/tendermint/tendermint/blob/master/docs/guides/java.md)
 guide.
 
@@ -1095,7 +1095,7 @@ Special thanks to external contributors on this release:
 @gchaincl, @bluele, @climber73
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### IMPROVEMENTS:
 
@@ -1118,7 +1118,7 @@ Special thanks to external contributors on this release:
 @ruseinov, @bluele, @guagualvcha
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -1160,7 +1160,7 @@ This release contains a minor enhancement to the ABCI and some breaking changes 
 - Removed various functions from `libs` pkgs
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -1176,7 +1176,7 @@ program](https://hackerone.com/tendermint).
 
 - [node] Add variadic argument to `NewNode` to support functional options, allowing the Node to be more easily customized.
 - [node][\#3730](https://github.com/tendermint/tendermint/pull/3730) Add `CustomReactors` option to `NewNode` allowing caller to pass
-  custom reactors to run inside Tendermint node (@ParthDesai)
+  custom reactors to run inside Reapchain node (@ParthDesai)
 - [abci] [\#2127](https://github.com/tendermint/tendermint/issues/2127)RequestCheckTx has a new field, `CheckTxType`, which can take values of `CheckTxType_New` and `CheckTxType_Recheck`, indicating whether this is a new tx being checked for the first time or whether this tx is being rechecked after a block commit. This allows applications to skip certain expensive operations, like signature checking, if they've already been done once. see [docs](https://github.com/tendermint/tendermint/blob/eddb433d7c082efbeaf8974413a36641519ee895/docs/spec/abci/apps.md#mempool-connection)
 
 ### IMPROVEMENTS:
@@ -1208,13 +1208,13 @@ and the RPC, namely:
 - Bind RPC to localhost by default, not to the public interface [UPGRADING/RPC_Changes](./UPGRADING.md#rpc_changes)
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
 * CLI/RPC/Config
   - [cli] [\#3613](https://github.com/tendermint/tendermint/issues/3613) Switch from golang/dep to Go Modules to resolve dependencies:
-    It is recommended to switch to Go Modules if your project has tendermint as
+    It is recommended to switch to Go Modules if your project has reapchain as
     a dependency. Read more on Modules here:
     https://github.com/golang/go/wiki/Modules
   - [config] [\#3632](https://github.com/tendermint/tendermint/pull/3632) Removed `leveldb` as generic
@@ -1255,7 +1255,7 @@ program](https://hackerone.com/tendermint).
 - [node] [\#3716](https://github.com/tendermint/tendermint/issues/3716) Fix a bug where `nil` is recorded as node's address
 - [node] [\#3741](https://github.com/tendermint/tendermint/issues/3741) Fix profiler blocking the entire node
 
-*Tendermint 0.31 release series has reached End-Of-Life and is no longer supported.*
+*Reapchain 0.31 release series has reached End-Of-Life and is no longer supported.*
 
 ## v0.31.12
 
@@ -1265,28 +1265,28 @@ This security release fixes:
 
 ### Denial of Service 1
 
-Tendermint 0.33.2 and earlier does not limit the number of P2P connection requests.
-For each p2p connection, Tendermint allocates ~0.5MB. Even though this
+Reapchain 0.33.2 and earlier does not limit the number of P2P connection requests.
+For each p2p connection, Reapchain allocates ~0.5MB. Even though this
 memory is garbage collected once the connection is terminated (due to duplicate
 IP or reaching a maximum number of inbound peers), temporary memory spikes can
 lead to OOM (Out-Of-Memory) exceptions.
 
-Tendermint 0.33.3, 0.32.10, and 0.31.12 limit the total number of P2P incoming
+Reapchain 0.33.3, 0.32.10, and 0.31.12 limit the total number of P2P incoming
 connection requests to to `p2p.max_num_inbound_peers +
 len(p2p.unconditional_peer_ids)`.
 
 Notes:
 
-- Tendermint does not rate limit P2P connection requests per IP (an attacker
+- Reapchain does not rate limit P2P connection requests per IP (an attacker
   can saturate all the inbound slots);
-- Tendermint does not rate limit HTTP(S) requests. If you expose any RPC
+- Reapchain does not rate limit HTTP(S) requests. If you expose any RPC
   endpoints to the public, please make sure to put in place some protection
   (https://www.nginx.com/blog/rate-limiting-nginx/). We may implement this in
   the future ([\#1696](https://github.com/tendermint/tendermint/issues/1696)).
 
 ### Denial of Service 2
 
-Tendermint 0.33.2 and earlier does not reclaim `activeID` of a peer after it's
+Reapchain 0.33.2 and earlier does not reclaim `activeID` of a peer after it's
 removed in `Mempool` reactor. This does not happen all the time. It only
 happens when a connection fails (for any reason) before the Peer is created and
 added to all reactors. `RemovePeer` is therefore called before `AddPeer`, which
@@ -1295,7 +1295,7 @@ maximum size of 65535 and the node will panic if this map reaches the maximum.
 An attacker can create a lot of connection attempts (exploiting Denial of
 Service 1), which ultimately will lead to the node panicking.
 
-Tendermint 0.33.3, 0.32.10, and 0.31.12 claim `activeID` for a peer in `InitPeer`,
+Reapchain 0.33.3, 0.32.10, and 0.31.12 claim `activeID` for a peer in `InitPeer`,
 which is executed before `MConnection` is started.
 
 Notes:
@@ -1311,7 +1311,7 @@ Special thanks to [fudongbai](https://hackerone.com/fudongbai) for finding
 and reporting this.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### SECURITY:
 
@@ -1333,7 +1333,7 @@ Special thanks to [elvishacker](https://hackerone.com/elvishacker) for finding
 and reporting this.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -1362,7 +1362,7 @@ Special thanks to [fudongbai](https://hackerone.com/fudongbai) for pointing
 this out.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### SECURITY:
 
@@ -1380,7 +1380,7 @@ Special thanks to [fudongbai](https://hackerone.com/fudongbai) for discovering
 and reporting this issue.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### SECURITY:
 
@@ -1427,7 +1427,7 @@ over again.
 This release contains many fixes and improvements, primarily for p2p functionality.
 It also fixes a security issue in the mempool package.
 
-With this release, Tendermint now supports [boltdb](https://github.com/etcd-io/bbolt), although
+With this release, Reapchain now supports [boltdb](https://github.com/etcd-io/bbolt), although
 in experimental mode. Feel free to try and report to us any findings/issues.
 Note also that the build tags for compiling CLevelDB have changed.
 
@@ -1460,10 +1460,10 @@ Special thanks to external contributors on this release:
 - [crypto] [\#3672](https://github.com/tendermint/tendermint/issues/3672) Return more info in the `AddSignatureFromPubKey` error
 - [cs/replay] [\#3460](https://github.com/tendermint/tendermint/issues/3460) Check appHash for each block
 - [libs/db] [\#3611](https://github.com/tendermint/tendermint/issues/3611) Conditional compilation
-  * Use `cleveldb` tag instead of `gcc` to compile Tendermint with CLevelDB or
+  * Use `cleveldb` tag instead of `gcc` to compile Reapchain with CLevelDB or
     use `make build_c` / `make install_c` (full instructions can be found at
-    https://docs.tendermint.com/master/introduction/install.html#compile-with-cleveldb-support)
-  * Use `boltdb` tag to compile Tendermint with bolt db
+    https://docs.reapchain.com/master/introduction/install.html#compile-with-cleveldb-support)
+  * Use `boltdb` tag to compile Reapchain with bolt db
 - [node] [\#3362](https://github.com/tendermint/tendermint/issues/3362) Return an error if `persistent_peers` list is invalid (except
   when IP lookup fails)
 - [p2p] [\#3463](https://github.com/tendermint/tendermint/pull/3463) Do not log "Can't add peer's address to addrbook" error for a private peer (@guagualvcha)
@@ -1575,7 +1575,7 @@ panic if the lookup failed.
 
 *March 30th, 2019*
 
-This release fixes a regression from v0.31.1 where Tendermint panics under
+This release fixes a regression from v0.31.1 where Reapchain panics under
 mempool load for external ABCI apps.
 
 Special thanks to external contributors on this release:
@@ -1677,7 +1677,7 @@ Milestone](https://github.com/tendermint/tendermint/milestone/19?closed=1) for
 more details.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -1807,9 +1807,9 @@ the application ([\#3285](https://github.com/tendermint/tendermint/issues/3285))
 For more, see issues marked
 [proposer-selection](https://github.com/tendermint/tendermint/labels/proposer-selection).
 
-This release also includes a fix to prevent Tendermint from including the same
+This release also includes a fix to prevent Reapchain from including the same
 piece of evidence in more than one block. This issue was reported by @chengwenxi in our
-[bug bounty program](https://hackerone.com/tendermint).
+[bug bounty program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -1899,7 +1899,7 @@ were not closing connections and one for consensus layer where consensus with
 no empty blocks (`create_empty_blocks = false`) could halt.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### IMPROVEMENTS:
 - [pex] [\#3037](https://github.com/tendermint/tendermint/issues/3037) Only log "Reached max attempts to dial" once
@@ -1940,7 +1940,7 @@ with old chains, there may be some final changes yet to come before Cosmos
 launch as we continue to audit and test the software.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -1990,7 +1990,7 @@ Special thanks to external contributors on this release:
 @HaoyangLiu
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### BUG FIXES:
 - [consensus] Fix consensus halt from proposing blocks with too much evidence
@@ -2120,7 +2120,7 @@ issue](https://github.com/tendermint/tendermint/issues/2718#issuecomment-4408886
 in the proposer selection algorithm.
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 This release is primarily about fixes to the proposer selection algorithm
 in preparation for the [Cosmos Game of
@@ -2164,7 +2164,7 @@ message.
   accept new connections
 - [p2p] [\#2969](https://github.com/tendermint/tendermint/issues/2969) Fix mismatch in peer count between `/net_info` and the prometheus
   metrics
-- [rpc] [\#2408](https://github.com/tendermint/tendermint/issues/2408) `/broadcast_tx_commit`: Fix "interface conversion: interface {} in nil, not EventDataTx" panic (could happen if somebody sent a tx using `/broadcast_tx_commit` while Tendermint was being stopped)
+- [rpc] [\#2408](https://github.com/tendermint/tendermint/issues/2408) `/broadcast_tx_commit`: Fix "interface conversion: interface {} in nil, not EventDataTx" panic (could happen if somebody sent a tx using `/broadcast_tx_commit` while Reapchain was being stopped)
 - [state] [\#2785](https://github.com/tendermint/tendermint/issues/2785) Fix accum for new validators to be `-1.125*totalVotingPower`
   instead of 0, forcing them to wait before becoming the proposer. Also:
     - do not batch clip
@@ -2184,7 +2184,7 @@ Special thanks to external contributors on this release:
 @nagarajmanjunath, @tomtau
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### FEATURES:
 
@@ -2225,7 +2225,7 @@ Special thanks to external contributors on this release:
 @danil-lashin, @kevlubkcm, @krhubert, @srmo
 
 Friendly reminder, we have a [bug bounty
-program](https://hackerone.com/tendermint).
+program](https://hackerone.com/reapchain).
 
 ### BREAKING CHANGES:
 
@@ -2257,7 +2257,7 @@ program](https://hackerone.com/tendermint).
 - [consensus] [\#2819](https://github.com/tendermint/tendermint/issues/2819) Don't send proposalHearbeat if not a validator
 - [docs] [\#2859](https://github.com/tendermint/tendermint/issues/2859) Fix ConsensusParams details in spec
 - [libs/autofile] [\#2760](https://github.com/tendermint/tendermint/issues/2760) Comment out autofile permissions check - should fix
-  running Tendermint on Windows
+  running Reapchain on Windows
 - [p2p] [\#2869](https://github.com/tendermint/tendermint/issues/2869) Set connection config properly instead of always using default
 - [p2p/pex] [\#2802](https://github.com/tendermint/tendermint/issues/2802) Seed mode fixes:
   - Only disconnect from inbound peers
@@ -2270,7 +2270,7 @@ program](https://hackerone.com/tendermint).
 
 Special thanks to external contributors on this release: @hleb-albau, @zhuzeyu
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder, we have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### FEATURES:
 
@@ -2289,7 +2289,7 @@ Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermi
 
 Special thanks to external contributors on this release: @katakonst
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder, we have a [bug bounty program](https://hackerone.com/reapchain).
 
 ### IMPROVEMENTS:
 
@@ -2318,7 +2318,7 @@ Special thanks to external contributors on this release:
 @james-ray, @overbool, @phymbert, @Slamper, @Uzair1995, @yutianwu.
 
 Special thanks to @Slamper for a series of bug reports in our [bug bounty
-program](https://hackerone.com/tendermint) which are fixed in this release.
+program](https://hackerone.com/reapchain) which are fixed in this release.
 
 This release is primarily about adding Version fields to various data structures,
 optimizing consensus messages for signing and verification in
@@ -2426,7 +2426,7 @@ plit immutable and mutable parts of priv_validator.json
     - [p2p] [\#2169](https://github.com/cosmos/cosmos-sdk/issues/2169)
 - [config] [\#2232](https://github.com/tendermint/tendermint/issues/2232) Added ValidateBasic method, which performs basic checks
 - [crypto/ed25519] [\#2558](https://github.com/tendermint/tendermint/issues/2558) Switch to use latest `golang.org/x/crypto` through our fork at
-  github.com/tendermint/crypto
+  github.com/reapchain/crypto
 - [libs/log] [\#2707](https://github.com/tendermint/tendermint/issues/2707) Add year to log format (@yutianwu)
 - [tools] [\#2238](https://github.com/tendermint/tendermint/issues/2238) Binary dependencies are now locked to a specific git commit
 
@@ -2464,7 +2464,7 @@ It also addresses some issues found via security audit, removes various unused
 functions from `libs/common`, and implements
 [ADR-012](https://github.com/tendermint/tendermint/blob/develop/docs/architecture/adr-012-peer-transport.md).
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder, we have a [bug bounty program](https://hackerone.com/reapchain).
 
 BREAKING CHANGES:
 
@@ -2543,7 +2543,7 @@ BREAKING CHANGES:
 
 * Apps
   - [abci] Added address of the original proposer of the block to Header
-  - [abci] Change ABCI Header to match Tendermint exactly
+  - [abci] Change ABCI Header to match Reapchain exactly
   - [abci] [\#2159](https://github.com/tendermint/tendermint/issues/2159) Update use of `Validator` (see
     [ADR-018](https://github.com/tendermint/tendermint/blob/develop/docs/architecture/adr-018-ABCI-Validators.md)):
     - Remove PubKey from `Validator` (so it's just Address and Power)
@@ -2707,7 +2707,7 @@ BUG FIXES
 *July 23th, 2018*
 
 BREAKING CHANGES:
-- [crypto] Refactor `tendermint/crypto` into many subpackages
+- [crypto] Refactor `reapchain/crypto` into many subpackages
 - [libs/common] remove exponentially distributed random numbers
 
 IMPROVEMENTS:
@@ -2731,13 +2731,13 @@ BREAKING CHANGES:
 - [types] Genesis.AppStateJSON -> Genesis.AppState
 
 FEATURES:
-- [tools] Merged in from github.com/tendermint/tools
+- [tools] Merged in from github.com/reapchain/tools
 
 BUG FIXES:
 - [tools/tm-bench] Various fixes
 - [consensus] Wait for WAL to stop on shutdown
 - [abci] Fix #1891, pending requests cannot hang when abci server dies.
-  Previously a crash in BeginBlock could leave tendermint in broken state.
+  Previously a crash in BeginBlock could leave reapchain in broken state.
 
 ## 0.22.3
 
@@ -2754,7 +2754,7 @@ IMPROVEMENTS
 
 IMPROVEMENTS
 - More cleanup post repo merge!
-- [docs] Include `ecosystem.json` and `tendermint-bft.md` from deprecated `aib-data` repository.
+- [docs] Include `ecosystem.json` and `reapchain-bft.md` from deprecated `aib-data` repository.
 - [config] Add `instrumentation.max_open_connections`, which limits the number
   of requests in flight to Prometheus server (if enabled). Default: 3.
 
@@ -2808,7 +2808,7 @@ BREAKING CHANGES:
 FEATURES
 - [cmd] Added metrics (served under `/metrics` using a Prometheus client;
   disabled by default). See the new `instrumentation` section in the config and
-  [metrics](https://tendermint.readthedocs.io/projects/tools/en/develop/metrics.html)
+  [metrics](https://reapchain.readthedocs.io/projects/tools/en/develop/metrics.html)
   guide.
 - [p2p] Add IPv6 support to peering.
 - [p2p] Add `external_address` to config to allow specifying the address for
@@ -2818,9 +2818,9 @@ IMPROVEMENT
 - [rpc/client] Supports https and wss now.
 - [crypto] Make public key size into public constants
 - [mempool] Log tx hash, not entire tx
-- [abci] Merged in github.com/tendermint/abci
-- [crypto] Merged in github.com/tendermint/go-crypto
-- [libs] Merged in github.com/tendermint/tmlibs
+- [abci] Merged in github.com/reapchain/abci
+- [crypto] Merged in github.com/reapchain/go-crypto
+- [libs] Merged in github.com/reapchain/tmlibs
 - [docs] Move from .rst to .md
 
 BUG FIXES:
@@ -2858,19 +2858,19 @@ BUG FIXES
 
 *June 6th, 2018*
 
-This is the first in a series of breaking releases coming to Tendermint after
+This is the first in a series of breaking releases coming to Reapchain after
 soliciting developer feedback and conducting security audits.
 
 This release does not break any blockchain data structures or
-protocols other than the ABCI messages between Tendermint and the application.
+protocols other than the ABCI messages between Reapchain and the application.
 
-Applications that upgrade for ABCI v0.11.0 should be able to continue running Tendermint
+Applications that upgrade for ABCI v0.11.0 should be able to continue running Reapchain
 v0.20.0 on blockchains created with v0.19.X
 
 BREAKING CHANGES
 
 - [abci] Upgrade to
-  [v0.11.0](https://github.com/tendermint/abci/blob/master/CHANGELOG.md#0110)
+  [v0.11.0](https://github.com/reapchain/abci/blob/master/CHANGELOG.md#0110)
 - [abci] Change Query path for filtering peers by node ID from
   `p2p/filter/pubkey/<id>` to `p2p/filter/id/<id>`
 
@@ -2922,11 +2922,11 @@ BREAKING:
 
 FEATURES
 
-- [rpc] the RPC documentation is now published to https://tendermint.github.io/slate
+- [rpc] the RPC documentation is now published to https://reapchain.github.io/slate
 - [p2p] AllowDuplicateIP config option to refuse connections from same IP.
     - true by default for now, false by default in next breaking release
 - [docs] Add docs for query, tx indexing, events, pubsub
-- [docs] Add some notes about running Tendermint in production
+- [docs] Add some notes about running Reapchain in production
 
 IMPROVEMENTS:
 
@@ -3000,7 +3000,7 @@ IMPROVEMENTS
 
 BUG FIXES
 
-- [cmd] Set GenesisTime during `tendermint init`
+- [cmd] Set GenesisTime during `reapchain init`
 - [consensus] fix ValidBlock rules
 
 ## 0.19.2 (April 30th, 2018)
@@ -3028,7 +3028,7 @@ BUG FIXES:
 ## 0.19.1 (April 27th, 2018)
 
 Note this release includes some small breaking changes in the RPC and one in the
-config that are really bug fixes. v0.19.1 will work with existing chains, and make Tendermint
+config that are really bug fixes. v0.19.1 will work with existing chains, and make Reapchain
 easier to use and debug. With <3
 
 BREAKING (MINOR)
@@ -3055,14 +3055,14 @@ Some of these are breaking in the RPC response, but they're really bugs!
 ## 0.19.0 (April 13th, 2018)
 
 BREAKING:
-- [cmd] improved `testnet` command; now it can fill in `persistent_peers` for you in the config file and much more (see `tendermint testnet --help` for details)
+- [cmd] improved `testnet` command; now it can fill in `persistent_peers` for you in the config file and much more (see `reapchain testnet --help` for details)
 - [cmd] `show_node_id` now returns an error if there is no node key
 - [rpc]: changed the output format for the `/status` endpoint (see https://godoc.org/github.com/tendermint/tendermint/rpc/core#Status)
 
 Upgrade from go-wire to go-amino. This is a sweeping change that breaks everything that is
 serialized to disk or over the network.
 
-See github.com/tendermint/go-amino for details on the new format.
+See github.com/reapchain/go-amino for details on the new format.
 
 See `scripts/wire2amino.go` for a tool to upgrade
 genesis/priv_validator/node_key JSON files.
@@ -3178,7 +3178,7 @@ BREAKING CHANGES:
 FEATURES:
 - [state] Send indices of absent validators and addresses of byzantine validators in BeginBlock
 - [state] Historical ConsensusParams and ABCIResponses
-- [docs] Specification for the base Tendermint data structures.
+- [docs] Specification for the base Reapchain data structures.
 - [evidence] New evidence reactor for gossiping and managing evidence
 - [rpc] `/block_results?height=X` returns the DeliverTx results for a given height.
 
@@ -3190,7 +3190,7 @@ BUG FIXES:
 - [state] validate block.Header.ValidatorsHash
 - [p2p] allow seed addresses to be prefixed with eg. `tcp://`
 - [p2p] use consistent key to refer to peers so we dont try to connect to existing peers
-- [cmd] fix `tendermint init` to ignore files that are there and generate files that aren't.
+- [cmd] fix `reapchain init` to ignore files that are there and generate files that aren't.
 
 ## 0.14.0 (December 11, 2017)
 
@@ -3199,7 +3199,7 @@ BREAKING CHANGES:
 - rpc/client: changed Subscribe/Unsubscribe/UnsubscribeAll funcs signatures to be identical to event bus.
 
 FEATURES:
-- new `tendermint lite` command (and `lite/proxy` pkg) for running a light-client RPC proxy.
+- new `reapchain lite` command (and `lite/proxy` pkg) for running a light-client RPC proxy.
     NOTE it is currently insecure and its APIs are not yet covered by semver
 
 IMPROVEMENTS:
@@ -3245,7 +3245,7 @@ BUG FIXES:
 ## 0.12.1 (November 27, 2017)
 
 BUG FIXES:
-- upgrade tmlibs dependency to enable Windows builds for Tendermint
+- upgrade tmlibs dependency to enable Windows builds for Reapchain
 
 ## 0.12.0 (October 27, 2017)
 
@@ -3257,7 +3257,7 @@ BREAKING CHANGES:
     - use scripts/wal2json to convert to json for debugging
 
 FEATURES:
- - new `Verifiers` pkg contains the tendermint light-client library (name subject to change)!
+ - new `Verifiers` pkg contains the reapchain light-client library (name subject to change)!
  - rpc: `/genesis` includes the `app_options` .
  - rpc: `/abci_query` takes an additional `height` parameter to support historical queries.
  - rpc/client: new ABCIQueryWithOptions supports options like `trusted` (set false to get a proof) and `height` to query a historical height.
@@ -3284,7 +3284,7 @@ BUG FIXES:
  - rpc: fix panics on missing params
  - rpc: fix `/dump_consensus_state` to have normal json output (NOTE: technically breaking, but worth a bug fix label)
  - types: fixed out of range error in VoteSet.addVote
- - consensus: fix wal autofile via https://github.com/tendermint/tmlibs/blob/master/CHANGELOG.md#032-october-2-2017
+ - consensus: fix wal autofile via https://github.com/reapchain/tmlibs/blob/master/CHANGELOG.md#032-october-2-2017
 
 ## 0.11.0 (September 22, 2017)
 
@@ -3305,7 +3305,7 @@ FEATURES:
  - rpc: Leaving the `height` param empty for `/block`, `/validators`, and `/commit` will return the value for the latest height.
 
 IMPROVEMENTS:
- - docs: Moved all docs from the website and tools repo in, converted to `.rst`, and cleaned up for presentation on `tendermint.readthedocs.io`
+ - docs: Moved all docs from the website and tools repo in, converted to `.rst`, and cleaned up for presentation on `reapchain.readthedocs.io`
 
 BUG FIXES:
  - fix WAL openning issue on Windows
@@ -3329,7 +3329,7 @@ FEATURES:
 - control over empty block production:
   - new flag, `--consensus.create_empty_blocks`; when set to false, blocks are only created when there are txs or when the AppHash changes.
   - new config option, `consensus.create_empty_blocks_interval`; an empty block is created after this many seconds.
-  - in normal operation, `create_empty_blocks = true` and `create_empty_blocks_interval = 0`, so blocks are being created all the time (as in all previous versions of tendermint). The number of empty blocks can be reduced by increasing `create_empty_blocks_interval` or by setting `create_empty_blocks = false`.
+  - in normal operation, `create_empty_blocks = true` and `create_empty_blocks_interval = 0`, so blocks are being created all the time (as in all previous versions of reapchain). The number of empty blocks can be reduced by increasing `create_empty_blocks_interval` or by setting `create_empty_blocks = false`.
   - new `TxsAvailable()` method added to Mempool that returns a channel which fires when txs are available.
   - new heartbeat message added to consensus reactor to notify peers that a node is waiting for txs before entering propose step.
 - rpc: Add `syncing` field to response returned by `/status`. Is `true` while in fast-sync mode.
@@ -3395,13 +3395,13 @@ containing substructs: `BaseConfig`, `P2PConfig`, `MempoolConfig`, `ConsensusCon
     [consensus]
     timeout_propose=1000
     ```
-  - Use viper and `DefaultConfig() / TestConfig()` functions to handle defaults, and remove `config/tendermint` and `config/tendermint_test`
+  - Use viper and `DefaultConfig() / TestConfig()` functions to handle defaults, and remove `config/reapchain` and `config/reapchain_test`
   - Change some function and method signatures to
   - Change some [function and method signatures](https://gist.github.com/ebuchman/640d5fc6c2605f73497992fe107ebe0b) accomodate new config
 
 - Logger
   - Replace static `log15` logger with a simple interface, and provide a new implementation using `go-kit`.
-See our new [logging library](https://github.com/tendermint/tmlibs/log) and [blog post](https://tendermint.com/blog/abstracting-the-logger-interface-in-go) for more details
+See our new [logging library](https://github.com/reapchain/tmlibs/log) and [blog post](https://reapchain.com/blog/abstracting-the-logger-interface-in-go) for more details
   - Levels `warn` and `notice` are removed (you may need to change them in your `config.toml`!)
   - Change some [function and method signatures](https://gist.github.com/ebuchman/640d5fc6c2605f73497992fe107ebe0b) to accept a logger
 
@@ -3433,7 +3433,7 @@ FEATURES:
 
 IMPROVEMENTS:
 
-- Merge `tendermint/go-p2p -> tendermint/tendermint/p2p` and `tendermint/go-rpc -> tendermint/tendermint/rpc/lib`
+- Merge `reapchain/go-p2p -> reapchain/reapchain/p2p` and `reapchain/go-rpc -> reapchain/reapchain/rpc/lib`
 - Update paths for grand repo merge:
   - `go-common -> tmlibs/common`
   - `go-data -> go-wire/data`
@@ -3444,7 +3444,7 @@ IMPROVEMENTS:
 - Use `.Wrap()` and `.Unwrap()` instead of eg. `PubKeyS` for `go-crypto` types
 - RPC JSON responses use pretty printing (via `json.MarshalIndent`)
 - Color code different instances of the consensus for tests
-- Isolate viper to `cmd/tendermint/commands` and do not read config from file for tests
+- Isolate viper to `cmd/reapchain/commands` and do not read config from file for tests
 
 
 ## 0.9.2 (April 26, 2017)
@@ -3459,7 +3459,7 @@ FEATURES:
 
 - Transaction indexing - txs are indexed by their hash using a simple key-value store; easily extended to more advanced indexers
 - New `/tx?hash=X` endpoint to query for transactions and their DeliverTx result by hash. Optionally returns a proof of the tx's inclusion in the block
-- `tendermint testnet` command initializes files for a testnet
+- `reapchain testnet` command initializes files for a testnet
 
 IMPROVEMENTS:
 
@@ -3513,7 +3513,7 @@ type BlockMeta struct {
 
 - `ValidatorSet.Proposer` is exposed as a field and persisted with the `State`. Use `GetProposer()` to initialize or update after validator-set changes.
 
-- `tendermint gen_validator` command output is now pure JSON
+- `reapchain gen_validator` command output is now pure JSON
 
 FEATURES:
 
@@ -3523,10 +3523,10 @@ FEATURES:
 IMPROVEMENTS:
 
 - `Node` is now a `BaseService`
-- Simplified starting Tendermint in-process from another application
+- Simplified starting Reapchain in-process from another application
 - Better organized Makefile
 - Scripts for auto-building binaries across platforms
-- Docker image improved, slimmed down (using Alpine), and changed from tendermint/tmbase to tendermint/tendermint
+- Docker image improved, slimmed down (using Alpine), and changed from reapchain/tmbase to reapchain/reapchain
 - New repo files: `CONTRIBUTING.md`, Github `ISSUE_TEMPLATE`, `CHANGELOG.md`
 - Improvements on CircleCI for managing build/test artifacts
 - Handshake replay is doen through the consensus package, possibly using a mockApp
@@ -3589,7 +3589,7 @@ type VoteSetMaj23Message struct {
 - Configurable block part set size
 - Validator set changes
 - Optionally skip TimeoutCommit if we have all the votes
-- Handshake between Tendermint and App on startup to sync latest state and ensure consistent recovery from crashes
+- Handshake between Reapchain and App on startup to sync latest state and ensure consistent recovery from crashes
 - GRPC server for BroadcastTx endpoint
 
 IMPROVEMENTS:
@@ -3639,7 +3639,7 @@ BUG FIXES:
 
 BUG FIXES:
 
-- Set mustConnect=false so tendermint will retry connecting to the app
+- Set mustConnect=false so reapchain will retry connecting to the app
 
 ## 0.7.1 (September 10, 2016)
 
@@ -3704,8 +3704,8 @@ That implementation now forms the heart of [Burrow](https://github.com/hyperledg
 In the later half of 2015, the consensus algorithm was upgraded with a more asynchronous design and a more deterministic and robust implementation.
 
 By late 2015, frustration with the difficulty of forking a large monolithic stack to create alternative cryptocurrency designs led to the
-invention of the Application Blockchain Interface (ABCI), then called the Tendermint Socket Protocol (TMSP).
-The Ethereum Virtual Machine and various other transaction features were removed, and Tendermint was whittled down to a core consensus engine
+invention of the Application Blockchain Interface (ABCI), then called the Reapchain Socket Protocol (TMSP).
+The Ethereum Virtual Machine and various other transaction features were removed, and Reapchain was whittled down to a core consensus engine
 driving an application running in another process.
 The ABCI interface and implementation were iterated on and improved over the course of 2016,
 until versioned history kicked in with v0.7.0.

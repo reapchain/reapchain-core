@@ -6,7 +6,7 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	cryptoenc "github.com/tendermint/tendermint/crypto/encoding"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
 )
 
 //-------------------------------------------------------
@@ -26,7 +26,7 @@ var ABCIPubKeyTypesToNames = map[string]string{
 
 //-------------------------------------------------------
 
-// TM2PB is used for converting Tendermint ABCI to protobuf ABCI.
+// TM2PB is used for converting Reapchain ABCI to protobuf ABCI.
 // UNSTABLE
 var TM2PB = tm2pb{}
 
@@ -122,7 +122,7 @@ func (tm2pb) NewValidatorUpdate(pubkey crypto.PubKey, power int64) abci.Validato
 
 //----------------------------------------------------------------------------
 
-// PB2TM is used for converting protobuf ABCI to Tendermint ABCI.
+// PB2TM is used for converting protobuf ABCI to Reapchain ABCI.
 // UNSTABLE
 var PB2TM = pb2tm{}
 

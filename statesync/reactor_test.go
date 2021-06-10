@@ -11,7 +11,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/p2p"
 	p2pmocks "github.com/tendermint/tendermint/p2p/mocks"
-	ssproto "github.com/tendermint/tendermint/proto/tendermint/statesync"
+	ssproto "github.com/tendermint/tendermint/proto/reapchain/statesync"
 	proxymocks "github.com/tendermint/tendermint/proxy/mocks"
 )
 

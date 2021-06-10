@@ -10,8 +10,8 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmmath "github.com/tendermint/tendermint/libs/math"
 	tmos "github.com/tendermint/tendermint/libs/os"
-	tmstate "github.com/tendermint/tendermint/proto/tendermint/state"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmstate "github.com/tendermint/tendermint/proto/reapchain/state"
+	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
 	"github.com/tendermint/tendermint/types"
 )
 
@@ -161,7 +161,7 @@ func (store dbStore) save(state State, key []byte) error {
 	// If first block, save validators for the block.
 	if nextHeight == 1 {
 		nextHeight = state.InitialHeight
-		// This extra logic due to Tendermint validator set changes being delayed 1 block.
+		// This extra logic due to Reapchain validator set changes being delayed 1 block.
 		// It may get overwritten due to InitChain validator updates.
 		if err := store.saveValidatorsInfo(nextHeight, nextHeight, state.Validators); err != nil {
 			return err
