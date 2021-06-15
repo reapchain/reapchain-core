@@ -35,6 +35,12 @@ type GenesisValidator struct {
 	Name    string        `json:"name"`
 }
 
+type GenesisStandingMember struct {
+	Address Address       `json:"address"`
+	PubKey  crypto.PubKey `json:"pub_key"`
+	Name    string        `json:"name"`
+}
+
 // GenesisDoc defines the initial conditions for a reapchain blockchain, in particular its validator set.
 type GenesisDoc struct {
 	GenesisTime     time.Time                `json:"genesis_time"`
@@ -44,6 +50,10 @@ type GenesisDoc struct {
 	Validators      []GenesisValidator       `json:"validators,omitempty"`
 	AppHash         tmbytes.HexBytes         `json:"app_hash"`
 	AppState        json.RawMessage          `json:"app_state,omitempty"`
+
+	StandingMembers 		[]GenesisStandingMember	 `json:"standing_members,omitempty"`
+	Qns 								[]Qn	 									 `json:"qns,omitempty"`
+	ConsensusRoundInfo 	ConsensusRound	 				 `json:"consensus_round_info,omitempty"`
 }
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.
@@ -97,6 +107,27 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 		if len(v.Address) == 0 {
 			genDoc.Validators[i].Address = v.PubKey.Address()
 		}
+	}
+
+	// 상임위 검증
+	for i, s := range genDoc.StandingMembers {
+		if len(s.Address) > 0 && !bytes.Equal(s.PubKey.Address(), s.Address) {
+			return fmt.Errorf("incorrect address for stending member %v in the genesis file, should be %v", s, s.PubKey.Address())
+		}
+		if len(s.Address) == 0 {
+			genDoc.StandingMembers[i].Address = s.PubKey.Address()
+		}
+	}
+
+	// 합의 라운드 검증
+	if genDoc.ConsensusRoundInfo.ConsensusStartBlockHeight < 0 {
+		return fmt.Errorf("consensus_start_block_height cannot be negative (got %v)", genDoc.ConsensusRoundInfo.ConsensusStartBlockHeight)
+	}
+	if genDoc.ConsensusRoundInfo.ConsensusStartBlockHeight == 0 {
+		genDoc.ConsensusRoundInfo.ConsensusStartBlockHeight = 1
+	}
+	if genDoc.ConsensusRoundInfo.Peorid < 0 {
+		return fmt.Errorf("consensus peorid cannot be negative (got %v)", genDoc.ConsensusRoundInfo.Peorid)
 	}
 
 	if genDoc.GenesisTime.IsZero() {

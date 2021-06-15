@@ -71,6 +71,22 @@ func initFilesWithConfig(config *cfg.Config) error {
 			Power:   10,
 		}}
 
+		// Default 상임위 의원 추가
+		genDoc.StandingMembers = []types.GenesisStandingMember{{
+			Address: pubKey.Address(),
+			PubKey:  pubKey,
+		}}
+
+		// Default 양자난수 추가 
+		genDoc.Qns = []types.Qn{{
+			Address: pubKey.Address(),
+			PubKey:  pubKey,
+			Value: 	 tmrand.Int64(),
+		}}
+
+		// 합의 라운드 정보 추가
+		genDoc.ConsensusRoundInfo = types.NewConsensusRound(0, 0)
+
 		if err := genDoc.SaveAs(genFile); err != nil {
 			return err
 		}
