@@ -4,9 +4,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/tendermint/tendermint/config"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
+	"github.com/reapchain/reapchain/config"
+	tmrand "github.com/reapchain/reapchain/libs/rand"
+	tmsync "github.com/reapchain/reapchain/libs/sync"
 )
 
 // FuzzedConnection wraps any net.Conn and depending on the mode either delays

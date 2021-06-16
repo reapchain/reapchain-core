@@ -9,11 +9,11 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/tendermint/tendermint/abci/example/code"
-	"github.com/tendermint/tendermint/abci/types"
-	cryptoenc "github.com/tendermint/tendermint/crypto/encoding"
-	"github.com/tendermint/tendermint/libs/log"
-	pc "github.com/tendermint/tendermint/proto/reapchain/crypto"
+	"github.com/reapchain/reapchain/abci/example/code"
+	"github.com/reapchain/reapchain/abci/types"
+	cryptoenc "github.com/reapchain/reapchain/crypto/encoding"
+	"github.com/reapchain/reapchain/libs/log"
+	pc "github.com/reapchain/reapchain/proto/reapchain/crypto"
 )
 
 const (

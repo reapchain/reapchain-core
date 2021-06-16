@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/pubsub/query"
-	blockidxkv "github.com/tendermint/tendermint/state/indexer/block/kv"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	"github.com/reapchain/reapchain/libs/pubsub/query"
+	blockidxkv "github.com/reapchain/reapchain/state/indexer/block/kv"
+	"github.com/reapchain/reapchain/types"
 	db "github.com/tendermint/tm-db"
 )
 

@@ -13,21 +13,21 @@ import (
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/behaviour"
-	bc "github.com/tendermint/tendermint/blockchain"
-	cfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/libs/service"
-	"github.com/tendermint/tendermint/mempool/mock"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/p2p/conn"
-	bcproto "github.com/tendermint/tendermint/proto/reapchain/blockchain"
-	"github.com/tendermint/tendermint/proxy"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/store"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	abci "github.com/reapchain/reapchain/abci/types"
+	"github.com/reapchain/reapchain/behaviour"
+	bc "github.com/reapchain/reapchain/blockchain"
+	cfg "github.com/reapchain/reapchain/config"
+	"github.com/reapchain/reapchain/libs/log"
+	"github.com/reapchain/reapchain/libs/service"
+	"github.com/reapchain/reapchain/mempool/mock"
+	"github.com/reapchain/reapchain/p2p"
+	"github.com/reapchain/reapchain/p2p/conn"
+	bcproto "github.com/reapchain/reapchain/proto/reapchain/blockchain"
+	"github.com/reapchain/reapchain/proxy"
+	sm "github.com/reapchain/reapchain/state"
+	"github.com/reapchain/reapchain/store"
+	"github.com/reapchain/reapchain/types"
+	tmtime "github.com/reapchain/reapchain/types/time"
 )
 
 type mockPeer struct {
@@ -174,7 +174,7 @@ func newTestReactor(p testReactorParams) *BlockchainReactor {
 }
 
 // This test is left here and not deleted to retain the termination cases for
-// future improvement in [#4482](https://github.com/tendermint/tendermint/issues/4482).
+// future improvement in [#4482](https://github.com/reapchain/reapchain/issues/4482).
 // func TestReactorTerminationScenarios(t *testing.T) {
 
 // 	config := cfg.ResetTestRoot("blockchain_reactor_v2_test")

@@ -5,14 +5,15 @@ import (
 	"errors"
 	"fmt"
 
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
 )
 
 // LightBlock is a SignedHeader and a ValidatorSet.
 // It is the basis of the light client
 type LightBlock struct {
-	*SignedHeader `json:"signed_header"`
-	ValidatorSet  *ValidatorSet `json:"validator_set"`
+	*SignedHeader     `json:"signed_header"`
+	ValidatorSet      *ValidatorSet      `json:"validator_set"`
+	StandingMemberSet *StandingMemberSet `json:"standing_member_set"`
 }
 
 // ValidateBasic checks that the data is correct and consistent
@@ -26,6 +27,10 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 		return errors.New("missing validator set")
 	}
 
+	if lb.StandingMemberSet == nil {
+		return errors.New("missing standing member set")
+	}
+
 	if err := lb.SignedHeader.ValidateBasic(chainID); err != nil {
 		return fmt.Errorf("invalid signed header: %w", err)
 	}
@@ -33,10 +38,22 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 		return fmt.Errorf("invalid validator set: %w", err)
 	}
 
+	// 상임위 집합 검증
+	if err := lb.StandingMemberSet.ValidateBasic(); err != nil {
+		return fmt.Errorf("invalid standing member set: %w", err)
+	}
+
 	// make sure the validator set is consistent with the header
 	if valSetHash := lb.ValidatorSet.Hash(); !bytes.Equal(lb.SignedHeader.ValidatorsHash, valSetHash) {
 		return fmt.Errorf("expected validator hash of header to match validator set hash (%X != %X)",
 			lb.SignedHeader.ValidatorsHash, valSetHash,
+		)
+	}
+
+	// 상임위 집합 해시 검증
+	if standingMemberSetHash := lb.StandingMemberSet.Hash(); !bytes.Equal(lb.SignedHeader.StandingMembersHash, standingMemberSetHash) {
+		return fmt.Errorf("expected standing member hash of header to match standing member set hash (%X != %X)",
+			lb.SignedHeader.StandingMembersHash, standingMemberSetHash,
 		)
 	}
 
@@ -106,6 +123,14 @@ func LightBlockFromProto(pb *tmproto.LightBlock) (*LightBlock, error) {
 			return nil, err
 		}
 		lb.ValidatorSet = vals
+	}
+
+	if pb.StandingMemberSet != nil {
+		sms, err := StandingMemberSetFromProto(pb.StandingMemberSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.StandingMemberSet = sms
 	}
 
 	return lb, nil

@@ -8,9 +8,9 @@ import (
 
 	"golang.org/x/crypto/ed25519"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmjson "github.com/tendermint/tendermint/libs/json"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/crypto/tmhash"
+	tmjson "github.com/reapchain/reapchain/libs/json"
 )
 
 //-------------------------------------

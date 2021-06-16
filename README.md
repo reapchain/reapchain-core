@@ -6,17 +6,17 @@
 [State Machines](https://en.wikipedia.org/wiki/State_machine_replication).
 Or [Blockchain](<https://en.wikipedia.org/wiki/Blockchain_(database)>), for short.
 
-[![version](https://img.shields.io/github/tag/reapchain/reapchain.svg)](https://github.com/tendermint/tendermint/releases/latest)
-[![API Reference](https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/68747470733a2f2f676f646f632e6f72672f6769746875622e636f6d2f676f6c616e672f6764646f3f7374617475732e737667)](https://pkg.go.dev/github.com/tendermint/tendermint)
+[![version](https://img.shields.io/github/tag/reapchain/reapchain.svg)](https://github.com/reapchain/reapchain/releases/latest)
+[![API Reference](https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/68747470733a2f2f676f646f632e6f72672f6769746875622e636f6d2f676f6c616e672f6764646f3f7374617475732e737667)](https://pkg.go.dev/github.com/reapchain/reapchain)
 [![Go version](https://img.shields.io/badge/go-1.15-blue.svg)](https://github.com/moovweb/gvm)
 [![Discord chat](https://img.shields.io/discord/669268347736686612.svg)](https://discord.gg/AzefAFd)
-[![license](https://img.shields.io/github/license/reapchain/reapchain.svg)](https://github.com/tendermint/tendermint/blob/master/LICENSE)
-[![reapchain/reapchain](https://tokei.rs/b1/github/reapchain/reapchain?category=lines)](https://github.com/tendermint/tendermint)
-[![Sourcegraph](https://sourcegraph.com/github.com/tendermint/tendermint/-/badge.svg)](https://sourcegraph.com/github.com/tendermint/tendermint?badge)
+[![license](https://img.shields.io/github/license/reapchain/reapchain.svg)](https://github.com/reapchain/reapchain/blob/master/LICENSE)
+[![reapchain/reapchain](https://tokei.rs/b1/github/reapchain/reapchain?category=lines)](https://github.com/reapchain/reapchain)
+[![Sourcegraph](https://sourcegraph.com/github.com/reapchain/reapchain/-/badge.svg)](https://sourcegraph.com/github.com/reapchain/reapchain?badge)
 
 | Branch | Tests                                                                                                                                                                                                                                                  | Coverage                                                                                                                             | Linting                                                                    |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| master | [![CircleCI](https://circleci.com/gh/reapchain/reapchain/tree/master.svg?style=shield)](https://circleci.com/gh/reapchain/reapchain/tree/master) </br> ![Tests](https://github.com/tendermint/tendermint/workflows/Tests/badge.svg?branch=master) | [![codecov](https://codecov.io/gh/reapchain/reapchain/branch/master/graph/badge.svg)](https://codecov.io/gh/reapchain/reapchain) | ![Lint](https://github.com/tendermint/tendermint/workflows/Lint/badge.svg) |
+| master | [![CircleCI](https://circleci.com/gh/reapchain/reapchain/tree/master.svg?style=shield)](https://circleci.com/gh/reapchain/reapchain/tree/master) </br> ![Tests](https://github.com/reapchain/reapchain/workflows/Tests/badge.svg?branch=master) | [![codecov](https://codecov.io/gh/reapchain/reapchain/branch/master/graph/badge.svg)](https://codecov.io/gh/reapchain/reapchain) | ![Lint](https://github.com/reapchain/reapchain/workflows/Lint/badge.svg) |
 
 Reapchain Core is Byzantine Fault Tolerant (BFT) middleware that takes a state transition machine - written in any programming language -
 and securely replicates it on many machines.
@@ -28,7 +28,7 @@ see our recent paper, "[The latest gossip on BFT consensus](https://arxiv.org/ab
 
 ## Releases
 
-Please do not depend on master as your production branch. Use [releases](https://github.com/tendermint/tendermint/releases) instead.
+Please do not depend on master as your production branch. Use [releases](https://github.com/reapchain/reapchain/releases) instead.
 
 Reapchain is being used in production in both private and public environments,
 most notably the blockchains of the [Cosmos Network](https://cosmos.network/).
@@ -76,7 +76,7 @@ Before contributing to the project, please take a look at the [contributing guid
 and the [style guide](STYLE_GUIDE.md). You may also find it helpful to read the
 [specifications](https://github.com/reapchain/spec), watch the [Developer Sessions](/docs/DEV_SESSIONS.md), 
 and familiarize yourself with our
-[Architectural Decision Records](https://github.com/tendermint/tendermint/tree/master/docs/architecture).
+[Architectural Decision Records](https://github.com/reapchain/reapchain/tree/master/docs/architecture).
 
 ## Versioning
 

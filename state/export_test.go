@@ -3,10 +3,10 @@ package state
 import (
 	dbm "github.com/tendermint/tm-db"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmstate "github.com/tendermint/tendermint/proto/reapchain/state"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	tmstate "github.com/reapchain/reapchain/proto/reapchain/state"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"github.com/reapchain/reapchain/types"
 )
 
 //

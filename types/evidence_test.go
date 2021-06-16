@@ -8,12 +8,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	tmversion "github.com/tendermint/tendermint/proto/reapchain/version"
-	"github.com/tendermint/tendermint/version"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/crypto/tmhash"
+	tmrand "github.com/reapchain/reapchain/libs/rand"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	tmversion "github.com/reapchain/reapchain/proto/reapchain/version"
+	"github.com/reapchain/reapchain/version"
 )
 
 var defaultVoteTime = time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)

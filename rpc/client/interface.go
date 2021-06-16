@@ -23,10 +23,10 @@ implementation.
 import (
 	"context"
 
-	"github.com/tendermint/tendermint/libs/bytes"
-	"github.com/tendermint/tendermint/libs/service"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain/libs/bytes"
+	"github.com/reapchain/reapchain/libs/service"
+	ctypes "github.com/reapchain/reapchain/rpc/core/types"
+	"github.com/reapchain/reapchain/types"
 )
 
 // Client wraps most important rpc calls a client would make if you want to
@@ -69,6 +69,7 @@ type SignClient interface {
 	BlockResults(ctx context.Context, height *int64) (*ctypes.ResultBlockResults, error)
 	Commit(ctx context.Context, height *int64) (*ctypes.ResultCommit, error)
 	Validators(ctx context.Context, height *int64, page, perPage *int) (*ctypes.ResultValidators, error)
+	StandingMembers(ctx context.Context, height *int64, page, perPage *int) (*ctypes.ResultStandingMembers, error)
 	Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.ResultTx, error)
 
 	// TxSearch defines a method to search for a paginated set of transactions by

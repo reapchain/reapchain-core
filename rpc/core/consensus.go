@@ -1,11 +1,11 @@
 package core
 
 import (
-	cm "github.com/tendermint/tendermint/consensus"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	rpctypes "github.com/tendermint/tendermint/rpc/jsonrpc/types"
-	"github.com/tendermint/tendermint/types"
+	cm "github.com/reapchain/reapchain/consensus"
+	tmmath "github.com/reapchain/reapchain/libs/math"
+	ctypes "github.com/reapchain/reapchain/rpc/core/types"
+	rpctypes "github.com/reapchain/reapchain/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain/types"
 )
 
 // Validators gets the validator set at the given block height.
@@ -43,6 +43,40 @@ func Validators(ctx *rpctypes.Context, heightPtr *int64, pagePtr, perPagePtr *in
 		Validators:  v,
 		Count:       len(v),
 		Total:       totalCount}, nil
+}
+
+// StandingMembers gets the standing member set at the given block height.
+//
+// If no height is provided, it will fetch the latest standing member set.
+//
+// More: https://docs.reapchain.com/master/rpc/#/Info/standingMembers
+func StandingMembers(ctx *rpctypes.Context, heightPtr *int64, pagePtr, perPagePtr *int) (*ctypes.ResultStandingMembers, error) {
+	height, err := getHeight(latestUncommittedHeight(), heightPtr)
+	if err != nil {
+		return nil, err
+	}
+
+	standingMembers, err := env.StateStore.LoadStandingMembers(height)
+	if err != nil {
+		return nil, err
+	}
+
+	totalCount := len(standingMembers.StandingMembers)
+	perPage := validatePerPage(perPagePtr)
+	page, err := validatePage(pagePtr, perPage, totalCount)
+	if err != nil {
+		return nil, err
+	}
+
+	skipCount := validateSkipCount(page, perPage)
+
+	v := standingMembers.StandingMembers[skipCount : skipCount+tmmath.MinInt(perPage, totalCount-skipCount)]
+
+	return &ctypes.ResultStandingMembers{
+		BlockHeight:     height,
+		StandingMembers: v,
+		Count:           len(v),
+		Total:           totalCount}, nil
 }
 
 // DumpConsensusState dumps consensus state.

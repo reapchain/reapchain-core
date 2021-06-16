@@ -4,11 +4,11 @@ import (
 	"os"
 	"path/filepath"
 
-	cmd "github.com/tendermint/tendermint/cmd/reapchain/commands"
-	"github.com/tendermint/tendermint/cmd/reapchain/commands/debug"
-	cfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/libs/cli"
-	nm "github.com/tendermint/tendermint/node"
+	cmd "github.com/reapchain/reapchain/cmd/reapchain/commands"
+	"github.com/reapchain/reapchain/cmd/reapchain/commands/debug"
+	cfg "github.com/reapchain/reapchain/config"
+	"github.com/reapchain/reapchain/libs/cli"
+	nm "github.com/reapchain/reapchain/node"
 )
 
 func main() {

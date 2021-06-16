@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/crypto/ed25519"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
 )
 
 // PrivValidator defines the functionality of a local Reapchain validator

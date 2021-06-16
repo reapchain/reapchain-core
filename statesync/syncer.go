@@ -7,14 +7,14 @@ import (
 	"fmt"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/p2p"
-	ssproto "github.com/tendermint/tendermint/proto/reapchain/statesync"
-	"github.com/tendermint/tendermint/proxy"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	"github.com/reapchain/reapchain/libs/log"
+	tmsync "github.com/reapchain/reapchain/libs/sync"
+	"github.com/reapchain/reapchain/p2p"
+	ssproto "github.com/reapchain/reapchain/proto/reapchain/statesync"
+	"github.com/reapchain/reapchain/proxy"
+	sm "github.com/reapchain/reapchain/state"
+	"github.com/reapchain/reapchain/types"
 )
 
 const (

@@ -6,7 +6,7 @@ RUN apt-get update && \
   jq bsdmainutils vim-common psmisc netcat curl
 
 # Setup reapchain repo
-ENV REPO $GOPATH/src/github.com/tendermint/tendermint
+ENV REPO $GOPATH/src/github.com/reapchain/reapchain
 ENV GOBIN $GOPATH/bin
 WORKDIR $REPO
 

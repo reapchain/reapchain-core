@@ -8,17 +8,17 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto/tmhash"
+	"github.com/reapchain/reapchain/crypto/tmhash"
 
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/state"
+	"github.com/reapchain/reapchain/crypto/ed25519"
+	"github.com/reapchain/reapchain/privval"
+	"github.com/reapchain/reapchain/state"
 
-	"github.com/tendermint/tendermint/libs/log"
-	tmnet "github.com/tendermint/tendermint/libs/net"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain/libs/log"
+	tmnet "github.com/reapchain/reapchain/libs/net"
+	tmos "github.com/reapchain/reapchain/libs/os"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"github.com/reapchain/reapchain/types"
 )
 
 // Test harness error codes (which act as exit codes when the test harness fails).

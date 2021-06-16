@@ -19,12 +19,12 @@ import (
 
 	"github.com/BurntSushi/toml"
 
-	"github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/privval"
-	e2e "github.com/tendermint/tendermint/test/e2e/pkg"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain/config"
+	"github.com/reapchain/reapchain/crypto/ed25519"
+	"github.com/reapchain/reapchain/p2p"
+	"github.com/reapchain/reapchain/privval"
+	e2e "github.com/reapchain/reapchain/test/e2e/pkg"
+	"github.com/reapchain/reapchain/types"
 )
 
 const (

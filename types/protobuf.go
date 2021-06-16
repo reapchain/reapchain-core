@@ -1,12 +1,12 @@
 package types
 
 import (
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	cryptoenc "github.com/tendermint/tendermint/crypto/encoding"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/crypto/ed25519"
+	cryptoenc "github.com/reapchain/reapchain/crypto/encoding"
+	"github.com/reapchain/reapchain/crypto/secp256k1"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
 )
 
 //-------------------------------------------------------
@@ -52,6 +52,8 @@ func (tm2pb) Header(header *Header) tmproto.Header {
 
 		EvidenceHash:    header.EvidenceHash,
 		ProposerAddress: header.ProposerAddress,
+
+		StandingMembersHash: header.StandingMembersHash,
 	}
 }
 
@@ -59,6 +61,12 @@ func (tm2pb) Validator(val *Validator) abci.Validator {
 	return abci.Validator{
 		Address: val.PubKey.Address(),
 		Power:   val.VotingPower,
+	}
+}
+
+func (tm2pb) StandingMember(val *StandingMember) abci.StandingMember {
+	return abci.StandingMember{
+		Address: val.PubKey.Address(),
 	}
 }
 
@@ -95,6 +103,24 @@ func (tm2pb) ValidatorUpdates(vals *ValidatorSet) []abci.ValidatorUpdate {
 		validators[i] = TM2PB.ValidatorUpdate(val)
 	}
 	return validators
+}
+
+func (tm2pb) StandingMemberUpdate(val *StandingMember) abci.StandingMemberUpdate {
+	pk, err := cryptoenc.PubKeyToProto(val.PubKey)
+	if err != nil {
+		panic(err)
+	}
+	return abci.StandingMemberUpdate{
+		PubKey: pk,
+	}
+}
+
+func (tm2pb) StandingMemberUpdates(sms *StandingMemberSet) []abci.StandingMemberUpdate {
+	standingMembers := make([]abci.StandingMemberUpdate, sms.Size())
+	for i, sm := range sms.StandingMembers {
+		standingMembers[i] = TM2PB.StandingMemberUpdate(sm)
+	}
+	return standingMembers
 }
 
 func (tm2pb) ConsensusParams(params *tmproto.ConsensusParams) *abci.ConsensusParams {
@@ -138,4 +164,16 @@ func (pb2tm) ValidatorUpdates(vals []abci.ValidatorUpdate) ([]*Validator, error)
 		tmVals[i] = NewValidator(pub, v.Power)
 	}
 	return tmVals, nil
+}
+
+func (pb2tm) StandingMemberUpdates(sms []abci.StandingMemberUpdate) ([]*StandingMember, error) {
+	smz := make([]*StandingMember, len(sms))
+	for i, v := range sms {
+		pub, err := cryptoenc.PubKeyFromProto(v.PubKey)
+		if err != nil {
+			return nil, err
+		}
+		smz[i] = NewStandingMember(pub)
+	}
+	return smz, nil
 }

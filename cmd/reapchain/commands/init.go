@@ -5,13 +5,13 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cfg "github.com/tendermint/tendermint/config"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	cfg "github.com/reapchain/reapchain/config"
+	tmos "github.com/reapchain/reapchain/libs/os"
+	tmrand "github.com/reapchain/reapchain/libs/rand"
+	"github.com/reapchain/reapchain/p2p"
+	"github.com/reapchain/reapchain/privval"
+	"github.com/reapchain/reapchain/types"
+	tmtime "github.com/reapchain/reapchain/types/time"
 )
 
 // InitFilesCmd initialises a fresh Reapchain Core instance.

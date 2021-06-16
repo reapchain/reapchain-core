@@ -7,12 +7,12 @@ import (
 	"github.com/stretchr/testify/require"
 	db "github.com/tendermint/tm-db"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	blockidxkv "github.com/tendermint/tendermint/state/indexer/block/kv"
-	"github.com/tendermint/tendermint/state/txindex"
-	"github.com/tendermint/tendermint/state/txindex/kv"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	"github.com/reapchain/reapchain/libs/log"
+	blockidxkv "github.com/reapchain/reapchain/state/indexer/block/kv"
+	"github.com/reapchain/reapchain/state/txindex"
+	"github.com/reapchain/reapchain/state/txindex/kv"
+	"github.com/reapchain/reapchain/types"
 )
 
 func TestIndexerServiceIndexesBlocks(t *testing.T) {

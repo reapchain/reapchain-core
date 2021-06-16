@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.abci;
 
-option go_package = "github.com/tendermint/tendermint/abci/types";
+option go_package = "github.com/reapchain/reapchain/abci/types";
 
 // For more information on gogo.proto, see:
 // https://github.com/gogo/protobuf/blob/master/extensions.md
@@ -63,8 +63,9 @@ message RequestInitChain {
   string                   chain_id         = 2;
   ConsensusParams          consensus_params = 3;
   repeated ValidatorUpdate validators       = 4 [(gogoproto.nullable) = false];
-  bytes                    app_state_bytes  = 5;
-  int64                    initial_height   = 6;
+  repeated StandingMemberUpdate standing_members       = 5 [(gogoproto.nullable) = false];
+  bytes                    app_state_bytes  = 6;
+  int64                    initial_height   = 7;
 }
 
 message RequestQuery {
@@ -181,7 +182,8 @@ message ResponseSetOption {
 message ResponseInitChain {
   ConsensusParams          consensus_params = 1;
   repeated ValidatorUpdate validators       = 2 [(gogoproto.nullable) = false];
-  bytes                    app_hash         = 3;
+  repeated StandingMemberUpdate standing_members       = 3 [(gogoproto.nullable) = false];
+  bytes                    app_hash         = 4;
 }
 
 message ResponseQuery {
@@ -339,10 +341,18 @@ message Validator {
   int64 power = 3;  // The voting power
 }
 
+message StandingMember {
+  bytes address = 1;  // The first 20 bytes of SHA256(public key)
+}
+
 // ValidatorUpdate
 message ValidatorUpdate {
   reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
   int64                       power   = 2;
+}
+
+message StandingMemberUpdate {
+  reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
 }
 
 // VoteInfo
@@ -370,7 +380,7 @@ message Evidence {
   ];
   // Total voting power of the validator set in case the ABCI application does
   // not store historical validators.
-  // https://github.com/tendermint/tendermint/issues/4581
+  // https://github.com/reapchain/reapchain/issues/4581
   int64 total_voting_power = 5;
 }
 

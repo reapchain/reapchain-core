@@ -11,22 +11,22 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	cfg "github.com/tendermint/tendermint/config"
-	cstypes "github.com/tendermint/tendermint/consensus/types"
-	"github.com/tendermint/tendermint/crypto"
-	tmevents "github.com/tendermint/tendermint/libs/events"
-	"github.com/tendermint/tendermint/libs/fail"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	"github.com/tendermint/tendermint/libs/service"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/p2p"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	cfg "github.com/reapchain/reapchain/config"
+	cstypes "github.com/reapchain/reapchain/consensus/types"
+	"github.com/reapchain/reapchain/crypto"
+	tmevents "github.com/reapchain/reapchain/libs/events"
+	"github.com/reapchain/reapchain/libs/fail"
+	tmjson "github.com/reapchain/reapchain/libs/json"
+	"github.com/reapchain/reapchain/libs/log"
+	tmmath "github.com/reapchain/reapchain/libs/math"
+	tmos "github.com/reapchain/reapchain/libs/os"
+	"github.com/reapchain/reapchain/libs/service"
+	tmsync "github.com/reapchain/reapchain/libs/sync"
+	"github.com/reapchain/reapchain/p2p"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	sm "github.com/reapchain/reapchain/state"
+	"github.com/reapchain/reapchain/types"
+	tmtime "github.com/reapchain/reapchain/types/time"
 )
 
 // Consensus sentinel errors
@@ -258,6 +258,13 @@ func (cs *State) GetValidators() (int64, []*types.Validator) {
 	cs.mtx.RLock()
 	defer cs.mtx.RUnlock()
 	return cs.state.LastBlockHeight, cs.state.Validators.Copy().Validators
+}
+
+// GetStandingMembers returns a copy of the current validators.
+func (cs *State) GetStandingMembers() (int64, []*types.StandingMember) {
+	cs.mtx.RLock()
+	defer cs.mtx.RUnlock()
+	return cs.state.LastBlockHeight, cs.state.StandingMembers.Copy().StandingMembers
 }
 
 // SetPrivValidator sets the private validator account for signing votes. It
@@ -845,7 +852,7 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// We probably don't want to stop the peer here. The vote does not
 		// necessarily comes from a malicious peer but can be just broadcasted by
 		// a typical peer.
-		// https://github.com/tendermint/tendermint/issues/1281
+		// https://github.com/reapchain/reapchain/issues/1281
 		// }
 
 		// NOTE: the vote is broadcast to peers by the reactor listening
@@ -1965,7 +1972,7 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 			// 1) bad peer OR
 			// 2) not a bad peer? this can also err sometimes with "Unexpected step" OR
 			// 3) tmkms use with multiple validators connecting to a single tmkms instance
-			// 		(https://github.com/tendermint/tendermint/issues/3839).
+			// 		(https://github.com/reapchain/reapchain/issues/3839).
 			cs.Logger.Info("failed attempting to add vote", "err", err)
 			return added, ErrAddingVote
 		}

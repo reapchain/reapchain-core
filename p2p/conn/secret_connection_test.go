@@ -17,12 +17,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/crypto/sr25519"
-	"github.com/tendermint/tendermint/libs/async"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/crypto/ed25519"
+	"github.com/reapchain/reapchain/crypto/sr25519"
+	"github.com/reapchain/reapchain/libs/async"
+	tmos "github.com/reapchain/reapchain/libs/os"
+	tmrand "github.com/reapchain/reapchain/libs/rand"
 )
 
 // Run go test -update from within this module

@@ -81,5 +81,5 @@
 //
 // Examples
 //
-// - [Reapchain](https://github.com/tendermint/tendermint/blob/master/rpc/core/routes.go)
+// - [Reapchain](https://github.com/reapchain/reapchain/blob/master/rpc/core/routes.go)
 package jsonrpc

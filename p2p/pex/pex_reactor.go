@@ -8,13 +8,13 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	"github.com/tendermint/tendermint/libs/cmap"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	"github.com/tendermint/tendermint/libs/service"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/p2p/conn"
-	tmp2p "github.com/tendermint/tendermint/proto/reapchain/p2p"
+	"github.com/reapchain/reapchain/libs/cmap"
+	tmmath "github.com/reapchain/reapchain/libs/math"
+	tmrand "github.com/reapchain/reapchain/libs/rand"
+	"github.com/reapchain/reapchain/libs/service"
+	"github.com/reapchain/reapchain/p2p"
+	"github.com/reapchain/reapchain/p2p/conn"
+	tmp2p "github.com/reapchain/reapchain/proto/reapchain/p2p"
 )
 
 type Peer = p2p.Peer

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	tmcrypto "github.com/tendermint/tendermint/proto/reapchain/crypto"
+	tmcrypto "github.com/reapchain/reapchain/proto/reapchain/crypto"
 )
 
 const ProofOpDomino = "test:domino"

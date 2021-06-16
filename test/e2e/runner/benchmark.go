@@ -6,8 +6,8 @@ import (
 	"math"
 	"time"
 
-	e2e "github.com/tendermint/tendermint/test/e2e/pkg"
-	"github.com/tendermint/tendermint/types"
+	e2e "github.com/reapchain/reapchain/test/e2e/pkg"
+	"github.com/reapchain/reapchain/types"
 )
 
 // Benchmark is a simple function for fetching, calculating and printing

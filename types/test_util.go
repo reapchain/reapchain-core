@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	tmversion "github.com/tendermint/tendermint/proto/reapchain/version"
-	"github.com/tendermint/tendermint/version"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	tmversion "github.com/reapchain/reapchain/proto/reapchain/version"
+	"github.com/reapchain/reapchain/version"
 )
 
 func MakeCommit(blockID BlockID, height int64, round int32,

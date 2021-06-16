@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	tmcrypto "github.com/tendermint/tendermint/proto/reapchain/crypto"
+	tmcrypto "github.com/reapchain/reapchain/proto/reapchain/crypto"
 )
 
 //----------------------------------------

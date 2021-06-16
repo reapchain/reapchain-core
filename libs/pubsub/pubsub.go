@@ -39,8 +39,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/tendermint/tendermint/libs/service"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
+	"github.com/reapchain/reapchain/libs/service"
+	tmsync "github.com/reapchain/reapchain/libs/sync"
 )
 
 type operation int

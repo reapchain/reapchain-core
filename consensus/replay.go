@@ -8,12 +8,12 @@ import (
 	"reflect"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto/merkle"
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/proxy"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	"github.com/reapchain/reapchain/crypto/merkle"
+	"github.com/reapchain/reapchain/libs/log"
+	"github.com/reapchain/reapchain/proxy"
+	sm "github.com/reapchain/reapchain/state"
+	"github.com/reapchain/reapchain/types"
 )
 
 var crc32c = crc32.MakeTable(crc32.Castagnoli)
@@ -305,15 +305,27 @@ func (h *Handshaker) ReplayBlocks(
 		for i, val := range h.genDoc.Validators {
 			validators[i] = types.NewValidator(val.PubKey, val.Power)
 		}
+
+		standingMembers := make([]*types.StandingMember, len(h.genDoc.StandingMembers))
+		for i, val := range h.genDoc.StandingMembers {
+			standingMembers[i] = types.NewStandingMember(val.PubKey)
+		}
+
 		validatorSet := types.NewValidatorSet(validators)
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
 		csParams := types.TM2PB.ConsensusParams(h.genDoc.ConsensusParams)
+
+		// 상임위 초기화
+		standingMemberSet := types.NewStandingMemberSet(standingMembers)
+		sms := types.TM2PB.StandingMemberUpdates(standingMemberSet)
+
 		req := abci.RequestInitChain{
 			Time:            h.genDoc.GenesisTime,
 			ChainId:         h.genDoc.ChainID,
 			InitialHeight:   h.genDoc.InitialHeight,
 			ConsensusParams: csParams,
 			Validators:      nextVals,
+			StandingMembers: sms,
 			AppStateBytes:   h.genDoc.AppState,
 		}
 		res, err := proxyApp.Consensus().InitChainSync(req)
@@ -341,6 +353,16 @@ func (h *Handshaker) ReplayBlocks(
 			} else if len(h.genDoc.Validators) == 0 {
 				// If validator set is not set in genesis and still empty after InitChain, exit.
 				return nil, fmt.Errorf("validator set is nil in genesis and still empty after InitChain")
+			}
+
+			if len(res.StandingMembers) > 0 {
+				vals, err := types.PB2TM.StandingMemberUpdates(res.StandingMembers)
+				if err != nil {
+					return nil, err
+				}
+				state.StandingMembers = types.NewStandingMemberSet(vals)
+			} else if len(h.genDoc.StandingMembers) == 0 {
+				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
 			}
 
 			if res.ConsensusParams != nil {

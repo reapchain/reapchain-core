@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/libs/bytes"
-	"github.com/tendermint/tendermint/p2p"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/libs/bytes"
+	"github.com/reapchain/reapchain/p2p"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"github.com/reapchain/reapchain/types"
 )
 
 // List of blocks
@@ -126,6 +126,16 @@ type Peer struct {
 type ResultValidators struct {
 	BlockHeight int64              `json:"block_height"`
 	Validators  []*types.Validator `json:"validators"`
+	// Count of actual validators in this result
+	Count int `json:"count"`
+	// Total number of validators
+	Total int `json:"total"`
+}
+
+// StandingMembers for a height.
+type ResultStandingMembers struct {
+	BlockHeight int64              `json:"block_height"`
+	StandingMembers  []*types.StandingMember `json:"standing_members"`
 	// Count of actual validators in this result
 	Count int `json:"count"`
 	// Total number of validators

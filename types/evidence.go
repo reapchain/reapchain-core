@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto/merkle"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	"github.com/reapchain/reapchain/crypto/merkle"
+	"github.com/reapchain/reapchain/crypto/tmhash"
+	tmjson "github.com/reapchain/reapchain/libs/json"
+	tmrand "github.com/reapchain/reapchain/libs/rand"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
 )
 
 // Evidence represents any provable malicious activity by a validator.
@@ -287,7 +287,8 @@ func (l *LightClientAttackEvidence) ConflictingHeaderIsInvalid(trustedHeader *He
 		!bytes.Equal(trustedHeader.NextValidatorsHash, l.ConflictingBlock.NextValidatorsHash) ||
 		!bytes.Equal(trustedHeader.ConsensusHash, l.ConflictingBlock.ConsensusHash) ||
 		!bytes.Equal(trustedHeader.AppHash, l.ConflictingBlock.AppHash) ||
-		!bytes.Equal(trustedHeader.LastResultsHash, l.ConflictingBlock.LastResultsHash)
+		!bytes.Equal(trustedHeader.LastResultsHash, l.ConflictingBlock.LastResultsHash) ||
+		!bytes.Equal(trustedHeader.StandingMembersHash, l.ConflictingBlock.StandingMembersHash)
 
 }
 

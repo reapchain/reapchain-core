@@ -7,18 +7,18 @@ import (
 	"github.com/gogo/protobuf/proto"
 	dbm "github.com/tendermint/tm-db"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmstate "github.com/tendermint/tendermint/proto/reapchain/state"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	tmmath "github.com/reapchain/reapchain/libs/math"
+	tmos "github.com/reapchain/reapchain/libs/os"
+	tmstate "github.com/reapchain/reapchain/proto/reapchain/state"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"github.com/reapchain/reapchain/types"
 )
 
 const (
 	// persist validators every valSetCheckpointInterval blocks to avoid
 	// LoadValidators taking too much time.
-	// https://github.com/tendermint/tendermint/pull/3438
+	// https://github.com/reapchain/reapchain/pull/3438
 	// 100000 results in ~ 100ms to get 100 validators (see BenchmarkLoadValidators)
 	valSetCheckpointInterval = 100000
 )
@@ -68,6 +68,8 @@ type Store interface {
 	Bootstrap(State) error
 	// PruneStates takes the height from which to start prning and which height stop at
 	PruneStates(int64, int64) error
+
+	LoadStandingMembers(int64) (*types.StandingMemberSet, error)
 }
 
 // dbStore wraps a db (github.com/tendermint/tm-db)
@@ -218,7 +220,7 @@ func (store dbStore) Bootstrap(state State) error {
 // e.g. `LastHeightChanged` must remain. The state at to must also exist.
 //
 // The from parameter is necessary since we can't do a key scan in a performant way due to the key
-// encoding not preserving ordering: https://github.com/tendermint/tendermint/issues/4567
+// encoding not preserving ordering: https://github.com/reapchain/reapchain/issues/4567
 // This will cause some old states to be left behind when doing incremental partial prunes,
 // specifically older checkpoints and LastHeightChanged targets.
 func (store dbStore) PruneStates(from int64, to int64) error {
@@ -592,4 +594,70 @@ func (store dbStore) saveConsensusParamsInfo(nextHeight, changeHeight int64, par
 	}
 
 	return nil
+}
+
+func (store dbStore) LoadStandingMembers(height int64) (*types.StandingMemberSet, error) {
+	smInfo, err := loadStandingMembersInfo(store.db, height)
+	if err != nil {
+		return nil, ErrNoValSetForHeight{height}
+	}
+	if smInfo.StandingMemberSet == nil {
+		lastStoredHeight := lastStoredHeightFor(height, smInfo.LastHeightChanged)
+		smInfo2, err := loadStandingMembersInfo(store.db, lastStoredHeight)
+		if err != nil || smInfo2.StandingMemberSet == nil {
+			return nil,
+				fmt.Errorf("couldn't find standing members at height %d (height %d was originally requested): %w",
+					lastStoredHeight,
+					height,
+					err,
+				)
+		}
+
+		vs, err := types.StandingMemberSetFromProto(smInfo2.StandingMemberSet)
+		if err != nil {
+			return nil, err
+		}
+
+		vi2, err := vs.ToProto()
+		if err != nil {
+			return nil, err
+		}
+
+		smInfo2.StandingMemberSet = vi2
+		smInfo = smInfo2
+	}
+
+	vip, err := types.StandingMemberSetFromProto(smInfo.StandingMemberSet)
+	if err != nil {
+		return nil, err
+	}
+
+	return vip, nil
+}
+
+// CONTRACT: Returned StandingMemberInfo can be mutated.
+func loadStandingMembersInfo(db dbm.DB, height int64) (*tmstate.StandingMembersInfo, error) {
+	buf, err := db.Get(calcStandingMembersKey(height))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	v := new(tmstate.StandingMembersInfo)
+	err = v.Unmarshal(buf)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadStandingMembers: Data has been corrupted or its spec has changed:
+                %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return v, nil
+}
+
+func calcStandingMembersKey(height int64) []byte {
+	return []byte(fmt.Sprintf("standingMembersKey:%v", height))
 }

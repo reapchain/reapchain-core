@@ -1,13 +1,14 @@
 syntax = "proto3";
 package reapchain.types;
 
-option go_package = "github.com/tendermint/tendermint/proto/reapchain/types";
+option go_package = "github.com/reapchain/reapchain/proto/reapchain/types";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "reapchain/crypto/proof.proto";
 import "reapchain/version/types.proto";
 import "reapchain/types/validator.proto";
+import "reapchain/types/standing_member.proto";
 
 // BlockIdFlag indicates which BlcokID the signature is for
 enum BlockIDFlag {
@@ -79,6 +80,8 @@ message Header {
   // consensus info
   bytes evidence_hash    = 13;  // evidence included in the block
   bytes proposer_address = 14;  // original proposer of the block
+  
+  bytes standing_members_hash = 15;
 }
 
 // Data contains the set of transactions included in the block
@@ -140,6 +143,7 @@ message SignedHeader {
 message LightBlock {
   SignedHeader                  signed_header = 1;
   reapchain.types.ValidatorSet validator_set = 2;
+  reapchain.types.StandingMemberSet standing_member_set = 3;
 }
 
 message BlockMeta {

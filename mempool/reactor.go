@@ -6,13 +6,13 @@ import (
 	"math"
 	"time"
 
-	cfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/libs/clist"
-	"github.com/tendermint/tendermint/libs/log"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/p2p"
-	protomem "github.com/tendermint/tendermint/proto/reapchain/mempool"
-	"github.com/tendermint/tendermint/types"
+	cfg "github.com/reapchain/reapchain/config"
+	"github.com/reapchain/reapchain/libs/clist"
+	"github.com/reapchain/reapchain/libs/log"
+	tmsync "github.com/reapchain/reapchain/libs/sync"
+	"github.com/reapchain/reapchain/p2p"
+	protomem "github.com/reapchain/reapchain/proto/reapchain/mempool"
+	"github.com/reapchain/reapchain/types"
 )
 
 const (
@@ -239,7 +239,7 @@ func (memR *Reactor) broadcastTxRoutine(peer p2p.Peer) {
 		}
 
 		// NOTE: Transaction batching was disabled due to
-		// https://github.com/tendermint/tendermint/issues/5796
+		// https://github.com/reapchain/reapchain/issues/5796
 
 		if _, ok := memTx.senders.Load(peerID); !ok {
 			msg := protomem.Message{

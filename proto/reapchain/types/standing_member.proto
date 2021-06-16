@@ -1,0 +1,20 @@
+syntax = "proto3";
+package reapchain.types;
+
+option go_package = "github.com/reapchain/reapchain/proto/reapchain/types";
+
+import "gogoproto/gogo.proto";
+import "reapchain/crypto/keys.proto";
+
+message StandingMemberSet {
+  repeated StandingMember standing_members         = 1;
+}
+
+message StandingMember {
+  bytes                       address           = 1;
+  reapchain.crypto.PublicKey pub_key           = 2 [(gogoproto.nullable) = false];
+}
+
+message SimpleStandingMember {
+  reapchain.crypto.PublicKey pub_key      = 1;
+}

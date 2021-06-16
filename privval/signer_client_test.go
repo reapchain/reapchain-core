@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	cryptoproto "github.com/tendermint/tendermint/proto/reapchain/crypto"
-	privvalproto "github.com/tendermint/tendermint/proto/reapchain/privval"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/crypto/tmhash"
+	tmrand "github.com/reapchain/reapchain/libs/rand"
+	cryptoproto "github.com/reapchain/reapchain/proto/reapchain/crypto"
+	privvalproto "github.com/reapchain/reapchain/proto/reapchain/privval"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"github.com/reapchain/reapchain/types"
 )
 
 type signerTestCase struct {

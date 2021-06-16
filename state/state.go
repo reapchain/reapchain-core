@@ -9,12 +9,12 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	tmstate "github.com/tendermint/tendermint/proto/reapchain/state"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	tmversion "github.com/tendermint/tendermint/proto/reapchain/version"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
-	"github.com/tendermint/tendermint/version"
+	tmstate "github.com/reapchain/reapchain/proto/reapchain/state"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	tmversion "github.com/reapchain/reapchain/proto/reapchain/version"
+	"github.com/reapchain/reapchain/types"
+	tmtime "github.com/reapchain/reapchain/types/time"
+	"github.com/reapchain/reapchain/version"
 )
 
 // database keys
@@ -78,6 +78,8 @@ type State struct {
 
 	// the latest AppHash we've received from calling abci.Commit()
 	AppHash []byte
+
+	StandingMembers *types.StandingMemberSet
 }
 
 // Copy makes a copy of the State for mutating.
@@ -217,6 +219,12 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 		state.LastValidators = types.NewValidatorSet(nil)
 	}
 
+	sms, err := types.StandingMemberSetFromProto(pb.StandingMembers)
+	if err != nil {
+		return nil, err
+	}
+	state.StandingMembers = sms
+
 	state.LastHeightValidatorsChanged = pb.LastHeightValidatorsChanged
 	state.ConsensusParams = pb.ConsensusParams
 	state.LastHeightConsensusParamsChanged = pb.LastHeightConsensusParamsChanged
@@ -258,6 +266,7 @@ func (state State) MakeBlock(
 		state.Validators.Hash(), state.NextValidators.Hash(),
 		types.HashConsensusParams(state.ConsensusParams), state.AppHash, state.LastResultsHash,
 		proposerAddress,
+		state.StandingMembers.Hash(),
 	)
 
 	return block, block.MakePartSet(types.BlockPartSizeBytes)
@@ -334,6 +343,17 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		nextValidatorSet = types.NewValidatorSet(validators).CopyIncrementProposerPriority(1)
 	}
 
+	var standingMemberSet *types.StandingMemberSet
+	if genDoc.Validators == nil {
+		standingMemberSet = types.NewStandingMemberSet(nil)
+	} else {
+		standingMembers := make([]*types.StandingMember, len(genDoc.StandingMembers))
+		for i, val := range genDoc.StandingMembers {
+			standingMembers[i] = types.NewStandingMember(val.PubKey)
+		}
+		standingMemberSet = types.NewStandingMemberSet(standingMembers)
+	}
+
 	return State{
 		Version:       InitStateVersion,
 		ChainID:       genDoc.ChainID,
@@ -350,6 +370,8 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 
 		ConsensusParams:                  *genDoc.ConsensusParams,
 		LastHeightConsensusParamsChanged: genDoc.InitialHeight,
+
+		StandingMembers: standingMemberSet,
 
 		AppHash: genDoc.AppHash,
 	}, nil

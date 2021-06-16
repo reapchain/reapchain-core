@@ -8,12 +8,12 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	"github.com/reapchain/reapchain/crypto"
+	tmbytes "github.com/reapchain/reapchain/libs/bytes"
+	tmjson "github.com/reapchain/reapchain/libs/json"
+	tmos "github.com/reapchain/reapchain/libs/os"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	tmtime "github.com/reapchain/reapchain/types/time"
 )
 
 const (
@@ -51,9 +51,9 @@ type GenesisDoc struct {
 	AppHash         tmbytes.HexBytes         `json:"app_hash"`
 	AppState        json.RawMessage          `json:"app_state,omitempty"`
 
-	StandingMembers 		[]GenesisStandingMember	 `json:"standing_members,omitempty"`
-	Qns 								[]Qn	 									 `json:"qns,omitempty"`
-	ConsensusRoundInfo 	ConsensusRound	 				 `json:"consensus_round_info,omitempty"`
+	StandingMembers    []GenesisStandingMember `json:"standing_members,omitempty"`
+	Qns                []Qn                    `json:"qns,omitempty"`
+	ConsensusRoundInfo ConsensusRound          `json:"consensus_round_info,omitempty"`
 }
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.
@@ -73,6 +73,15 @@ func (genDoc *GenesisDoc) ValidatorHash() []byte {
 	}
 	vset := NewValidatorSet(vals)
 	return vset.Hash()
+}
+
+func (genDoc *GenesisDoc) StandingMemberHash() []byte {
+	sms := make([]*StandingMember, len(genDoc.StandingMembers))
+	for i, v := range genDoc.StandingMembers {
+		sms[i] = NewStandingMember(v.PubKey)
+	}
+	smSet := NewStandingMemberSet(sms)
+	return smSet.Hash()
 }
 
 // ValidateAndComplete checks that all necessary fields are present

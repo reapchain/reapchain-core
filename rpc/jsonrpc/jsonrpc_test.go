@@ -16,13 +16,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	"github.com/tendermint/tendermint/libs/log"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
+	tmbytes "github.com/reapchain/reapchain/libs/bytes"
+	"github.com/reapchain/reapchain/libs/log"
+	tmrand "github.com/reapchain/reapchain/libs/rand"
 
-	client "github.com/tendermint/tendermint/rpc/jsonrpc/client"
-	server "github.com/tendermint/tendermint/rpc/jsonrpc/server"
-	types "github.com/tendermint/tendermint/rpc/jsonrpc/types"
+	client "github.com/reapchain/reapchain/rpc/jsonrpc/client"
+	server "github.com/reapchain/reapchain/rpc/jsonrpc/server"
+	types "github.com/reapchain/reapchain/rpc/jsonrpc/types"
 )
 
 // Client and Server should work over tcp or unix sockets

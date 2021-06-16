@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
+	"github.com/reapchain/reapchain/crypto/tmhash"
+	tmrand "github.com/reapchain/reapchain/libs/rand"
 )
 
 func TestBlockMeta_ToProto(t *testing.T) {

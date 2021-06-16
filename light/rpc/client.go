@@ -10,15 +10,15 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto/merkle"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	service "github.com/tendermint/tendermint/libs/service"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	rpctypes "github.com/tendermint/tendermint/rpc/jsonrpc/types"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	"github.com/reapchain/reapchain/crypto/merkle"
+	tmbytes "github.com/reapchain/reapchain/libs/bytes"
+	tmmath "github.com/reapchain/reapchain/libs/math"
+	service "github.com/reapchain/reapchain/libs/service"
+	rpcclient "github.com/reapchain/reapchain/rpc/client"
+	ctypes "github.com/reapchain/reapchain/rpc/core/types"
+	rpctypes "github.com/reapchain/reapchain/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain/types"
 )
 
 var errNegOrZeroHeight = errors.New("negative or zero height")
@@ -522,6 +522,35 @@ func (c *Client) Validators(
 		Count:       len(v),
 		Total:       totalCount}, nil
 }
+
+func (c *Client) StandingMembers(
+	ctx context.Context,
+	height *int64,
+	pagePtr, perPagePtr *int,
+) (*ctypes.ResultStandingMembers, error) {
+
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	totalCount := len(l.StandingMemberSet.StandingMembers)
+	perPage := validatePerPage(perPagePtr)
+	page, err := validatePage(pagePtr, perPage, totalCount)
+	if err != nil {
+		return nil, err
+	}
+
+	skipCount := validateSkipCount(page, perPage)
+	v := l.StandingMemberSet.StandingMembers[skipCount : skipCount+tmmath.MinInt(perPage, totalCount-skipCount)]
+
+	return &ctypes.ResultStandingMembers{
+		BlockHeight: l.Height,
+		StandingMembers:  v,
+		Count:       len(v),
+		Total:       totalCount}, nil
+}
+
 
 func (c *Client) BroadcastEvidence(ctx context.Context, ev types.Evidence) (*ctypes.ResultBroadcastEvidence, error) {
 	return c.next.BroadcastEvidence(ctx, ev)

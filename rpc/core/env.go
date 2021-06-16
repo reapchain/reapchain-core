@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"time"
 
-	cfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/consensus"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/libs/log"
-	mempl "github.com/tendermint/tendermint/mempool"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/proxy"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/state/indexer"
-	"github.com/tendermint/tendermint/state/txindex"
-	"github.com/tendermint/tendermint/types"
+	cfg "github.com/reapchain/reapchain/config"
+	"github.com/reapchain/reapchain/consensus"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/libs/log"
+	mempl "github.com/reapchain/reapchain/mempool"
+	"github.com/reapchain/reapchain/p2p"
+	"github.com/reapchain/reapchain/proxy"
+	sm "github.com/reapchain/reapchain/state"
+	"github.com/reapchain/reapchain/state/indexer"
+	"github.com/reapchain/reapchain/state/txindex"
+	"github.com/reapchain/reapchain/types"
 )
 
 const (
@@ -44,6 +44,7 @@ func SetEnvironment(e *Environment) {
 type Consensus interface {
 	GetState() sm.State
 	GetValidators() (int64, []*types.Validator)
+	GetStandingMembers() (int64, []*types.StandingMember)
 	GetLastHeight() int64
 	GetRoundStateJSON() ([]byte, error)
 	GetRoundStateSimpleJSON() ([]byte, error)

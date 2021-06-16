@@ -13,17 +13,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	mempl "github.com/tendermint/tendermint/mempool"
-	"github.com/tendermint/tendermint/rpc/client"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
-	rpclocal "github.com/tendermint/tendermint/rpc/client/local"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
-	rpctest "github.com/tendermint/tendermint/rpc/test"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain/abci/types"
+	"github.com/reapchain/reapchain/libs/log"
+	tmmath "github.com/reapchain/reapchain/libs/math"
+	mempl "github.com/reapchain/reapchain/mempool"
+	"github.com/reapchain/reapchain/rpc/client"
+	rpchttp "github.com/reapchain/reapchain/rpc/client/http"
+	rpclocal "github.com/reapchain/reapchain/rpc/client/local"
+	ctypes "github.com/reapchain/reapchain/rpc/core/types"
+	rpcclient "github.com/reapchain/reapchain/rpc/jsonrpc/client"
+	rpctest "github.com/reapchain/reapchain/rpc/test"
+	"github.com/reapchain/reapchain/types"
 )
 
 var (

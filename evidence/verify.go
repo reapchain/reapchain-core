@@ -7,8 +7,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/tendermint/tendermint/light"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain/light"
+	"github.com/reapchain/reapchain/types"
 )
 
 // verify verifies the evidence fully by checking:

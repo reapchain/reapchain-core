@@ -9,17 +9,17 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	"github.com/tendermint/tendermint/evidence"
-	"github.com/tendermint/tendermint/evidence/mocks"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	tmversion "github.com/tendermint/tendermint/proto/reapchain/version"
-	sm "github.com/tendermint/tendermint/state"
-	smmocks "github.com/tendermint/tendermint/state/mocks"
-	"github.com/tendermint/tendermint/types"
-	"github.com/tendermint/tendermint/version"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/crypto/tmhash"
+	"github.com/reapchain/reapchain/evidence"
+	"github.com/reapchain/reapchain/evidence/mocks"
+	"github.com/reapchain/reapchain/libs/log"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	tmversion "github.com/reapchain/reapchain/proto/reapchain/version"
+	sm "github.com/reapchain/reapchain/state"
+	smmocks "github.com/reapchain/reapchain/state/mocks"
+	"github.com/reapchain/reapchain/types"
+	"github.com/reapchain/reapchain/version"
 )
 
 func TestVerifyLightClientAttack_Lunatic(t *testing.T) {

@@ -8,14 +8,14 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	cryptoenc "github.com/tendermint/tendermint/crypto/encoding"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	cryptoproto "github.com/tendermint/tendermint/proto/reapchain/crypto"
-	privproto "github.com/tendermint/tendermint/proto/reapchain/privval"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/crypto/ed25519"
+	cryptoenc "github.com/reapchain/reapchain/crypto/encoding"
+	"github.com/reapchain/reapchain/crypto/tmhash"
+	cryptoproto "github.com/reapchain/reapchain/proto/reapchain/crypto"
+	privproto "github.com/reapchain/reapchain/proto/reapchain/privval"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"github.com/reapchain/reapchain/types"
 )
 
 var stamp = time.Date(2019, 10, 13, 16, 14, 44, 0, time.UTC)

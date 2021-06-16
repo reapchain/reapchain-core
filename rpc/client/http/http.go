@@ -7,16 +7,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tendermint/tendermint/libs/bytes"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmpubsub "github.com/tendermint/tendermint/libs/pubsub"
-	"github.com/tendermint/tendermint/libs/service"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	jsonrpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain/libs/bytes"
+	tmjson "github.com/reapchain/reapchain/libs/json"
+	"github.com/reapchain/reapchain/libs/log"
+	tmpubsub "github.com/reapchain/reapchain/libs/pubsub"
+	"github.com/reapchain/reapchain/libs/service"
+	tmsync "github.com/reapchain/reapchain/libs/sync"
+	rpcclient "github.com/reapchain/reapchain/rpc/client"
+	ctypes "github.com/reapchain/reapchain/rpc/core/types"
+	jsonrpcclient "github.com/reapchain/reapchain/rpc/jsonrpc/client"
+	"github.com/reapchain/reapchain/types"
 )
 
 /*
@@ -538,6 +538,30 @@ func (c *baseRPCClient) Validators(
 		params["height"] = height
 	}
 	_, err := c.caller.Call(ctx, "validators", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (c *baseRPCClient) StandingMembers(
+	ctx context.Context,
+	height *int64,
+	page,
+	perPage *int,
+) (*ctypes.ResultStandingMembers, error) {
+	result := new(ctypes.ResultStandingMembers)
+	params := make(map[string]interface{})
+	if page != nil {
+		params["page"] = page
+	}
+	if perPage != nil {
+		params["per_page"] = perPage
+	}
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "standing_members", params, result)
 	if err != nil {
 		return nil, err
 	}

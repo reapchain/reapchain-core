@@ -2,7 +2,7 @@
 Package core defines the Reapchain RPC endpoints.
 
 Reapchain ships with its own JSONRPC library -
-https://github.com/tendermint/tendermint/tree/master/rpc/jsonrpc.
+https://github.com/reapchain/reapchain/tree/master/rpc/jsonrpc.
 
 ## Get the list
 

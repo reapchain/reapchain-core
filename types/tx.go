@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/tendermint/tendermint/crypto/merkle"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
+	"github.com/reapchain/reapchain/crypto/merkle"
+	"github.com/reapchain/reapchain/crypto/tmhash"
+	tmbytes "github.com/reapchain/reapchain/libs/bytes"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
 )
 
 // Tx is an arbitrary byte array.

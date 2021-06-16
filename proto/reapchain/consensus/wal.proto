@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.consensus;
 
-option go_package = "github.com/tendermint/tendermint/proto/reapchain/consensus";
+option go_package = "github.com/reapchain/reapchain/proto/reapchain/consensus";
 
 import "gogoproto/gogo.proto";
 import "reapchain/consensus/types.proto";

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.statesync;
 
-option go_package = "github.com/tendermint/tendermint/proto/reapchain/statesync";
+option go_package = "github.com/reapchain/reapchain/proto/reapchain/statesync";
 
 message Message {
   oneof sum {

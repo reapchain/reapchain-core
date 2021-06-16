@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/tendermint/tendermint/crypto"
+	"github.com/reapchain/reapchain/crypto"
 )
 
 // Tx is an arbitrary byte array.

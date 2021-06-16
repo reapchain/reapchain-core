@@ -10,16 +10,16 @@ import (
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/merkle"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	"github.com/tendermint/tendermint/libs/bits"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	tmproto "github.com/tendermint/tendermint/proto/reapchain/types"
-	tmversion "github.com/tendermint/tendermint/proto/reapchain/version"
-	"github.com/tendermint/tendermint/version"
+	"github.com/reapchain/reapchain/crypto"
+	"github.com/reapchain/reapchain/crypto/merkle"
+	"github.com/reapchain/reapchain/crypto/tmhash"
+	"github.com/reapchain/reapchain/libs/bits"
+	tmbytes "github.com/reapchain/reapchain/libs/bytes"
+	tmmath "github.com/reapchain/reapchain/libs/math"
+	tmsync "github.com/reapchain/reapchain/libs/sync"
+	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	tmversion "github.com/reapchain/reapchain/proto/reapchain/version"
+	"github.com/reapchain/reapchain/version"
 )
 
 const (
@@ -348,6 +348,9 @@ type Header struct {
 	// consensus info
 	EvidenceHash    tmbytes.HexBytes `json:"evidence_hash"`    // evidence included in the block
 	ProposerAddress Address          `json:"proposer_address"` // original proposer of the block
+
+	// 상임위 리스트 해시
+	StandingMembersHash     tmbytes.HexBytes `json:"standing_members_hash"`
 }
 
 // Populate the Header with state-derived data.
@@ -358,6 +361,7 @@ func (h *Header) Populate(
 	valHash, nextValHash []byte,
 	consensusHash, appHash, lastResultsHash []byte,
 	proposerAddress Address,
+	standingMembersHash []byte,
 ) {
 	h.Version = version
 	h.ChainID = chainID
@@ -369,6 +373,8 @@ func (h *Header) Populate(
 	h.AppHash = appHash
 	h.LastResultsHash = lastResultsHash
 	h.ProposerAddress = proposerAddress
+
+	h.StandingMembersHash = standingMembersHash
 }
 
 // ValidateBasic performs stateless validation on a Header returning an error
@@ -428,6 +434,9 @@ func (h Header) ValidateBasic() error {
 		return fmt.Errorf("wrong LastResultsHash: %v", err)
 	}
 
+	if err := ValidateHash(h.StandingMembersHash); err != nil {
+		return fmt.Errorf("wrong StandingMembersHash: %v", err)
+	}
 	return nil
 }
 
@@ -439,6 +448,10 @@ func (h Header) ValidateBasic() error {
 // a ValidatorsHash (corresponding to the validator set).
 func (h *Header) Hash() tmbytes.HexBytes {
 	if h == nil || len(h.ValidatorsHash) == 0 {
+		return nil
+	}
+
+	if h == nil || len(h.StandingMembersHash) == 0 {
 		return nil
 	}
 	hbz, err := h.Version.Marshal()
@@ -471,6 +484,7 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		cdcEncode(h.LastResultsHash),
 		cdcEncode(h.EvidenceHash),
 		cdcEncode(h.ProposerAddress),
+		cdcEncode(h.StandingMembersHash),
 	})
 }
 
@@ -494,6 +508,7 @@ func (h *Header) StringIndented(indent string) string {
 %s  Results:        %v
 %s  Evidence:       %v
 %s  Proposer:       %v
+%s  StandingMembers:       %v
 %s}#%v`,
 		indent, h.Version,
 		indent, h.ChainID,
@@ -509,6 +524,7 @@ func (h *Header) StringIndented(indent string) string {
 		indent, h.LastResultsHash,
 		indent, h.EvidenceHash,
 		indent, h.ProposerAddress,
+		indent, h.StandingMembersHash,
 		indent, h.Hash())
 }
 
@@ -533,6 +549,7 @@ func (h *Header) ToProto() *tmproto.Header {
 		LastResultsHash:    h.LastResultsHash,
 		LastCommitHash:     h.LastCommitHash,
 		ProposerAddress:    h.ProposerAddress,
+		StandingMembersHash:    h.StandingMembersHash,
 	}
 }
 
@@ -565,6 +582,7 @@ func HeaderFromProto(ph *tmproto.Header) (Header, error) {
 	h.LastResultsHash = ph.LastResultsHash
 	h.LastCommitHash = ph.LastCommitHash
 	h.ProposerAddress = ph.ProposerAddress
+	h.StandingMembersHash = ph.StandingMembersHash
 
 	return *h, h.ValidateBasic()
 }
