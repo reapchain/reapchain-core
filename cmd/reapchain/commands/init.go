@@ -77,11 +77,11 @@ func initFilesWithConfig(config *cfg.Config) error {
 			PubKey:  pubKey,
 		}}
 
-		// Default 양자난수 추가 
+		// Default 양자난수 추가
 		genDoc.Qns = []types.Qn{{
 			Address: pubKey.Address(),
 			PubKey:  pubKey,
-			Value: 	 tmrand.Int64(),
+			Value:   tmrand.Uint64(),
 		}}
 
 		// 합의 라운드 정보 추가
