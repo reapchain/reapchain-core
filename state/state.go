@@ -105,6 +105,7 @@ func (state State) Copy() State {
 		AppHash: state.AppHash,
 
 		LastResultsHash: state.LastResultsHash,
+		StandingMembers: state.StandingMembers.Copy(),
 	}
 }
 
@@ -154,6 +155,12 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	}
 	sm.Validators = vals
 
+	sms, err := state.StandingMembers.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.StandingMembers = sms
+
 	nVals, err := state.NextValidators.ToProto()
 	if err != nil {
 		return nil, err
@@ -179,6 +186,7 @@ func (state *State) ToProto() (*tmstate.State, error) {
 
 // StateFromProto takes a state proto message & returns the local state type
 func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
+	fmt.Println("stompesi-start-54564164")
 	if pb == nil {
 		return nil, errors.New("nil State")
 	}
@@ -259,6 +267,8 @@ func (state State) MakeBlock(
 		timestamp = MedianTime(commit, state.LastValidators)
 	}
 
+	fmt.Println("stompesi tt1-", state.Validators)
+	fmt.Println("stompesi tt2-", state.StandingMembers)
 	// Fill rest of header with state data.
 	block.Header.Populate(
 		state.Version.Consensus, state.ChainID,

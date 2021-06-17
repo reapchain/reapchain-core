@@ -265,6 +265,8 @@ func (h *Handshaker) Handshake(proxyApp proxy.AppConns) error {
 	}
 
 	// Replay blocks up to the latest in the blockstore.
+	fmt.Println("stompesi-start-99")
+
 	_, err = h.ReplayBlocks(h.initialState, appHash, blockHeight, proxyApp)
 	if err != nil {
 		return fmt.Errorf("error on replay: %v", err)
@@ -312,12 +314,13 @@ func (h *Handshaker) ReplayBlocks(
 		}
 
 		validatorSet := types.NewValidatorSet(validators)
+		standingMemberSet := types.NewStandingMemberSet(standingMembers)
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
 		csParams := types.TM2PB.ConsensusParams(h.genDoc.ConsensusParams)
 
-		// 상임위 초기화
-		standingMemberSet := types.NewStandingMemberSet(standingMembers)
 		sms := types.TM2PB.StandingMemberUpdates(standingMemberSet)
+
+		fmt.Println("stompesi-start-asdfasdf", len(sms))
 
 		req := abci.RequestInitChain{
 			Time:            h.genDoc.GenesisTime,
@@ -329,6 +332,8 @@ func (h *Handshaker) ReplayBlocks(
 			AppStateBytes:   h.genDoc.AppState,
 		}
 		res, err := proxyApp.Consensus().InitChainSync(req)
+
+		fmt.Println("stompesi-start-end-InitChainSync", len(res.Validators), len(res.StandingMembers))
 		if err != nil {
 			return nil, err
 		}

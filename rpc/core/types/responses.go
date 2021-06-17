@@ -81,11 +81,18 @@ type ValidatorInfo struct {
 	VotingPower int64          `json:"voting_power"`
 }
 
+// Info about the node's validator
+type StandingMemberInfo struct {
+	Address bytes.HexBytes `json:"address"`
+	PubKey  crypto.PubKey  `json:"pub_key"`
+}
+
 // Node Status
 type ResultStatus struct {
-	NodeInfo      p2p.DefaultNodeInfo `json:"node_info"`
-	SyncInfo      SyncInfo            `json:"sync_info"`
-	ValidatorInfo ValidatorInfo       `json:"validator_info"`
+	NodeInfo           p2p.DefaultNodeInfo `json:"node_info"`
+	SyncInfo           SyncInfo            `json:"sync_info"`
+	ValidatorInfo      ValidatorInfo       `json:"validator_info"`
+	StandingMemberInfo StandingMemberInfo  `json:"standing_member_info"`
 }
 
 // Is TxIndexing enabled
@@ -134,8 +141,8 @@ type ResultValidators struct {
 
 // StandingMembers for a height.
 type ResultStandingMembers struct {
-	BlockHeight int64              `json:"block_height"`
-	StandingMembers  []*types.StandingMember `json:"standing_members"`
+	BlockHeight     int64                   `json:"block_height"`
+	StandingMembers []*types.StandingMember `json:"standing_members"`
 	// Count of actual validators in this result
 	Count int `json:"count"`
 	// Total number of validators

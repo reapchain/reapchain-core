@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/gogo/protobuf/proto"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/reapchain/tm-db"
 
 	abci "github.com/reapchain/reapchain/abci/types"
 	"github.com/reapchain/reapchain/libs/pubsub/query"

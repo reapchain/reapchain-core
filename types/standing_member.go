@@ -3,6 +3,7 @@ package types
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/reapchain/reapchain/crypto"
 	ce "github.com/reapchain/reapchain/crypto/encoding"
@@ -96,4 +97,13 @@ func (sm *StandingMember) ToProto() (*tmproto.StandingMember, error) {
 func (sm *StandingMember) Copy() *StandingMember {
 	smCopy := *sm
 	return &smCopy
+}
+
+func StandingMemberListString(vals []*StandingMember) string {
+	chunks := make([]string, len(vals))
+	for i, val := range vals {
+		chunks[i] = fmt.Sprintf("%s", val.Address)
+	}
+
+	return strings.Join(chunks, ",")
 }

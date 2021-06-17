@@ -1076,7 +1076,7 @@ program](https://hackerone.com/reapchain).
 - [deps] [\#3939](https://github.com/reapchain/reapchain/pull/3939) bump github.com/rs/cors from 1.6.0 to 1.7.0
 - [deps] [\#3937](https://github.com/reapchain/reapchain/pull/3937) bump github.com/magiconair/properties from 1.8.0 to 1.8.1
 - [deps] [\#3947](https://github.com/reapchain/reapchain/pull/3947) update gogo/protobuf version from v1.2.1 to v1.3.0
-- [deps] [\#4001](https://github.com/reapchain/reapchain/pull/4001) bump github.com/tendermint/tm-db from 0.1.1 to 0.2.0
+- [deps] [\#4001](https://github.com/reapchain/reapchain/pull/4001) bump github.com/reapchain/tm-db from 0.1.1 to 0.2.0
 
 ### BUG FIXES:
 
@@ -1123,7 +1123,7 @@ program](https://hackerone.com/reapchain).
 ### BREAKING CHANGES:
 
 - Go API
-  - [libs] [\#3811](https://github.com/reapchain/reapchain/issues/3811) Remove `db` from libs in favor of `https://github.com/tendermint/tm-db`
+  - [libs] [\#3811](https://github.com/reapchain/reapchain/issues/3811) Remove `db` from libs in favor of `https://github.com/reapchain/tm-db`
 
 ### FEATURES:
 

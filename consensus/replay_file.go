@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/reapchain/tm-db"
 
 	cfg "github.com/reapchain/reapchain/config"
 	"github.com/reapchain/reapchain/libs/log"

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gogo/protobuf/proto"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/reapchain/tm-db"
 
 	abci "github.com/reapchain/reapchain/abci/types"
 	tmmath "github.com/reapchain/reapchain/libs/math"
@@ -72,7 +72,7 @@ type Store interface {
 	LoadStandingMembers(int64) (*types.StandingMemberSet, error)
 }
 
-// dbStore wraps a db (github.com/tendermint/tm-db)
+// dbStore wraps a db (github.com/reapchain/tm-db)
 type dbStore struct {
 	db dbm.DB
 }
@@ -105,6 +105,7 @@ func (store dbStore) LoadFromDBOrGenesisFile(genesisFilePath string) (State, err
 // LoadStateFromDBOrGenesisDoc loads the most recent state from the database,
 // or creates a new one from the given genesisDoc.
 func (store dbStore) LoadFromDBOrGenesisDoc(genesisDoc *types.GenesisDoc) (State, error) {
+	fmt.Println("stompesi-start-2")
 	state, err := store.Load()
 	if err != nil {
 		return State{}, err
@@ -123,26 +124,35 @@ func (store dbStore) LoadFromDBOrGenesisDoc(genesisDoc *types.GenesisDoc) (State
 
 // LoadState loads the State from the database.
 func (store dbStore) Load() (State, error) {
+	fmt.Println("stompesi-start-3")
 	return store.loadState(stateKey)
 }
 
 func (store dbStore) loadState(key []byte) (state State, err error) {
+	fmt.Println("stompesi-start-4", key)
 	buf, err := store.db.Get(key)
 	if err != nil {
+		fmt.Println("stompesi-start-4-1-return")
 		return state, err
 	}
+
 	if len(buf) == 0 {
+		fmt.Println("stompesi-start-4-2-return")
 		return state, nil
 	}
 
+	fmt.Println("stompesi-start-kkk")
 	sp := new(tmstate.State)
 
+	fmt.Println("stompesi-start-start-Unmarshal", sp)
 	err = proto.Unmarshal(buf, sp)
 	if err != nil {
 		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
 		tmos.Exit(fmt.Sprintf(`LoadState: Data has been corrupted or its spec has changed:
 		%v\n`, err))
 	}
+
+	fmt.Println("stompesi-start-end-Unmarshal", sp)
 
 	sm, err := StateFromProto(sp)
 	if err != nil {
@@ -159,9 +169,12 @@ func (store dbStore) Save(state State) error {
 }
 
 func (store dbStore) save(state State, key []byte) error {
+	fmt.Println("stompesi-init-save")
+
 	nextHeight := state.LastBlockHeight + 1
 	// If first block, save validators for the block.
 	if nextHeight == 1 {
+		fmt.Println("stompesi-init-save-1")
 		nextHeight = state.InitialHeight
 		// This extra logic due to Reapchain validator set changes being delayed 1 block.
 		// It may get overwritten due to InitChain validator updates.
@@ -169,6 +182,12 @@ func (store dbStore) save(state State, key []byte) error {
 			return err
 		}
 	}
+
+	fmt.Println("stompesi-init-save-3")
+	if err := store.saveStandingMembersInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.StandingMembers); err != nil {
+		return err
+	}
+
 	// Save next validators.
 	if err := store.saveValidatorsInfo(nextHeight+1, state.LastHeightValidatorsChanged, state.NextValidators); err != nil {
 		return err
@@ -179,6 +198,8 @@ func (store dbStore) save(state State, key []byte) error {
 		state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
 		return err
 	}
+	fmt.Println("stompesi-init-save-2", state.StandingMembers)
+
 	err := store.db.SetSync(key, state.Bytes())
 	if err != nil {
 		return err
@@ -203,6 +224,10 @@ func (store dbStore) Bootstrap(state State) error {
 		return err
 	}
 
+	if err := store.saveStandingMembersInfo(height, height, state.StandingMembers); err != nil {
+		return err
+	}
+
 	if err := store.saveValidatorsInfo(height+1, height+1, state.NextValidators); err != nil {
 		return err
 	}
@@ -212,6 +237,7 @@ func (store dbStore) Bootstrap(state State) error {
 		return err
 	}
 
+	fmt.Println("stompesi-init-SetSync", state)
 	return store.db.SetSync(stateKey, state.Bytes())
 }
 
@@ -239,11 +265,23 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 		return fmt.Errorf("consensus params at height %v not found: %w", to, err)
 	}
 
+	smInfo, err := loadStandingMembersInfo(store.db, to)
+	if err != nil {
+		return fmt.Errorf("validators at height %v not found: %w", to, err)
+	}
+
 	keepVals := make(map[int64]bool)
 	if valInfo.ValidatorSet == nil {
 		keepVals[valInfo.LastHeightChanged] = true
 		keepVals[lastStoredHeightFor(to, valInfo.LastHeightChanged)] = true // keep last checkpoint too
 	}
+
+	keepSms := make(map[int64]bool)
+	if smInfo.StandingMemberSet == nil {
+		keepSms[valInfo.LastHeightChanged] = true
+		keepSms[lastStoredHeightFor(to, smInfo.LastHeightChanged)] = true // keep last checkpoint too
+	}
+
 	keepParams := make(map[int64]bool)
 	if paramsInfo.ConsensusParams.Equal(&tmproto.ConsensusParams{}) {
 		keepParams[paramsInfo.LastHeightChanged] = true
@@ -286,6 +324,38 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 			}
 		} else {
 			err = batch.Delete(calcValidatorsKey(h))
+			if err != nil {
+				return err
+			}
+		}
+
+		if keepSms[h] {
+			v, err := loadStandingMembersInfo(store.db, h)
+			if err != nil || v.StandingMemberSet == nil {
+				vip, err := store.LoadStandingMembers(h)
+				if err != nil {
+					return err
+				}
+
+				pvi, err := vip.ToProto()
+				if err != nil {
+					return err
+				}
+
+				v.StandingMemberSet = pvi
+				v.LastHeightChanged = h
+
+				bz, err := v.Marshal()
+				if err != nil {
+					return err
+				}
+				err = batch.Set(calcStandingMembersKey(h), bz)
+				if err != nil {
+					return err
+				}
+			}
+		} else {
+			err = batch.Delete(calcStandingMembersKey(h))
 			if err != nil {
 				return err
 			}
@@ -406,6 +476,7 @@ func (store dbStore) SaveABCIResponses(height int64, abciResponses *tmstate.ABCI
 		return err
 	}
 
+	fmt.Println("stompesi-init-SetSync", bz)
 	err = store.db.SetSync(calcABCIResponsesKey(height), bz)
 	if err != nil {
 		return err
@@ -513,7 +584,41 @@ func (store dbStore) saveValidatorsInfo(height, lastHeightChanged int64, valSet 
 		return err
 	}
 
+	fmt.Println("stompesi-init-Set-calcValidatorsKey", valInfo)
 	err = store.db.Set(calcValidatorsKey(height), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, valSet *types.StandingMemberSet) error {
+	fmt.Println("stompesi-jkjkjkdjfkjdkf")
+
+	if lastHeightChanged > height {
+		return errors.New("lastHeightChanged cannot be greater than StandingMembersInfo height")
+	}
+	smInfo := &tmstate.StandingMembersInfo{
+		LastHeightChanged: lastHeightChanged,
+	}
+	// Only persist validator set if it was updated or checkpoint height (see
+	// valSetCheckpointInterval) is reached.
+	if height == lastHeightChanged || height%valSetCheckpointInterval == 0 {
+		pv, err := valSet.ToProto()
+		if err != nil {
+			return err
+		}
+		smInfo.StandingMemberSet = pv
+	}
+
+	bz, err := smInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("stompesi-saveStandingMembersInfo", smInfo)
+	err = store.db.Set(calcStandingMembersKey(height), bz)
 	if err != nil {
 		return err
 	}

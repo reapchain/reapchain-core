@@ -382,6 +382,7 @@ func (cli *grpcClient) CommitSync() (*types.ResponseCommit, error) {
 }
 
 func (cli *grpcClient) InitChainSync(params types.RequestInitChain) (*types.ResponseInitChain, error) {
+	fmt.Println("stompesi-start-InitChainSync")
 	reqres := cli.InitChainAsync(params)
 	return cli.finishSyncCall(reqres).GetInitChain(), cli.Error()
 }

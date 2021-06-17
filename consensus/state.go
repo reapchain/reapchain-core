@@ -178,6 +178,7 @@ func NewState(
 
 	// We have no votes, so reconstruct LastCommit from SeenCommit.
 	if state.LastBlockHeight > 0 {
+		fmt.Println("stompesi-으어")
 		cs.reconstructLastCommit(state)
 	}
 
@@ -622,6 +623,7 @@ func (cs *State) updateToState(state sm.State) {
 
 	// Reset fields based on state.
 	validators := state.Validators
+	fmt.Println("stompesi-last", state.StandingMembers)
 
 	switch {
 	case state.LastBlockHeight == 0: // Very first commit should be empty.
@@ -680,7 +682,9 @@ func (cs *State) updateToState(state sm.State) {
 	cs.CommitRound = -1
 	cs.LastValidators = state.LastValidators
 	cs.TriggeredTimeoutPrecommit = false
+	cs.StandingMembers = state.StandingMembers
 
+	fmt.Println("stompesi-last", state)
 	cs.state = state
 
 	// Finally, broadcast RoundState
@@ -1639,6 +1643,8 @@ func (cs *State) finalizeCommit(height int64) {
 		retainHeight int64
 	)
 
+	fmt.Println("stompesi-start-종빈", len(stateCopy.StandingMembers.StandingMembers))
+
 	stateCopy, retainHeight, err = cs.blockExec.ApplyBlock(
 		stateCopy,
 		types.BlockID{
@@ -1652,6 +1658,7 @@ func (cs *State) finalizeCommit(height int64) {
 		return
 	}
 
+	fmt.Println("stompesi-start-종빈-3")
 	fail.Fail() // XXX
 
 	// Prune old heights, if requested by ABCI app.
@@ -1663,9 +1670,12 @@ func (cs *State) finalizeCommit(height int64) {
 			logger.Debug("pruned blocks", "pruned", pruned, "retain_height", retainHeight)
 		}
 	}
+	fmt.Println("stompesi-start-종빈-4")
 
 	// must be called before we update state
 	cs.recordMetrics(height, block)
+
+	fmt.Println("stompesi-start-종빈-2", stateCopy.StandingMembers)
 
 	// NewHeightStep!
 	cs.updateToState(stateCopy)
@@ -1704,9 +1714,14 @@ func (cs *State) pruneBlocks(retainHeight int64) (uint64, error) {
 }
 
 func (cs *State) recordMetrics(height int64, block *types.Block) {
+	fmt.Println("stompesi-start-recordMetrics")
+
 	cs.metrics.Validators.Set(float64(cs.Validators.Size()))
 	cs.metrics.ValidatorsPower.Set(float64(cs.Validators.TotalVotingPower()))
 
+	cs.metrics.StandingMembers.Set(float64(cs.StandingMembers.Size()))
+
+	fmt.Println("stompesi-start-recordMetrics-1")
 	var (
 		missingValidators      int
 		missingValidatorsPower int64
@@ -1714,7 +1729,9 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 	// height=0 -> MissingValidators and MissingValidatorsPower are both 0.
 	// Remember that the first LastCommit is intentionally empty, so it's not
 	// fair to increment missing validators number.
+	fmt.Println("stompesi-start-recordMetrics-2")
 	if height > cs.state.InitialHeight {
+		fmt.Println("stompesi-start-recordMetrics-3")
 		// Sanity check that commit size matches validator set size - only applies
 		// after first block.
 		var (
@@ -1736,6 +1753,7 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 			}
 		}
 
+		fmt.Println("stompesi-start-recordMetrics-4")
 		for i, val := range cs.LastValidators.Validators {
 			commitSig := block.LastCommit.Signatures[i]
 			if commitSig.Absent() {
@@ -1785,10 +1803,12 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 		}
 	}
 
+	fmt.Println("stompesi-start-recordMetrics-5")
 	cs.metrics.NumTxs.Set(float64(len(block.Data.Txs)))
 	cs.metrics.TotalTxs.Add(float64(len(block.Data.Txs)))
 	cs.metrics.BlockSizeBytes.Set(float64(block.Size()))
 	cs.metrics.CommittedHeight.Set(float64(block.Height))
+	fmt.Println("stompesi-start-recordMetrics-6")
 }
 
 //-----------------------------------------------------------------------------

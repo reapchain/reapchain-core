@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gogo/protobuf/proto"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/reapchain/tm-db"
 
 	tmsync "github.com/reapchain/reapchain/libs/sync"
 	tmstore "github.com/reapchain/reapchain/proto/reapchain/store"

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/reapchain/tm-db"
 
 	"github.com/reapchain/reapchain/abci/example/code"
 	"github.com/reapchain/reapchain/abci/types"

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/reapchain/tm-db"
 
 	"github.com/reapchain/reapchain/libs/log"
 	tmsync "github.com/reapchain/reapchain/libs/sync"

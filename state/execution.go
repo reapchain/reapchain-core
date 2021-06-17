@@ -103,7 +103,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	evidence, evSize := blockExec.evpool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
 
 	// Fetch a limited amount of valid txs
-	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size())
+	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size(), state.StandingMembers.Size())
 
 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxDataBytes, maxGas)
 
@@ -170,11 +170,30 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		blockExec.logger.Debug("updates to validators", "updates", types.ValidatorListString(validatorUpdates))
 	}
 
+	//stompesi: 여기서부터 할것
+	abciStandingMemberUpdates := abciResponses.EndBlock.StandingMemberUpdates
+	err = validateStandingMemberUpdates(abciStandingMemberUpdates, state.ConsensusParams.StandingMember)
+	if err != nil {
+		return state, 0, fmt.Errorf("error in validator updates: %v", err)
+	}
+
+	standingMemberUpdates, err := types.PB2TM.StandingMemberUpdates(abciStandingMemberUpdates)
+	if err != nil {
+		return state, 0, err
+	}
+	if len(standingMemberUpdates) > 0 {
+		blockExec.logger.Debug("updates to standing members", "updates", types.StandingMemberListString(standingMemberUpdates))
+	}
+	// --------------------------
+
 	// Update the state with the block and responses.
+	fmt.Println("stompesi-이쯤1", len(state.StandingMembers.StandingMembers), len(state.Validators.Validators))
+
 	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
+	fmt.Println("stompesi-이쯤2", len(state.StandingMembers.StandingMembers), len(state.Validators.Validators))
 
 	// Lock mempool, commit app state, update mempoool.
 	appHash, retainHeight, err := blockExec.Commit(state, block, abciResponses.DeliverTxs)
@@ -189,6 +208,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	// Update the app hash and save the state.
 	state.AppHash = appHash
+
 	if err := blockExec.store.Save(state); err != nil {
 		return state, 0, err
 	}
@@ -213,6 +233,9 @@ func (blockExec *BlockExecutor) Commit(
 	block *types.Block,
 	deliverTxResponses []*abci.ResponseDeliverTx,
 ) ([]byte, int64, error) {
+
+	fmt.Println("stompesijaskdjfkasdjkfasdkfj!!!")
+
 	blockExec.mempool.Lock()
 	defer blockExec.mempool.Unlock()
 
@@ -399,6 +422,23 @@ func validateValidatorUpdates(abciUpdates []abci.ValidatorUpdate,
 	return nil
 }
 
+func validateStandingMemberUpdates(abciUpdates []abci.StandingMemberUpdate,
+	params tmproto.StandingMemberParams) error {
+	for _, valUpdate := range abciUpdates {
+		// Check if validator's pubkey matches an ABCI type in the consensus params
+		pk, err := cryptoenc.PubKeyFromProto(valUpdate.PubKey)
+		if err != nil {
+			return err
+		}
+
+		if !types.IsValidStandingMemberPubkeyType(params, pk.Type()) {
+			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
+				valUpdate, pk.Type())
+		}
+	}
+	return nil
+}
+
 // updateState returns a new State updated according to the header and responses.
 func updateState(
 	state State,
@@ -462,6 +502,7 @@ func updateState(
 		LastHeightConsensusParamsChanged: lastHeightParamsChanged,
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
+		StandingMembers:                  state.StandingMembers.Copy(),
 	}, nil
 }
 

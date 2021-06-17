@@ -60,6 +60,9 @@ type Metrics struct {
 
 	// Number of blockparts transmitted by peer.
 	BlockParts metrics.Counter
+
+	// Number of standing members.
+	StandingMembers metrics.Gauge
 }
 
 // PrometheusMetrics returns Metrics build using Prometheus client library.
@@ -89,6 +92,12 @@ func PrometheusMetrics(namespace string, labelsAndValues ...string) *Metrics {
 			Subsystem: MetricsSubsystem,
 			Name:      "validators",
 			Help:      "Number of validators.",
+		}, labels).With(labelsAndValues...),
+		StandingMembers: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "standing_members",
+			Help:      "Number of standing memberss.",
 		}, labels).With(labelsAndValues...),
 		ValidatorLastSignedHeight: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
@@ -199,6 +208,7 @@ func NopMetrics() *Metrics {
 		Rounds: discard.NewGauge(),
 
 		Validators:               discard.NewGauge(),
+		StandingMembers:          discard.NewGauge(),
 		ValidatorsPower:          discard.NewGauge(),
 		ValidatorPower:           discard.NewGauge(),
 		ValidatorMissedBlocks:    discard.NewGauge(),

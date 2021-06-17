@@ -540,6 +540,12 @@ func (cs *State) GetValidators() (int64, []*types.Validator) {
 	return cs.state.LastBlockHeight, cs.state.Validators.Copy().Validators
 }
 
+func (cs *State) GetStandingMembers() (int64, []*types.StandingMember) {
+	cs.mtx.RLock()
+	defer cs.mtx.RUnlock()
+	return cs.state.LastBlockHeight, cs.state.StandingMembers.Copy().StandingMembers
+}
+
 // SetPrivValidator sets the private validator account for signing votes. It
 // immediately requests pubkey and caches it.
 func (cs *State) SetPrivValidator(priv types.PrivValidator) {

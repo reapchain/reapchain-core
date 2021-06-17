@@ -1,8 +1,10 @@
 package types
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/reapchain/reapchain/crypto/merkle"
 	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
@@ -15,13 +17,16 @@ type StandingMemberSet struct {
 func NewStandingMemberSet(smz []*StandingMember) *StandingMemberSet {
 	sms := &StandingMemberSet{}
 
-	if len(smz) == 0 {
-		sms.StandingMembers = make([]*StandingMember, 0)
-	} else {
-		sms.StandingMembers = smz
+	err := sms.updateWithChangeSet(smz)
+	if err != nil {
+		panic(fmt.Sprintf("Cannot create standing member set: %v", err))
 	}
 
 	return sms
+}
+
+func (sms *StandingMemberSet) UpdateWithChangeSet(smz []*StandingMember) error {
+	return sms.updateWithChangeSet(smz)
 }
 
 func (sms *StandingMemberSet) ValidateBasic() error {
@@ -107,4 +112,26 @@ func standingMemberListCopy(sms []*StandingMember) []*StandingMember {
 
 func (sms *StandingMemberSet) Size() int {
 	return len(sms.StandingMembers)
+}
+
+// 정렬하기 위한 구조체
+type StandingMembersByAddress []*StandingMember
+
+func (sms StandingMembersByAddress) Len() int { return len(sms) }
+
+func (sms StandingMembersByAddress) Less(i, j int) bool {
+	return bytes.Compare(sms[i].Address, sms[j].Address) == -1
+}
+
+func (sms StandingMembersByAddress) Swap(i, j int) {
+	sms[i], sms[j] = sms[j], sms[i]
+}
+
+func (sms *StandingMemberSet) updateWithChangeSet(smz []*StandingMember) error {
+	if len(smz) != 0 {
+		sort.Sort(StandingMembersByAddress(smz))
+		sms.StandingMembers = smz[:]
+	}
+
+	return nil
 }

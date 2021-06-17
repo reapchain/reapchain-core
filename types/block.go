@@ -275,11 +275,12 @@ func BlockFromProto(bp *tmproto.Block) (*Block, error) {
 // MaxDataBytes returns the maximum size of block's data.
 //
 // XXX: Panics on negative result.
-func MaxDataBytes(maxBytes, evidenceBytes int64, valsCount int) int64 {
+func MaxDataBytes(maxBytes, evidenceBytes int64, valsCount, smsCount int) int64 {
 	maxDataBytes := maxBytes -
 		MaxOverheadForBlock -
 		MaxHeaderBytes -
 		MaxCommitBytes(valsCount) -
+		MaxCommitBytes(smsCount) -
 		evidenceBytes
 
 	if maxDataBytes < 0 {
@@ -350,7 +351,7 @@ type Header struct {
 	ProposerAddress Address          `json:"proposer_address"` // original proposer of the block
 
 	// 상임위 리스트 해시
-	StandingMembersHash     tmbytes.HexBytes `json:"standing_members_hash"`
+	StandingMembersHash tmbytes.HexBytes `json:"standing_members_hash"`
 }
 
 // Populate the Header with state-derived data.
@@ -535,21 +536,21 @@ func (h *Header) ToProto() *tmproto.Header {
 	}
 
 	return &tmproto.Header{
-		Version:            h.Version,
-		ChainID:            h.ChainID,
-		Height:             h.Height,
-		Time:               h.Time,
-		LastBlockId:        h.LastBlockID.ToProto(),
-		ValidatorsHash:     h.ValidatorsHash,
-		NextValidatorsHash: h.NextValidatorsHash,
-		ConsensusHash:      h.ConsensusHash,
-		AppHash:            h.AppHash,
-		DataHash:           h.DataHash,
-		EvidenceHash:       h.EvidenceHash,
-		LastResultsHash:    h.LastResultsHash,
-		LastCommitHash:     h.LastCommitHash,
-		ProposerAddress:    h.ProposerAddress,
-		StandingMembersHash:    h.StandingMembersHash,
+		Version:             h.Version,
+		ChainID:             h.ChainID,
+		Height:              h.Height,
+		Time:                h.Time,
+		LastBlockId:         h.LastBlockID.ToProto(),
+		ValidatorsHash:      h.ValidatorsHash,
+		NextValidatorsHash:  h.NextValidatorsHash,
+		ConsensusHash:       h.ConsensusHash,
+		AppHash:             h.AppHash,
+		DataHash:            h.DataHash,
+		EvidenceHash:        h.EvidenceHash,
+		LastResultsHash:     h.LastResultsHash,
+		LastCommitHash:      h.LastCommitHash,
+		ProposerAddress:     h.ProposerAddress,
+		StandingMembersHash: h.StandingMembersHash,
 	}
 }
 

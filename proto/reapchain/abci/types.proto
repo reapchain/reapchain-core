@@ -234,6 +234,8 @@ message ResponseEndBlock {
   ConsensusParams consensus_param_updates = 2;
   repeated Event  events                  = 3
       [(gogoproto.nullable) = false, (gogoproto.jsontag) = "events,omitempty"];
+  repeated StandingMemberUpdate standing_member_updates = 4
+      [(gogoproto.nullable) = false];
 }
 
 message ResponseCommit {
@@ -288,6 +290,7 @@ message ConsensusParams {
   reapchain.types.EvidenceParams  evidence  = 2;
   reapchain.types.ValidatorParams validator = 3;
   reapchain.types.VersionParams   version   = 4;
+  reapchain.types.StandingMemberParams standing_member = 5;
 }
 
 // BlockParams contains limits on the block size.
