@@ -79,6 +79,31 @@ func StandingMembers(ctx *rpctypes.Context, heightPtr *int64, pagePtr, perPagePt
 		Total:           totalCount}, nil
 }
 
+func Qns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQns, error) {
+	height, err := getHeight(latestUncommittedHeight(), heightPtr)
+	if err != nil {
+		return nil, err
+	}
+
+	qns, err := env.StateStore.LoadQns(height)
+	if err != nil {
+		return nil, err
+	}
+
+	totalCount := len(qns.Qns)
+	if err != nil {
+		return nil, err
+	}
+
+	v := qns.Qns[:]
+
+	return &ctypes.ResultQns{
+		BlockHeight: height,
+		Qns:         qns.Qns,
+		Count:       len(v),
+		Total:       totalCount}, nil
+}
+
 // DumpConsensusState dumps consensus state.
 // UNSTABLE
 // More: https://docs.reapchain.com/master/rpc/#/Info/dump_consensus_state

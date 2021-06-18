@@ -268,6 +268,12 @@ func (cs *State) GetStandingMembers() (int64, []*types.StandingMember) {
 	return cs.state.LastBlockHeight, cs.state.StandingMembers.Copy().StandingMembers
 }
 
+func (cs *State) GetQns() (int64, []*types.Qn) {
+	cs.mtx.RLock()
+	defer cs.mtx.RUnlock()
+	return cs.state.LastBlockHeight, cs.state.Qns.Copy().Qns
+}
+
 // SetPrivValidator sets the private validator account for signing votes. It
 // immediately requests pubkey and caches it.
 func (cs *State) SetPrivValidator(priv types.PrivValidator) {
@@ -475,7 +481,7 @@ func (cs *State) AddVote(vote *types.Vote, peerID p2p.ID) (added bool, err error
 
 // SetProposal inputs a proposal.
 func (cs *State) SetProposal(proposal *types.Proposal, peerID p2p.ID) error {
-
+	fmt.Println("2stompesi-,jkjjkkjkasdf")
 	if peerID == "" {
 		cs.internalMsgQueue <- msgInfo{&ProposalMessage{proposal}, ""}
 	} else {
@@ -488,7 +494,7 @@ func (cs *State) SetProposal(proposal *types.Proposal, peerID p2p.ID) error {
 
 // AddProposalBlockPart inputs a part of the proposal block.
 func (cs *State) AddProposalBlockPart(height int64, round int32, part *types.Part, peerID p2p.ID) error {
-
+	fmt.Println("2stompesi-AddProposalBlockPart")
 	if peerID == "" {
 		cs.internalMsgQueue <- msgInfo{&BlockPartMessage{height, round, part}, ""}
 	} else {
@@ -683,6 +689,7 @@ func (cs *State) updateToState(state sm.State) {
 	cs.LastValidators = state.LastValidators
 	cs.TriggeredTimeoutPrecommit = false
 	cs.StandingMembers = state.StandingMembers
+	cs.Qns = state.Qns
 
 	fmt.Println("stompesi-last", state)
 	cs.state = state
@@ -824,10 +831,12 @@ func (cs *State) handleMsg(mi msgInfo) {
 	case *ProposalMessage:
 		// will not cause transition.
 		// once proposal is set, we can receive block parts
+		fmt.Println("2stompesi-block-1")
 		err = cs.setProposal(msg.Proposal)
 
 	case *BlockPartMessage:
 		// if the proposal is complete, we'll enterPrevote or tryFinalizeCommit
+		fmt.Println("2stompesi-block-2")
 		added, err = cs.addProposalBlockPart(msg, peerID)
 		if added {
 			cs.statsMsgQueue <- mi
@@ -846,6 +855,7 @@ func (cs *State) handleMsg(mi msgInfo) {
 	case *VoteMessage:
 		// attempt to add the vote and dupeout the validator if its a duplicate signature
 		// if the vote gives us a 2/3-any or 2/3-one, we transition
+		fmt.Println("2stompesi-block-3")
 		added, err = cs.tryAddVote(msg.Vote, peerID)
 		if added {
 			cs.statsMsgQueue <- mi
@@ -1144,6 +1154,7 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 		proposal.Signature = p.Signature
 
 		// send proposal and block parts on internal msg queue
+		fmt.Println("stompesi-start-defaultDecideProposal")
 		cs.sendInternalMessage(msgInfo{&ProposalMessage{proposal}, ""})
 
 		for i := 0; i < int(blockParts.Total()); i++ {
@@ -1720,6 +1731,7 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 	cs.metrics.ValidatorsPower.Set(float64(cs.Validators.TotalVotingPower()))
 
 	cs.metrics.StandingMembers.Set(float64(cs.StandingMembers.Size()))
+	cs.metrics.Qns.Set(float64(cs.Qns.Size()))
 
 	fmt.Println("stompesi-start-recordMetrics-1")
 	var (
@@ -1878,6 +1890,7 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 		return false, nil
 	}
 
+	fmt.Println("2stompesi-block-tt", part)
 	added, err = cs.ProposalBlockParts.AddPart(part)
 	if err != nil {
 		return added, err
@@ -1887,6 +1900,7 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 			cs.ProposalBlockParts.ByteSize(), cs.state.ConsensusParams.Block.MaxBytes,
 		)
 	}
+
 	if added && cs.ProposalBlockParts.IsComplete() {
 		bz, err := ioutil.ReadAll(cs.ProposalBlockParts.GetReader())
 		if err != nil {
@@ -1894,12 +1908,16 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 		}
 
 		var pbb = new(tmproto.Block)
+		fmt.Println("2stompesi-block-tt", pbb.Header.Height)
 		err = proto.Unmarshal(bz, pbb)
 		if err != nil {
 			return added, err
 		}
+		fmt.Println("2stompesi-block-1", pbb)
 
 		block, err := types.BlockFromProto(pbb)
+		fmt.Println("2stompesi-block-2", block)
+
 		if err != nil {
 			return added, err
 		}

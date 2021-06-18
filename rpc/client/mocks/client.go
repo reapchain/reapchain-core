@@ -802,7 +802,6 @@ func (_m *Client) Validators(ctx context.Context, height *int64, page *int, perP
 	return r0, r1
 }
 
-
 // StandingMembers provides a mock function with given fields: ctx, height, page, perPage
 func (_m *Client) StandingMembers(ctx context.Context, height *int64, page *int, perPage *int) (*coretypes.ResultStandingMembers, error) {
 	ret := _m.Called(ctx, height, page, perPage)
@@ -819,6 +818,28 @@ func (_m *Client) StandingMembers(ctx context.Context, height *int64, page *int,
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, *int64, *int, *int) error); ok {
 		r1 = rf(ctx, height, page, perPage)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+func (_m *Client) Qns(ctx context.Context, height *int64) (*coretypes.ResultQns, error) {
+	ret := _m.Called(ctx, height)
+
+	var r0 *coretypes.ResultQns
+	if rf, ok := ret.Get(0).(func(context.Context, *int64) *coretypes.ResultQns); ok {
+		r0 = rf(ctx, height)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*coretypes.ResultQns)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, *int64) error); ok {
+		r1 = rf(ctx, height)
 	} else {
 		r1 = ret.Error(1)
 	}

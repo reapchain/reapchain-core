@@ -84,7 +84,6 @@ func initFilesWithConfig(config *cfg.Config) error {
 			Value:   tmrand.Uint64(),
 		}}
 
-		// 합의 라운드 정보 추가
 		genDoc.ConsensusRoundInfo = types.NewConsensusRound(0, 0)
 
 		if err := genDoc.SaveAs(genFile); err != nil {

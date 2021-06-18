@@ -9,6 +9,7 @@ import "reapchain/crypto/proof.proto";
 import "reapchain/types/types.proto";
 import "reapchain/crypto/keys.proto";
 import "reapchain/types/params.proto";
+import "reapchain/types/consensus_round.proto";
 import "google/protobuf/timestamp.proto";
 import "gogoproto/gogo.proto";
 
@@ -64,8 +65,10 @@ message RequestInitChain {
   ConsensusParams          consensus_params = 3;
   repeated ValidatorUpdate validators       = 4 [(gogoproto.nullable) = false];
   repeated StandingMemberUpdate standing_members       = 5 [(gogoproto.nullable) = false];
+  repeated QnUpdate qns       = 9 [(gogoproto.nullable) = false];
   bytes                    app_state_bytes  = 6;
   int64                    initial_height   = 7;
+  reapchain.types.ConsensusRound consensus_round_info       = 8 [(gogoproto.nullable) = false];
 }
 
 message RequestQuery {
@@ -183,7 +186,9 @@ message ResponseInitChain {
   ConsensusParams          consensus_params = 1;
   repeated ValidatorUpdate validators       = 2 [(gogoproto.nullable) = false];
   repeated StandingMemberUpdate standing_members       = 3 [(gogoproto.nullable) = false];
+  repeated QnUpdate qns       = 6 [(gogoproto.nullable) = false];
   bytes                    app_hash         = 4;
+  reapchain.types.ConsensusRound consensus_round_info       = 5 [(gogoproto.nullable) = false];
 }
 
 message ResponseQuery {
@@ -235,6 +240,8 @@ message ResponseEndBlock {
   repeated Event  events                  = 3
       [(gogoproto.nullable) = false, (gogoproto.jsontag) = "events,omitempty"];
   repeated StandingMemberUpdate standing_member_updates = 4
+      [(gogoproto.nullable) = false];
+  repeated QNUpdate qn_updates = 5
       [(gogoproto.nullable) = false];
 }
 
@@ -291,6 +298,7 @@ message ConsensusParams {
   reapchain.types.ValidatorParams validator = 3;
   reapchain.types.VersionParams   version   = 4;
   reapchain.types.StandingMemberParams standing_member = 5;
+  reapchain.types.ConsensusRound consensus_round_info = 6;
 }
 
 // BlockParams contains limits on the block size.
@@ -348,6 +356,11 @@ message StandingMember {
   bytes address = 1;  // The first 20 bytes of SHA256(public key)
 }
 
+message Qn {
+  bytes address = 1;  // The first 20 bytes of SHA256(public key)
+  uint64 power = 3;  // The voting power
+}
+
 // ValidatorUpdate
 message ValidatorUpdate {
   reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
@@ -356,6 +369,11 @@ message ValidatorUpdate {
 
 message StandingMemberUpdate {
   reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
+}
+
+message QnUpdate {
+  reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
+  uint64 value = 2;
 }
 
 // VoteInfo

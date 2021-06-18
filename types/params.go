@@ -24,10 +24,11 @@ const (
 // DefaultConsensusParams returns a default ConsensusParams.
 func DefaultConsensusParams() *tmproto.ConsensusParams {
 	return &tmproto.ConsensusParams{
-		Block:     DefaultBlockParams(),
-		Evidence:  DefaultEvidenceParams(),
-		Validator: DefaultValidatorParams(),
-		Version:   DefaultVersionParams(),
+		Block:          DefaultBlockParams(),
+		Evidence:       DefaultEvidenceParams(),
+		Validator:      DefaultValidatorParams(),
+		Version:        DefaultVersionParams(),
+		StandingMember: DefaultStandingMemberParams(),
 	}
 }
 
@@ -53,6 +54,12 @@ func DefaultEvidenceParams() tmproto.EvidenceParams {
 // only ed25519 pubkeys.
 func DefaultValidatorParams() tmproto.ValidatorParams {
 	return tmproto.ValidatorParams{
+		PubKeyTypes: []string{ABCIPubKeyTypeEd25519},
+	}
+}
+
+func DefaultStandingMemberParams() tmproto.StandingMemberParams {
+	return tmproto.StandingMemberParams{
 		PubKeyTypes: []string{ABCIPubKeyTypeEd25519},
 	}
 }

@@ -79,7 +79,9 @@ type State struct {
 	// the latest AppHash we've received from calling abci.Commit()
 	AppHash []byte
 
-	StandingMembers *types.StandingMemberSet
+	StandingMembers    *types.StandingMemberSet
+	ConsensusRoundInfo types.ConsensusRound
+	Qns                *types.QnSet
 }
 
 // Copy makes a copy of the State for mutating.
@@ -104,8 +106,10 @@ func (state State) Copy() State {
 
 		AppHash: state.AppHash,
 
-		LastResultsHash: state.LastResultsHash,
-		StandingMembers: state.StandingMembers.Copy(),
+		LastResultsHash:    state.LastResultsHash,
+		StandingMembers:    state.StandingMembers.Copy(),
+		ConsensusRoundInfo: state.ConsensusRoundInfo,
+		Qns:                state.Qns.Copy(),
 	}
 }
 
@@ -161,6 +165,12 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	}
 	sm.StandingMembers = sms
 
+	qns, err := state.Qns.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.Qns = qns
+
 	nVals, err := state.NextValidators.ToProto()
 	if err != nil {
 		return nil, err
@@ -179,7 +189,11 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	sm.ConsensusParams = state.ConsensusParams
 	sm.LastHeightConsensusParamsChanged = state.LastHeightConsensusParamsChanged
 	sm.LastResultsHash = state.LastResultsHash
+	fmt.Println("2stompesi-ToProto-1", state.ConsensusRoundInfo)
+	sm.ConsensusRoundInfo = state.ConsensusRoundInfo.ToProto()
 	sm.AppHash = state.AppHash
+
+	fmt.Println("2stompesi-ToProto", sm)
 
 	return sm, nil
 }
@@ -233,11 +247,20 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	}
 	state.StandingMembers = sms
 
+	qns, err := types.QnSetFromProto(pb.Qns)
+	if err != nil {
+		return nil, err
+	}
+	state.Qns = qns
+
 	state.LastHeightValidatorsChanged = pb.LastHeightValidatorsChanged
 	state.ConsensusParams = pb.ConsensusParams
 	state.LastHeightConsensusParamsChanged = pb.LastHeightConsensusParamsChanged
 	state.LastResultsHash = pb.LastResultsHash
 	state.AppHash = pb.AppHash
+	state.ConsensusRoundInfo = types.ConsensusRoundFromProto(pb.ConsensusRoundInfo)
+
+	fmt.Println("2stompesi-StateFromProto", state)
 
 	return state, nil
 }
@@ -267,8 +290,11 @@ func (state State) MakeBlock(
 		timestamp = MedianTime(commit, state.LastValidators)
 	}
 
-	fmt.Println("stompesi tt1-", state.Validators)
-	fmt.Println("stompesi tt2-", state.StandingMembers)
+	if state.ConsensusRoundInfo.ConsensusStartBlockHeight+state.ConsensusRoundInfo.Peorid < height {
+		state.ConsensusRoundInfo.ConsensusStartBlockHeight = height
+	}
+
+	fmt.Println("2stompesi-skdfjkasjdfkjaskdfj", state)
 	// Fill rest of header with state data.
 	block.Header.Populate(
 		state.Version.Consensus, state.ChainID,
@@ -277,6 +303,8 @@ func (state State) MakeBlock(
 		types.HashConsensusParams(state.ConsensusParams), state.AppHash, state.LastResultsHash,
 		proposerAddress,
 		state.StandingMembers.Hash(),
+		state.ConsensusRoundInfo,
+		state.Qns.Hash(),
 	)
 
 	return block, block.MakePartSet(types.BlockPartSizeBytes)
@@ -354,7 +382,7 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 	}
 
 	var standingMemberSet *types.StandingMemberSet
-	if genDoc.Validators == nil {
+	if genDoc.StandingMembers == nil {
 		standingMemberSet = types.NewStandingMemberSet(nil)
 	} else {
 		standingMembers := make([]*types.StandingMember, len(genDoc.StandingMembers))
@@ -362,6 +390,17 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 			standingMembers[i] = types.NewStandingMember(val.PubKey)
 		}
 		standingMemberSet = types.NewStandingMemberSet(standingMembers)
+	}
+
+	var qnSet *types.QnSet
+	if genDoc.Qns == nil {
+		qnSet = types.NewQnSet(nil)
+	} else {
+		qns := make([]*types.Qn, len(genDoc.Qns))
+		for i, qn := range genDoc.Qns {
+			qns[i] = types.NewQn(qn.PubKey, qn.Value)
+		}
+		qnSet = types.NewQnSet(qns)
 	}
 
 	return State{
@@ -381,7 +420,9 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		ConsensusParams:                  *genDoc.ConsensusParams,
 		LastHeightConsensusParamsChanged: genDoc.InitialHeight,
 
-		StandingMembers: standingMemberSet,
+		StandingMembers:    standingMemberSet,
+		ConsensusRoundInfo: genDoc.ConsensusRoundInfo,
+		Qns:                qnSet,
 
 		AppHash: genDoc.AppHash,
 	}, nil

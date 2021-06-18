@@ -245,6 +245,7 @@ func BlockFromProto(bp *tmproto.Block) (*Block, error) {
 	}
 
 	b := new(Block)
+	fmt.Println("2stompesi-block-1444", bp.Header)
 	h, err := HeaderFromProto(&bp.Header)
 	if err != nil {
 		return nil, err
@@ -352,6 +353,12 @@ type Header struct {
 
 	// 상임위 리스트 해시
 	StandingMembersHash tmbytes.HexBytes `json:"standing_members_hash"`
+
+	// 합의 정보
+	ConsensusRoundInfo ConsensusRound `json:"consensus_round_info"`
+
+	// 양자 난수 해시
+	QnsHash tmbytes.HexBytes `json:"qns_hash"`
 }
 
 // Populate the Header with state-derived data.
@@ -363,6 +370,8 @@ func (h *Header) Populate(
 	consensusHash, appHash, lastResultsHash []byte,
 	proposerAddress Address,
 	standingMembersHash []byte,
+	consensusRoundInfo ConsensusRound,
+	qnsHash []byte,
 ) {
 	h.Version = version
 	h.ChainID = chainID
@@ -376,6 +385,8 @@ func (h *Header) Populate(
 	h.ProposerAddress = proposerAddress
 
 	h.StandingMembersHash = standingMembersHash
+	h.ConsensusRoundInfo = consensusRoundInfo
+	h.QnsHash = qnsHash
 }
 
 // ValidateBasic performs stateless validation on a Header returning an error
@@ -394,6 +405,10 @@ func (h Header) ValidateBasic() error {
 		return errors.New("negative Height")
 	} else if h.Height == 0 {
 		return errors.New("zero Height")
+	}
+
+	if h.Height < h.ConsensusRoundInfo.ConsensusStartBlockHeight {
+		return errors.New("ConsensusStartBlockHeight can not greater than block height")
 	}
 
 	if err := h.LastBlockID.ValidateBasic(); err != nil {
@@ -438,6 +453,14 @@ func (h Header) ValidateBasic() error {
 	if err := ValidateHash(h.StandingMembersHash); err != nil {
 		return fmt.Errorf("wrong StandingMembersHash: %v", err)
 	}
+
+	if err := ValidateHash(h.QnsHash); err != nil {
+		return fmt.Errorf("wrong QnsHash: %v", err)
+	}
+
+	if err := h.ConsensusRoundInfo.ValidateBasic(); err != nil {
+		return fmt.Errorf("wrong ConsensusRoundInfo: %w", err)
+	}
 	return nil
 }
 
@@ -455,6 +478,11 @@ func (h *Header) Hash() tmbytes.HexBytes {
 	if h == nil || len(h.StandingMembersHash) == 0 {
 		return nil
 	}
+
+	if h == nil || len(h.QnsHash) == 0 {
+		return nil
+	}
+
 	hbz, err := h.Version.Marshal()
 	if err != nil {
 		return nil
@@ -470,6 +498,13 @@ func (h *Header) Hash() tmbytes.HexBytes {
 	if err != nil {
 		return nil
 	}
+
+	crbi := h.ConsensusRoundInfo.ToProto()
+	crbz, err := crbi.Marshal()
+	if err != nil {
+		return nil
+	}
+
 	return merkle.HashFromByteSlices([][]byte{
 		hbz,
 		cdcEncode(h.ChainID),
@@ -486,6 +521,9 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		cdcEncode(h.EvidenceHash),
 		cdcEncode(h.ProposerAddress),
 		cdcEncode(h.StandingMembersHash),
+		cdcEncode(h.ConsensusRoundInfo),
+		cdcEncode(h.QnsHash),
+		crbz,
 	})
 }
 
@@ -510,6 +548,8 @@ func (h *Header) StringIndented(indent string) string {
 %s  Evidence:       %v
 %s  Proposer:       %v
 %s  StandingMembers:       %v
+%s  ConsensusRoundInfo:       %v
+%s  Qns:       %v
 %s}#%v`,
 		indent, h.Version,
 		indent, h.ChainID,
@@ -526,6 +566,8 @@ func (h *Header) StringIndented(indent string) string {
 		indent, h.EvidenceHash,
 		indent, h.ProposerAddress,
 		indent, h.StandingMembersHash,
+		indent, h.ConsensusRoundInfo,
+		indent, h.QnsHash,
 		indent, h.Hash())
 }
 
@@ -551,6 +593,8 @@ func (h *Header) ToProto() *tmproto.Header {
 		LastCommitHash:      h.LastCommitHash,
 		ProposerAddress:     h.ProposerAddress,
 		StandingMembersHash: h.StandingMembersHash,
+		ConsensusRoundInfo:  h.ConsensusRoundInfo.ToProto(),
+		QnsHash:             h.QnsHash,
 	}
 }
 
@@ -584,6 +628,8 @@ func HeaderFromProto(ph *tmproto.Header) (Header, error) {
 	h.LastCommitHash = ph.LastCommitHash
 	h.ProposerAddress = ph.ProposerAddress
 	h.StandingMembersHash = ph.StandingMembersHash
+	h.ConsensusRoundInfo = ConsensusRoundFromProto(ph.ConsensusRoundInfo)
+	h.QnsHash = ph.QnsHash
 
 	return *h, h.ValidateBasic()
 }

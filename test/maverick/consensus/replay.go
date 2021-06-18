@@ -320,13 +320,14 @@ func (h *Handshaker) ReplayBlocks(
 		sms := types.TM2PB.StandingMemberUpdates(standingMemberSet)
 
 		req := abci.RequestInitChain{
-			Time:            h.genDoc.GenesisTime,
-			ChainId:         h.genDoc.ChainID,
-			InitialHeight:   h.genDoc.InitialHeight,
-			ConsensusParams: csParams,
-			Validators:      nextVals,
-			StandingMembers: sms,
-			AppStateBytes:   h.genDoc.AppState,
+			Time:               h.genDoc.GenesisTime,
+			ChainId:            h.genDoc.ChainID,
+			InitialHeight:      h.genDoc.InitialHeight,
+			ConsensusParams:    csParams,
+			Validators:         nextVals,
+			StandingMembers:    sms,
+			AppStateBytes:      h.genDoc.AppState,
+			ConsensusRoundInfo: h.genDoc.ConsensusRoundInfo.ToProto(),
 		}
 		res, err := proxyApp.Consensus().InitChainSync(req)
 		if err != nil {
@@ -355,6 +356,8 @@ func (h *Handshaker) ReplayBlocks(
 				return nil, fmt.Errorf("validator set is nil in genesis and still empty after InitChain")
 			}
 
+			state.ConsensusRoundInfo = types.NewConsensusRound(res.ConsensusRoundInfo.ConsensusStartBlockHeight, res.ConsensusRoundInfo.Peorid)
+
 			if len(res.StandingMembers) > 0 {
 				vals, err := types.PB2TM.StandingMemberUpdates(res.StandingMembers)
 				if err != nil {
@@ -362,14 +365,28 @@ func (h *Handshaker) ReplayBlocks(
 				}
 				state.StandingMembers = types.NewStandingMemberSet(vals)
 
-			} else if len(h.genDoc.Validators) == 0 {
+			} else if len(h.genDoc.StandingMembers) == 0 {
 				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
+			}
+
+			if len(res.Qns) > 0 {
+				qns, err := types.PB2TM.QnUpdates(res.Qns)
+				if err != nil {
+					return nil, err
+				}
+				state.Qns = types.NewQnSet(qns)
+
+			} else if len(h.genDoc.Qns) == 0 {
+				return nil, fmt.Errorf("qn set is nil in genesis and still empty after InitChain")
 			}
 
 			if res.ConsensusParams != nil {
 				state.ConsensusParams = types.UpdateConsensusParams(state.ConsensusParams, res.ConsensusParams)
 				state.Version.Consensus.App = state.ConsensusParams.Version.AppVersion
 			}
+
+			state.ConsensusRoundInfo = types.ConsensusRound(res.ConsensusRoundInfo)
+
 			// We update the last results hash with the empty hash, to conform with RFC-6962.
 			state.LastResultsHash = merkle.HashFromByteSlices(nil)
 			if err := h.stateStore.Save(state); err != nil {

@@ -545,12 +545,32 @@ func (c *Client) StandingMembers(
 	v := l.StandingMemberSet.StandingMembers[skipCount : skipCount+tmmath.MinInt(perPage, totalCount-skipCount)]
 
 	return &ctypes.ResultStandingMembers{
+		BlockHeight:     l.Height,
+		StandingMembers: v,
+		Count:           len(v),
+		Total:           totalCount}, nil
+}
+
+func (c *Client) Qns(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultQns, error) {
+
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	totalCount := len(l.QnSet.Qns)
+
+	v := l.QnSet.Qns[:]
+
+	return &ctypes.ResultQns{
 		BlockHeight: l.Height,
-		StandingMembers:  v,
+		Qns:         v,
 		Count:       len(v),
 		Total:       totalCount}, nil
 }
-
 
 func (c *Client) BroadcastEvidence(ctx context.Context, ev types.Evidence) (*ctypes.ResultBroadcastEvidence, error) {
 	return c.next.BroadcastEvidence(ctx, ev)

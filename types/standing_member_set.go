@@ -95,11 +95,11 @@ func (sms *StandingMemberSet) ToProto() (*tmproto.StandingMemberSet, error) {
 
 func (sms *StandingMemberSet) Copy() *StandingMemberSet {
 	return &StandingMemberSet{
-		StandingMembers: standingMemberListCopy(sms.StandingMembers),
+		StandingMembers: standingMemberCopy(sms.StandingMembers),
 	}
 }
 
-func standingMemberListCopy(sms []*StandingMember) []*StandingMember {
+func standingMemberCopy(sms []*StandingMember) []*StandingMember {
 	if sms == nil {
 		return nil
 	}

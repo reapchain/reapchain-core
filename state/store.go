@@ -33,6 +33,10 @@ func calcConsensusParamsKey(height int64) []byte {
 	return []byte(fmt.Sprintf("consensusParamsKey:%v", height))
 }
 
+func calcConsensusRoundKey(height int64) []byte {
+	return []byte(fmt.Sprintf("consensusRoundKey:%v", height))
+}
+
 func calcABCIResponsesKey(height int64) []byte {
 	return []byte(fmt.Sprintf("abciResponsesKey:%v", height))
 }
@@ -70,6 +74,7 @@ type Store interface {
 	PruneStates(int64, int64) error
 
 	LoadStandingMembers(int64) (*types.StandingMemberSet, error)
+	LoadQns(int64) (*types.QnSet, error)
 }
 
 // dbStore wraps a db (github.com/reapchain/tm-db)
@@ -188,6 +193,12 @@ func (store dbStore) save(state State, key []byte) error {
 		return err
 	}
 
+	fmt.Println("2stompesi-asdfdf", state.ConsensusRoundInfo)
+
+	if err := store.saveConsensusRoundInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.ConsensusRoundInfo.ToProto()); err != nil {
+		return err
+	}
+
 	// Save next validators.
 	if err := store.saveValidatorsInfo(nextHeight+1, state.LastHeightValidatorsChanged, state.NextValidators); err != nil {
 		return err
@@ -225,6 +236,10 @@ func (store dbStore) Bootstrap(state State) error {
 	}
 
 	if err := store.saveStandingMembersInfo(height, height, state.StandingMembers); err != nil {
+		return err
+	}
+
+	if err := store.saveConsensusRoundInfo(height, state.LastHeightConsensusParamsChanged, state.ConsensusRoundInfo.ToProto()); err != nil {
 		return err
 	}
 
@@ -356,6 +371,38 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 			}
 		} else {
 			err = batch.Delete(calcStandingMembersKey(h))
+			if err != nil {
+				return err
+			}
+		}
+
+		if keepSms[h] {
+			v, err := loadQnsInfo(store.db, h)
+			if err != nil || v.QnSet == nil {
+				vip, err := store.LoadQns(h)
+				if err != nil {
+					return err
+				}
+
+				pvi, err := vip.ToProto()
+				if err != nil {
+					return err
+				}
+
+				v.QnSet = pvi
+				v.LastHeightChanged = h
+
+				bz, err := v.Marshal()
+				if err != nil {
+					return err
+				}
+				err = batch.Set(calcQnsKey(h), bz)
+				if err != nil {
+					return err
+				}
+			}
+		} else {
+			err = batch.Delete(calcQnsKey(h))
 			if err != nil {
 				return err
 			}
@@ -701,6 +748,27 @@ func (store dbStore) saveConsensusParamsInfo(nextHeight, changeHeight int64, par
 	return nil
 }
 
+func (store dbStore) saveConsensusRoundInfo(nextHeight, changeHeight int64, params tmproto.ConsensusRound) error {
+	paramsInfo := &tmstate.ConsensusRoundInfo{
+		LastHeightChanged: changeHeight,
+	}
+
+	if changeHeight == nextHeight {
+		paramsInfo.ConsensusRoundInfo = &params
+	}
+	bz, err := paramsInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = store.db.Set(calcConsensusRoundKey(nextHeight), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (store dbStore) LoadStandingMembers(height int64) (*types.StandingMemberSet, error) {
 	smInfo, err := loadStandingMembersInfo(store.db, height)
 	if err != nil {
@@ -765,4 +833,70 @@ func loadStandingMembersInfo(db dbm.DB, height int64) (*tmstate.StandingMembersI
 
 func calcStandingMembersKey(height int64) []byte {
 	return []byte(fmt.Sprintf("standingMembersKey:%v", height))
+}
+
+func (store dbStore) LoadQns(height int64) (*types.QnSet, error) {
+	smInfo, err := loadQnsInfo(store.db, height)
+	if err != nil {
+		return nil, ErrNoValSetForHeight{height}
+	}
+	if smInfo.QnSet == nil {
+		lastStoredHeight := lastStoredHeightFor(height, smInfo.LastHeightChanged)
+		smInfo2, err := loadQnsInfo(store.db, lastStoredHeight)
+		if err != nil || smInfo2.QnSet == nil {
+			return nil,
+				fmt.Errorf("couldn't find qns at height %d (height %d was originally requested): %w",
+					lastStoredHeight,
+					height,
+					err,
+				)
+		}
+
+		vs, err := types.QnSetFromProto(smInfo2.QnSet)
+		if err != nil {
+			return nil, err
+		}
+
+		vi2, err := vs.ToProto()
+		if err != nil {
+			return nil, err
+		}
+
+		smInfo2.QnSet = vi2
+		smInfo = smInfo2
+	}
+
+	vip, err := types.QnSetFromProto(smInfo.QnSet)
+	if err != nil {
+		return nil, err
+	}
+
+	return vip, nil
+}
+
+// CONTRACT: Returned QnInfo can be mutated.
+func loadQnsInfo(db dbm.DB, height int64) (*tmstate.QnsInfo, error) {
+	buf, err := db.Get(calcQnsKey(height))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	v := new(tmstate.QnsInfo)
+	err = v.Unmarshal(buf)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadQns: Data has been corrupted or its spec has changed:
+                %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return v, nil
+}
+
+func calcQnsKey(height int64) []byte {
+	return []byte(fmt.Sprintf("qnsKey:%v", height))
 }

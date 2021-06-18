@@ -568,6 +568,23 @@ func (c *baseRPCClient) StandingMembers(
 	return result, nil
 }
 
+func (c *baseRPCClient) Qns(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultQns, error) {
+	result := new(ctypes.ResultQns)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "qns", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *baseRPCClient) BroadcastEvidence(
 	ctx context.Context,
 	ev types.Evidence,

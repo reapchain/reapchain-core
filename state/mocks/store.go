@@ -3,8 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
 	state "github.com/reapchain/reapchain/state"
+	mock "github.com/stretchr/testify/mock"
 
 	reapchainstate "github.com/reapchain/reapchain/proto/reapchain/state"
 
@@ -204,7 +204,6 @@ func (_m *Store) SaveABCIResponses(_a0 int64, _a1 *reapchainstate.ABCIResponses)
 	return r0
 }
 
-
 // LoadStandingMembers provides a mock function with given fields: _a0
 func (_m *Store) LoadStandingMembers(_a0 int64) (*reapchaintypes.StandingMemberSet, error) {
 	ret := _m.Called(_a0)
@@ -215,6 +214,28 @@ func (_m *Store) LoadStandingMembers(_a0 int64) (*reapchaintypes.StandingMemberS
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*reapchaintypes.StandingMemberSet)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+func (_m *Store) LoadQns(_a0 int64) (*reapchaintypes.QnSet, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *reapchaintypes.QnSet
+	if rf, ok := ret.Get(0).(func(int64) *reapchaintypes.QnSet); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*reapchaintypes.QnSet)
 		}
 	}
 

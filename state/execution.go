@@ -96,6 +96,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	state State, commit *types.Commit,
 	proposerAddr []byte,
 ) (*types.Block, *types.PartSet) {
+	fmt.Println("2stompesi-지금테스트")
 
 	maxBytes := state.ConsensusParams.Block.MaxBytes
 	maxGas := state.ConsensusParams.Block.MaxGas
@@ -503,6 +504,7 @@ func updateState(
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
 		StandingMembers:                  state.StandingMembers.Copy(),
+		ConsensusRoundInfo:               state.ConsensusRoundInfo,
 	}, nil
 }
 

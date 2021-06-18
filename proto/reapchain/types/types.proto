@@ -9,6 +9,7 @@ import "reapchain/crypto/proof.proto";
 import "reapchain/version/types.proto";
 import "reapchain/types/validator.proto";
 import "reapchain/types/standing_member.proto";
+import "reapchain/types/consensus_round.proto";
 
 // BlockIdFlag indicates which BlcokID the signature is for
 enum BlockIDFlag {
@@ -82,6 +83,8 @@ message Header {
   bytes proposer_address = 14;  // original proposer of the block
   
   bytes standing_members_hash = 15;
+  types.ConsensusRound consensus_round_info = 16 [(gogoproto.nullable) = false];
+  bytes qns_hash = 17;
 }
 
 // Data contains the set of transactions included in the block

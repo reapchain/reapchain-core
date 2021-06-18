@@ -312,24 +312,32 @@ func (h *Handshaker) ReplayBlocks(
 		for i, val := range h.genDoc.StandingMembers {
 			standingMembers[i] = types.NewStandingMember(val.PubKey)
 		}
+		standingMemberSet := types.NewStandingMemberSet(standingMembers)
+		sms := types.TM2PB.StandingMemberUpdates(standingMemberSet)
+
+		qns := make([]*types.Qn, len(h.genDoc.Qns))
+		for i, val := range h.genDoc.Qns {
+			qns[i] = types.NewQn(val.PubKey, val.Value)
+		}
+		qnSet := types.NewQnSet(qns)
+		qnz := types.TM2PB.QnUpdates(qnSet)
 
 		validatorSet := types.NewValidatorSet(validators)
-		standingMemberSet := types.NewStandingMemberSet(standingMembers)
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
 		csParams := types.TM2PB.ConsensusParams(h.genDoc.ConsensusParams)
-
-		sms := types.TM2PB.StandingMemberUpdates(standingMemberSet)
 
 		fmt.Println("stompesi-start-asdfasdf", len(sms))
 
 		req := abci.RequestInitChain{
-			Time:            h.genDoc.GenesisTime,
-			ChainId:         h.genDoc.ChainID,
-			InitialHeight:   h.genDoc.InitialHeight,
-			ConsensusParams: csParams,
-			Validators:      nextVals,
-			StandingMembers: sms,
-			AppStateBytes:   h.genDoc.AppState,
+			Time:               h.genDoc.GenesisTime,
+			ChainId:            h.genDoc.ChainID,
+			InitialHeight:      h.genDoc.InitialHeight,
+			ConsensusParams:    csParams,
+			Validators:         nextVals,
+			StandingMembers:    sms,
+			Qns:                qnz,
+			AppStateBytes:      h.genDoc.AppState,
+			ConsensusRoundInfo: h.genDoc.ConsensusRoundInfo.ToProto(),
 		}
 		res, err := proxyApp.Consensus().InitChainSync(req)
 
@@ -360,6 +368,8 @@ func (h *Handshaker) ReplayBlocks(
 				return nil, fmt.Errorf("validator set is nil in genesis and still empty after InitChain")
 			}
 
+			state.ConsensusRoundInfo = types.NewConsensusRound(res.ConsensusRoundInfo.ConsensusStartBlockHeight, res.ConsensusRoundInfo.Peorid)
+
 			if len(res.StandingMembers) > 0 {
 				vals, err := types.PB2TM.StandingMemberUpdates(res.StandingMembers)
 				if err != nil {
@@ -370,12 +380,24 @@ func (h *Handshaker) ReplayBlocks(
 				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
 			}
 
+			if len(res.Qns) > 0 {
+				qns, err := types.PB2TM.QnUpdates(res.Qns)
+				if err != nil {
+					return nil, err
+				}
+				state.Qns = types.NewQnSet(qns)
+			} else if len(h.genDoc.Qns) == 0 {
+				return nil, fmt.Errorf("qn set is nil in genesis and still empty after InitChain")
+			}
+
 			if res.ConsensusParams != nil {
 				state.ConsensusParams = types.UpdateConsensusParams(state.ConsensusParams, res.ConsensusParams)
 				state.Version.Consensus.App = state.ConsensusParams.Version.AppVersion
 			}
+
 			// We update the last results hash with the empty hash, to conform with RFC-6962.
 			state.LastResultsHash = merkle.HashFromByteSlices(nil)
+			fmt.Println("stompesi-Save-1")
 			if err := h.stateStore.Save(state); err != nil {
 				return nil, err
 			}

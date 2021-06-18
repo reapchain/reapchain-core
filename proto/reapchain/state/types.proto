@@ -8,6 +8,8 @@ import "reapchain/abci/types.proto";
 import "reapchain/types/types.proto";
 import "reapchain/types/validator.proto";
 import "reapchain/types/standing_member.proto";
+import "reapchain/types/qn.proto";
+import "reapchain/types/consensus_round.proto";
 import "reapchain/types/params.proto";
 import "reapchain/version/types.proto";
 import "google/protobuf/timestamp.proto";
@@ -30,6 +32,17 @@ message ValidatorsInfo {
 // StandingMembersInfo represents the latest standing member set, or the last height it changed
 message StandingMembersInfo {
   reapchain.types.StandingMemberSet standing_member_set       = 1;
+  int64                         last_height_changed = 2;
+}
+
+// QnsInfo represents the latest standing member set, or the last height it changed
+message QnsInfo {
+  reapchain.types.QnSet qn_set       = 1;
+  int64                         last_height_changed = 2;
+}
+
+message ConsensusRoundInfo {
+  reapchain.types.ConsensusRound consensus_round_info       = 1;
   int64                         last_height_changed = 2;
 }
 
@@ -80,5 +93,8 @@ message State {
 
   // the latest AppHash we've received from calling abci.Commit()
   bytes app_hash = 13;
+
+  reapchain.types.ConsensusRound consensus_round_info                     = 16 [(gogoproto.nullable) = false];
+  reapchain.types.QnSet qns          = 17;
 }
 

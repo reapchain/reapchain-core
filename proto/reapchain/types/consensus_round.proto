@@ -1,0 +1,10 @@
+syntax = "proto3";
+package reapchain.types;
+
+option go_package = "github.com/reapchain/reapchain/proto/reapchain/types";
+
+// ConsensusRound
+message ConsensusRound {
+  int64 consensus_start_block_height = 1;
+  int64 peorid = 2;
+}

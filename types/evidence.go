@@ -288,7 +288,8 @@ func (l *LightClientAttackEvidence) ConflictingHeaderIsInvalid(trustedHeader *He
 		!bytes.Equal(trustedHeader.ConsensusHash, l.ConflictingBlock.ConsensusHash) ||
 		!bytes.Equal(trustedHeader.AppHash, l.ConflictingBlock.AppHash) ||
 		!bytes.Equal(trustedHeader.LastResultsHash, l.ConflictingBlock.LastResultsHash) ||
-		!bytes.Equal(trustedHeader.StandingMembersHash, l.ConflictingBlock.StandingMembersHash)
+		!bytes.Equal(trustedHeader.StandingMembersHash, l.ConflictingBlock.StandingMembersHash) ||
+		!bytes.Equal(trustedHeader.QnsHash, l.ConflictingBlock.QnsHash)
 
 }
 

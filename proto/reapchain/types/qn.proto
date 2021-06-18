@@ -1,0 +1,22 @@
+syntax = "proto3";
+package reapchain.types;
+
+option go_package = "github.com/reapchain/reapchain/proto/reapchain/types";
+
+import "gogoproto/gogo.proto";
+import "reapchain/crypto/keys.proto";
+
+message QnSet {
+  repeated Qn qns         = 1;
+}
+
+message Qn {
+  bytes                       address           = 1;
+  reapchain.crypto.PublicKey pub_key           = 2 [(gogoproto.nullable) = false];
+  uint64 value = 3;
+}
+
+message SimpleQn {
+  reapchain.crypto.PublicKey pub_key      = 1;
+  uint64 value = 2;
+}

@@ -53,7 +53,7 @@ type GenesisDoc struct {
 
 	StandingMembers    []GenesisStandingMember `json:"standing_members,omitempty"`
 	Qns                []Qn                    `json:"qns,omitempty"`
-	ConsensusRoundInfo ConsensusRound          `json:"consensus_round_info,omitempty"`
+	ConsensusRoundInfo ConsensusRound          `json:"consensus_round_info"`
 }
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.
@@ -126,17 +126,6 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 		if len(s.Address) == 0 {
 			genDoc.StandingMembers[i].Address = s.PubKey.Address()
 		}
-	}
-
-	// 합의 라운드 검증
-	if genDoc.ConsensusRoundInfo.ConsensusStartBlockHeight < 0 {
-		return fmt.Errorf("consensus_start_block_height cannot be negative (got %v)", genDoc.ConsensusRoundInfo.ConsensusStartBlockHeight)
-	}
-	if genDoc.ConsensusRoundInfo.ConsensusStartBlockHeight == 0 {
-		genDoc.ConsensusRoundInfo.ConsensusStartBlockHeight = 1
-	}
-	if genDoc.ConsensusRoundInfo.Peorid < 0 {
-		return fmt.Errorf("consensus peorid cannot be negative (got %v)", genDoc.ConsensusRoundInfo.Peorid)
 	}
 
 	if genDoc.GenesisTime.IsZero() {

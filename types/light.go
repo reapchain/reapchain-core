@@ -14,6 +14,7 @@ type LightBlock struct {
 	*SignedHeader     `json:"signed_header"`
 	ValidatorSet      *ValidatorSet      `json:"validator_set"`
 	StandingMemberSet *StandingMemberSet `json:"standing_member_set"`
+	QnSet             *QnSet             `json:"qn_set"`
 }
 
 // ValidateBasic checks that the data is correct and consistent
@@ -54,6 +55,13 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 	if standingMemberSetHash := lb.StandingMemberSet.Hash(); !bytes.Equal(lb.SignedHeader.StandingMembersHash, standingMemberSetHash) {
 		return fmt.Errorf("expected standing member hash of header to match standing member set hash (%X != %X)",
 			lb.SignedHeader.StandingMembersHash, standingMemberSetHash,
+		)
+	}
+
+	// 양자 난수 해시 검증
+	if qnsHash := lb.QnSet.Hash(); !bytes.Equal(lb.SignedHeader.QnsHash, qnsHash) {
+		return fmt.Errorf("expected standing member hash of header to match standing member set hash (%X != %X)",
+			lb.SignedHeader.QnsHash, qnsHash,
 		)
 	}
 

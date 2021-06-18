@@ -54,6 +54,8 @@ func (tm2pb) Header(header *Header) tmproto.Header {
 		ProposerAddress: header.ProposerAddress,
 
 		StandingMembersHash: header.StandingMembersHash,
+		ConsensusRoundInfo:  header.ConsensusRoundInfo.ToProto(),
+		QnsHash:             header.QnsHash,
 	}
 }
 
@@ -123,6 +125,25 @@ func (tm2pb) StandingMemberUpdates(sms *StandingMemberSet) []abci.StandingMember
 	return standingMembers
 }
 
+func (tm2pb) QnUpdate(val *Qn) abci.QnUpdate {
+	pk, err := cryptoenc.PubKeyToProto(val.PubKey)
+	if err != nil {
+		panic(err)
+	}
+	return abci.QnUpdate{
+		PubKey: pk,
+		Value:  val.Value,
+	}
+}
+
+func (tm2pb) QnUpdates(sms *QnSet) []abci.QnUpdate {
+	standingMembers := make([]abci.QnUpdate, sms.Size())
+	for i, sm := range sms.Qns {
+		standingMembers[i] = TM2PB.QnUpdate(sm)
+	}
+	return standingMembers
+}
+
 func (tm2pb) ConsensusParams(params *tmproto.ConsensusParams) *abci.ConsensusParams {
 	return &abci.ConsensusParams{
 		Block: &abci.BlockParams{
@@ -174,6 +195,18 @@ func (pb2tm) StandingMemberUpdates(sms []abci.StandingMemberUpdate) ([]*Standing
 			return nil, err
 		}
 		smz[i] = NewStandingMember(pub)
+	}
+	return smz, nil
+}
+
+func (pb2tm) QnUpdates(sms []abci.QnUpdate) ([]*Qn, error) {
+	smz := make([]*Qn, len(sms))
+	for i, v := range sms {
+		pub, err := cryptoenc.PubKeyFromProto(v.PubKey)
+		if err != nil {
+			return nil, err
+		}
+		smz[i] = NewQn(pub, v.Value)
 	}
 	return smz, nil
 }

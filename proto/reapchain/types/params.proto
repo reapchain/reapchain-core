@@ -71,6 +71,13 @@ message StandingMemberParams {
   repeated string pub_key_types = 1;
 }
 
+message QnParams {
+  option (gogoproto.populate) = true;
+  option (gogoproto.equal)    = true;
+
+  repeated string pub_key_types = 1;
+}
+
 // VersionParams contains the ABCI application version.
 message VersionParams {
   option (gogoproto.populate) = true;
