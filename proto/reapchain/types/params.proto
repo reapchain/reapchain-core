@@ -16,6 +16,7 @@ message ConsensusParams {
   ValidatorParams validator = 3 [(gogoproto.nullable) = false];
   VersionParams   version   = 4 [(gogoproto.nullable) = false];
   StandingMemberParams standing_member = 5 [(gogoproto.nullable) = false];
+  QnParams qn = 6 [(gogoproto.nullable) = false];
 }
 
 // BlockParams contains limits on the block size.
@@ -76,6 +77,7 @@ message QnParams {
   option (gogoproto.equal)    = true;
 
   repeated string pub_key_types = 1;
+  repeated uint64 value = 2;
 }
 
 // VersionParams contains the ABCI application version.

@@ -265,7 +265,7 @@ func (h *Handshaker) Handshake(proxyApp proxy.AppConns) error {
 	}
 
 	// Replay blocks up to the latest in the blockstore.
-	fmt.Println("stompesi-start-99")
+	//fmt.Println("stompesi-start-99")
 
 	_, err = h.ReplayBlocks(h.initialState, appHash, blockHeight, proxyApp)
 	if err != nil {
@@ -326,7 +326,7 @@ func (h *Handshaker) ReplayBlocks(
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
 		csParams := types.TM2PB.ConsensusParams(h.genDoc.ConsensusParams)
 
-		fmt.Println("stompesi-start-asdfasdf", len(sms))
+		//fmt.Println("stompesi-start-asdfasdf", len(sms))
 
 		req := abci.RequestInitChain{
 			Time:               h.genDoc.GenesisTime,
@@ -341,7 +341,7 @@ func (h *Handshaker) ReplayBlocks(
 		}
 		res, err := proxyApp.Consensus().InitChainSync(req)
 
-		fmt.Println("stompesi-start-end-InitChainSync", len(res.Validators), len(res.StandingMembers))
+		//fmt.Println("stompesi-start-end-InitChainSync", len(res.Validators), len(res.StandingMembers))
 		if err != nil {
 			return nil, err
 		}
@@ -397,7 +397,7 @@ func (h *Handshaker) ReplayBlocks(
 
 			// We update the last results hash with the empty hash, to conform with RFC-6962.
 			state.LastResultsHash = merkle.HashFromByteSlices(nil)
-			fmt.Println("stompesi-Save-1")
+			//fmt.Println("stompesi-Save-1")
 			if err := h.stateStore.Save(state); err != nil {
 				return nil, err
 			}

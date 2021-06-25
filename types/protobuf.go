@@ -72,6 +72,12 @@ func (tm2pb) StandingMember(val *StandingMember) abci.StandingMember {
 	}
 }
 
+func (tm2pb) Qn(val *Qn) abci.Qn {
+	return abci.Qn{
+		Address: val.PubKey.Address(),
+	}
+}
+
 func (tm2pb) BlockID(blockID BlockID) tmproto.BlockID {
 	return tmproto.BlockID{
 		Hash:          blockID.Hash,

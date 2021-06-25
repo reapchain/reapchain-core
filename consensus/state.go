@@ -178,10 +178,10 @@ func NewState(
 
 	// We have no votes, so reconstruct LastCommit from SeenCommit.
 	if state.LastBlockHeight > 0 {
-		fmt.Println("stompesi-으어")
 		cs.reconstructLastCommit(state)
 	}
 
+	//fmt.Println("stompesi-으어", state.Qns)
 	cs.updateToState(state)
 
 	// NOTE: we do not call scheduleRound0 yet, we do that upon Start()
@@ -481,7 +481,7 @@ func (cs *State) AddVote(vote *types.Vote, peerID p2p.ID) (added bool, err error
 
 // SetProposal inputs a proposal.
 func (cs *State) SetProposal(proposal *types.Proposal, peerID p2p.ID) error {
-	fmt.Println("2stompesi-,jkjjkkjkasdf")
+	//fmt.Println("2stompesi-,jkjjkkjkasdf")
 	if peerID == "" {
 		cs.internalMsgQueue <- msgInfo{&ProposalMessage{proposal}, ""}
 	} else {
@@ -494,7 +494,7 @@ func (cs *State) SetProposal(proposal *types.Proposal, peerID p2p.ID) error {
 
 // AddProposalBlockPart inputs a part of the proposal block.
 func (cs *State) AddProposalBlockPart(height int64, round int32, part *types.Part, peerID p2p.ID) error {
-	fmt.Println("2stompesi-AddProposalBlockPart")
+	//fmt.Println("2stompesi-AddProposalBlockPart")
 	if peerID == "" {
 		cs.internalMsgQueue <- msgInfo{&BlockPartMessage{height, round, part}, ""}
 	} else {
@@ -588,6 +588,8 @@ func (cs *State) reconstructLastCommit(state sm.State) {
 // Updates State and increments height to match that of state.
 // The round becomes 0 and cs.Step becomes cstypes.RoundStepNewHeight.
 func (cs *State) updateToState(state sm.State) {
+	//fmt.Println("stompesi-jjjjjjkkkk", state.Qns)
+
 	if cs.CommitRound > -1 && 0 < cs.Height && cs.Height != state.LastBlockHeight {
 		panic(fmt.Sprintf(
 			"updateToState() expected state height of %v but found %v",
@@ -629,7 +631,7 @@ func (cs *State) updateToState(state sm.State) {
 
 	// Reset fields based on state.
 	validators := state.Validators
-	fmt.Println("stompesi-last", state.StandingMembers)
+	//fmt.Println("stompesi-last", state.StandingMembers)
 
 	switch {
 	case state.LastBlockHeight == 0: // Very first commit should be empty.
@@ -691,7 +693,7 @@ func (cs *State) updateToState(state sm.State) {
 	cs.StandingMembers = state.StandingMembers
 	cs.Qns = state.Qns
 
-	fmt.Println("stompesi-last", state)
+	fmt.Println("3stompesi-updateToState", state)
 	cs.state = state
 
 	// Finally, broadcast RoundState
@@ -831,12 +833,12 @@ func (cs *State) handleMsg(mi msgInfo) {
 	case *ProposalMessage:
 		// will not cause transition.
 		// once proposal is set, we can receive block parts
-		fmt.Println("2stompesi-block-1")
+		//fmt.Println("2stompesi-block-1")
 		err = cs.setProposal(msg.Proposal)
 
 	case *BlockPartMessage:
 		// if the proposal is complete, we'll enterPrevote or tryFinalizeCommit
-		fmt.Println("2stompesi-block-2")
+		//fmt.Println("2stompesi-block-2")
 		added, err = cs.addProposalBlockPart(msg, peerID)
 		if added {
 			cs.statsMsgQueue <- mi
@@ -855,7 +857,7 @@ func (cs *State) handleMsg(mi msgInfo) {
 	case *VoteMessage:
 		// attempt to add the vote and dupeout the validator if its a duplicate signature
 		// if the vote gives us a 2/3-any or 2/3-one, we transition
-		fmt.Println("2stompesi-block-3")
+		//fmt.Println("2stompesi-block-3")
 		added, err = cs.tryAddVote(msg.Vote, peerID)
 		if added {
 			cs.statsMsgQueue <- mi
@@ -1154,7 +1156,7 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 		proposal.Signature = p.Signature
 
 		// send proposal and block parts on internal msg queue
-		fmt.Println("stompesi-start-defaultDecideProposal")
+		//fmt.Println("stompesi-start-defaultDecideProposal")
 		cs.sendInternalMessage(msgInfo{&ProposalMessage{proposal}, ""})
 
 		for i := 0; i < int(blockParts.Total()); i++ {
@@ -1220,7 +1222,7 @@ func (cs *State) createProposalBlock() (block *types.Block, blockParts *types.Pa
 	}
 
 	proposerAddr := cs.privValidatorPubKey.Address()
-
+	fmt.Println("3stompesi-createProposalBlock", cs.state)
 	return cs.blockExec.CreateProposalBlock(cs.Height, cs.state, commit, proposerAddr)
 }
 
@@ -1645,6 +1647,7 @@ func (cs *State) finalizeCommit(height int64) {
 	fail.Fail() // XXX
 
 	// Create a copy of the state for staging and an event cache for txs.
+	//fmt.Println("stompesi-jjjjjjkkkk2", cs.state.Qns)
 	stateCopy := cs.state.Copy()
 
 	// Execute and commit the block, update and save the state, and update the mempool.
@@ -1654,7 +1657,7 @@ func (cs *State) finalizeCommit(height int64) {
 		retainHeight int64
 	)
 
-	fmt.Println("stompesi-start-종빈", len(stateCopy.StandingMembers.StandingMembers))
+	//fmt.Println("stompesi-start-종빈", len(stateCopy.StandingMembers.StandingMembers))
 
 	stateCopy, retainHeight, err = cs.blockExec.ApplyBlock(
 		stateCopy,
@@ -1669,7 +1672,7 @@ func (cs *State) finalizeCommit(height int64) {
 		return
 	}
 
-	fmt.Println("stompesi-start-종빈-3")
+	//fmt.Println("stompesi-start-종빈-3")
 	fail.Fail() // XXX
 
 	// Prune old heights, if requested by ABCI app.
@@ -1681,12 +1684,12 @@ func (cs *State) finalizeCommit(height int64) {
 			logger.Debug("pruned blocks", "pruned", pruned, "retain_height", retainHeight)
 		}
 	}
-	fmt.Println("stompesi-start-종빈-4")
+	//fmt.Println("stompesi-start-종빈-4")
 
 	// must be called before we update state
 	cs.recordMetrics(height, block)
 
-	fmt.Println("stompesi-start-종빈-2", stateCopy.StandingMembers)
+	//fmt.Println("stompesi-start-종빈-2", stateCopy.Qns)
 
 	// NewHeightStep!
 	cs.updateToState(stateCopy)
@@ -1725,7 +1728,7 @@ func (cs *State) pruneBlocks(retainHeight int64) (uint64, error) {
 }
 
 func (cs *State) recordMetrics(height int64, block *types.Block) {
-	fmt.Println("stompesi-start-recordMetrics")
+	//fmt.Println("stompesi-start-recordMetrics")
 
 	cs.metrics.Validators.Set(float64(cs.Validators.Size()))
 	cs.metrics.ValidatorsPower.Set(float64(cs.Validators.TotalVotingPower()))
@@ -1733,7 +1736,7 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 	cs.metrics.StandingMembers.Set(float64(cs.StandingMembers.Size()))
 	cs.metrics.Qns.Set(float64(cs.Qns.Size()))
 
-	fmt.Println("stompesi-start-recordMetrics-1")
+	//fmt.Println("stompesi-start-recordMetrics-1")
 	var (
 		missingValidators      int
 		missingValidatorsPower int64
@@ -1741,9 +1744,9 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 	// height=0 -> MissingValidators and MissingValidatorsPower are both 0.
 	// Remember that the first LastCommit is intentionally empty, so it's not
 	// fair to increment missing validators number.
-	fmt.Println("stompesi-start-recordMetrics-2")
+	//fmt.Println("stompesi-start-recordMetrics-2")
 	if height > cs.state.InitialHeight {
-		fmt.Println("stompesi-start-recordMetrics-3")
+		//fmt.Println("stompesi-start-recordMetrics-3")
 		// Sanity check that commit size matches validator set size - only applies
 		// after first block.
 		var (
@@ -1765,7 +1768,7 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 			}
 		}
 
-		fmt.Println("stompesi-start-recordMetrics-4")
+		//fmt.Println("stompesi-start-recordMetrics-4")
 		for i, val := range cs.LastValidators.Validators {
 			commitSig := block.LastCommit.Signatures[i]
 			if commitSig.Absent() {
@@ -1815,12 +1818,12 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 		}
 	}
 
-	fmt.Println("stompesi-start-recordMetrics-5")
+	//fmt.Println("stompesi-start-recordMetrics-5")
 	cs.metrics.NumTxs.Set(float64(len(block.Data.Txs)))
 	cs.metrics.TotalTxs.Add(float64(len(block.Data.Txs)))
 	cs.metrics.BlockSizeBytes.Set(float64(block.Size()))
 	cs.metrics.CommittedHeight.Set(float64(block.Height))
-	fmt.Println("stompesi-start-recordMetrics-6")
+	//fmt.Println("stompesi-start-recordMetrics-6")
 }
 
 //-----------------------------------------------------------------------------
@@ -1890,7 +1893,7 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 		return false, nil
 	}
 
-	fmt.Println("2stompesi-block-tt", part)
+	//fmt.Println("2stompesi-block-tt", part)
 	added, err = cs.ProposalBlockParts.AddPart(part)
 	if err != nil {
 		return added, err
@@ -1908,15 +1911,15 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 		}
 
 		var pbb = new(tmproto.Block)
-		fmt.Println("2stompesi-block-tt", pbb.Header.Height)
+		//fmt.Println("2stompesi-block-tt", pbb.Header.Height)
 		err = proto.Unmarshal(bz, pbb)
 		if err != nil {
 			return added, err
 		}
-		fmt.Println("2stompesi-block-1", pbb)
+		//fmt.Println("2stompesi-block-1", pbb)
 
 		block, err := types.BlockFromProto(pbb)
-		fmt.Println("2stompesi-block-2", block)
+		//fmt.Println("2stompesi-block-2", block)
 
 		if err != nil {
 			return added, err

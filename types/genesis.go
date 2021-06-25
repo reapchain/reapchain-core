@@ -84,6 +84,15 @@ func (genDoc *GenesisDoc) StandingMemberHash() []byte {
 	return smSet.Hash()
 }
 
+func (genDoc *GenesisDoc) QnHash() []byte {
+	qns := make([]*Qn, len(genDoc.Qns))
+	for i, v := range genDoc.Qns {
+		qns[i] = NewQn(v.PubKey, v.Value)
+	}
+	qnSet := NewQnSet(qns)
+	return qnSet.Hash()
+}
+
 // ValidateAndComplete checks that all necessary fields are present
 // and fills in defaults for optional fields left empty
 func (genDoc *GenesisDoc) ValidateAndComplete() error {
@@ -125,6 +134,15 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 		}
 		if len(s.Address) == 0 {
 			genDoc.StandingMembers[i].Address = s.PubKey.Address()
+		}
+	}
+
+	for i, qn := range genDoc.Qns {
+		if len(qn.Address) > 0 && !bytes.Equal(qn.PubKey.Address(), qn.Address) {
+			return fmt.Errorf("incorrect address for stending member %v in the genesis file, should be %v", qn, qn.PubKey.Address())
+		}
+		if len(qn.Address) == 0 {
+			genDoc.Qns[i].Address = qn.PubKey.Address()
 		}
 	}
 

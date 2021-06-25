@@ -241,7 +241,7 @@ message ResponseEndBlock {
       [(gogoproto.nullable) = false, (gogoproto.jsontag) = "events,omitempty"];
   repeated StandingMemberUpdate standing_member_updates = 4
       [(gogoproto.nullable) = false];
-  repeated QNUpdate qn_updates = 5
+  repeated QnUpdate qn_updates = 5
       [(gogoproto.nullable) = false];
 }
 

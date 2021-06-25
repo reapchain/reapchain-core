@@ -32,6 +32,10 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 		return errors.New("missing standing member set")
 	}
 
+	if lb.QnSet == nil {
+		return errors.New("missing standing member set")
+	}
+
 	if err := lb.SignedHeader.ValidateBasic(chainID); err != nil {
 		return fmt.Errorf("invalid signed header: %w", err)
 	}
@@ -41,6 +45,10 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 
 	// 상임위 집합 검증
 	if err := lb.StandingMemberSet.ValidateBasic(); err != nil {
+		return fmt.Errorf("invalid standing member set: %w", err)
+	}
+
+	if err := lb.QnSet.ValidateBasic(); err != nil {
 		return fmt.Errorf("invalid standing member set: %w", err)
 	}
 
@@ -139,6 +147,14 @@ func LightBlockFromProto(pb *tmproto.LightBlock) (*LightBlock, error) {
 			return nil, err
 		}
 		lb.StandingMemberSet = sms
+	}
+
+	if pb.QnSet != nil {
+		qns, err := QnSetFromProto(pb.QnSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.QnSet = qns
 	}
 
 	return lb, nil

@@ -165,10 +165,13 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	}
 	sm.StandingMembers = sms
 
+	//fmt.Println("2stompesi-ToProto", state.Qns)
+
 	qns, err := state.Qns.ToProto()
 	if err != nil {
 		return nil, err
 	}
+	//fmt.Println("2stompesi-ToProto1", qns)
 	sm.Qns = qns
 
 	nVals, err := state.NextValidators.ToProto()
@@ -189,18 +192,17 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	sm.ConsensusParams = state.ConsensusParams
 	sm.LastHeightConsensusParamsChanged = state.LastHeightConsensusParamsChanged
 	sm.LastResultsHash = state.LastResultsHash
-	fmt.Println("2stompesi-ToProto-1", state.ConsensusRoundInfo)
+
 	sm.ConsensusRoundInfo = state.ConsensusRoundInfo.ToProto()
 	sm.AppHash = state.AppHash
 
-	fmt.Println("2stompesi-ToProto", sm)
-
+	//fmt.Println("2stompesi-ToProto-askdjfkjdsf", sm)
 	return sm, nil
 }
 
 // StateFromProto takes a state proto message & returns the local state type
 func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
-	fmt.Println("stompesi-start-54564164")
+	//fmt.Println("stompesi-start-54564164")
 	if pb == nil {
 		return nil, errors.New("nil State")
 	}
@@ -260,7 +262,7 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.AppHash = pb.AppHash
 	state.ConsensusRoundInfo = types.ConsensusRoundFromProto(pb.ConsensusRoundInfo)
 
-	fmt.Println("2stompesi-StateFromProto", state)
+	//fmt.Println("2stompesi-StateFromProto", state)
 
 	return state, nil
 }
@@ -294,7 +296,7 @@ func (state State) MakeBlock(
 		state.ConsensusRoundInfo.ConsensusStartBlockHeight = height
 	}
 
-	fmt.Println("2stompesi-skdfjkasjdfkjaskdfj", state)
+	//fmt.Println("2stompesi-skdfjkasjdfkjaskdfj", state)
 	// Fill rest of header with state data.
 	block.Header.Populate(
 		state.Version.Consensus, state.ChainID,

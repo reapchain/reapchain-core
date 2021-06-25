@@ -3,6 +3,7 @@ package types
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/reapchain/reapchain/crypto"
 	ce "github.com/reapchain/reapchain/crypto/encoding"
@@ -59,4 +60,13 @@ func (qn *Qn) Bytes() []byte {
 		panic(err)
 	}
 	return bz
+}
+
+func QnListString(qns []*Qn) string {
+	chunks := make([]string, len(qns))
+	for i, qn := range qns {
+		chunks[i] = fmt.Sprintf("%s:%d", qn.Address, qn.Value)
+	}
+
+	return strings.Join(chunks, ",")
 }

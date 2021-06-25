@@ -245,7 +245,7 @@ func BlockFromProto(bp *tmproto.Block) (*Block, error) {
 	}
 
 	b := new(Block)
-	fmt.Println("2stompesi-block-1444", bp.Header)
+	//fmt.Println("2stompesi-block-1444", bp.Header)
 	h, err := HeaderFromProto(&bp.Header)
 	if err != nil {
 		return nil, err
@@ -458,6 +458,10 @@ func (h Header) ValidateBasic() error {
 		return fmt.Errorf("wrong QnsHash: %v", err)
 	}
 
+	if err := ValidateHash(h.QnsHash); err != nil {
+		return fmt.Errorf("wrong QnsHash: %v", err)
+	}
+
 	if err := h.ConsensusRoundInfo.ValidateBasic(); err != nil {
 		return fmt.Errorf("wrong ConsensusRoundInfo: %w", err)
 	}
@@ -476,6 +480,10 @@ func (h *Header) Hash() tmbytes.HexBytes {
 	}
 
 	if h == nil || len(h.StandingMembersHash) == 0 {
+		return nil
+	}
+
+	if h == nil || len(h.QnsHash) == 0 {
 		return nil
 	}
 

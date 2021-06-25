@@ -53,7 +53,7 @@ func WALGenerateNBlocks(t *testing.T, wr io.Writer, numBlocks int) (err error) {
 		return fmt.Errorf("failed to make genesis state: %w", err)
 	}
 	state.Version.Consensus.App = kvstore.ProtocolVersion
-	fmt.Println("stompesi-start-dfdfdfdfdf55454")
+	//fmt.Println("stompesi-start-dfdfdfdfdf55454")
 	if err = stateStore.Save(state); err != nil {
 		t.Error(err)
 	}

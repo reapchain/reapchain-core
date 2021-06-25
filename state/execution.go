@@ -96,7 +96,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	state State, commit *types.Commit,
 	proposerAddr []byte,
 ) (*types.Block, *types.PartSet) {
-	fmt.Println("2stompesi-지금테스트")
+	//fmt.Println("2stompesi-지금테스트")
 
 	maxBytes := state.ConsensusParams.Block.MaxBytes
 	maxGas := state.ConsensusParams.Block.MaxGas
@@ -171,11 +171,10 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		blockExec.logger.Debug("updates to validators", "updates", types.ValidatorListString(validatorUpdates))
 	}
 
-	//stompesi: 여기서부터 할것
 	abciStandingMemberUpdates := abciResponses.EndBlock.StandingMemberUpdates
 	err = validateStandingMemberUpdates(abciStandingMemberUpdates, state.ConsensusParams.StandingMember)
 	if err != nil {
-		return state, 0, fmt.Errorf("error in validator updates: %v", err)
+		return state, 0, fmt.Errorf("error in standing member updates: %v", err)
 	}
 
 	standingMemberUpdates, err := types.PB2TM.StandingMemberUpdates(abciStandingMemberUpdates)
@@ -185,10 +184,26 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	if len(standingMemberUpdates) > 0 {
 		blockExec.logger.Debug("updates to standing members", "updates", types.StandingMemberListString(standingMemberUpdates))
 	}
+
+	abciQnUpdates := abciResponses.EndBlock.QnUpdates
+	err = validateQnUpdates(abciQnUpdates, state.ConsensusParams.Qn)
+	if err != nil {
+		return state, 0, fmt.Errorf("error in qn updates: %v", err)
+	}
+
+	qnUpdates, err := types.PB2TM.QnUpdates(abciQnUpdates)
+	if err != nil {
+		return state, 0, err
+	}
+	if len(qnUpdates) > 0 {
+		blockExec.logger.Debug("updates to qn", "updates", types.QnListString(qnUpdates))
+	}
+
 	// --------------------------
 
 	// Update the state with the block and responses.
-	fmt.Println("stompesi-이쯤1", len(state.StandingMembers.StandingMembers), len(state.Validators.Validators))
+	//fmt.Println("stompesi-이쯤1", len(state.StandingMembers.StandingMembers), len(state.Validators.Validators))
+	fmt.Println("3stompesi-ApplyBlock", state)
 
 	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates)
 	if err != nil {
@@ -234,9 +249,6 @@ func (blockExec *BlockExecutor) Commit(
 	block *types.Block,
 	deliverTxResponses []*abci.ResponseDeliverTx,
 ) ([]byte, int64, error) {
-
-	fmt.Println("stompesijaskdjfkasdjkfasdkfj!!!")
-
 	blockExec.mempool.Lock()
 	defer blockExec.mempool.Unlock()
 
@@ -440,6 +452,23 @@ func validateStandingMemberUpdates(abciUpdates []abci.StandingMemberUpdate,
 	return nil
 }
 
+func validateQnUpdates(abciUpdates []abci.QnUpdate,
+	params tmproto.QnParams) error {
+	for _, valUpdate := range abciUpdates {
+		// Check if validator's pubkey matches an ABCI type in the consensus params
+		pk, err := cryptoenc.PubKeyFromProto(valUpdate.PubKey)
+		if err != nil {
+			return err
+		}
+
+		if !types.IsValidQnPubkeyType(params, pk.Type()) {
+			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
+				valUpdate, pk.Type())
+		}
+	}
+	return nil
+}
+
 // updateState returns a new State updated according to the header and responses.
 func updateState(
 	state State,
@@ -504,6 +533,7 @@ func updateState(
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
 		StandingMembers:                  state.StandingMembers.Copy(),
+		Qns:                              state.Qns.Copy(),
 		ConsensusRoundInfo:               state.ConsensusRoundInfo,
 	}, nil
 }
