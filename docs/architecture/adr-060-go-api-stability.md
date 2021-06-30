@@ -12,7 +12,7 @@
 
 With the release of Tendermint 1.0 we will adopt [semantic versioning](https://semver.org). One major implication is a guarantee that we will not make backwards-incompatible changes until Tendermint 2.0 (except in pre-release versions). In order to provide this guarantee for our Go API, we must clearly define which of our APIs are public, and what changes are considered backwards-compatible.
 
-Currently, we list packages that we consider public in our [README](https://github.com/tendermint/tendermint#versioning), but since we are still at version 0.x we do not provide any backwards compatiblity guarantees at all.
+Currently, we list packages that we consider public in our [README](https://github.com/reapchain/reapchain-core#versioning), but since we are still at version 0.x we do not provide any backwards compatiblity guarantees at all.
 
 ### Glossary
 
@@ -68,46 +68,46 @@ We may offer additional APIs as well, following further discussions internally a
 For comparison, the following are the number of Tendermint imports in the Cosmos SDK (excluding tests), which should be mostly satisfied by the planned APIs.
 
 ```
-      1 github.com/tendermint/tendermint/abci/server
-     73 github.com/tendermint/tendermint/abci/types
-      2 github.com/tendermint/tendermint/cmd/tendermint/commands
-      7 github.com/tendermint/tendermint/config
-     68 github.com/tendermint/tendermint/crypto
-      1 github.com/tendermint/tendermint/crypto/armor
-     10 github.com/tendermint/tendermint/crypto/ed25519
-      2 github.com/tendermint/tendermint/crypto/encoding
-      3 github.com/tendermint/tendermint/crypto/merkle
-      3 github.com/tendermint/tendermint/crypto/sr25519
-      8 github.com/tendermint/tendermint/crypto/tmhash
-      1 github.com/tendermint/tendermint/crypto/xsalsa20symmetric
-     11 github.com/tendermint/tendermint/libs/bytes
-      2 github.com/tendermint/tendermint/libs/bytes.HexBytes
-     15 github.com/tendermint/tendermint/libs/cli
-      2 github.com/tendermint/tendermint/libs/cli/flags
-      2 github.com/tendermint/tendermint/libs/json
-     30 github.com/tendermint/tendermint/libs/log
-      1 github.com/tendermint/tendermint/libs/math
-     11 github.com/tendermint/tendermint/libs/os
-      4 github.com/tendermint/tendermint/libs/rand
-      1 github.com/tendermint/tendermint/libs/strings
-      5 github.com/tendermint/tendermint/light
-      1 github.com/tendermint/tendermint/mempool
-      3 github.com/tendermint/tendermint/node
-      5 github.com/tendermint/tendermint/p2p
-      4 github.com/tendermint/tendermint/privval
-     10 github.com/tendermint/tendermint/proto/tendermint/crypto
-      1 github.com/tendermint/tendermint/proto/tendermint/libs/bits
-     24 github.com/tendermint/tendermint/proto/tendermint/types
-      3 github.com/tendermint/tendermint/proto/tendermint/version
-      2 github.com/tendermint/tendermint/proxy
-      3 github.com/tendermint/tendermint/rpc/client
-      1 github.com/tendermint/tendermint/rpc/client/http
-      2 github.com/tendermint/tendermint/rpc/client/local
-      3 github.com/tendermint/tendermint/rpc/core/types
-      1 github.com/tendermint/tendermint/rpc/jsonrpc/server
-     33 github.com/tendermint/tendermint/types
-      2 github.com/tendermint/tendermint/types/time
-      1 github.com/tendermint/tendermint/version
+      1 github.com/reapchain/reapchain-core/abci/server
+     73 github.com/reapchain/reapchain-core/abci/types
+      2 github.com/reapchain/reapchain-core/cmd/tendermint/commands
+      7 github.com/reapchain/reapchain-core/config
+     68 github.com/reapchain/reapchain-core/crypto
+      1 github.com/reapchain/reapchain-core/crypto/armor
+     10 github.com/reapchain/reapchain-core/crypto/ed25519
+      2 github.com/reapchain/reapchain-core/crypto/encoding
+      3 github.com/reapchain/reapchain-core/crypto/merkle
+      3 github.com/reapchain/reapchain-core/crypto/sr25519
+      8 github.com/reapchain/reapchain-core/crypto/tmhash
+      1 github.com/reapchain/reapchain-core/crypto/xsalsa20symmetric
+     11 github.com/reapchain/reapchain-core/libs/bytes
+      2 github.com/reapchain/reapchain-core/libs/bytes.HexBytes
+     15 github.com/reapchain/reapchain-core/libs/cli
+      2 github.com/reapchain/reapchain-core/libs/cli/flags
+      2 github.com/reapchain/reapchain-core/libs/json
+     30 github.com/reapchain/reapchain-core/libs/log
+      1 github.com/reapchain/reapchain-core/libs/math
+     11 github.com/reapchain/reapchain-core/libs/os
+      4 github.com/reapchain/reapchain-core/libs/rand
+      1 github.com/reapchain/reapchain-core/libs/strings
+      5 github.com/reapchain/reapchain-core/light
+      1 github.com/reapchain/reapchain-core/mempool
+      3 github.com/reapchain/reapchain-core/node
+      5 github.com/reapchain/reapchain-core/p2p
+      4 github.com/reapchain/reapchain-core/privval
+     10 github.com/reapchain/reapchain-core/proto/tendermint/crypto
+      1 github.com/reapchain/reapchain-core/proto/tendermint/libs/bits
+     24 github.com/reapchain/reapchain-core/proto/tendermint/types
+      3 github.com/reapchain/reapchain-core/proto/tendermint/version
+      2 github.com/reapchain/reapchain-core/proxy
+      3 github.com/reapchain/reapchain-core/rpc/client
+      1 github.com/reapchain/reapchain-core/rpc/client/http
+      2 github.com/reapchain/reapchain-core/rpc/client/local
+      3 github.com/reapchain/reapchain-core/rpc/core/types
+      1 github.com/reapchain/reapchain-core/rpc/jsonrpc/server
+     33 github.com/reapchain/reapchain-core/types
+      2 github.com/reapchain/reapchain-core/types/time
+      1 github.com/reapchain/reapchain-core/version
 ```
 
 ### Backwards-Compatible Changes
@@ -188,6 +188,6 @@ Accepted
 
 ## References
 
-- [#4451: Place internal APIs under internal package](https://github.com/tendermint/tendermint/issues/4451)
+- [#4451: Place internal APIs under internal package](https://github.com/reapchain/reapchain-core/issues/4451)
 
 - [On Pluggability](https://docs.google.com/document/d/1G08LnwSyb6BAuCVSMF3EKn47CGdhZ5wPZYJQr4-bw58/edit?ts=5f609f11)

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	privvalproto "github.com/tendermint/tendermint/proto/tendermint/privval"
+	privvalproto "github.com/reapchain/reapchain-core/proto/tendermint/privval"
 )
 
 // TODO: Add ChainIDRequest

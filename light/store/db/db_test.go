@@ -10,12 +10,12 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
-	"github.com/tendermint/tendermint/types"
-	"github.com/tendermint/tendermint/version"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	tmversion "github.com/reapchain/reapchain-core/proto/tendermint/version"
+	"github.com/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/version"
 )
 
 func TestLast_FirstLightBlockHeight(t *testing.T) {

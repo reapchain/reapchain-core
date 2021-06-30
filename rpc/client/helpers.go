@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // Waiter is informed of current height, decided whether to quit early

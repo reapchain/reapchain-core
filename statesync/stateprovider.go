@@ -8,17 +8,17 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/tendermint/tendermint/libs/log"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/light"
-	lightprovider "github.com/tendermint/tendermint/light/provider"
-	lighthttp "github.com/tendermint/tendermint/light/provider/http"
-	lightrpc "github.com/tendermint/tendermint/light/rpc"
-	lightdb "github.com/tendermint/tendermint/light/store/db"
-	tmstate "github.com/tendermint/tendermint/proto/tendermint/state"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/light"
+	lightprovider "github.com/reapchain/reapchain-core/light/provider"
+	lighthttp "github.com/reapchain/reapchain-core/light/provider/http"
+	lightrpc "github.com/reapchain/reapchain-core/light/rpc"
+	lightdb "github.com/reapchain/reapchain-core/light/store/db"
+	tmstate "github.com/reapchain/reapchain-core/proto/tendermint/state"
+	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 //go:generate mockery --case underscore --name StateProvider

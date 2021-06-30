@@ -13,24 +13,24 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/tendermint/tendermint/abci/server"
-	"github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmflags "github.com/tendermint/tendermint/libs/cli/flags"
-	"github.com/tendermint/tendermint/libs/log"
-	tmnet "github.com/tendermint/tendermint/libs/net"
-	"github.com/tendermint/tendermint/light"
-	lproxy "github.com/tendermint/tendermint/light/proxy"
-	lrpc "github.com/tendermint/tendermint/light/rpc"
-	dbs "github.com/tendermint/tendermint/light/store/db"
-	"github.com/tendermint/tendermint/node"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/proxy"
-	rpcserver "github.com/tendermint/tendermint/rpc/jsonrpc/server"
-	e2e "github.com/tendermint/tendermint/test/e2e/pkg"
-	mcs "github.com/tendermint/tendermint/test/maverick/consensus"
-	maverick "github.com/tendermint/tendermint/test/maverick/node"
+	"github.com/reapchain/reapchain-core/abci/server"
+	"github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	tmflags "github.com/reapchain/reapchain-core/libs/cli/flags"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	"github.com/reapchain/reapchain-core/light"
+	lproxy "github.com/reapchain/reapchain-core/light/proxy"
+	lrpc "github.com/reapchain/reapchain-core/light/rpc"
+	dbs "github.com/reapchain/reapchain-core/light/store/db"
+	"github.com/reapchain/reapchain-core/node"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/privval"
+	"github.com/reapchain/reapchain-core/proxy"
+	rpcserver "github.com/reapchain/reapchain-core/rpc/jsonrpc/server"
+	e2e "github.com/reapchain/reapchain-core/test/e2e/pkg"
+	mcs "github.com/reapchain/reapchain-core/test/maverick/consensus"
+	maverick "github.com/reapchain/reapchain-core/test/maverick/node"
 )
 
 var logger = log.NewTMLogger(log.NewSyncWriter(os.Stdout))
@@ -181,7 +181,7 @@ func startLightClient(cfg *Config) error {
 	rpccfg.MaxOpenConnections = tmcfg.RPC.MaxOpenConnections
 	// If necessary adjust global WriteTimeout to ensure it's greater than
 	// TimeoutBroadcastTxCommit.
-	// See https://github.com/tendermint/tendermint/issues/3435
+	// See https://github.com/reapchain/reapchain-core/issues/3435
 	if rpccfg.WriteTimeout <= tmcfg.RPC.TimeoutBroadcastTxCommit {
 		rpccfg.WriteTimeout = tmcfg.RPC.TimeoutBroadcastTxCommit + 1*time.Second
 	}
