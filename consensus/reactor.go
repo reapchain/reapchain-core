@@ -1609,6 +1609,9 @@ func (m *BlockPartMessage) String() string {
 }
 
 //-------------------------------------
+type QnMessage struct {
+	Qn *types.Qn
+}
 
 // VoteMessage is sent when voting for a proposal (or lack thereof).
 type VoteMessage struct {

@@ -92,6 +92,15 @@ func MsgToProto(msg Message) (*tmcons.Message, error) {
 				},
 			},
 		}
+	case *QnMessage:
+		qn := msg.Qn.ToProto()
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_Qn{
+				Qn: &tmcons.Qn{
+					Qn: qn,
+				},
+			},
+		}
 	case *HasVoteMessage:
 		pb = tmcons.Message{
 			Sum: &tmcons.Message_HasVote{
@@ -215,6 +224,15 @@ func MsgFromProto(msg *tmcons.Message) (Message, error) {
 
 		pb = &VoteMessage{
 			Vote: vote,
+		}
+	case *tmcons.Message_Qn:
+		qn, err := types.QnFromProto(msg.Qn.Qn)
+		if err != nil {
+			return nil, fmt.Errorf("vote msg to proto error: %w", err)
+		}
+
+		pb = &QnMessage{
+			Qn: qn,
 		}
 	case *tmcons.Message_HasVote:
 		pb = &HasVoteMessage{

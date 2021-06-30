@@ -108,7 +108,12 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 
 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxDataBytes, maxGas)
 
-	return state.MakeBlock(height, txs, commit, evidence, proposerAddr)
+	qns := make([]types.Qn, 0, len(state.Qns.Qns))
+	for i, qn := range qns {
+		qns[i] = qn
+	}
+
+	return state.MakeBlock(height, txs, qns, commit, evidence, proposerAddr)
 }
 
 // ValidateBlock validates the given block against the given state.

@@ -20,6 +20,7 @@ import (
 	"github.com/reapchain/reapchain/libs/log"
 	tmmath "github.com/reapchain/reapchain/libs/math"
 	tmos "github.com/reapchain/reapchain/libs/os"
+	tmrand "github.com/reapchain/reapchain/libs/rand"
 	"github.com/reapchain/reapchain/libs/service"
 	tmsync "github.com/reapchain/reapchain/libs/sync"
 	"github.com/reapchain/reapchain/p2p"
@@ -533,6 +534,7 @@ func (cs *State) SetProposalAndBlock(
 func (cs *State) updateHeight(height int64) {
 	cs.metrics.Height.Set(float64(height))
 	cs.Height = height
+	fmt.Println("5stompesi-updateHeight")
 }
 
 func (cs *State) updateRoundStep(round int32, step cstypes.RoundStepType) {
@@ -854,6 +856,15 @@ func (cs *State) handleMsg(mi msgInfo) {
 			err = nil
 		}
 
+	case *QnMessage:
+		// attempt to add the vote and dupeout the validator if its a duplicate signature
+		// if the vote gives us a 2/3-any or 2/3-one, we transition
+		//fmt.Println("2stompesi-block-3")
+		added, err = cs.tryAddVote(msg.Qn, peerID)
+		if added {
+			cs.statsMsgQueue <- mi
+		}
+
 	case *VoteMessage:
 		// attempt to add the vote and dupeout the validator if its a duplicate signature
 		// if the vote gives us a 2/3-any or 2/3-one, we transition
@@ -1136,6 +1147,8 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 		block, blockParts = cs.ValidBlock, cs.ValidBlockParts
 	} else {
 		// Create a new proposal block from state/txs from the mempool.
+		fmt.Println("stompesi-createProposalBlock")
+
 		block, blockParts = cs.createProposalBlock()
 		if block == nil {
 			return
@@ -1709,6 +1722,18 @@ func (cs *State) finalizeCommit(height int64) {
 	// * cs.Height has been increment to height+1
 	// * cs.Step is now cstypes.RoundStepNewHeight
 	// * cs.StartTime is set to when we will start round0.
+
+	fmt.Println("5stompesi-finalizeCommit", len(cs.state.Qns.Qns))
+	// genDoc.Qns = []types.Qn{{
+	// 	Address: pubKey.Address(),
+	// 	PubKey:  pubKey,
+	// 	Value:   tmrand.Uint64(),
+	// }}
+
+	cs.state.Qns.Qns[0].Value = tmrand.Uint64()
+
+	// Value:   tmrand.Uint64(),
+
 }
 
 func (cs *State) pruneBlocks(retainHeight int64) (uint64, error) {

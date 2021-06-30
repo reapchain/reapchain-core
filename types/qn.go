@@ -7,12 +7,23 @@ import (
 
 	"github.com/reapchain/reapchain/crypto"
 	ce "github.com/reapchain/reapchain/crypto/encoding"
+	"github.com/reapchain/reapchain/crypto/merkle"
 	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
 )
 
 // Tx is an arbitrary byte array.
 // NOTE: Tx has no types at this level, so when wire encoded it's just length-prefixed.
 // Might we want types here ?
+type Qns []Qn
+
+func (qns Qns) Hash() []byte {
+	bzs := make([][]byte, len(qns))
+	for i, qn := range qns {
+		bzs[i] = qn.Bytes()
+	}
+	return merkle.HashFromByteSlices(bzs)
+}
+
 type Qn struct {
 	Address Address       `json:"address"`
 	PubKey  crypto.PubKey `json:"pub_key"`
@@ -69,4 +80,27 @@ func QnListString(qns []*Qn) string {
 	}
 
 	return strings.Join(chunks, ",")
+}
+
+func QnFromProto(pv *tmproto.Qn) (*Qn, error) {
+	if pv == nil {
+		return nil, errors.New("nil vote")
+	}
+
+	blockID, err := BlockIDFromProto(&pv.BlockID)
+	if err != nil {
+		return nil, err
+	}
+
+	vote := new(Qn)
+	vote.Type = pv.Type
+	vote.Height = pv.Height
+	vote.Round = pv.Round
+	vote.BlockID = *blockID
+	vote.Timestamp = pv.Timestamp
+	vote.ValidatorAddress = pv.ValidatorAddress
+	vote.ValidatorIndex = pv.ValidatorIndex
+	vote.Signature = pv.Signature
+
+	return vote, vote.ValidateBasic()
 }

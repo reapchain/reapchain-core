@@ -45,6 +45,7 @@ type Block struct {
 
 	Header     `json:"header"`
 	Data       `json:"data"`
+	QnData     `json:"qn_data"`
 	Evidence   EvidenceData `json:"evidence"`
 	LastCommit *Commit      `json:"last_commit"`
 }
@@ -112,6 +113,9 @@ func (b *Block) fillHeader() {
 	}
 	if b.DataHash == nil {
 		b.DataHash = b.Data.Hash()
+	}
+	if b.QnsHash == nil {
+		b.QnsHash = b.QnData.Hash()
 	}
 	if b.EvidenceHash == nil {
 		b.EvidenceHash = b.Evidence.Hash()
@@ -1061,6 +1065,27 @@ func CommitFromProto(cp *tmproto.Commit) (*Commit, error) {
 
 //-----------------------------------------------------------------------------
 
+type QnData struct {
+
+	// Txs that will be applied by state @ block.Height+1.
+	// NOTE: not all txs here are valid.  We're just agreeing on the order first.
+	// This means that block.AppHash does not include these txs.
+	Qns Qns `json:"qns"`
+
+	// Volatile
+	hash tmbytes.HexBytes
+}
+
+func (qnData *QnData) Hash() tmbytes.HexBytes {
+	if qnData == nil {
+		return (Qns{}).Hash()
+	}
+	if qnData.hash == nil {
+		qnData.hash = qnData.Qns.Hash() // NOTE: leaves of merkle tree are TxIDs
+	}
+	return qnData.hash
+}
+
 // Data contains the set of transactions included in the block
 type Data struct {
 
@@ -1071,8 +1096,6 @@ type Data struct {
 
 	// Volatile
 	hash tmbytes.HexBytes
-
-	Qns []Qn `json:"qns"`
 }
 
 // Hash returns the hash of the data

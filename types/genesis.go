@@ -86,8 +86,8 @@ func (genDoc *GenesisDoc) StandingMemberHash() []byte {
 
 func (genDoc *GenesisDoc) QnHash() []byte {
 	qns := make([]*Qn, len(genDoc.Qns))
-	for i, v := range genDoc.Qns {
-		qns[i] = NewQn(v.PubKey, v.Value)
+	for i, qn := range genDoc.Qns {
+		qns[i] = NewQn(qn.PubKey, qn.Value)
 	}
 	qnSet := NewQnSet(qns)
 	return qnSet.Hash()

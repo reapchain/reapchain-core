@@ -76,6 +76,10 @@ func (cs *State) readReplayMessage(msg *TimedWALMessage, newStepSub types.Subscr
 			v := msg.Vote
 			cs.Logger.Info("Replay: Vote", "height", v.Height, "round", v.Round, "type", v.Type,
 				"blockID", v.BlockID, "peer", peerID)
+		case *QnMessage:
+			v := msg.Qn
+			cs.Logger.Info("Replay: Vote", "height", v.Height, "round", v.Round, "type", v.Type,
+				"blockID", v.BlockID, "peer", peerID)
 		}
 
 		cs.handleMsg(m)
