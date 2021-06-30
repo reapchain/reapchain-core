@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	abcicli "gitlab.reappay.net/sucs-lab//reapchain/abci/client"
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	abcicli "gitlab.reappay.net/sucs-lab/reapchain/abci/client"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
 )
 
 func InitChain(client abcicli.Client) error {

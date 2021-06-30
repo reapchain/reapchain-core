@@ -3,8 +3,8 @@ package types
 import (
 	"time"
 
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
 )
 
 // Canonical* wraps the structs in types for amino encoding them for use in SignBytes / the Signable interface.

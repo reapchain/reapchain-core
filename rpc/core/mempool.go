@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	mempl "gitlab.reappay.net/sucs-lab//reapchain/mempool"
-	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
-	rpctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	mempl "gitlab.reappay.net/sucs-lab/reapchain/mempool"
+	ctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/core/types"
+	rpctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 //-----------------------------------------------------------------------------

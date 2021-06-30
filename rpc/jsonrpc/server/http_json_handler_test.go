@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	types "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	types "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
 )
 
 func testMux() *http.ServeMux {
@@ -32,7 +32,7 @@ func statusOK(code int) bool { return code >= 200 && code <= 299 }
 
 // Ensure that nefarious/unintended inputs to `params`
 // do not crash our RPC handlers.
-// See Issue https://gitlab.reappay.net/sucs-lab//reapchain/issues/708.
+// See Issue https://gitlab.reappay.net/sucs-lab/reapchain/issues/708.
 func TestRPCParams(t *testing.T) {
 	mux := testMux()
 	tests := []struct {

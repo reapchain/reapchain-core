@@ -10,14 +10,14 @@ main Reapchain project, the following process leads to the best chance of
 landing changes in master.
 
 All work on the code base should be motivated by a [Github
-Issue](https://gitlab.reappay.net/sucs-lab//reapchain/issues).
-[Search](https://gitlab.reappay.net/sucs-lab//reapchain/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
+Issue](https://gitlab.reappay.net/sucs-lab/reapchain/issues).
+[Search](https://gitlab.reappay.net/sucs-lab/reapchain/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
 is a good place start when looking for places to contribute. If you
 would like to work on an issue which already exists, please indicate so
 by leaving a comment.
 
 All new contributions should start with a [Github
-Issue](https://gitlab.reappay.net/sucs-lab//reapchain/issues/new/choose). The
+Issue](https://gitlab.reappay.net/sucs-lab/reapchain/issues/new/choose). The
 issue helps capture the problem you're trying to solve and allows for
 early feedback. Once the issue is created the process can proceed in different
 directions depending on how well defined the problem and potential
@@ -26,7 +26,7 @@ will indicate their support with a heartfelt emoji.
 
 If the issue would benefit from thorough discussion, maintainers may
 request that you create a [Request For
-Comment](https://gitlab.reappay.net/sucs-lab//spec/tree/master/rfc). Discussion
+Comment](https://gitlab.reappay.net/sucs-lab/spec/tree/master/rfc). Discussion
 at the RFC stage will build collective understanding of the dimensions
 of the problems and help structure conversations around trade-offs.
 
@@ -62,12 +62,12 @@ Please note that Go requires code to live under absolute paths, which complicate
 While my fork lives at `https://github.com/ebuchman/reapchain`,
 the code should never exist at `$GOPATH/src/github.com/ebuchman/reapchain`.
 Instead, we use `git remote` to add the fork as a new remote for the original repo,
-`$GOPATH/src/gitlab.reappay.net/sucs-lab//reapchain`, and do all the work there.
+`$GOPATH/src/gitlab.reappay.net/sucs-lab/reapchain`, and do all the work there.
 
 For instance, to create a fork and work on a branch of it, I would:
 
 - Create the fork on GitHub, using the fork button.
-- Go to the original repo checked out locally (i.e. `$GOPATH/src/gitlab.reappay.net/sucs-lab//reapchain`)
+- Go to the original repo checked out locally (i.e. `$GOPATH/src/gitlab.reappay.net/sucs-lab/reapchain`)
 - `git remote rename origin upstream`
 - `git remote add origin git@github.com:ebuchman/basecoin.git`
 
@@ -100,7 +100,7 @@ up-to-date.
 When updating dependencies, please only update the particular dependencies you
 need. Instead of running `go get -u=patch`, which will update anything,
 specify exactly the dependency you want to update, eg.
-`GO111MODULE=on go get -u gitlab.reappay.net/sucs-lab//go-amino@master`.
+`GO111MODULE=on go get -u gitlab.reappay.net/sucs-lab/go-amino@master`.
 
 ## Protobuf
 
@@ -173,7 +173,7 @@ easy to reference the pull request where a change was introduced.
 
 The latest state of development is on `master`, which must never fail `make test`. _Never_ force push `master`, unless fixing broken git history (which we rarely do anyways).
 
-To begin contributing, create a development branch either on `gitlab.reappay.net/sucs-lab//reapchain`, or your fork (using `git remote add origin`).
+To begin contributing, create a development branch either on `gitlab.reappay.net/sucs-lab/reapchain`, or your fork (using `git remote add origin`).
 
 Make changes, and before submitting a pull request, update the `CHANGELOG_PENDING.md` to record your change. Also, run either `git rebase` or `git merge` on top of the latest `master`. (Since pull requests are squash-merged, either is fine!)
 
@@ -387,7 +387,7 @@ most probably (99.9%)*.
 [Jepsen](http://jepsen.io/) tests are used to verify the
 [linearizability](https://jepsen.io/consistency/models/linearizable) property
 of the Reapchain consensus. They are located in a separate repository
--> <https://gitlab.reappay.net/sucs-lab//jepsen>. Please refer to its README for more
+-> <https://gitlab.reappay.net/sucs-lab/jepsen>. Please refer to its README for more
 information.
 
 ### RPC Testing

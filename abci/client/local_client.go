@@ -1,9 +1,9 @@
 package abcicli
 
 import (
-	types "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
-	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	types "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
+	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
 )
 
 var _ Client = (*localClient)(nil)

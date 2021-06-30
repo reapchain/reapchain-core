@@ -16,8 +16,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	types "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	types "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
 )
 
 type sampleResult struct {

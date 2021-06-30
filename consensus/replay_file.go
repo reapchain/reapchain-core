@@ -10,15 +10,15 @@ import (
 	"strconv"
 	"strings"
 
-	dbm "gitlab.reappay.net/sucs-lab//tm-db"
+	dbm "github.com/tendermint/tm-db"
 
-	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
-	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
-	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
-	"gitlab.reappay.net/sucs-lab//reapchain/store"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	tmos "gitlab.reappay.net/sucs-lab/reapchain/libs/os"
+	"gitlab.reappay.net/sucs-lab/reapchain/proxy"
+	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
+	"gitlab.reappay.net/sucs-lab/reapchain/store"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 const (

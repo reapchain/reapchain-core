@@ -11,8 +11,8 @@ import (
 	secp256k1 "github.com/btcsuite/btcd/btcec"
 	"golang.org/x/crypto/ripemd160" // nolint: staticcheck // necessary for Bitcoin address format
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
-	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
 )
 
 //-------------------------------------

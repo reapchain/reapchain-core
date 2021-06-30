@@ -5,9 +5,9 @@ import (
 	"net"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
-	tmnet "gitlab.reappay.net/sucs-lab//reapchain/libs/net"
-	p2pconn "gitlab.reappay.net/sucs-lab//reapchain/p2p/conn"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	tmnet "gitlab.reappay.net/sucs-lab/reapchain/libs/net"
+	p2pconn "gitlab.reappay.net/sucs-lab/reapchain/p2p/conn"
 )
 
 // Socket errors.

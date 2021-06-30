@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/light/provider"
-	rpcclient "gitlab.reappay.net/sucs-lab//reapchain/rpc/client"
-	rpchttp "gitlab.reappay.net/sucs-lab//reapchain/rpc/client/http"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/light/provider"
+	rpcclient "gitlab.reappay.net/sucs-lab/reapchain/rpc/client"
+	rpchttp "gitlab.reappay.net/sucs-lab/reapchain/rpc/client/http"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 var (
-	// This is very brittle, see: https://gitlab.reappay.net/sucs-lab//reapchain/issues/4740
+	// This is very brittle, see: https://gitlab.reappay.net/sucs-lab/reapchain/issues/4740
 	regexpMissingHeight = regexp.MustCompile(`height \d+ is not available`)
 	regexpTooHigh       = regexp.MustCompile(`height \d+ must be less than or equal to`)
 

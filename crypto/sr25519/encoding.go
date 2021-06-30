@@ -1,8 +1,8 @@
 package sr25519
 
 import (
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
-	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
 )
 
 var _ crypto.PrivKey = PrivKey{}

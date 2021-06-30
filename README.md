@@ -6,29 +6,29 @@
 [State Machines](https://en.wikipedia.org/wiki/State_machine_replication).
 Or [Blockchain](<https://en.wikipedia.org/wiki/Blockchain_(database)>), for short.
 
-[![version](https://img.shields.io/github/tag/reapchain/reapchain.svg)](https://gitlab.reappay.net/sucs-lab//reapchain/releases/latest)
-[![API Reference](https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/68747470733a2f2f676f646f632e6f72672f6769746875622e636f6d2f676f6c616e672f6764646f3f7374617475732e737667)](https://pkg.go.dev/gitlab.reappay.net/sucs-lab//reapchain)
+[![version](https://img.shields.io/github/tag/reapchain/reapchain.svg)](https://gitlab.reappay.net/sucs-lab/reapchain/releases/latest)
+[![API Reference](https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/68747470733a2f2f676f646f632e6f72672f6769746875622e636f6d2f676f6c616e672f6764646f3f7374617475732e737667)](https://pkg.go.dev/gitlab.reappay.net/sucs-lab/reapchain)
 [![Go version](https://img.shields.io/badge/go-1.15-blue.svg)](https://github.com/moovweb/gvm)
 [![Discord chat](https://img.shields.io/discord/669268347736686612.svg)](https://discord.gg/AzefAFd)
-[![license](https://img.shields.io/github/license/reapchain/reapchain.svg)](https://gitlab.reappay.net/sucs-lab//reapchain/blob/master/LICENSE)
-[![reapchain/reapchain](https://tokei.rs/b1/github/reapchain/reapchain?category=lines)](https://gitlab.reappay.net/sucs-lab//reapchain)
-[![Sourcegraph](https://sourcegraph.com/gitlab.reappay.net/sucs-lab//reapchain/-/badge.svg)](https://sourcegraph.com/gitlab.reappay.net/sucs-lab//reapchain?badge)
+[![license](https://img.shields.io/github/license/reapchain/reapchain.svg)](https://gitlab.reappay.net/sucs-lab/reapchain/blob/master/LICENSE)
+[![reapchain/reapchain](https://tokei.rs/b1/github/reapchain/reapchain?category=lines)](https://gitlab.reappay.net/sucs-lab/reapchain)
+[![Sourcegraph](https://sourcegraph.com/gitlab.reappay.net/sucs-lab/reapchain/-/badge.svg)](https://sourcegraph.com/gitlab.reappay.net/sucs-lab/reapchain?badge)
 
 | Branch | Tests                                                                                                                                                                                                                                                  | Coverage                                                                                                                             | Linting                                                                    |
 | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| master | [![CircleCI](https://circleci.com/gh/reapchain/reapchain/tree/master.svg?style=shield)](https://circleci.com/gh/reapchain/reapchain/tree/master) </br> ![Tests](https://gitlab.reappay.net/sucs-lab//reapchain/workflows/Tests/badge.svg?branch=master) | [![codecov](https://codecov.io/gh/reapchain/reapchain/branch/master/graph/badge.svg)](https://codecov.io/gh/reapchain/reapchain) | ![Lint](https://gitlab.reappay.net/sucs-lab//reapchain/workflows/Lint/badge.svg) |
+| master | [![CircleCI](https://circleci.com/gh/reapchain/reapchain/tree/master.svg?style=shield)](https://circleci.com/gh/reapchain/reapchain/tree/master) </br> ![Tests](https://gitlab.reappay.net/sucs-lab/reapchain/workflows/Tests/badge.svg?branch=master) | [![codecov](https://codecov.io/gh/reapchain/reapchain/branch/master/graph/badge.svg)](https://codecov.io/gh/reapchain/reapchain) | ![Lint](https://gitlab.reappay.net/sucs-lab/reapchain/workflows/Lint/badge.svg) |
 
 Reapchain Core is Byzantine Fault Tolerant (BFT) middleware that takes a state transition machine - written in any programming language -
 and securely replicates it on many machines.
 
-For protocol details, see [the specification](https://gitlab.reappay.net/sucs-lab//spec).
+For protocol details, see [the specification](https://gitlab.reappay.net/sucs-lab/spec).
 
 For detailed analysis of the consensus protocol, including safety and liveness proofs,
 see our recent paper, "[The latest gossip on BFT consensus](https://arxiv.org/abs/1807.04938)".
 
 ## Releases
 
-Please do not depend on master as your production branch. Use [releases](https://gitlab.reappay.net/sucs-lab//reapchain/releases) instead.
+Please do not depend on master as your production branch. Use [releases](https://gitlab.reappay.net/sucs-lab/reapchain/releases) instead.
 
 Reapchain is being used in production in both private and public environments,
 most notably the blockchains of the [Cosmos Network](https://cosmos.network/).
@@ -74,9 +74,9 @@ Please abide by the [Code of Conduct](CODE_OF_CONDUCT.md) in all interactions.
 
 Before contributing to the project, please take a look at the [contributing guidelines](CONTRIBUTING.md)
 and the [style guide](STYLE_GUIDE.md). You may also find it helpful to read the
-[specifications](https://gitlab.reappay.net/sucs-lab//spec), watch the [Developer Sessions](/docs/DEV_SESSIONS.md), 
+[specifications](https://gitlab.reappay.net/sucs-lab/spec), watch the [Developer Sessions](/docs/DEV_SESSIONS.md), 
 and familiarize yourself with our
-[Architectural Decision Records](https://gitlab.reappay.net/sucs-lab//reapchain/tree/master/docs/architecture).
+[Architectural Decision Records](https://gitlab.reappay.net/sucs-lab/reapchain/tree/master/docs/architecture).
 
 ## Versioning
 

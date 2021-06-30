@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
-	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
+	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
 )
 
 const (
@@ -129,7 +129,7 @@ func (r *ReqRes) InvokeCallback() {
 // marked done and SetCallback is called before calling GetCallback as that
 // will invoke the callback twice and create a potential race condition.
 //
-// ref: https://gitlab.reappay.net/sucs-lab//reapchain/issues/5439
+// ref: https://gitlab.reappay.net/sucs-lab/reapchain/issues/5439
 func (r *ReqRes) GetCallback() func(*types.Response) {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()

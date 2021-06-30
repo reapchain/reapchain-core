@@ -1,5 +1,5 @@
 .PHONY: docs
-REPO:=gitlab.reappay.net/sucs-lab//reapchain/libs/events
+REPO:=gitlab.reappay.net/sucs-lab/reapchain/libs/events
 
 docs:
 	@go get github.com/davecheney/godoc2md

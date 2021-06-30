@@ -1,11 +1,8 @@
-module gitlab.reappay.net/sucs-lab//reapchain
+module gitlab.reappay.net/sucs-lab/reapchain
 
 go 1.16
 
-replace gitlab.reappay.net/sucs-lab//tm-db v0.6.4 => ../tm-db
-
 require (
-	github.com/BurntSushi/toml v0.3.1
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20210527232834-58622d036665
 	github.com/Workiva/go-datastructures v1.0.53
 	github.com/btcsuite/btcd v0.22.0-beta
@@ -25,16 +22,15 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.11.0
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
-	gitlab.reappay.net/sucs-lab//tm-db v0.6.4
 	github.com/rs/cors v1.7.0
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa
 	github.com/snikch/goodman v0.0.0-20171125024755-10e37e294daa
 	github.com/spf13/cobra v1.1.3
-	github.com/spf13/viper v1.8.0
+	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
-	github.com/tendermint/tendermint v0.34.10
+	github.com/tendermint/tendermint v0.34.11
 	github.com/tendermint/tm-db v0.6.4
-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
-	google.golang.org/grpc v1.38.0
+	google.golang.org/grpc v1.39.0
 )

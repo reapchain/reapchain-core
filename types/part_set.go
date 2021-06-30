@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"io"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/merkle"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/bits"
-	tmbytes "gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
-	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
-	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
-	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/merkle"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/bits"
+	tmbytes "gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
+	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
+	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
+	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
 )
 
 var (

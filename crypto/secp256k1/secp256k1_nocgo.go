@@ -7,7 +7,7 @@ import (
 
 	secp256k1 "github.com/btcsuite/btcd/btcec"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
 )
 
 // used to reject malleable signatures

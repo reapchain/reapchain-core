@@ -3,8 +3,8 @@ package privval
 import (
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
 )
 
 const (

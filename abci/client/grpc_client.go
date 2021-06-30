@@ -9,10 +9,10 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	tmnet "gitlab.reappay.net/sucs-lab//reapchain/libs/net"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
-	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	tmnet "gitlab.reappay.net/sucs-lab/reapchain/libs/net"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
+	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
 )
 
 var _ Client = (*grpcClient)(nil)

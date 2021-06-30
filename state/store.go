@@ -5,20 +5,20 @@ import (
 	"fmt"
 
 	"github.com/gogo/protobuf/proto"
-	dbm "gitlab.reappay.net/sucs-lab//tm-db"
+	dbm "github.com/tendermint/tm-db"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
-	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
-	tmstate "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/state"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
+	tmos "gitlab.reappay.net/sucs-lab/reapchain/libs/os"
+	tmstate "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/state"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 const (
 	// persist validators every valSetCheckpointInterval blocks to avoid
 	// LoadValidators taking too much time.
-	// https://gitlab.reappay.net/sucs-lab//reapchain/pull/3438
+	// https://gitlab.reappay.net/sucs-lab/reapchain/pull/3438
 	// 100000 results in ~ 100ms to get 100 validators (see BenchmarkLoadValidators)
 	valSetCheckpointInterval = 100000
 )
@@ -77,7 +77,7 @@ type Store interface {
 	LoadQns(int64) (*types.QnSet, error)
 }
 
-// dbStore wraps a db (gitlab.reappay.net/sucs-lab//tm-db)
+// dbStore wraps a db (github.com/tendermint/tm-db)
 type dbStore struct {
 	db dbm.DB
 }
@@ -265,7 +265,7 @@ func (store dbStore) Bootstrap(state State) error {
 // e.g. `LastHeightChanged` must remain. The state at to must also exist.
 //
 // The from parameter is necessary since we can't do a key scan in a performant way due to the key
-// encoding not preserving ordering: https://gitlab.reappay.net/sucs-lab//reapchain/issues/4567
+// encoding not preserving ordering: https://gitlab.reappay.net/sucs-lab/reapchain/issues/4567
 // This will cause some old states to be left behind when doing incremental partial prunes,
 // specifically older checkpoints and LastHeightChanged targets.
 func (store dbStore) PruneStates(from int64, to int64) error {

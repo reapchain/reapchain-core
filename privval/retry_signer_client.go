@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 // RetrySignerClient wraps SignerClient adding retry for each operation (except

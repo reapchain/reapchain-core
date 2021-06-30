@@ -6,10 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	rpctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
+	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	rpctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
 )
 
 func TestUnsafeDialSeeds(t *testing.T) {

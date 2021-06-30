@@ -10,13 +10,13 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab//reapchain/privval"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
+	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab/reapchain/privval"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
 )
 
 var (

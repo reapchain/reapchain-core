@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/light/provider"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/light/provider"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 type Mock struct {

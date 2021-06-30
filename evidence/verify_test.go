@@ -9,17 +9,17 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
-	"gitlab.reappay.net/sucs-lab//reapchain/evidence"
-	"gitlab.reappay.net/sucs-lab//reapchain/evidence/mocks"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
-	tmversion "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/version"
-	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
-	smmocks "gitlab.reappay.net/sucs-lab//reapchain/state/mocks"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/version"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
+	"gitlab.reappay.net/sucs-lab/reapchain/evidence"
+	"gitlab.reappay.net/sucs-lab/reapchain/evidence/mocks"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	tmversion "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/version"
+	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
+	smmocks "gitlab.reappay.net/sucs-lab/reapchain/state/mocks"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/version"
 )
 
 func TestVerifyLightClientAttack_Lunatic(t *testing.T) {

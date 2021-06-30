@@ -15,7 +15,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
 )
 
 func TestWSClientReconnectWithJitter(t *testing.T) {

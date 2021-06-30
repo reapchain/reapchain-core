@@ -11,8 +11,8 @@ package server
 import (
 	"fmt"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
 )
 
 func NewServer(protoAddr, transport string, app types.Application) (service.Service, error) {

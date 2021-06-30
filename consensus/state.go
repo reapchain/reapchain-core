@@ -11,23 +11,23 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
-	cstypes "gitlab.reappay.net/sucs-lab//reapchain/consensus/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
-	tmevents "gitlab.reappay.net/sucs-lab//reapchain/libs/events"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/fail"
-	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
-	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
-	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
-	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
+	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
+	cstypes "gitlab.reappay.net/sucs-lab/reapchain/consensus/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	tmevents "gitlab.reappay.net/sucs-lab/reapchain/libs/events"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/fail"
+	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
+	tmos "gitlab.reappay.net/sucs-lab/reapchain/libs/os"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
+	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
 )
 
 // Consensus sentinel errors
@@ -880,7 +880,7 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// We probably don't want to stop the peer here. The vote does not
 		// necessarily comes from a malicious peer but can be just broadcasted by
 		// a typical peer.
-		// https://gitlab.reappay.net/sucs-lab//reapchain/issues/1281
+		// https://gitlab.reappay.net/sucs-lab/reapchain/issues/1281
 		// }
 
 		// NOTE: the vote is broadcast to peers by the reactor listening
@@ -2039,7 +2039,7 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 			// 1) bad peer OR
 			// 2) not a bad peer? this can also err sometimes with "Unexpected step" OR
 			// 3) tmkms use with multiple validators connecting to a single tmkms instance
-			// 		(https://gitlab.reappay.net/sucs-lab//reapchain/issues/3839).
+			// 		(https://gitlab.reappay.net/sucs-lab/reapchain/issues/3839).
 			cs.Logger.Info("failed attempting to add vote", "err", err)
 			return added, ErrAddingVote
 		}

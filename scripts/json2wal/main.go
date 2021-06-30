@@ -14,9 +14,9 @@ import (
 	"os"
 	"strings"
 
-	cs "gitlab.reappay.net/sucs-lab//reapchain/consensus"
-	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	cs "gitlab.reappay.net/sucs-lab/reapchain/consensus"
+	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 func main() {

@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	tmp2p "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/p2p"
+	tmp2p "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/p2p"
 )
 
 // EmptyNetAddress defines the string representation of an empty NetAddress

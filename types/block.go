@@ -10,16 +10,16 @@ import (
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/merkle"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/bits"
-	tmbytes "gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
-	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
-	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
-	tmversion "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/version"
-	"gitlab.reappay.net/sucs-lab//reapchain/version"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/merkle"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/bits"
+	tmbytes "gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
+	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
+	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	tmversion "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/version"
+	"gitlab.reappay.net/sucs-lab/reapchain/version"
 )
 
 const (
@@ -327,7 +327,7 @@ func MaxDataBytesNoEvidence(maxBytes int64, valsCount int) int64 {
 // NOTE: changes to the Header should be duplicated in:
 // - header.Hash()
 // - abci.Header
-// - https://gitlab.reappay.net/sucs-lab//spec/blob/master/spec/blockchain/blockchain.md
+// - https://gitlab.reappay.net/sucs-lab/spec/blob/master/spec/blockchain/blockchain.md
 type Header struct {
 	// basic block info
 	Version tmversion.Consensus `json:"version"`

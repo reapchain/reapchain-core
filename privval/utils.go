@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	tmnet "gitlab.reappay.net/sucs-lab//reapchain/libs/net"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	tmnet "gitlab.reappay.net/sucs-lab/reapchain/libs/net"
 )
 
 // IsConnTimeout returns a boolean indicating whether the error is known to

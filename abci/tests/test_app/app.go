@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	abcicli "gitlab.reappay.net/sucs-lab//reapchain/abci/client"
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	abcicli "gitlab.reappay.net/sucs-lab/reapchain/abci/client"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
 )
 
 func startClient(abciType string) abcicli.Client {

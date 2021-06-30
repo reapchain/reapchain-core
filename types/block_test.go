@@ -15,16 +15,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/merkle"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/bits"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
-	tmversion "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/version"
-	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
-	"gitlab.reappay.net/sucs-lab//reapchain/version"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/merkle"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/bits"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	tmversion "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/version"
+	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
+	"gitlab.reappay.net/sucs-lab/reapchain/version"
 )
 
 func TestMain(m *testing.M) {

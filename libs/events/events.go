@@ -4,8 +4,8 @@ package events
 import (
 	"fmt"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
-	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
+	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
 )
 
 // ErrListenerWasRemoved is returned by AddEvent if the listener was removed.

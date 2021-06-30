@@ -12,16 +12,16 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab//reapchain/mempool/mock"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
-	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
-	"gitlab.reappay.net/sucs-lab//reapchain/store"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/mempool/mock"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab/reapchain/proxy"
+	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
+	"gitlab.reappay.net/sucs-lab/reapchain/store"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
 )
 
 var config *cfg.Config

@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
 )
 
 const (

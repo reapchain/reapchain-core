@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
 )
 
 const (

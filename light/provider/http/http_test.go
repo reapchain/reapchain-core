@@ -9,13 +9,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/kvstore"
-	"gitlab.reappay.net/sucs-lab//reapchain/light/provider"
-	lighthttp "gitlab.reappay.net/sucs-lab//reapchain/light/provider/http"
-	rpcclient "gitlab.reappay.net/sucs-lab//reapchain/rpc/client"
-	rpchttp "gitlab.reappay.net/sucs-lab//reapchain/rpc/client/http"
-	rpctest "gitlab.reappay.net/sucs-lab//reapchain/rpc/test"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/example/kvstore"
+	"gitlab.reappay.net/sucs-lab/reapchain/light/provider"
+	lighthttp "gitlab.reappay.net/sucs-lab/reapchain/light/provider/http"
+	rpcclient "gitlab.reappay.net/sucs-lab/reapchain/rpc/client"
+	rpchttp "gitlab.reappay.net/sucs-lab/reapchain/rpc/client/http"
+	rpctest "gitlab.reappay.net/sucs-lab/reapchain/rpc/test"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 func TestNewProvider(t *testing.T) {

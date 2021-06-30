@@ -3,7 +3,7 @@ package commands
 import (
 	"github.com/spf13/cobra"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/consensus"
+	"gitlab.reappay.net/sucs-lab/reapchain/consensus"
 )
 
 // ReplayCmd allows replaying of messages from the WAL.

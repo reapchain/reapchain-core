@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	abcicli "gitlab.reappay.net/sucs-lab//reapchain/abci/client"
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/server"
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	abcicli "gitlab.reappay.net/sucs-lab/reapchain/abci/client"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/server"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
 )
 
 func TestProperSyncCalls(t *testing.T) {

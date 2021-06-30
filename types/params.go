@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
 )
 
 const (

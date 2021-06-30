@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.state;
 
-option go_package = "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/state";
+option go_package = "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/state";
 
 import "gogoproto/gogo.proto";
 import "reapchain/abci/types.proto";

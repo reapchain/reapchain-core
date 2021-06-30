@@ -3,7 +3,7 @@ package timer
 import (
 	"time"
 
-	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
 )
 
 /*

@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"sort"
 
-	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
-	tmquery "gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
-	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
-	rpctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/state/txindex/null"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
+	tmquery "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
+	ctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/core/types"
+	rpctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/state/txindex/null"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 // Tx allows you to query the transaction results. `nil` could mean the

@@ -5,12 +5,12 @@ import (
 	"os"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	tmnet "gitlab.reappay.net/sucs-lab//reapchain/libs/net"
-	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	tmnet "gitlab.reappay.net/sucs-lab/reapchain/libs/net"
+	tmos "gitlab.reappay.net/sucs-lab/reapchain/libs/os"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/privval"
+	"gitlab.reappay.net/sucs-lab/reapchain/privval"
 )
 
 func main() {

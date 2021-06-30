@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
 )
 
 type Capabilities struct {

@@ -3,7 +3,7 @@ package fuzz_test
 import (
 	"fmt"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
 )
 
 func Fuzz(data []byte) int {

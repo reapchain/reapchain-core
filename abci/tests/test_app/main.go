@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/code"
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/example/code"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/types"
 )
 
 var abciType string

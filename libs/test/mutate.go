@@ -1,7 +1,7 @@
 package test
 
 import (
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
 )
 
 // Contract: !bytes.Equal(input, output) && len(input) >= len(output)

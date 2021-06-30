@@ -6,10 +6,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
 )
 
 func TestExample(t *testing.T) {

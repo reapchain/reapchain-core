@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
 )
 
 // TODO: fuzzy testing?

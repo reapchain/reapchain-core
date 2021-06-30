@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
-	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
+	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
 )
 
 // ValidateTime does a basic time validation ensuring time does not drift too

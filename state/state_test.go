@@ -13,15 +13,15 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
-	cryptoenc "gitlab.reappay.net/sucs-lab//reapchain/crypto/encoding"
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
-	tmstate "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/state"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
-	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
+	cryptoenc "gitlab.reappay.net/sucs-lab/reapchain/crypto/encoding"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	tmstate "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/state"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 // setupTestCase does setup common to all test cases.
@@ -429,7 +429,7 @@ func testProposerFreq(t *testing.T, caseNum int, valSet *types.ValidatorSet) {
 }
 
 // TestProposerPriorityDoesNotGetResetToZero assert that we preserve accum when calling updateState
-// see https://gitlab.reappay.net/sucs-lab//reapchain/issues/2718
+// see https://gitlab.reappay.net/sucs-lab/reapchain/issues/2718
 func TestProposerPriorityDoesNotGetResetToZero(t *testing.T) {
 	tearDown, _, state := setupTestCase(t)
 	defer tearDown(t)
@@ -761,7 +761,7 @@ func TestLargeGenesisValidator(t *testing.T) {
 	// add more validators with same voting power as the 2nd
 	// let the genesis validator "unbond",
 	// see how long it takes until the effect wears off and both begin to alternate
-	// see: https://gitlab.reappay.net/sucs-lab//reapchain/issues/2960
+	// see: https://gitlab.reappay.net/sucs-lab/reapchain/issues/2960
 	firstAddedValPubKey := ed25519.GenPrivKey().PubKey()
 	firstAddedValVotingPower := int64(10)
 	fvp, err := cryptoenc.PubKeyToProto(firstAddedValPubKey)

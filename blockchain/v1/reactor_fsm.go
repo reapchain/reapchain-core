@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 // Blockchain Reactor State

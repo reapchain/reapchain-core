@@ -13,21 +13,21 @@ import (
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/behaviour"
-	bc "gitlab.reappay.net/sucs-lab//reapchain/blockchain"
-	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
-	"gitlab.reappay.net/sucs-lab//reapchain/mempool/mock"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p/conn"
-	bcproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/blockchain"
-	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
-	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
-	"gitlab.reappay.net/sucs-lab//reapchain/store"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/behaviour"
+	bc "gitlab.reappay.net/sucs-lab/reapchain/blockchain"
+	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
+	"gitlab.reappay.net/sucs-lab/reapchain/mempool/mock"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p/conn"
+	bcproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/blockchain"
+	"gitlab.reappay.net/sucs-lab/reapchain/proxy"
+	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
+	"gitlab.reappay.net/sucs-lab/reapchain/store"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
 )
 
 type mockPeer struct {
@@ -174,7 +174,7 @@ func newTestReactor(p testReactorParams) *BlockchainReactor {
 }
 
 // This test is left here and not deleted to retain the termination cases for
-// future improvement in [#4482](https://gitlab.reappay.net/sucs-lab//reapchain/issues/4482).
+// future improvement in [#4482](https://gitlab.reappay.net/sucs-lab/reapchain/issues/4482).
 // func TestReactorTerminationScenarios(t *testing.T) {
 
 // 	config := cfg.ResetTestRoot("blockchain_reactor_v2_test")

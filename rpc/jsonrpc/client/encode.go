@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"reflect"
 
-	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
 )
 
 func argsToURLValues(args map[string]interface{}) (url.Values, error) {

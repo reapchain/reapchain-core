@@ -50,17 +50,17 @@ Vagrant.configure("2") do |config|
     echo 'export GOPATH=/home/vagrant/go' >> /home/vagrant/.bash_profile
     echo 'export PATH=$PATH:$GOROOT/bin:$GOPATH/bin' >> /home/vagrant/.bash_profile
     echo 'export LC_ALL=en_US.UTF-8' >> /home/vagrant/.bash_profile
-    echo 'cd go/src/gitlab.reappay.net/sucs-lab//reapchain' >> /home/vagrant/.bash_profile
+    echo 'cd go/src/gitlab.reappay.net/sucs-lab/reapchain' >> /home/vagrant/.bash_profile
 
     mkdir -p /home/vagrant/go/bin
     mkdir -p /home/vagrant/go/src/gitlab.reappay.net/sucs-lab/
-    ln -s /vagrant /home/vagrant/go/src/gitlab.reappay.net/sucs-lab//reapchain
+    ln -s /vagrant /home/vagrant/go/src/gitlab.reappay.net/sucs-lab/reapchain
 
     chown -R vagrant:vagrant /home/vagrant/go
     chown vagrant:vagrant /home/vagrant/.bash_profile
 
     # get all deps and tools, ready to install/test
     su - vagrant  -c 'source /home/vagrant/.bash_profile'
-    su - vagrant -c 'cd /home/vagrant/go/src/gitlab.reappay.net/sucs-lab//reapchain && make tools'
+    su - vagrant -c 'cd /home/vagrant/go/src/gitlab.reappay.net/sucs-lab/reapchain && make tools'
   SHELL
 end

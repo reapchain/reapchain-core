@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
 )
 
 func TestNodeInfoValidate(t *testing.T) {

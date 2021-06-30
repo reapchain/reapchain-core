@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	tmpubsub "gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	"gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	tmpubsub "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
 )
 
 const defaultCapacity = 0

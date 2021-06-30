@@ -7,14 +7,14 @@ import (
 	"fmt"
 	"time"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	ssproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/statesync"
-	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
-	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	ssproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/statesync"
+	"gitlab.reappay.net/sucs-lab/reapchain/proxy"
+	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 const (

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
-	ce "gitlab.reappay.net/sucs-lab//reapchain/crypto/encoding"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/merkle"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	ce "gitlab.reappay.net/sucs-lab/reapchain/crypto/encoding"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/merkle"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
 )
 
 // Tx is an arbitrary byte array.

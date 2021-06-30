@@ -1,8 +1,8 @@
 package types
 
 import (
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
-	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
+	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
 )
 
 var (

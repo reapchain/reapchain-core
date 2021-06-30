@@ -7,9 +7,9 @@ import (
 	"strings"
 	"sync"
 
-	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
-	tmprotobits "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/libs/bits"
+	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	tmprotobits "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/libs/bits"
 )
 
 // BitArray is a thread-safe implementation of a bit array.

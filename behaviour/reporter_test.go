@@ -4,8 +4,8 @@ import (
 	"sync"
 	"testing"
 
-	bh "gitlab.reappay.net/sucs-lab//reapchain/behaviour"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	bh "gitlab.reappay.net/sucs-lab/reapchain/behaviour"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
 )
 
 // TestMockReporter tests the MockReporter's ability to store reported

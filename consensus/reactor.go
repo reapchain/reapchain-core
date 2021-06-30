@@ -9,18 +9,18 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	cstypes "gitlab.reappay.net/sucs-lab//reapchain/consensus/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/bits"
-	tmevents "gitlab.reappay.net/sucs-lab//reapchain/libs/events"
-	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	tmcons "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/consensus"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
-	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
+	cstypes "gitlab.reappay.net/sucs-lab/reapchain/consensus/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/bits"
+	tmevents "gitlab.reappay.net/sucs-lab/reapchain/libs/events"
+	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	tmcons "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/consensus"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
 )
 
 const (

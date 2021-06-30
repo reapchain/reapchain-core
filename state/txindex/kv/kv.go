@@ -9,13 +9,13 @@ import (
 	"strings"
 
 	"github.com/gogo/protobuf/proto"
-	dbm "gitlab.reappay.net/sucs-lab//tm-db"
+	dbm "github.com/tendermint/tm-db"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
-	"gitlab.reappay.net/sucs-lab//reapchain/state/indexer"
-	"gitlab.reappay.net/sucs-lab//reapchain/state/txindex"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
+	"gitlab.reappay.net/sucs-lab/reapchain/state/indexer"
+	"gitlab.reappay.net/sucs-lab/reapchain/state/txindex"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 const (

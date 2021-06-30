@@ -76,13 +76,13 @@ Sometimes it's necessary to rename libraries to avoid naming collisions or ambig
 * Use [goimports](https://godoc.org/golang.org/x/tools/cmd/goimports)
 * Separate imports into blocks - one for the standard lib, one for external libs and one for application libs.
 * Here are some common library labels for consistency:
-    * dbm "gitlab.reappay.net/sucs-lab//tm-db"
-    * tmcmd "gitlab.reappay.net/sucs-lab//reapchain/cmd/reapchain/commands"
-    * tmcfg "gitlab.reappay.net/sucs-lab//reapchain/config/reapchain"
-    * tmtypes "gitlab.reappay.net/sucs-lab//reapchain/types"
+    * dbm "github.com/tendermint/tm-db"
+    * tmcmd "gitlab.reappay.net/sucs-lab/reapchain/cmd/reapchain/commands"
+    * tmcfg "gitlab.reappay.net/sucs-lab/reapchain/config/reapchain"
+    * tmtypes "gitlab.reappay.net/sucs-lab/reapchain/types"
 * Never use anonymous imports (the `.`), for example, `tmlibs/common` or anything else.
 * When importing a pkg from the `reapchain/libs` directory, prefix the pkg alias with tm.
-    * tmbits "gitlab.reappay.net/sucs-lab//reapchain/libs/bits"
+    * tmbits "gitlab.reappay.net/sucs-lab/reapchain/libs/bits"
 * tip: Use the `_` library import to import a library for initialization effects (side effects)
 
 ## Dependencies

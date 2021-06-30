@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
 )
 
 /* AutoFile usage

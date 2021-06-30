@@ -3,10 +3,10 @@ package types
 import (
 	"fmt"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
-	tmpubsub "gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub"
-	tmquery "gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
+	tmpubsub "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub"
+	tmquery "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
 )
 
 // Reserved event types (alphabetically sorted).

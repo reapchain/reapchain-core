@@ -9,12 +9,12 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	tmstate "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/state"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
-	tmversion "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/version"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
-	"gitlab.reappay.net/sucs-lab//reapchain/version"
+	tmstate "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/state"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	tmversion "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/version"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
+	"gitlab.reappay.net/sucs-lab/reapchain/version"
 )
 
 // database keys

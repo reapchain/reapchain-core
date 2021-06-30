@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.crypto;
 
-option go_package = "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/crypto";
+option go_package = "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/crypto";
 
 import "gogoproto/gogo.proto";
 

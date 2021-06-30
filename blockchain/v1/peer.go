@@ -5,10 +5,10 @@ import (
 	"math"
 	"time"
 
-	flow "gitlab.reappay.net/sucs-lab//reapchain/libs/flowrate"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	flow "gitlab.reappay.net/sucs-lab/reapchain/libs/flowrate"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 //--------

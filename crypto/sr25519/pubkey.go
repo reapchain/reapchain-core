@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
 
 	schnorrkel "github.com/ChainSafe/go-schnorrkel"
 )

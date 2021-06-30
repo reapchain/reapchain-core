@@ -5,9 +5,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
-	"gitlab.reappay.net/sucs-lab//reapchain/privval"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	tmos "gitlab.reappay.net/sucs-lab/reapchain/libs/os"
+	"gitlab.reappay.net/sucs-lab/reapchain/privval"
 )
 
 // ResetAllCmd removes the database of this Reapchain core

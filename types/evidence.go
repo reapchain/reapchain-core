@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/merkle"
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
-	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
-	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/merkle"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
+	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
 )
 
 // Evidence represents any provable malicious activity by a validator.

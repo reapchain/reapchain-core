@@ -4,8 +4,8 @@ import (
 	"net"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
-	p2pconn "gitlab.reappay.net/sucs-lab//reapchain/p2p/conn"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
+	p2pconn "gitlab.reappay.net/sucs-lab/reapchain/p2p/conn"
 )
 
 const (
@@ -140,7 +140,7 @@ func (ln *UnixListener) Accept() (net.Conn, error) {
 	conn := newTimeoutConn(tc, ln.timeoutReadWrite)
 
 	// TODO: wrap in something that authenticates
-	// with a MAC - https://gitlab.reappay.net/sucs-lab//reapchain/issues/3099
+	// with a MAC - https://gitlab.reappay.net/sucs-lab/reapchain/issues/3099
 
 	return conn, nil
 }

@@ -9,9 +9,9 @@ import (
 	"reflect"
 	"sort"
 
-	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	types "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
+	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	types "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
 )
 
 // HTTP + JSON handler

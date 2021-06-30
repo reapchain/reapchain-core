@@ -9,9 +9,9 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 func BenchmarkTxSearch(b *testing.B) {

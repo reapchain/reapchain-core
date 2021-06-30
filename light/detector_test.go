@@ -9,12 +9,12 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab//reapchain/light"
-	"gitlab.reappay.net/sucs-lab//reapchain/light/provider"
-	mockp "gitlab.reappay.net/sucs-lab//reapchain/light/provider/mock"
-	dbs "gitlab.reappay.net/sucs-lab//reapchain/light/store/db"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab/reapchain/light"
+	"gitlab.reappay.net/sucs-lab/reapchain/light/provider"
+	mockp "gitlab.reappay.net/sucs-lab/reapchain/light/provider/mock"
+	dbs "gitlab.reappay.net/sucs-lab/reapchain/light/store/db"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 func TestLightClientAttackEvidence_Lunatic(t *testing.T) {

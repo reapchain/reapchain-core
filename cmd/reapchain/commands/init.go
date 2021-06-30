@@ -5,13 +5,13 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
-	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
-	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab//reapchain/privval"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
+	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
+	tmos "gitlab.reappay.net/sucs-lab/reapchain/libs/os"
+	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab/reapchain/privval"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
 )
 
 // InitFilesCmd initialises a fresh Reapchain Core instance.

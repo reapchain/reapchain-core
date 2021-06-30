@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
 )
 
 func TestStatusIndexer(t *testing.T) {

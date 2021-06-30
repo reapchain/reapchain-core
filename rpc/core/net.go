@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
-	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
-	rpctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
+	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	ctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/core/types"
+	rpctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
 )
 
 // NetInfo returns network info.

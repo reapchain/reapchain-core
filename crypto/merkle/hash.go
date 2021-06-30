@@ -1,7 +1,7 @@
 package merkle
 
 import (
-	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
+	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
 )
 
 // TODO: make these have a large predefined capacity

@@ -6,8 +6,8 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	bcproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/blockchain"
-	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	bcproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/blockchain"
+	"gitlab.reappay.net/sucs-lab/reapchain/types"
 )
 
 const (
