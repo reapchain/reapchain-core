@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	tmrand "github.com/reapchain/reapchain/libs/rand"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
 )
 
 func randBitArray(bits int) (*BitArray, []byte) {

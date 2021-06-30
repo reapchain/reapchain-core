@@ -1,6 +1,6 @@
 package store
 
-import "github.com/reapchain/reapchain/types"
+import "gitlab.reappay.net/sucs-lab//reapchain/types"
 
 // Store is anything that can persistently store headers.
 type Store interface {

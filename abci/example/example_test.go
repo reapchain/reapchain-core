@@ -15,14 +15,14 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/reapchain/reapchain/libs/log"
-	tmnet "github.com/reapchain/reapchain/libs/net"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmnet "gitlab.reappay.net/sucs-lab//reapchain/libs/net"
 
-	abcicli "github.com/reapchain/reapchain/abci/client"
-	"github.com/reapchain/reapchain/abci/example/code"
-	"github.com/reapchain/reapchain/abci/example/kvstore"
-	abciserver "github.com/reapchain/reapchain/abci/server"
-	"github.com/reapchain/reapchain/abci/types"
+	abcicli "gitlab.reappay.net/sucs-lab//reapchain/abci/client"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/code"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/kvstore"
+	abciserver "gitlab.reappay.net/sucs-lab//reapchain/abci/server"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
 )
 
 func init() {

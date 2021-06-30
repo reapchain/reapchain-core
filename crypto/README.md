@@ -5,10 +5,10 @@ crypto is the cryptographic package adapted for Reapchain's uses
 ## Importing it
 
 To get the interfaces,
-`import "github.com/reapchain/reapchain/crypto"`
+`import "gitlab.reappay.net/sucs-lab//reapchain/crypto"`
 
 For any specific algorithm, use its specific module e.g.
-`import "github.com/reapchain/reapchain/crypto/ed25519"`
+`import "gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"`
 
 ## Binary encoding
 
@@ -16,7 +16,7 @@ For Binary encoding, please refer to the [Reapchain encoding specification](http
 
 ## JSON Encoding
 
-JSON encoding is done using reapchain's internal json encoder. For more information on JSON encoding, please refer to [Reapchain JSON encoding](https://github.com/reapchain/reapchain/blob/ccc990498df70f5a3df06d22476c9bb83812cbe3/libs/json/doc.go)
+JSON encoding is done using reapchain's internal json encoder. For more information on JSON encoding, please refer to [Reapchain JSON encoding](https://gitlab.reappay.net/sucs-lab//reapchain/blob/ccc990498df70f5a3df06d22476c9bb83812cbe3/libs/json/doc.go)
 
 ```go
 Example JSON encodings:

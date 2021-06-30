@@ -6,11 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	dbm "github.com/reapchain/tm-db"
+	dbm "gitlab.reappay.net/sucs-lab//tm-db"
 
-	"github.com/reapchain/reapchain/abci/example/code"
-	"github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/version"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/code"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/version"
 )
 
 var (

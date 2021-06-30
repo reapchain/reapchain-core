@@ -11,7 +11,7 @@ import (
 	kitlog "github.com/go-kit/kit/log"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/reapchain/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
 )
 
 func TestTMFmtLogger(t *testing.T) {

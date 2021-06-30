@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/reapchain/reapchain/crypto"
-	ce "github.com/reapchain/reapchain/crypto/encoding"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	ce "gitlab.reappay.net/sucs-lab//reapchain/crypto/encoding"
 
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
 )
 
 // Volatile state for each SteeringMemberCandidate

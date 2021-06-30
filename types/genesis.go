@@ -8,12 +8,12 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/reapchain/reapchain/crypto"
-	tmbytes "github.com/reapchain/reapchain/libs/bytes"
-	tmjson "github.com/reapchain/reapchain/libs/json"
-	tmos "github.com/reapchain/reapchain/libs/os"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	tmbytes "gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 const (
@@ -87,7 +87,7 @@ func (genDoc *GenesisDoc) StandingMemberHash() []byte {
 func (genDoc *GenesisDoc) QnHash() []byte {
 	qns := make([]*Qn, len(genDoc.Qns))
 	for i, qn := range genDoc.Qns {
-		qns[i] = NewQn(qn.PubKey, qn.Value)
+		qns[i] = NewQn(qn.PubKey, qn.Value, qn.Height)
 	}
 	qnSet := NewQnSet(qns)
 	return qnSet.Hash()

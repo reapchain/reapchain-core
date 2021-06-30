@@ -3,12 +3,12 @@ package mock
 import (
 	"context"
 
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/libs/bytes"
-	"github.com/reapchain/reapchain/proxy"
-	"github.com/reapchain/reapchain/rpc/client"
-	ctypes "github.com/reapchain/reapchain/rpc/core/types"
-	"github.com/reapchain/reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
+	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
+	"gitlab.reappay.net/sucs-lab//reapchain/rpc/client"
+	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 // ABCIApp will send all abci related request to the named app,

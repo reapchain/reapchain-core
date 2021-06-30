@@ -1,8 +1,8 @@
 package kvstore
 
 import (
-	"github.com/reapchain/reapchain/abci/types"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
 )
 
 // RandVal creates one random validator, with a key derived

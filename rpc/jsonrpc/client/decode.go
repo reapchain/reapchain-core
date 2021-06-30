@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	tmjson "github.com/reapchain/reapchain/libs/json"
-	types "github.com/reapchain/reapchain/rpc/jsonrpc/types"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	types "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
 )
 
 func unmarshalResponseBytes(

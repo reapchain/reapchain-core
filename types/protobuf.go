@@ -1,12 +1,12 @@
 package types
 
 import (
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/crypto/ed25519"
-	cryptoenc "github.com/reapchain/reapchain/crypto/encoding"
-	"github.com/reapchain/reapchain/crypto/secp256k1"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
+	cryptoenc "gitlab.reappay.net/sucs-lab//reapchain/crypto/encoding"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/secp256k1"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
 )
 
 //-------------------------------------------------------
@@ -212,7 +212,7 @@ func (pb2tm) QnUpdates(sms []abci.QnUpdate) ([]*Qn, error) {
 		if err != nil {
 			return nil, err
 		}
-		smz[i] = NewQn(pub, v.Value)
+		smz[i] = NewQn(pub, v.Value, v.Height)
 	}
 	return smz, nil
 }

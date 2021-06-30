@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/p2p"
-	p2pmocks "github.com/reapchain/reapchain/p2p/mocks"
-	"github.com/reapchain/reapchain/statesync/mocks"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	p2pmocks "gitlab.reappay.net/sucs-lab//reapchain/p2p/mocks"
+	"gitlab.reappay.net/sucs-lab//reapchain/statesync/mocks"
 )
 
 func TestSnapshot_Key(t *testing.T) {

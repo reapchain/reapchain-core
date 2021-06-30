@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/reapchain/reapchain/crypto/tmhash"
-	tmcrypto "github.com/reapchain/reapchain/proto/reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
+	tmcrypto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/crypto"
 )
 
 const (

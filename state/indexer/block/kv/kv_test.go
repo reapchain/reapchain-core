@@ -6,11 +6,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/libs/pubsub/query"
-	blockidxkv "github.com/reapchain/reapchain/state/indexer/block/kv"
-	"github.com/reapchain/reapchain/types"
 	db "github.com/tendermint/tm-db"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
+	blockidxkv "gitlab.reappay.net/sucs-lab//reapchain/state/indexer/block/kv"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 func TestBlockIndexer(t *testing.T) {

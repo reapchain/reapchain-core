@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/libs/pubsub/query"
-	"github.com/reapchain/reapchain/state/txindex"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
+	"gitlab.reappay.net/sucs-lab//reapchain/state/txindex"
 )
 
 var _ txindex.TxIndexer = (*TxIndex)(nil)

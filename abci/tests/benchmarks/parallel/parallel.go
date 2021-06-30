@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/reapchain/reapchain/abci/types"
-	tmnet "github.com/reapchain/reapchain/libs/net"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	tmnet "gitlab.reappay.net/sucs-lab//reapchain/libs/net"
 )
 
 func main() {

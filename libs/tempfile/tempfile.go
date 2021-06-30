@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	tmsync "github.com/reapchain/reapchain/libs/sync"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
 )
 
 const (

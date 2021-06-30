@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/reapchain/reapchain/crypto/merkle"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/merkle"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
 )
 
 type StandingMemberSet struct {
@@ -134,4 +134,12 @@ func (sms *StandingMemberSet) updateWithChangeSet(smz []*StandingMember) error {
 	}
 
 	return nil
+}
+
+func (standingMemberSet *StandingMemberSet) GetByIndex(index int32) (address []byte, standingMember *StandingMember) {
+	if index < 0 || int(index) >= len(standingMemberSet.StandingMembers) {
+		return nil, nil
+	}
+	standingMember = standingMemberSet.StandingMembers[index]
+	return standingMember.Address, standingMember.Copy()
 }

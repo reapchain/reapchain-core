@@ -8,12 +8,12 @@ import (
 	"reflect"
 	"time"
 
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/crypto/merkle"
-	"github.com/reapchain/reapchain/libs/log"
-	"github.com/reapchain/reapchain/proxy"
-	sm "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/merkle"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
+	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 var crc32c = crc32.MakeTable(crc32.Castagnoli)
@@ -77,9 +77,8 @@ func (cs *State) readReplayMessage(msg *TimedWALMessage, newStepSub types.Subscr
 			cs.Logger.Info("Replay: Vote", "height", v.Height, "round", v.Round, "type", v.Type,
 				"blockID", v.BlockID, "peer", peerID)
 		case *QnMessage:
-			v := msg.Qn
-			cs.Logger.Info("Replay: Vote", "height", v.Height, "round", v.Round, "type", v.Type,
-				"blockID", v.BlockID, "peer", peerID)
+			qn := msg.Qn
+			cs.Logger.Info("Replay: Qn", "height", qn.Height, "peer", peerID)
 		}
 
 		cs.handleMsg(m)
@@ -321,7 +320,7 @@ func (h *Handshaker) ReplayBlocks(
 
 		qns := make([]*types.Qn, len(h.genDoc.Qns))
 		for i, val := range h.genDoc.Qns {
-			qns[i] = types.NewQn(val.PubKey, val.Value)
+			qns[i] = types.NewQn(val.PubKey, val.Value, val.Height)
 		}
 		qnSet := types.NewQnSet(qns)
 		qnz := types.TM2PB.QnUpdates(qnSet)

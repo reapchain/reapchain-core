@@ -10,10 +10,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
 
-	"github.com/reapchain/reapchain/libs/pubsub"
-	"github.com/reapchain/reapchain/libs/pubsub/query"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
 )
 
 const (

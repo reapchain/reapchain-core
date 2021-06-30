@@ -9,12 +9,12 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	tmstate "github.com/reapchain/reapchain/proto/reapchain/state"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	tmversion "github.com/reapchain/reapchain/proto/reapchain/version"
-	"github.com/reapchain/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
-	"github.com/reapchain/reapchain/version"
+	tmstate "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/state"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	tmversion "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/version"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
+	"gitlab.reappay.net/sucs-lab//reapchain/version"
 )
 
 // database keys
@@ -425,7 +425,7 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 	} else {
 		qns := make([]*types.Qn, len(genDoc.Qns))
 		for i, qn := range genDoc.Qns {
-			qns[i] = types.NewQn(qn.PubKey, qn.Value)
+			qns[i] = types.NewQn(qn.PubKey, qn.Value, qn.Height)
 		}
 		qnSet = types.NewQnSet(qns)
 	}

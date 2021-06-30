@@ -6,7 +6,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	tmnet "github.com/reapchain/reapchain/libs/net"
+	tmnet "gitlab.reappay.net/sucs-lab//reapchain/libs/net"
 )
 
 // Config is an gRPC server configuration.

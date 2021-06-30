@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/crypto"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 func TestVoteSet_AddVote_Good(t *testing.T) {

@@ -13,11 +13,11 @@ import (
 
 	db "github.com/tendermint/tm-db"
 
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/libs/pubsub/query"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	"github.com/reapchain/reapchain/state/txindex"
-	"github.com/reapchain/reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab//reapchain/state/txindex"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 func TestTxIndex(t *testing.T) {
@@ -295,7 +295,7 @@ func TestTxSearchMultipleTxs(t *testing.T) {
 	require.NoError(t, err)
 
 	// indexed fourth (to test we don't include txs with similar events)
-	// https://github.com/reapchain/reapchain/issues/2908
+	// https://gitlab.reappay.net/sucs-lab//reapchain/issues/2908
 	txResult4 := txResultWithEvents([]abci.Event{
 		{Type: "account", Attributes: []abci.EventAttribute{{Key: []byte("number.id"), Value: []byte("1"), Index: true}}},
 	})

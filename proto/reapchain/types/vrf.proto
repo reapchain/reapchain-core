@@ -1,0 +1,24 @@
+syntax = "proto3";
+package reapchain.types;
+
+option go_package = "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types";
+
+import "gogoproto/gogo.proto";
+import "reapchain/crypto/keys.proto";
+
+message VrfSet {
+  repeated Vrf vrfs         = 1;
+}
+
+message Vrf {
+  bytes                       address           = 1;
+  reapchain.crypto.PublicKey pub_key           = 2 [(gogoproto.nullable) = false];
+  uint64 value = 3;
+  int64 height = 4;
+}
+
+message SimpleVrf {
+  reapchain.crypto.PublicKey pub_key      = 1;
+  uint64 value = 2;
+  int64 height = 3;
+}

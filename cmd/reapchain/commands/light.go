@@ -13,16 +13,16 @@ import (
 
 	"github.com/spf13/cobra"
 
-	dbm "github.com/reapchain/tm-db"
+	dbm "gitlab.reappay.net/sucs-lab//tm-db"
 
-	"github.com/reapchain/reapchain/libs/log"
-	tmmath "github.com/reapchain/reapchain/libs/math"
-	tmos "github.com/reapchain/reapchain/libs/os"
-	"github.com/reapchain/reapchain/light"
-	lproxy "github.com/reapchain/reapchain/light/proxy"
-	lrpc "github.com/reapchain/reapchain/light/rpc"
-	dbs "github.com/reapchain/reapchain/light/store/db"
-	rpcserver "github.com/reapchain/reapchain/rpc/jsonrpc/server"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
+	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
+	"gitlab.reappay.net/sucs-lab//reapchain/light"
+	lproxy "gitlab.reappay.net/sucs-lab//reapchain/light/proxy"
+	lrpc "gitlab.reappay.net/sucs-lab//reapchain/light/rpc"
+	dbs "gitlab.reappay.net/sucs-lab//reapchain/light/store/db"
+	rpcserver "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/server"
 )
 
 // LightCmd represents the base command when called without any subcommands
@@ -207,7 +207,7 @@ func runProxy(cmd *cobra.Command, args []string) error {
 	cfg.MaxOpenConnections = maxOpenConnections
 	// If necessary adjust global WriteTimeout to ensure it's greater than
 	// TimeoutBroadcastTxCommit.
-	// See https://github.com/reapchain/reapchain/issues/3435
+	// See https://gitlab.reappay.net/sucs-lab//reapchain/issues/3435
 	if cfg.WriteTimeout <= config.RPC.TimeoutBroadcastTxCommit {
 		cfg.WriteTimeout = config.RPC.TimeoutBroadcastTxCommit + 1*time.Second
 	}

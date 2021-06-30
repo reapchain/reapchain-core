@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/reapchain/reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
 )
 
 func TestSimple(t *testing.T) {

@@ -5,9 +5,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/reapchain/reapchain/abci/example/kvstore"
-	nm "github.com/reapchain/reapchain/node"
-	rpctest "github.com/reapchain/reapchain/rpc/test"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/kvstore"
+	nm "gitlab.reappay.net/sucs-lab//reapchain/node"
+	rpctest "gitlab.reappay.net/sucs-lab//reapchain/rpc/test"
 )
 
 var node *nm.Node

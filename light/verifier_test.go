@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	tmmath "github.com/reapchain/reapchain/libs/math"
-	"github.com/reapchain/reapchain/light"
-	"github.com/reapchain/reapchain/types"
+	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
+	"gitlab.reappay.net/sucs-lab//reapchain/light"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 const (

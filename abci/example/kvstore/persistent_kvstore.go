@@ -7,13 +7,13 @@ import (
 	"strconv"
 	"strings"
 
-	dbm "github.com/reapchain/tm-db"
+	dbm "gitlab.reappay.net/sucs-lab//tm-db"
 
-	"github.com/reapchain/reapchain/abci/example/code"
-	"github.com/reapchain/reapchain/abci/types"
-	cryptoenc "github.com/reapchain/reapchain/crypto/encoding"
-	"github.com/reapchain/reapchain/libs/log"
-	pc "github.com/reapchain/reapchain/proto/reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/code"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	cryptoenc "gitlab.reappay.net/sucs-lab//reapchain/crypto/encoding"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	pc "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/crypto"
 )
 
 const (

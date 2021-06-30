@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/libs/log"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	"github.com/reapchain/reapchain/p2p"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 func init() {
@@ -45,7 +45,7 @@ func (p testPeer) simulateInput(input inputData) {
 	input.pool.AddBlock(input.request.PeerID, block, 123)
 	// TODO: uncommenting this creates a race which is detected by:
 	// https://github.com/golang/go/blob/2bd767b1022dd3254bcec469f0ee164024726486/src/testing/testing.go#L854-L856
-	// see: https://github.com/reapchain/reapchain/issues/3390#issue-418379890
+	// see: https://gitlab.reappay.net/sucs-lab//reapchain/issues/3390#issue-418379890
 	// input.t.Logf("Added block from peer %v (height: %v)", input.request.PeerID, input.request.Height)
 }
 

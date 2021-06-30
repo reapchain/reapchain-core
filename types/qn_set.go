@@ -6,24 +6,116 @@ import (
 	"fmt"
 	"sort"
 
-	ce "github.com/reapchain/reapchain/crypto/encoding"
-	"github.com/reapchain/reapchain/crypto/merkle"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	ce "gitlab.reappay.net/sucs-lab//reapchain/crypto/encoding"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/merkle"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+)
+
+var (
+	ErrGotQnFromUnwantedCosensusRound = errors.New(
+		"peer has sent a qn that does not match our height for more than one round",
+	)
+)
+
+var (
+	ErrQnUnexpectedStep               = errors.New("unexpected step")
+	ErrQnInvalidStandingMemberIndex   = errors.New("invalid standing member index")
+	ErrQnInvalidStandingMemberAddress = errors.New("invalid standing member address")
+	ErrQnInvalidSignature             = errors.New("invalid signature")
+	ErrQnInvalidBlockHash             = errors.New("invalid block hash")
+	ErrQnNonDeterministicSignature    = errors.New("non-deterministic signature")
+	ErrQnNil                          = errors.New("nil vote")
 )
 
 type QnSet struct {
-	Qns []*Qn `json:"qns"`
+	height            int64
+	standingMemberSet *StandingMemberSet
+
+	qns []*Qn
+
+	mtx tmsync.Mutex
 }
 
-func NewQnSet(qnz []*Qn) *QnSet {
-	qns := &QnSet{}
+func NewQnSet(height int64, standingMemberSet *StandingMemberSet) *QnSet {
+	if height == 0 {
+		panic("Cannot make QnSet for height == 0, doesn't make sense.")
+	}
+	return &QnSet{
+		height:            height,
+		standingMemberSet: standingMemberSet,
+		qns:               make([]*Qn, standingMemberSet.Size()),
+	}
+}
 
-	err := qns.updateWithChangeSet(qnz)
-	if err != nil {
-		panic(fmt.Sprintf("Cannot create qn set: %v", err))
+func (qnSet *QnSet) GetHeight() int64 {
+	if qnSet == nil {
+		return 0
+	}
+	return qnSet.height
+}
+
+func (qnSet *QnSet) Size() int {
+	if qnSet == nil {
+		return 0
+	}
+	return qnSet.standingMemberSet.Size()
+}
+
+func (qnSet *QnSet) AddQn(qn *Qn) (added bool, err error) {
+	if qnSet == nil {
+		panic("AddQn() on nil QnSet")
+	}
+	qnSet.mtx.Lock()
+	defer qnSet.mtx.Unlock()
+
+	return qnSet.addQn(qn)
+}
+
+func (qnSet *QnSet) addQn(qn *Qn) (added bool, err error) {
+	if qn == nil {
+		return false, ErrQnNil
+	}
+	standingMemberIndex := qn.StandingMemberIndex
+	standingMemberAddr := qn.StandingMemberAddress
+
+	// Ensure that standing member index was set
+	if standingMemberIndex < 0 {
+		return false, fmt.Errorf("index < 0: %w", ErrQnInvalidStandingMemberIndex)
+	} else if len(standingMemberAddr) == 0 {
+		return false, fmt.Errorf("empty address: %w", ErrQnInvalidStandingMemberAddress)
 	}
 
-	return qns
+	// Make sure the step matches.
+	if qn.Height != qnSet.height {
+		return false, fmt.Errorf("expected %d, but got %d: %w", qnSet.height, qn.Height)
+	}
+
+	// Ensure that signer is a standing member.
+	lookupAddr, standingMember := qnSet.standingMemberSet.GetByIndex(standingMemberIndex)
+	if standingMember == nil {
+		return false, fmt.Errorf(
+			"cannot find standing member %d in standing member set of size %d: %w",
+			standingMemberIndex, qnSet.standingMemberSet.Size(), ErrQnInvalidStandingMemberIndex)
+	}
+
+	// Ensure that the signer has the right address.
+	if !bytes.Equal(standingMemberAddr, lookupAddr) {
+		return false, fmt.Errorf(
+			"qn.StandingMemberAddress (%X) does not match address (%X) for qn.StandingMemberIndex (%d)\n"+
+				"Ensure the genesis file is correct across all standing members: %w",
+			standingMemberAddr, lookupAddr, standingMemberIndex, ErrQnInvalidStandingMemberAddress)
+	}
+
+	// Check signature.
+	if err := qn.Verify(standingMember.PubKey); err != nil {
+		return false, fmt.Errorf("failed to verify qn and PubKey %s: %w", standingMember.PubKey, err)
+	}
+
+	// Add qn
+	qnSet.qns[standingMemberIndex] = qn
+
+	return added, nil
 }
 
 func (qns *QnSet) UpdateWithChangeSet(qnz []*Qn) error {
@@ -83,11 +175,10 @@ func (qns *QnSet) ToProto() (*tmproto.QnSet, error) {
 	vp := new(tmproto.QnSet)
 	qnsProto := make([]*tmproto.Qn, len(qns.Qns))
 	for i := 0; i < len(qns.Qns); i++ {
-		valp, err := qns.Qns[i].ToProto()
-		if err != nil {
-			return nil, err
+		valp := qns.Qns[i].ToProto()
+		if valp != nil {
+			qnsProto[i] = valp
 		}
-		qnsProto[i] = valp
 	}
 	vp.Qns = qnsProto
 
@@ -109,10 +200,6 @@ func standingMemberListCopy(qns []*Qn) []*Qn {
 		qnsCopy[i] = qn.Copy()
 	}
 	return qnsCopy
-}
-
-func (qns *QnSet) Size() int {
-	return len(qns.Qns)
 }
 
 // 정렬하기 위한 구조체
@@ -150,27 +237,29 @@ func QnFromProto(vp *tmproto.Qn) (*Qn, error) {
 	v.Address = vp.GetAddress()
 	v.PubKey = pk
 	v.Value = vp.Value
+	v.Height = vp.Height
 
 	return v, nil
 }
 
-func (qn *Qn) ToProto() (*tmproto.Qn, error) {
+func (qn *Qn) ToProto() *tmproto.Qn {
 	if qn == nil {
-		return nil, errors.New("nil qn")
+		return nil
 	}
 
 	pk, err := ce.PubKeyToProto(qn.PubKey)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
-	vp := tmproto.Qn{
+	qnProto := tmproto.Qn{
 		Address: qn.Address,
 		PubKey:  pk,
 		Value:   qn.Value,
+		Height:  qn.Height,
 	}
 
-	return &vp, nil
+	return &qnProto
 }
 
 func (qn *Qn) Copy() *Qn {

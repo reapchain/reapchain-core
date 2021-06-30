@@ -3,8 +3,8 @@ package mock
 import (
 	"context"
 
-	"github.com/reapchain/reapchain/rpc/client"
-	ctypes "github.com/reapchain/reapchain/rpc/core/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/rpc/client"
+	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
 )
 
 // StatusMock returns the result specified by the Call

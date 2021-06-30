@@ -11,13 +11,13 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	auto "github.com/reapchain/reapchain/libs/autofile"
-	tmjson "github.com/reapchain/reapchain/libs/json"
-	"github.com/reapchain/reapchain/libs/log"
-	tmos "github.com/reapchain/reapchain/libs/os"
-	"github.com/reapchain/reapchain/libs/service"
-	tmcons "github.com/reapchain/reapchain/proto/reapchain/consensus"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	auto "gitlab.reappay.net/sucs-lab//reapchain/libs/autofile"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	tmcons "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/consensus"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 const (

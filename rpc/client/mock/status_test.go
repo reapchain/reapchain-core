@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/libs/bytes"
-	"github.com/reapchain/reapchain/rpc/client/mock"
-	ctypes "github.com/reapchain/reapchain/rpc/core/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
+	"gitlab.reappay.net/sucs-lab//reapchain/rpc/client/mock"
+	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
 )
 
 func TestStatus(t *testing.T) {

@@ -6,12 +6,12 @@ import (
 	"regexp"
 	"strconv"
 
-	dbm "github.com/reapchain/tm-db"
+	dbm "gitlab.reappay.net/sucs-lab//tm-db"
 
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	"github.com/reapchain/reapchain/light/store"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	"github.com/reapchain/reapchain/types"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab//reapchain/light/store"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 var (

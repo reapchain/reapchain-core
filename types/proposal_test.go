@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/crypto/tmhash"
-	"github.com/reapchain/reapchain/libs/protoio"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/protoio"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
 )
 
 var (

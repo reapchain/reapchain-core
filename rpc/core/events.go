@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	tmpubsub "github.com/reapchain/reapchain/libs/pubsub"
-	tmquery "github.com/reapchain/reapchain/libs/pubsub/query"
-	ctypes "github.com/reapchain/reapchain/rpc/core/types"
-	rpctypes "github.com/reapchain/reapchain/rpc/jsonrpc/types"
+	tmpubsub "gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub"
+	tmquery "gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
+	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
+	rpctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
 )
 
 const (

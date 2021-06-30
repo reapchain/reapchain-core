@@ -11,13 +11,13 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/reapchain/reapchain/abci/example/kvstore"
-	"github.com/reapchain/reapchain/libs/log"
-	"github.com/reapchain/reapchain/light"
-	"github.com/reapchain/reapchain/light/provider"
-	httpp "github.com/reapchain/reapchain/light/provider/http"
-	dbs "github.com/reapchain/reapchain/light/store/db"
-	rpctest "github.com/reapchain/reapchain/rpc/test"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/kvstore"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/light"
+	"gitlab.reappay.net/sucs-lab//reapchain/light/provider"
+	httpp "gitlab.reappay.net/sucs-lab//reapchain/light/provider/http"
+	dbs "gitlab.reappay.net/sucs-lab//reapchain/light/store/db"
+	rpctest "gitlab.reappay.net/sucs-lab//reapchain/rpc/test"
 )
 
 // Automatically getting new headers and verifying them.

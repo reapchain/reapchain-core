@@ -5,12 +5,12 @@ import (
 	"os"
 	"testing"
 
-	cfg "github.com/reapchain/reapchain/config"
-	"github.com/reapchain/reapchain/crypto/tmhash"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	"github.com/reapchain/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 var config *cfg.Config // NOTE: must be reset for each _test.go file

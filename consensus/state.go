@@ -11,23 +11,23 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	cfg "github.com/reapchain/reapchain/config"
-	cstypes "github.com/reapchain/reapchain/consensus/types"
-	"github.com/reapchain/reapchain/crypto"
-	tmevents "github.com/reapchain/reapchain/libs/events"
-	"github.com/reapchain/reapchain/libs/fail"
-	tmjson "github.com/reapchain/reapchain/libs/json"
-	"github.com/reapchain/reapchain/libs/log"
-	tmmath "github.com/reapchain/reapchain/libs/math"
-	tmos "github.com/reapchain/reapchain/libs/os"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	"github.com/reapchain/reapchain/libs/service"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	"github.com/reapchain/reapchain/p2p"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	sm "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
+	cstypes "gitlab.reappay.net/sucs-lab//reapchain/consensus/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	tmevents "gitlab.reappay.net/sucs-lab//reapchain/libs/events"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/fail"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
+	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 // Consensus sentinel errors
@@ -35,6 +35,7 @@ var (
 	ErrInvalidProposalSignature   = errors.New("error invalid proposal signature")
 	ErrInvalidProposalPOLRound    = errors.New("error invalid proposal POL round")
 	ErrAddingVote                 = errors.New("error adding vote")
+	ErrAddingQn                   = errors.New("error adding qn")
 	ErrSignatureFoundInPastBlocks = errors.New("found signature from the same key")
 
 	errPubKeyIsNotSet = errors.New("pubkey is not set. Look for \"Can't get private validator pubkey\" errors")
@@ -860,7 +861,7 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// attempt to add the vote and dupeout the validator if its a duplicate signature
 		// if the vote gives us a 2/3-any or 2/3-one, we transition
 		//fmt.Println("2stompesi-block-3")
-		added, err = cs.tryAddVote(msg.Qn, peerID)
+		added, err = cs.tryAddQn(msg.Qn, peerID)
 		if added {
 			cs.statsMsgQueue <- mi
 		}
@@ -879,7 +880,7 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// We probably don't want to stop the peer here. The vote does not
 		// necessarily comes from a malicious peer but can be just broadcasted by
 		// a typical peer.
-		// https://github.com/reapchain/reapchain/issues/1281
+		// https://gitlab.reappay.net/sucs-lab//reapchain/issues/1281
 		// }
 
 		// NOTE: the vote is broadcast to peers by the reactor listening
@@ -2038,9 +2039,52 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 			// 1) bad peer OR
 			// 2) not a bad peer? this can also err sometimes with "Unexpected step" OR
 			// 3) tmkms use with multiple validators connecting to a single tmkms instance
-			// 		(https://github.com/reapchain/reapchain/issues/3839).
+			// 		(https://gitlab.reappay.net/sucs-lab//reapchain/issues/3839).
 			cs.Logger.Info("failed attempting to add vote", "err", err)
 			return added, ErrAddingVote
+		}
+	}
+
+	return added, nil
+}
+
+func (cs *State) tryAddQn(qn *types.Qn, peerID p2p.ID) (bool, error) {
+	added, err := cs.addQn(qn, peerID)
+	if err != nil {
+		// If the qn height is off, we'll just ignore it,
+		// But if it's a conflicting sig, add it to the cs.evpool.
+		// If it's otherwise invalid, punish peer.
+		// nolint: gocritic
+		if qnErr, ok := err.(*types.ErrQnConflictingQns); ok {
+			if cs.privValidatorPubKey == nil {
+				return false, errPubKeyIsNotSet
+			}
+
+			if bytes.Equal(qn.ValidatorAddress, cs.privValidatorPubKey.Address()) {
+				cs.Logger.Error(
+					"found conflicting qn from ourselves; did you unsafe_reset a validator?",
+					"height", qn.Height,
+					"round", qn.Round,
+					"type", qn.Type,
+				)
+
+				return added, err
+			}
+
+			// report conflicting qns to the evidence pool
+			cs.evpool.ReportConflictingQns(qnErr.QnA, qnErr.QnB)
+			cs.Logger.Debug(
+				"found and sent conflicting qns to the evidence pool",
+				"qn_a", qnErr.QnA,
+				"qn_b", qnErr.QnB,
+			)
+
+			return added, err
+		} else if errors.Is(err, types.ErrQnNonDeterministicSignature) {
+			cs.Logger.Debug("qn has non-deterministic signature", "err", err)
+		} else {
+			cs.Logger.Info("failed attempting to add qn", "err", err)
+			return added, ErrAddingQn
 		}
 	}
 
@@ -2255,6 +2299,29 @@ func (cs *State) signVote(
 	vote.Signature = v.Signature
 
 	return vote, err
+}
+
+func (cs *State) addQn(qn *types.Qn, peerID p2p.ID) (added bool, err error) {
+	cs.Logger.Debug(
+		"adding vote",
+		"vote_height", qn.Height,
+		"qn_address", qn.Address,
+	)
+
+	// Height mismatch is ignored.
+	// Not necessarily a bad peer, but not favourable behaviour.
+	if qn.Height != cs.Height {
+		cs.Logger.Debug("qn ignored and not added", "vote_height", qn.Height, "cs_height", cs.Height, "peer", peerID)
+		return
+	}
+
+	added, err = cs.Qns.AddQn(qn, peerID)
+	if !added {
+		// Either duplicate, or error upon cs.Votes.AddByIndex()
+		return
+	}
+
+	return added, err
 }
 
 func (cs *State) voteTime() time.Time {

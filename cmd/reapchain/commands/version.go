@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/reapchain/reapchain/version"
+	"gitlab.reappay.net/sucs-lab//reapchain/version"
 )
 
 // VersionCmd ...

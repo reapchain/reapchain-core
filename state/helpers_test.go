@@ -7,16 +7,16 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/crypto/ed25519"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	tmstate "github.com/reapchain/reapchain/proto/reapchain/state"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	"github.com/reapchain/reapchain/proxy"
-	sm "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	tmstate "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/state"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
+	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 type paramsChangeTestCase struct {

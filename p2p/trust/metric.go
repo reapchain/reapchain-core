@@ -7,8 +7,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/reapchain/reapchain/libs/service"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
 )
 
 //---------------------------------------------------------------------------------------

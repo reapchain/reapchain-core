@@ -6,13 +6,13 @@ import (
 	"math"
 	"time"
 
-	cfg "github.com/reapchain/reapchain/config"
-	"github.com/reapchain/reapchain/libs/clist"
-	"github.com/reapchain/reapchain/libs/log"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	"github.com/reapchain/reapchain/p2p"
-	protomem "github.com/reapchain/reapchain/proto/reapchain/mempool"
-	"github.com/reapchain/reapchain/types"
+	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/clist"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	protomem "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/mempool"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 const (
@@ -239,7 +239,7 @@ func (memR *Reactor) broadcastTxRoutine(peer p2p.Peer) {
 		}
 
 		// NOTE: Transaction batching was disabled due to
-		// https://github.com/reapchain/reapchain/issues/5796
+		// https://gitlab.reappay.net/sucs-lab//reapchain/issues/5796
 
 		if _, ok := memTx.senders.Load(peerID); !ok {
 			msg := protomem.Message{

@@ -1,10 +1,12 @@
 syntax = "proto3";
 package reapchain.consensus;
 
-option go_package = "github.com/reapchain/reapchain/proto/reapchain/consensus";
+option go_package = "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/consensus";
 
 import "gogoproto/gogo.proto";
 import "reapchain/types/types.proto";
+import "reapchain/types/qn.proto";
+import "reapchain/types/vrf.proto";
 import "reapchain/libs/bits/types.proto";
 
 // NewRoundStep is sent for every step taken in the ConsensusState.
@@ -81,6 +83,10 @@ message Qn {
   reapchain.types.Qn qn = 1;
 }
 
+message Vrf {
+  reapchain.types.Vrf vrf = 1;
+}
+
 message Message {
   oneof sum {
     NewRoundStep  new_round_step  = 1;
@@ -92,6 +98,7 @@ message Message {
     HasVote       has_vote        = 7;
     VoteSetMaj23  vote_set_maj23  = 8;
     VoteSetBits   vote_set_bits   = 9;
-    Qn          Qn            = 10;
+    Qn            qn              = 10;
+    Vrf           vrfn            = 11;
   }
 }

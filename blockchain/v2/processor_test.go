@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/reapchain/reapchain/p2p"
-	tmState "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	tmState "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 // pcBlock is a test helper structure with simple types. Its purpose is to help with test readability.

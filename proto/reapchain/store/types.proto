@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.store;
 
-option go_package = "github.com/reapchain/reapchain/proto/reapchain/store";
+option go_package = "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/store";
 
 message BlockStoreState {
   int64 base   = 1;

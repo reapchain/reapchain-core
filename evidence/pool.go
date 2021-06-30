@@ -11,13 +11,13 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
-	dbm "github.com/reapchain/tm-db"
+	dbm "gitlab.reappay.net/sucs-lab//tm-db"
 
-	clist "github.com/reapchain/reapchain/libs/clist"
-	"github.com/reapchain/reapchain/libs/log"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	sm "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/types"
+	clist "gitlab.reappay.net/sucs-lab//reapchain/libs/clist"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 const (

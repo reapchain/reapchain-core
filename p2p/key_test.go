@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/crypto/ed25519"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
 )
 
 func TestLoadOrGenNodeKey(t *testing.T) {

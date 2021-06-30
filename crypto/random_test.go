@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
 )
 
 // the purpose of this test is primarily to ensure that the randomness

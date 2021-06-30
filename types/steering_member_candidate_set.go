@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/reapchain/reapchain/crypto/merkle"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/merkle"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
 )
 
 type SteeringMemberCandidateSet struct {

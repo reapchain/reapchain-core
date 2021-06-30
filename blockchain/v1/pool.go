@@ -3,9 +3,9 @@ package v1
 import (
 	"sort"
 
-	"github.com/reapchain/reapchain/libs/log"
-	"github.com/reapchain/reapchain/p2p"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 // BlockPool keeps track of the fast sync peers, block requests and block responses.

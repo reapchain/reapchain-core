@@ -4,8 +4,8 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/reapchain/reapchain/abci/example/code"
-	"github.com/reapchain/reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/code"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
 )
 
 type Application struct {

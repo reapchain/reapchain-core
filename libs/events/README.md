@@ -2,7 +2,7 @@
 
 # events
 
-`import "github.com/reapchain/reapchain/libs/events"`
+`import "gitlab.reappay.net/sucs-lab//reapchain/libs/events"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
@@ -27,7 +27,7 @@ Pub-Sub in go with event caching
 
 ### Package files
 
-[event_cache.go](/src/github.com/reapchain/reapchain/libs/events/event_cache.go) [events.go](/src/github.com/reapchain/reapchain/libs/events/events.go) 
+[event_cache.go](/src/gitlab.reappay.net/sucs-lab//reapchain/libs/events/event_cache.go) [events.go](/src/gitlab.reappay.net/sucs-lab//reapchain/libs/events/events.go) 
 
 
 

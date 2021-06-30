@@ -9,18 +9,18 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	cstypes "github.com/reapchain/reapchain/consensus/types"
-	"github.com/reapchain/reapchain/libs/bits"
-	tmevents "github.com/reapchain/reapchain/libs/events"
-	tmjson "github.com/reapchain/reapchain/libs/json"
-	"github.com/reapchain/reapchain/libs/log"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	"github.com/reapchain/reapchain/p2p"
-	tmcons "github.com/reapchain/reapchain/proto/reapchain/consensus"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	sm "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	cstypes "gitlab.reappay.net/sucs-lab//reapchain/consensus/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/bits"
+	tmevents "gitlab.reappay.net/sucs-lab//reapchain/libs/events"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	tmcons "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/consensus"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 const (
@@ -1611,6 +1611,10 @@ func (m *BlockPartMessage) String() string {
 //-------------------------------------
 type QnMessage struct {
 	Qn *types.Qn
+}
+
+func (qnMessage *QnMessage) ValidateBasic() error {
+	return qnMessage.Qn.ValidateBasic()
 }
 
 // VoteMessage is sent when voting for a proposal (or lack thereof).

@@ -11,13 +11,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/crypto/ed25519"
-	"github.com/reapchain/reapchain/crypto/tmhash"
-	tmjson "github.com/reapchain/reapchain/libs/json"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	"github.com/reapchain/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 func TestGenLoadValidator(t *testing.T) {

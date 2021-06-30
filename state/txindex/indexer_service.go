@@ -3,9 +3,9 @@ package txindex
 import (
 	"context"
 
-	"github.com/reapchain/reapchain/libs/service"
-	"github.com/reapchain/reapchain/state/indexer"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	"gitlab.reappay.net/sucs-lab//reapchain/state/indexer"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 // XXX/TODO: These types should be moved to the indexer package.

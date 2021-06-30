@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/crypto/ed25519"
-	tmjson "github.com/reapchain/reapchain/libs/json"
-	tmos "github.com/reapchain/reapchain/libs/os"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
 )
 
 // ID is a hex-encoded crypto.Address

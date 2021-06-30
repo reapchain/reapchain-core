@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/reapchain/reapchain/light/provider"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/light/provider"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 var errNoResp = errors.New("no response from provider")

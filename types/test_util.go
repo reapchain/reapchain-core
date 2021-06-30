@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	tmversion "github.com/reapchain/reapchain/proto/reapchain/version"
-	"github.com/reapchain/reapchain/version"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	tmversion "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/version"
+	"gitlab.reappay.net/sucs-lab//reapchain/version"
 )
 
 func MakeCommit(blockID BlockID, height int64, round int32,

@@ -11,9 +11,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	cfg "github.com/reapchain/reapchain/config"
-	"github.com/reapchain/reapchain/libs/cli"
-	rpchttp "github.com/reapchain/reapchain/rpc/client/http"
+	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/cli"
+	rpchttp "gitlab.reappay.net/sucs-lab//reapchain/rpc/client/http"
 )
 
 var dumpCmd = &cobra.Command{

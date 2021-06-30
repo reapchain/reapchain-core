@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	types "github.com/reapchain/reapchain/rpc/jsonrpc/types"
+	types "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
 )
 
 const (

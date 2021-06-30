@@ -9,9 +9,9 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	sm "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/types"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 func TestTxFilter(t *testing.T) {

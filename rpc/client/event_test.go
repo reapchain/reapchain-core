@@ -10,11 +10,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	abci "github.com/reapchain/reapchain/abci/types"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	"github.com/reapchain/reapchain/rpc/client"
-	ctypes "github.com/reapchain/reapchain/rpc/core/types"
-	"github.com/reapchain/reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab//reapchain/rpc/client"
+	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 var waitForEventTimeout = 8 * time.Second

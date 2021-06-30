@@ -4,8 +4,8 @@ import (
 	"io"
 	"testing"
 
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/crypto/internal/benchmarking"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/internal/benchmarking"
 )
 
 func BenchmarkKeyGeneration(b *testing.B) {

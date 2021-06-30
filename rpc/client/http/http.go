@@ -7,16 +7,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/reapchain/reapchain/libs/bytes"
-	tmjson "github.com/reapchain/reapchain/libs/json"
-	"github.com/reapchain/reapchain/libs/log"
-	tmpubsub "github.com/reapchain/reapchain/libs/pubsub"
-	"github.com/reapchain/reapchain/libs/service"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	rpcclient "github.com/reapchain/reapchain/rpc/client"
-	ctypes "github.com/reapchain/reapchain/rpc/core/types"
-	jsonrpcclient "github.com/reapchain/reapchain/rpc/jsonrpc/client"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmpubsub "gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	rpcclient "gitlab.reappay.net/sucs-lab//reapchain/rpc/client"
+	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
+	jsonrpcclient "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/client"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 /*

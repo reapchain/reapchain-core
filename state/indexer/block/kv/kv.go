@@ -9,12 +9,12 @@ import (
 	"strings"
 
 	"github.com/google/orderedcode"
-	dbm "github.com/reapchain/tm-db"
+	dbm "gitlab.reappay.net/sucs-lab//tm-db"
 
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/libs/pubsub/query"
-	"github.com/reapchain/reapchain/state/indexer"
-	"github.com/reapchain/reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
+	"gitlab.reappay.net/sucs-lab//reapchain/state/indexer"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 var _ indexer.BlockIndexer = (*BlockerIndexer)(nil)

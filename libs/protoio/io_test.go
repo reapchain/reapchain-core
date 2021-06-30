@@ -41,7 +41,7 @@ import (
 	"github.com/gogo/protobuf/test"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/libs/protoio"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/protoio"
 )
 
 func iotest(writer protoio.WriteCloser, reader protoio.ReadCloser) error {

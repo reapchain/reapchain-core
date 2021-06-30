@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/reapchain/reapchain/libs/pubsub/query"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/pubsub/query"
 )
 
 func TestEmptyQueryMatchesAnything(t *testing.T) {

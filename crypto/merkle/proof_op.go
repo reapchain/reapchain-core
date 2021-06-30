@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	tmcrypto "github.com/reapchain/reapchain/proto/reapchain/crypto"
+	tmcrypto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/crypto"
 )
 
 //----------------------------------------

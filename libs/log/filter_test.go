@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/reapchain/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
 )
 
 func TestVariousLevels(t *testing.T) {

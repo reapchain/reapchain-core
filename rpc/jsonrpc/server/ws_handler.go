@@ -12,9 +12,9 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/reapchain/reapchain/libs/log"
-	"github.com/reapchain/reapchain/libs/service"
-	types "github.com/reapchain/reapchain/rpc/jsonrpc/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	types "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
 )
 
 // WebSocket handler
@@ -446,7 +446,7 @@ func (wsc *wsConnection) writeRoutine() {
 
 // All writes to the websocket must (re)set the write deadline.
 // If some writes don't set it while others do, they may timeout incorrectly
-// (https://github.com/reapchain/reapchain/issues/553)
+// (https://gitlab.reappay.net/sucs-lab//reapchain/issues/553)
 func (wsc *wsConnection) writeMessageWithDeadline(msgType int, msg []byte) error {
 	if err := wsc.baseConn.SetWriteDeadline(time.Now().Add(wsc.writeWait)); err != nil {
 		return err

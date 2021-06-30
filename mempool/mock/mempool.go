@@ -1,10 +1,10 @@
 package mock
 
 import (
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/libs/clist"
-	mempl "github.com/reapchain/reapchain/mempool"
-	"github.com/reapchain/reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/clist"
+	mempl "gitlab.reappay.net/sucs-lab//reapchain/mempool"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 // Mempool is an empty implementation of a Mempool, useful for testing.

@@ -10,16 +10,16 @@ import (
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/crypto/merkle"
-	"github.com/reapchain/reapchain/crypto/tmhash"
-	"github.com/reapchain/reapchain/libs/bits"
-	tmbytes "github.com/reapchain/reapchain/libs/bytes"
-	tmmath "github.com/reapchain/reapchain/libs/math"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	tmversion "github.com/reapchain/reapchain/proto/reapchain/version"
-	"github.com/reapchain/reapchain/version"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/merkle"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/bits"
+	tmbytes "gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
+	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	tmversion "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/version"
+	"gitlab.reappay.net/sucs-lab//reapchain/version"
 )
 
 const (
@@ -327,7 +327,7 @@ func MaxDataBytesNoEvidence(maxBytes int64, valsCount int) int64 {
 // NOTE: changes to the Header should be duplicated in:
 // - header.Hash()
 // - abci.Header
-// - https://github.com/reapchain/spec/blob/master/spec/blockchain/blockchain.md
+// - https://gitlab.reappay.net/sucs-lab//spec/blob/master/spec/blockchain/blockchain.md
 type Header struct {
 	// basic block info
 	Version tmversion.Consensus `json:"version"`
@@ -1064,27 +1064,6 @@ func CommitFromProto(cp *tmproto.Commit) (*Commit, error) {
 }
 
 //-----------------------------------------------------------------------------
-
-type QnData struct {
-
-	// Txs that will be applied by state @ block.Height+1.
-	// NOTE: not all txs here are valid.  We're just agreeing on the order first.
-	// This means that block.AppHash does not include these txs.
-	Qns Qns `json:"qns"`
-
-	// Volatile
-	hash tmbytes.HexBytes
-}
-
-func (qnData *QnData) Hash() tmbytes.HexBytes {
-	if qnData == nil {
-		return (Qns{}).Hash()
-	}
-	if qnData.hash == nil {
-		qnData.hash = qnData.Qns.Hash() // NOTE: leaves of merkle tree are TxIDs
-	}
-	return qnData.hash
-}
 
 // Data contains the set of transactions included in the block
 type Data struct {

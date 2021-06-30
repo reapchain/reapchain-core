@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/reapchain/reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
 )
 
 func TestTrustMetricStoreSaveLoad(t *testing.T) {

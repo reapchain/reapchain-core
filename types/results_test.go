@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	abci "github.com/reapchain/reapchain/abci/types"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
 )
 
 func TestABCIResults(t *testing.T) {

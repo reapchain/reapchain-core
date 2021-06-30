@@ -5,14 +5,14 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/reapchain/reapchain/behaviour"
-	bc "github.com/reapchain/reapchain/blockchain"
-	"github.com/reapchain/reapchain/libs/log"
-	"github.com/reapchain/reapchain/p2p"
-	bcproto "github.com/reapchain/reapchain/proto/reapchain/blockchain"
-	sm "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/store"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/behaviour"
+	bc "gitlab.reappay.net/sucs-lab//reapchain/blockchain"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	bcproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/blockchain"
+	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/store"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 const (

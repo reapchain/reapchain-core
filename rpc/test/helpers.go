@@ -8,18 +8,18 @@ import (
 	"strings"
 	"time"
 
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/libs/log"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
 
-	cfg "github.com/reapchain/reapchain/config"
-	tmnet "github.com/reapchain/reapchain/libs/net"
-	nm "github.com/reapchain/reapchain/node"
-	"github.com/reapchain/reapchain/p2p"
-	"github.com/reapchain/reapchain/privval"
-	"github.com/reapchain/reapchain/proxy"
-	ctypes "github.com/reapchain/reapchain/rpc/core/types"
-	core_grpc "github.com/reapchain/reapchain/rpc/grpc"
-	rpcclient "github.com/reapchain/reapchain/rpc/jsonrpc/client"
+	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
+	tmnet "gitlab.reappay.net/sucs-lab//reapchain/libs/net"
+	nm "gitlab.reappay.net/sucs-lab//reapchain/node"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab//reapchain/privval"
+	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
+	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
+	core_grpc "gitlab.reappay.net/sucs-lab//reapchain/rpc/grpc"
+	rpcclient "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/client"
 )
 
 // Options helps with specifying some parameters for our RPC testing for greater

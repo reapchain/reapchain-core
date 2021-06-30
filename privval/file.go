@@ -9,16 +9,16 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/crypto/ed25519"
-	tmbytes "github.com/reapchain/reapchain/libs/bytes"
-	tmjson "github.com/reapchain/reapchain/libs/json"
-	tmos "github.com/reapchain/reapchain/libs/os"
-	"github.com/reapchain/reapchain/libs/protoio"
-	"github.com/reapchain/reapchain/libs/tempfile"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	"github.com/reapchain/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
+	tmbytes "gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/protoio"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/tempfile"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 // TODO: type ?

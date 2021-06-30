@@ -16,13 +16,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	tmbytes "github.com/reapchain/reapchain/libs/bytes"
-	"github.com/reapchain/reapchain/libs/log"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
+	tmbytes "gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
 
-	client "github.com/reapchain/reapchain/rpc/jsonrpc/client"
-	server "github.com/reapchain/reapchain/rpc/jsonrpc/server"
-	types "github.com/reapchain/reapchain/rpc/jsonrpc/types"
+	client "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/client"
+	server "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/server"
+	types "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
 )
 
 // Client and Server should work over tcp or unix sockets

@@ -12,9 +12,9 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/libs/log"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	types "github.com/reapchain/reapchain/rpc/jsonrpc/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	types "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
 )
 
 var wsCallTimeout = 5 * time.Second

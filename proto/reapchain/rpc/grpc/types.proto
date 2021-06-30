@@ -1,6 +1,6 @@
 syntax = "proto3";
 package reapchain.rpc.grpc;
-option  go_package = "github.com/reapchain/reapchain/rpc/grpc;coregrpc";
+option  go_package = "gitlab.reappay.net/sucs-lab//reapchain/rpc/grpc;coregrpc";
 
 import "reapchain/abci/types.proto";
 

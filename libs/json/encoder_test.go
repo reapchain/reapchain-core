@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/json"
 )
 
 func TestMarshal(t *testing.T) {

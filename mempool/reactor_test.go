@@ -13,16 +13,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/abci/example/kvstore"
-	abci "github.com/reapchain/reapchain/abci/types"
-	cfg "github.com/reapchain/reapchain/config"
-	"github.com/reapchain/reapchain/libs/log"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	"github.com/reapchain/reapchain/p2p"
-	"github.com/reapchain/reapchain/p2p/mock"
-	memproto "github.com/reapchain/reapchain/proto/reapchain/mempool"
-	"github.com/reapchain/reapchain/proxy"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/kvstore"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p/mock"
+	memproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/mempool"
+	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 const (
@@ -65,7 +65,7 @@ func TestReactorBroadcastTxsMessage(t *testing.T) {
 	waitForTxsOnReactors(t, txs, reactors)
 }
 
-// regression test for https://github.com/reapchain/reapchain/issues/5408
+// regression test for https://gitlab.reappay.net/sucs-lab//reapchain/issues/5408
 func TestReactorConcurrency(t *testing.T) {
 	config := cfg.TestConfig()
 	const N = 2

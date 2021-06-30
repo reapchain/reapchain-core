@@ -9,17 +9,17 @@ import (
 	"testing"
 	"time"
 
-	db "github.com/reapchain/tm-db"
+	db "gitlab.reappay.net/sucs-lab//tm-db"
 
-	"github.com/reapchain/reapchain/abci/example/kvstore"
-	cfg "github.com/reapchain/reapchain/config"
-	"github.com/reapchain/reapchain/libs/log"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	"github.com/reapchain/reapchain/privval"
-	"github.com/reapchain/reapchain/proxy"
-	sm "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/store"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/kvstore"
+	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab//reapchain/privval"
+	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
+	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/store"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 // WALGenerateNBlocks generates a consensus WAL. It does this by spinning up a

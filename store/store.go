@@ -5,12 +5,12 @@ import (
 	"strconv"
 
 	"github.com/gogo/protobuf/proto"
-	dbm "github.com/reapchain/tm-db"
+	dbm "gitlab.reappay.net/sucs-lab//tm-db"
 
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	tmstore "github.com/reapchain/reapchain/proto/reapchain/store"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	"github.com/reapchain/reapchain/types"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	tmstore "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/store"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 /*
@@ -37,7 +37,7 @@ type BlockStore struct {
 	// fine-grained concurrency control for its data, and thus this mutex does not apply to
 	// database contents. The only reason for keeping these fields in the struct is that the data
 	// can't efficiently be queried from the database since the key encoding we use is not
-	// lexicographically ordered (see https://github.com/reapchain/reapchain/issues/4567).
+	// lexicographically ordered (see https://gitlab.reappay.net/sucs-lab//reapchain/issues/4567).
 	mtx    tmsync.RWMutex
 	base   int64
 	height int64

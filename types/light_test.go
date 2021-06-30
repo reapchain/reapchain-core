@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/reapchain/reapchain/crypto"
-	tmversion "github.com/reapchain/reapchain/proto/reapchain/version"
-	"github.com/reapchain/reapchain/version"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	tmversion "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/version"
+	"gitlab.reappay.net/sucs-lab//reapchain/version"
 )
 
 func TestLightBlockValidateBasic(t *testing.T) {

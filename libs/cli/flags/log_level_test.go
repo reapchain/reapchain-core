@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	tmflags "github.com/reapchain/reapchain/libs/cli/flags"
-	"github.com/reapchain/reapchain/libs/log"
+	tmflags "gitlab.reappay.net/sucs-lab//reapchain/libs/cli/flags"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
 )
 
 const (

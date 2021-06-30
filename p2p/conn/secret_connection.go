@@ -21,13 +21,13 @@ import (
 	"golang.org/x/crypto/hkdf"
 	"golang.org/x/crypto/nacl/box"
 
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/crypto/ed25519"
-	cryptoenc "github.com/reapchain/reapchain/crypto/encoding"
-	"github.com/reapchain/reapchain/libs/async"
-	"github.com/reapchain/reapchain/libs/protoio"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	tmp2p "github.com/reapchain/reapchain/proto/reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
+	cryptoenc "gitlab.reappay.net/sucs-lab//reapchain/crypto/encoding"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/async"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/protoio"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	tmp2p "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/p2p"
 )
 
 // 4 + 1024 == 1028 total frame size
@@ -53,13 +53,13 @@ var (
 
 // SecretConnection implements net.Conn.
 // It is an implementation of the STS protocol.
-// See https://github.com/reapchain/reapchain/blob/0.1/docs/sts-final.pdf for
+// See https://gitlab.reappay.net/sucs-lab//reapchain/blob/0.1/docs/sts-final.pdf for
 // details on the protocol.
 //
 // Consumers of the SecretConnection are responsible for authenticating
 // the remote peer's pubkey against known information, like a nodeID.
 // Otherwise they are vulnerable to MITM.
-// (TODO(ismail): see also https://github.com/reapchain/reapchain/issues/3010)
+// (TODO(ismail): see also https://gitlab.reappay.net/sucs-lab//reapchain/issues/3010)
 type SecretConnection struct {
 
 	// immutable
@@ -456,7 +456,7 @@ func incrNonce(nonce *[aeadNonceSize]byte) {
 	counter := binary.LittleEndian.Uint64(nonce[4:])
 	if counter == math.MaxUint64 {
 		// Terminates the session and makes sure the nonce would not re-used.
-		// See https://github.com/reapchain/reapchain/issues/3531
+		// See https://gitlab.reappay.net/sucs-lab//reapchain/issues/3531
 		panic("can't increase nonce without overflow")
 	}
 	counter++

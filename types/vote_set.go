@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/reapchain/reapchain/libs/bits"
-	tmjson "github.com/reapchain/reapchain/libs/json"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/bits"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
 )
 
 const (

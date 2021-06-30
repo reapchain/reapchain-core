@@ -9,12 +9,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/reapchain/reapchain/libs/log"
-	tmmath "github.com/reapchain/reapchain/libs/math"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	"github.com/reapchain/reapchain/light/provider"
-	"github.com/reapchain/reapchain/light/store"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmmath "gitlab.reappay.net/sucs-lab//reapchain/libs/math"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab//reapchain/light/provider"
+	"gitlab.reappay.net/sucs-lab//reapchain/light/store"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 type mode byte
@@ -506,7 +506,7 @@ func (c *Client) VerifyLightBlockAtHeight(ctx context.Context, height int64, now
 // headers are not adjacent, verifySkipping is performed and necessary (not all)
 // intermediate headers will be requested. See the specification for details.
 // Intermediate headers are not saved to database.
-// https://github.com/reapchain/spec/blob/master/spec/consensus/light-client.md
+// https://gitlab.reappay.net/sucs-lab//spec/blob/master/spec/consensus/light-client.md
 //
 // If the header, which is older than the currently trusted header, is
 // requested and the light client does not have it, VerifyHeader will perform:

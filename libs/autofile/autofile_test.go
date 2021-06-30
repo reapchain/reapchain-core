@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	tmos "github.com/reapchain/reapchain/libs/os"
+	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
 )
 
 func TestSIGHUP(t *testing.T) {

@@ -23,10 +23,10 @@ implementation.
 import (
 	"context"
 
-	"github.com/reapchain/reapchain/libs/bytes"
-	"github.com/reapchain/reapchain/libs/service"
-	ctypes "github.com/reapchain/reapchain/rpc/core/types"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 // Client wraps most important rpc calls a client would make if you want to

@@ -5,11 +5,11 @@ import (
 	"net"
 	"time"
 
-	"github.com/reapchain/reapchain/libs/cmap"
-	"github.com/reapchain/reapchain/libs/log"
-	"github.com/reapchain/reapchain/libs/service"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/cmap"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
 
-	tmconn "github.com/reapchain/reapchain/p2p/conn"
+	tmconn "gitlab.reappay.net/sucs-lab//reapchain/p2p/conn"
 )
 
 //go:generate mockery --case underscore --name Peer

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/reapchain/reapchain/libs/bits"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/bits"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 //-----------------------------------------------------------------------------

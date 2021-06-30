@@ -17,12 +17,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/crypto/ed25519"
-	"github.com/reapchain/reapchain/crypto/sr25519"
-	"github.com/reapchain/reapchain/libs/async"
-	tmos "github.com/reapchain/reapchain/libs/os"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/ed25519"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/sr25519"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/async"
+	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
 )
 
 // Run go test -update from within this module

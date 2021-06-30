@@ -3,7 +3,7 @@ package node
 import (
 	"time"
 
-	"github.com/reapchain/reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
 )
 
 type ID struct {

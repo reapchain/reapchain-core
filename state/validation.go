@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 //-----------------------------------------------------

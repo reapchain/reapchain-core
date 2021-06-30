@@ -1,8 +1,8 @@
 package p2p
 
 import (
-	"github.com/reapchain/reapchain/libs/service"
-	"github.com/reapchain/reapchain/p2p/conn"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p/conn"
 )
 
 // Reactor is responsible for handling incoming messages on one or more

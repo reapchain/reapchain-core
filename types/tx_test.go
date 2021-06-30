@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	ctest "github.com/reapchain/reapchain/libs/test"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	ctest "gitlab.reappay.net/sucs-lab//reapchain/libs/test"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
 )
 
 func makeTxs(cnt, size int) Txs {

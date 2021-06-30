@@ -13,21 +13,21 @@ import (
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
 
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/behaviour"
-	bc "github.com/reapchain/reapchain/blockchain"
-	cfg "github.com/reapchain/reapchain/config"
-	"github.com/reapchain/reapchain/libs/log"
-	"github.com/reapchain/reapchain/libs/service"
-	"github.com/reapchain/reapchain/mempool/mock"
-	"github.com/reapchain/reapchain/p2p"
-	"github.com/reapchain/reapchain/p2p/conn"
-	bcproto "github.com/reapchain/reapchain/proto/reapchain/blockchain"
-	"github.com/reapchain/reapchain/proxy"
-	sm "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/store"
-	"github.com/reapchain/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/behaviour"
+	bc "gitlab.reappay.net/sucs-lab//reapchain/blockchain"
+	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	"gitlab.reappay.net/sucs-lab//reapchain/mempool/mock"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p/conn"
+	bcproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/blockchain"
+	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
+	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/store"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 type mockPeer struct {
@@ -174,7 +174,7 @@ func newTestReactor(p testReactorParams) *BlockchainReactor {
 }
 
 // This test is left here and not deleted to retain the termination cases for
-// future improvement in [#4482](https://github.com/reapchain/reapchain/issues/4482).
+// future improvement in [#4482](https://gitlab.reappay.net/sucs-lab//reapchain/issues/4482).
 // func TestReactorTerminationScenarios(t *testing.T) {
 
 // 	config := cfg.ResetTestRoot("blockchain_reactor_v2_test")

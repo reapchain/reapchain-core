@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"time"
 
-	abci "github.com/reapchain/reapchain/abci/types"
-	cryptoenc "github.com/reapchain/reapchain/crypto/encoding"
-	"github.com/reapchain/reapchain/libs/fail"
-	"github.com/reapchain/reapchain/libs/log"
-	mempl "github.com/reapchain/reapchain/mempool"
-	tmstate "github.com/reapchain/reapchain/proto/reapchain/state"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	"github.com/reapchain/reapchain/proxy"
-	"github.com/reapchain/reapchain/types"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	cryptoenc "gitlab.reappay.net/sucs-lab//reapchain/crypto/encoding"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/fail"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	mempl "gitlab.reappay.net/sucs-lab//reapchain/mempool"
+	tmstate "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/state"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/proxy"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 //-----------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.abci;
 
-option go_package = "github.com/reapchain/reapchain/abci/types";
+option go_package = "gitlab.reappay.net/sucs-lab//reapchain/abci/types";
 
 // For more information on gogo.proto, see:
 // https://github.com/gogo/protobuf/blob/master/extensions.md
@@ -13,7 +13,7 @@ import "reapchain/types/consensus_round.proto";
 import "google/protobuf/timestamp.proto";
 import "gogoproto/gogo.proto";
 
-// This file is copied from http://github.com/reapchain/abci
+// This file is copied from http://gitlab.reappay.net/sucs-lab//abci
 // NOTE: When using custom types, mind the warnings.
 // https://github.com/gogo/protobuf/blob/master/custom_types.md#warnings-and-issues
 
@@ -374,6 +374,7 @@ message StandingMemberUpdate {
 message QnUpdate {
   reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
   uint64 value = 2;
+  int64 height = 3;
 }
 
 // VoteInfo
@@ -401,7 +402,7 @@ message Evidence {
   ];
   // Total voting power of the validator set in case the ABCI application does
   // not store historical validators.
-  // https://github.com/reapchain/reapchain/issues/4581
+  // https://gitlab.reappay.net/sucs-lab//reapchain/issues/4581
   int64 total_voting_power = 5;
 }
 

@@ -94,7 +94,7 @@ Check out other examples in example_test.go
 ## 2. Pure functions to verify a new header (see verifier.go)
 
 Verify function verifies a new header against some trusted header. See
-https://github.com/reapchain/spec/blob/master/spec/consensus/light-client/verification.md
+https://gitlab.reappay.net/sucs-lab//spec/blob/master/spec/consensus/light-client/verification.md
 for details.
 
 There are two methods of verification: sequential and bisection
@@ -121,7 +121,7 @@ See
 https://docs.reapchain.com/master/reapchain-core/light-client-protocol.html
 for usage example.
 Or see
-https://github.com/reapchain/spec/tree/master/spec/consensus/light-client
+https://gitlab.reappay.net/sucs-lab//spec/tree/master/spec/consensus/light-client
 for the full spec
 */
 package light

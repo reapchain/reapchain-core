@@ -4,7 +4,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/reapchain/reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
 )
 
 // The code in this file is adapted from agl/ed25519.

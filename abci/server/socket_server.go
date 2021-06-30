@@ -8,11 +8,11 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/reapchain/reapchain/abci/types"
-	tmlog "github.com/reapchain/reapchain/libs/log"
-	tmnet "github.com/reapchain/reapchain/libs/net"
-	"github.com/reapchain/reapchain/libs/service"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	tmlog "gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmnet "gitlab.reappay.net/sucs-lab//reapchain/libs/net"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
 )
 
 // var maxNumberConnections = 2

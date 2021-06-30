@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/reapchain/reapchain/crypto"
-	ce "github.com/reapchain/reapchain/crypto/encoding"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	ce "gitlab.reappay.net/sucs-lab//reapchain/crypto/encoding"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
 )
 
 // Volatile state for each Validator

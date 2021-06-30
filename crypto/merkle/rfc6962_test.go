@@ -20,7 +20,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/reapchain/reapchain/crypto/tmhash"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
 )
 
 func TestRFC6962Hasher(t *testing.T) {

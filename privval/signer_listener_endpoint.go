@@ -5,10 +5,10 @@ import (
 	"net"
 	"time"
 
-	"github.com/reapchain/reapchain/libs/log"
-	"github.com/reapchain/reapchain/libs/service"
-	tmsync "github.com/reapchain/reapchain/libs/sync"
-	privvalproto "github.com/reapchain/reapchain/proto/reapchain/privval"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
+	privvalproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/privval"
 )
 
 // SignerListenerEndpointOption sets an optional parameter on the SignerListenerEndpoint.

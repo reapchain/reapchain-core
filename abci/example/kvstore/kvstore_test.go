@@ -8,14 +8,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/reapchain/reapchain/libs/log"
-	"github.com/reapchain/reapchain/libs/service"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/service"
 
-	abcicli "github.com/reapchain/reapchain/abci/client"
-	"github.com/reapchain/reapchain/abci/example/code"
-	abciserver "github.com/reapchain/reapchain/abci/server"
-	"github.com/reapchain/reapchain/abci/types"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
+	abcicli "gitlab.reappay.net/sucs-lab//reapchain/abci/client"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/example/code"
+	abciserver "gitlab.reappay.net/sucs-lab//reapchain/abci/server"
+	"gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
 )
 
 const (

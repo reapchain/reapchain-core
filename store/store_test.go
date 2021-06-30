@@ -14,16 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
 
-	cfg "github.com/reapchain/reapchain/config"
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/libs/log"
-	tmrand "github.com/reapchain/reapchain/libs/rand"
-	tmstore "github.com/reapchain/reapchain/proto/reapchain/store"
-	tmversion "github.com/reapchain/reapchain/proto/reapchain/version"
-	sm "github.com/reapchain/reapchain/state"
-	"github.com/reapchain/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
-	"github.com/reapchain/reapchain/version"
+	cfg "gitlab.reappay.net/sucs-lab//reapchain/config"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/log"
+	tmrand "gitlab.reappay.net/sucs-lab//reapchain/libs/rand"
+	tmstore "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/store"
+	tmversion "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/version"
+	sm "gitlab.reappay.net/sucs-lab//reapchain/state"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
+	"gitlab.reappay.net/sucs-lab//reapchain/version"
 )
 
 // A cleanupFunc cleans up any config / test files created for a particular

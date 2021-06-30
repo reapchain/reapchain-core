@@ -8,9 +8,9 @@ import (
 
 	"golang.org/x/crypto/ed25519"
 
-	"github.com/reapchain/reapchain/crypto"
-	"github.com/reapchain/reapchain/crypto/tmhash"
-	tmjson "github.com/reapchain/reapchain/libs/json"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto"
+	"gitlab.reappay.net/sucs-lab//reapchain/crypto/tmhash"
+	tmjson "gitlab.reappay.net/sucs-lab//reapchain/libs/json"
 )
 
 //-------------------------------------

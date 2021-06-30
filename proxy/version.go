@@ -1,8 +1,8 @@
 package proxy
 
 import (
-	abci "github.com/reapchain/reapchain/abci/types"
-	"github.com/reapchain/reapchain/version"
+	abci "gitlab.reappay.net/sucs-lab//reapchain/abci/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/version"
 )
 
 // RequestInfo contains all the information for sending

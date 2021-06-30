@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"sync"
 
-	tmsync "github.com/reapchain/reapchain/libs/sync"
+	tmsync "gitlab.reappay.net/sucs-lab//reapchain/libs/sync"
 )
 
 // MaxLength is the max allowed number of elements a linked list is

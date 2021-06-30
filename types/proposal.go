@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	tmbytes "github.com/reapchain/reapchain/libs/bytes"
-	"github.com/reapchain/reapchain/libs/protoio"
-	tmproto "github.com/reapchain/reapchain/proto/reapchain/types"
-	tmtime "github.com/reapchain/reapchain/types/time"
+	tmbytes "gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/protoio"
+	tmproto "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/types"
+	tmtime "gitlab.reappay.net/sucs-lab//reapchain/types/time"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	tmos "github.com/reapchain/reapchain/libs/os"
-	"github.com/reapchain/reapchain/p2p"
+	tmos "gitlab.reappay.net/sucs-lab//reapchain/libs/os"
+	"gitlab.reappay.net/sucs-lab//reapchain/p2p"
 )
 
 // GenNodeKeyCmd allows the generation of a node key. It prints node's ID to

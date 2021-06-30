@@ -1,13 +1,13 @@
 package proxy
 
 import (
-	"github.com/reapchain/reapchain/libs/bytes"
-	lrpc "github.com/reapchain/reapchain/light/rpc"
-	rpcclient "github.com/reapchain/reapchain/rpc/client"
-	ctypes "github.com/reapchain/reapchain/rpc/core/types"
-	rpcserver "github.com/reapchain/reapchain/rpc/jsonrpc/server"
-	rpctypes "github.com/reapchain/reapchain/rpc/jsonrpc/types"
-	"github.com/reapchain/reapchain/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/libs/bytes"
+	lrpc "gitlab.reappay.net/sucs-lab//reapchain/light/rpc"
+	rpcclient "gitlab.reappay.net/sucs-lab//reapchain/rpc/client"
+	ctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/core/types"
+	rpcserver "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/server"
+	rpctypes "gitlab.reappay.net/sucs-lab//reapchain/rpc/jsonrpc/types"
+	"gitlab.reappay.net/sucs-lab//reapchain/types"
 )
 
 func RPCRoutes(c *lrpc.Client) map[string]*rpcserver.RPCFunc {

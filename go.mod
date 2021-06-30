@@ -1,8 +1,8 @@
-module github.com/reapchain/reapchain
+module gitlab.reappay.net/sucs-lab//reapchain
 
 go 1.16
 
-replace github.com/reapchain/tm-db v0.6.4 => ../tm-db
+replace gitlab.reappay.net/sucs-lab//tm-db v0.6.4 => ../tm-db
 
 require (
 	github.com/BurntSushi/toml v0.3.1
@@ -25,7 +25,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.11.0
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
-	github.com/reapchain/tm-db v0.6.4
+	gitlab.reappay.net/sucs-lab//tm-db v0.6.4
 	github.com/rs/cors v1.7.0
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa
 	github.com/snikch/goodman v0.0.0-20171125024755-10e37e294daa

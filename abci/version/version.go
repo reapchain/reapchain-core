@@ -1,7 +1,7 @@
 package version
 
 import (
-	"github.com/reapchain/reapchain/version"
+	"gitlab.reappay.net/sucs-lab//reapchain/version"
 )
 
 // TODO: eliminate this after some version refactor

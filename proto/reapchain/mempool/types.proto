@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.mempool;
 
-option go_package = "github.com/reapchain/reapchain/proto/reapchain/mempool";
+option go_package = "gitlab.reappay.net/sucs-lab//reapchain/proto/reapchain/mempool";
 
 message Txs {
   repeated bytes txs = 1;
