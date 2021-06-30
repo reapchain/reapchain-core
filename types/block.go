@@ -1071,6 +1071,8 @@ type Data struct {
 
 	// Volatile
 	hash tmbytes.HexBytes
+
+	Qns []Qn `json:"qns"`
 }
 
 // Hash returns the hash of the data

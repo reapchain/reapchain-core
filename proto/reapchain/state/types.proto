@@ -8,6 +8,7 @@ import "reapchain/abci/types.proto";
 import "reapchain/types/types.proto";
 import "reapchain/types/validator.proto";
 import "reapchain/types/standing_member.proto";
+import "reapchain/types/steering_member_candidate.proto";
 import "reapchain/types/qn.proto";
 import "reapchain/types/consensus_round.proto";
 import "reapchain/types/params.proto";
@@ -79,6 +80,7 @@ message State {
   // Extra +1 due to nextValSet delay.
   reapchain.types.ValidatorSet next_validators                = 6;
   reapchain.types.StandingMemberSet standing_members          = 15;
+  reapchain.types.SteeringMemberCandidateSet steering_member_candidates          = 18;
   reapchain.types.ValidatorSet validators                     = 7;
   reapchain.types.ValidatorSet last_validators                = 8;
   int64                         last_height_validators_changed = 9;

@@ -391,7 +391,7 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 			}
 		}
 
-		if keepSms[h] {
+		if keepQns[h] {
 			v, err := loadQnsInfo(store.db, h)
 			if err != nil || v.QnSet == nil {
 				vip, err := store.LoadQns(h)
