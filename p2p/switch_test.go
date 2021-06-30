@@ -18,11 +18,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/config"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p/conn"
+	"gitlab.reappay.net/reapchain/reapchain-core/config"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p/conn"
 )
 
 var (

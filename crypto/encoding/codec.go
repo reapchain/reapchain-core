@@ -3,11 +3,11 @@ package encoding
 import (
 	"fmt"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/secp256k1"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/json"
-	pc "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/crypto"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/secp256k1"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/json"
+	pc "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/crypto"
 )
 
 func init() {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
 )
 
 var (

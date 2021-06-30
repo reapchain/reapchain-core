@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	abcicli "gitlab.reappay.net/sucs-lab/reapchain/abci/client"
-	"gitlab.reappay.net/sucs-lab/reapchain/abci/example/kvstore"
-	"gitlab.reappay.net/sucs-lab/reapchain/abci/server"
-	"gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	abcicli "gitlab.reappay.net/reapchain/reapchain-core/abci/client"
+	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
+	"gitlab.reappay.net/reapchain/reapchain-core/abci/server"
+	"gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
 )
 
 //----------------------------------------

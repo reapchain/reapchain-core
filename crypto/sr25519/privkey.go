@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
 
 	schnorrkel "github.com/ChainSafe/go-schnorrkel"
 )

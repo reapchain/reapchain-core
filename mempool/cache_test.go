@@ -7,10 +7,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/abci/example/kvstore"
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/proxy"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 func TestCacheRemove(t *testing.T) {

@@ -1,12 +1,12 @@
 package types
 
 import (
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
-	cryptoenc "gitlab.reappay.net/sucs-lab/reapchain/crypto/encoding"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/secp256k1"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
+	cryptoenc "gitlab.reappay.net/reapchain/reapchain-core/crypto/encoding"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/secp256k1"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 //-------------------------------------------------------

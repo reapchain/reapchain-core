@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
-	"gitlab.reappay.net/sucs-lab/reapchain/privval"
+	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
+	"gitlab.reappay.net/reapchain/reapchain-core/privval"
 )
 
 // GenValidatorCmd allows the generation of a keypair for a

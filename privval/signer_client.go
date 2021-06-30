@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
-	cryptoenc "gitlab.reappay.net/sucs-lab/reapchain/crypto/encoding"
-	privvalproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/privval"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	cryptoenc "gitlab.reappay.net/reapchain/reapchain-core/crypto/encoding"
+	privvalproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/privval"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 // SignerClient implements PrivValidator.

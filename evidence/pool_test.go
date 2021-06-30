@@ -11,16 +11,16 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/evidence"
-	"gitlab.reappay.net/sucs-lab/reapchain/evidence/mocks"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
-	tmversion "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/version"
-	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
-	smmocks "gitlab.reappay.net/sucs-lab/reapchain/state/mocks"
-	"gitlab.reappay.net/sucs-lab/reapchain/store"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/version"
+	"gitlab.reappay.net/reapchain/reapchain-core/evidence"
+	"gitlab.reappay.net/reapchain/reapchain-core/evidence/mocks"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	tmversion "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/version"
+	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
+	smmocks "gitlab.reappay.net/reapchain/reapchain-core/state/mocks"
+	"gitlab.reappay.net/reapchain/reapchain-core/store"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/version"
 )
 
 func TestMain(m *testing.M) {

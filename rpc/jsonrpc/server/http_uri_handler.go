@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"strings"
 
-	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	types "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
+	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	types "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 // HTTP + URI handler

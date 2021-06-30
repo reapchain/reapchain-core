@@ -21,7 +21,7 @@ mkdir -p build/pkg
 
 # Get the git commit
 VERSION := "$(shell git describe --always)"
-GIT_IMPORT="gitlab.reappay.net/sucs-lab/reapchain/version"
+GIT_IMPORT="gitlab.reappay.net/reapchain/reapchain-core/version"
 
 # Determine the arch/os combos we're building for
 XC_ARCH=${XC_ARCH:-"386 amd64 arm"}

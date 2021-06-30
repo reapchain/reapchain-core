@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"sort"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/merkle"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/merkle"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 type StandingMemberSet struct {

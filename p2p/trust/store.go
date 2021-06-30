@@ -10,8 +10,8 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
 )
 
 const defaultStorePeriodicSaveInterval = 1 * time.Minute

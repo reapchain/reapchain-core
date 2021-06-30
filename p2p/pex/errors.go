@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
 )
 
 type ErrAddrBookNonRoutable struct {

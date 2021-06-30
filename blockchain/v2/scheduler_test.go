@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab/reapchain/state"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/state"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 type scTestParams struct {

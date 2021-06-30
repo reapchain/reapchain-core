@@ -13,10 +13,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
 )
 
 // FIXME These tests should not rely on .(*addrBook) assertions

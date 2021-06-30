@@ -18,13 +18,13 @@ import (
 	"context"
 	"reflect"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
-	"gitlab.reappay.net/sucs-lab/reapchain/rpc/client"
-	"gitlab.reappay.net/sucs-lab/reapchain/rpc/core"
-	ctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/core/types"
-	rpctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	"gitlab.reappay.net/reapchain/reapchain-core/rpc/client"
+	"gitlab.reappay.net/reapchain/reapchain-core/rpc/core"
+	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 // Client wraps arbitrary implementations of the various interfaces.

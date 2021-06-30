@@ -13,11 +13,11 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	dbm "github.com/tendermint/tm-db"
 
-	clist "gitlab.reappay.net/sucs-lab/reapchain/libs/clist"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
-	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	clist "gitlab.reappay.net/reapchain/reapchain-core/libs/clist"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 const (

@@ -11,15 +11,15 @@ import (
 
 	db "github.com/tendermint/tm-db"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/abci/example/kvstore"
-	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
-	"gitlab.reappay.net/sucs-lab/reapchain/privval"
-	"gitlab.reappay.net/sucs-lab/reapchain/proxy"
-	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
-	"gitlab.reappay.net/sucs-lab/reapchain/store"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
+	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	"gitlab.reappay.net/reapchain/reapchain-core/privval"
+	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
+	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
+	"gitlab.reappay.net/reapchain/reapchain-core/store"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 // WALGenerateNBlocks generates a consensus WAL. It does this by spinning up a

@@ -3,10 +3,10 @@ package privval
 import (
 	"io"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
-	privvalproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/privval"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	privvalproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/privval"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 // ValidationRequestHandlerFunc handles different remoteSigner requests

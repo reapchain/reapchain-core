@@ -7,11 +7,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 type lastBlockRequestT struct {

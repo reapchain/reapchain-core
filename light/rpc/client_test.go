@@ -13,14 +13,14 @@ import (
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
 
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/merkle"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
-	lcmock "gitlab.reappay.net/sucs-lab/reapchain/light/rpc/mocks"
-	tmcrypto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/crypto"
-	rpcmock "gitlab.reappay.net/sucs-lab/reapchain/rpc/client/mocks"
-	ctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/core/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/merkle"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
+	lcmock "gitlab.reappay.net/reapchain/reapchain-core/light/rpc/mocks"
+	tmcrypto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/crypto"
+	rpcmock "gitlab.reappay.net/reapchain/reapchain-core/rpc/client/mocks"
+	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 // TestABCIQuery tests ABCIQuery requests and verifies proofs. HAPPY PATH 😀

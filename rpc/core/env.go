@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"time"
 
-	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
-	"gitlab.reappay.net/sucs-lab/reapchain/consensus"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	mempl "gitlab.reappay.net/sucs-lab/reapchain/mempool"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab/reapchain/proxy"
-	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
-	"gitlab.reappay.net/sucs-lab/reapchain/state/indexer"
-	"gitlab.reappay.net/sucs-lab/reapchain/state/txindex"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
+	"gitlab.reappay.net/reapchain/reapchain-core/consensus"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	mempl "gitlab.reappay.net/reapchain/reapchain-core/mempool"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
+	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
+	"gitlab.reappay.net/reapchain/reapchain-core/state/indexer"
+	"gitlab.reappay.net/reapchain/reapchain-core/state/txindex"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 const (

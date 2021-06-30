@@ -14,14 +14,14 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	flow "gitlab.reappay.net/sucs-lab/reapchain/libs/flowrate"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/protoio"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/timer"
-	tmp2p "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/p2p"
+	flow "gitlab.reappay.net/reapchain/reapchain-core/libs/flowrate"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/protoio"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/timer"
+	tmp2p "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/p2p"
 )
 
 const (
@@ -609,7 +609,7 @@ FOR_LOOP:
 		switch pkt := packet.Sum.(type) {
 		case *tmp2p.Packet_PacketPing:
 			// TODO: prevent abuse, as they cause flush()'s.
-			// https://gitlab.reappay.net/sucs-lab/reapchain/issues/1190
+			// https://gitlab.reappay.net/reapchain/reapchain-core/issues/1190
 			c.Logger.Debug("Receive Ping")
 			select {
 			case c.pong <- struct{}{}:

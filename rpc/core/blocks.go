@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"sort"
 
-	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
-	tmquery "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
-	ctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/core/types"
-	rpctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
-	blockidxnull "gitlab.reappay.net/sucs-lab/reapchain/state/indexer/block/null"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
+	tmquery "gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
+	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
+	blockidxnull "gitlab.reappay.net/reapchain/reapchain-core/state/indexer/block/null"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 // BlockchainInfo gets block headers for minHeight <= height <= maxHeight.

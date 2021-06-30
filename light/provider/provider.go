@@ -3,7 +3,7 @@ package provider
 import (
 	"context"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 // Provider provides information for the light client to sync (verification

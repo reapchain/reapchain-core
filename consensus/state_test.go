@@ -10,15 +10,15 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/abci/example/counter"
-	cstypes "gitlab.reappay.net/sucs-lab/reapchain/consensus/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmpubsub "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub"
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
-	p2pmock "gitlab.reappay.net/sucs-lab/reapchain/p2p/mock"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/counter"
+	cstypes "gitlab.reappay.net/reapchain/reapchain-core/consensus/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmpubsub "gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	p2pmock "gitlab.reappay.net/reapchain/reapchain-core/p2p/mock"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 /*

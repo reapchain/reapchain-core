@@ -6,7 +6,7 @@ package blockchain
 import (
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	types "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	types "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"

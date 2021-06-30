@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
-	tmbytes "gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/protoio"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	tmbytes "gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/protoio"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 const (

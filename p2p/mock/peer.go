@@ -3,10 +3,10 @@ package mock
 import (
 	"net"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p/conn"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p/conn"
 )
 
 type Peer struct {

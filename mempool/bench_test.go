@@ -4,8 +4,8 @@ import (
 	"encoding/binary"
 	"testing"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/abci/example/kvstore"
-	"gitlab.reappay.net/sucs-lab/reapchain/proxy"
+	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
+	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
 )
 
 func BenchmarkReap(b *testing.B) {

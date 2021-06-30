@@ -3,9 +3,9 @@ package coregrpc
 import (
 	"context"
 
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	core "gitlab.reappay.net/sucs-lab/reapchain/rpc/core"
-	rpctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	core "gitlab.reappay.net/reapchain/reapchain-core/rpc/core"
+	rpctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 type broadcastAPI struct {

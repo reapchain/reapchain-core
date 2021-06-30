@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	tmos "gitlab.reappay.net/sucs-lab/reapchain/libs/os"
+	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
 )
 
 // DefaultDirPerm is the default permissions used when creating directories.
@@ -209,7 +209,7 @@ max_subscriptions_per_client = {{ .RPC.MaxSubscriptionsPerClient }}
 # How long to wait for a tx to be committed during /broadcast_tx_commit.
 # WARNING: Using a value larger than 10s will result in increasing the
 # global HTTP write timeout, which applies to all connections and endpoints.
-# See https://gitlab.reappay.net/sucs-lab/reapchain/issues/3435
+# See https://gitlab.reappay.net/reapchain/reapchain-core/issues/3435
 timeout_broadcast_tx_commit = "{{ .RPC.TimeoutBroadcastTxCommit }}"
 
 # Maximum size of request body, in bytes
@@ -340,7 +340,7 @@ max_tx_bytes = {{ .Mempool.MaxTxBytes }}
 
 # Maximum size of a batch of transactions to send to a peer
 # Including space needed by encoding (one varint per transaction).
-# XXX: Unused due to https://gitlab.reappay.net/sucs-lab/reapchain/issues/5796
+# XXX: Unused due to https://gitlab.reappay.net/reapchain/reapchain-core/issues/5796
 max_batch_bytes = {{ .Mempool.MaxBatchBytes }}
 
 #######################################################

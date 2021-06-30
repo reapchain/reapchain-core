@@ -6,12 +6,12 @@ import (
 	"net"
 	"net/http"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmpubsub "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub"
-	"gitlab.reappay.net/sucs-lab/reapchain/light"
-	lrpc "gitlab.reappay.net/sucs-lab/reapchain/light/rpc"
-	rpchttp "gitlab.reappay.net/sucs-lab/reapchain/rpc/client/http"
-	rpcserver "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/server"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmpubsub "gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub"
+	"gitlab.reappay.net/reapchain/reapchain-core/light"
+	lrpc "gitlab.reappay.net/reapchain/reapchain-core/light/rpc"
+	rpchttp "gitlab.reappay.net/reapchain/reapchain-core/rpc/client/http"
+	rpcserver "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/server"
 )
 
 // A Proxy defines parameters for running an HTTP server proxy.

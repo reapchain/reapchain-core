@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
-	. "gitlab.reappay.net/sucs-lab/reapchain/libs/test"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	. "gitlab.reappay.net/reapchain/reapchain-core/libs/test"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
 )
 
 type testItem []byte

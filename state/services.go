@@ -1,7 +1,7 @@
 package state
 
 import (
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 //------------------------------------------------------

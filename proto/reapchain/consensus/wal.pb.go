@@ -10,7 +10,7 @@ import (
 	_ "github.com/gogo/protobuf/types"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	_ "github.com/golang/protobuf/ptypes/duration"
-	types "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	types "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"

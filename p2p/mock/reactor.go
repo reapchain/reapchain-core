@@ -1,9 +1,9 @@
 package mock
 
 import (
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p/conn"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p/conn"
 )
 
 type Reactor struct {

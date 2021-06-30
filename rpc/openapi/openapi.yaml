@@ -3,7 +3,7 @@ info:
   title: Reapchain RPC
   contact:
     name: Reapchain RPC
-    url: https://gitlab.reappay.net/sucs-lab/reapchain/issues/new/choose
+    url: https://gitlab.reappay.net/reapchain/reapchain-core/issues/new/choose
   description: |
     Reapchain supports the following RPC protocols:
 
@@ -54,7 +54,7 @@ info:
   version: "Master"
   license:
     name: Apache 2.0
-    url: https://gitlab.reappay.net/sucs-lab/reapchain/blob/master/LICENSE
+    url: https://gitlab.reappay.net/reapchain/reapchain-core/blob/master/LICENSE
 servers:
   - url: https://rpc.cosmos.network
     description: Cosmos mainnet node to interact with the Reapchain RPC
@@ -91,7 +91,7 @@ paths:
         1. malicious node can drop or pretend it had committed your tx
         2. malicious proposer (not necessary the one you're communicating with) can
         drop transactions, which might become valid in the future
-        (https://gitlab.reappay.net/sucs-lab/reapchain/issues/3322)
+        (https://gitlab.reappay.net/reapchain/reapchain-core/issues/3322)
 
 
         Please refer to
@@ -135,7 +135,7 @@ paths:
         1. malicious node can drop or pretend it had committed your tx
         2. malicious proposer (not necessary the one you're communicating with) can
         drop transactions, which might become valid in the future
-        (https://gitlab.reappay.net/sucs-lab/reapchain/issues/3322)
+        (https://gitlab.reappay.net/reapchain/reapchain-core/issues/3322)
         3. node can be offline
 
         Please refer to
@@ -263,8 +263,8 @@ paths:
         DeliverTx response.
 
         import (
-            abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-            "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
+            abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+            "gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
         )
 
         abci.ResponseDeliverTx{
@@ -331,14 +331,14 @@ paths:
         query.MustParse("tm.event = 'Tx' AND rewards.withdraw.source = 'W'")
 
         See list of all possible events here
-        https://godoc.org/gitlab.reappay.net/sucs-lab/reapchain/types#pkg-constants
+        https://godoc.org/gitlab.reappay.net/reapchain/reapchain-core/types#pkg-constants
 
         For complete query syntax, check out
-        https://godoc.org/gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query.
+        https://godoc.org/gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query.
 
         ```go
-        import rpchttp "gitlab.reappay.net/sucs-lab/rpc/client/http"
-        import "gitlab.reappay.net/sucs-lab/reapchain/types"
+        import rpchttp "gitlab.reappay.net/reapchain/rpc/client/http"
+        import "gitlab.reappay.net/reapchain/reapchain-core/types"
 
         client := rpchttp.New("tcp:0.0.0.0:26657", "/websocket")
         err := client.Start()
@@ -839,7 +839,7 @@ paths:
           description: |
             Complete consensus state.
 
-            See https://pkg.go.dev/gitlab.reappay.net/sucs-lab/reapchain/types?tab=doc#Vote.String for Vote string description.
+            See https://pkg.go.dev/gitlab.reappay.net/reapchain/reapchain-core/types?tab=doc#Vote.String for Vote string description.
           content:
             application/json:
               schema:

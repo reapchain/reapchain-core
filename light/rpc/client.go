@@ -10,15 +10,15 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/merkle"
-	tmbytes "gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
-	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
-	service "gitlab.reappay.net/sucs-lab/reapchain/libs/service"
-	rpcclient "gitlab.reappay.net/sucs-lab/reapchain/rpc/client"
-	ctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/core/types"
-	rpctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/merkle"
+	tmbytes "gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
+	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
+	service "gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	rpcclient "gitlab.reappay.net/reapchain/reapchain-core/rpc/client"
+	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 var errNegOrZeroHeight = errors.New("negative or zero height")

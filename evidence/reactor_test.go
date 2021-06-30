@@ -15,17 +15,17 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
-	"gitlab.reappay.net/sucs-lab/reapchain/evidence"
-	"gitlab.reappay.net/sucs-lab/reapchain/evidence/mocks"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
-	p2pmocks "gitlab.reappay.net/sucs-lab/reapchain/p2p/mocks"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
-	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
+	"gitlab.reappay.net/reapchain/reapchain-core/evidence"
+	"gitlab.reappay.net/reapchain/reapchain-core/evidence/mocks"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	p2pmocks "gitlab.reappay.net/reapchain/reapchain-core/p2p/mocks"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 var (

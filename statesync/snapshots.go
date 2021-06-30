@@ -8,8 +8,8 @@ import (
 	"sort"
 	"time"
 
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
 )
 
 // snapshotKey is a snapshot key used for lookups.

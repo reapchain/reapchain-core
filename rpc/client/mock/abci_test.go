@@ -9,13 +9,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/abci/example/kvstore"
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
-	"gitlab.reappay.net/sucs-lab/reapchain/rpc/client"
-	"gitlab.reappay.net/sucs-lab/reapchain/rpc/client/mock"
-	ctypes "gitlab.reappay.net/sucs-lab/reapchain/rpc/core/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
+	"gitlab.reappay.net/reapchain/reapchain-core/rpc/client"
+	"gitlab.reappay.net/reapchain/reapchain-core/rpc/client/mock"
+	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 func TestABCIMock(t *testing.T) {

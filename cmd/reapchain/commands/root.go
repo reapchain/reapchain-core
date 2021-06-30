@@ -8,10 +8,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/cli"
-	tmflags "gitlab.reappay.net/sucs-lab/reapchain/libs/cli/flags"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/cli"
+	tmflags "gitlab.reappay.net/reapchain/reapchain-core/libs/cli/flags"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
 )
 
 var (

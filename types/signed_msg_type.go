@@ -1,6 +1,6 @@
 package types
 
-import tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+import tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
 
 // IsVoteTypeValid returns true if t is a valid vote type.
 func IsVoteTypeValid(t tmproto.SignedMsgType) bool {

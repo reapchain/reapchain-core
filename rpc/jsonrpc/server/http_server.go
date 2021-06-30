@@ -15,8 +15,8 @@ import (
 
 	"golang.org/x/net/netutil"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	types "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	types "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 // Config is a RPC server configuration.

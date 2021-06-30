@@ -14,12 +14,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/consensus/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/merkle"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/autofile"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmtypes "gitlab.reappay.net/sucs-lab/reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
+	"gitlab.reappay.net/reapchain/reapchain-core/consensus/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/merkle"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/autofile"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmtypes "gitlab.reappay.net/reapchain/reapchain-core/types"
+	tmtime "gitlab.reappay.net/reapchain/reapchain-core/types/time"
 )
 
 const (

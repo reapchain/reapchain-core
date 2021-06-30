@@ -8,17 +8,17 @@ import (
 	"sync"
 	"sync/atomic"
 
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
-	auto "gitlab.reappay.net/sucs-lab/reapchain/libs/autofile"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/clist"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
-	tmos "gitlab.reappay.net/sucs-lab/reapchain/libs/os"
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab/reapchain/proxy"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
+	auto "gitlab.reappay.net/reapchain/reapchain-core/libs/autofile"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/clist"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
+	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 // TxKeySize is the size of the transaction key index
@@ -602,7 +602,7 @@ func (mem *CListMempool) Update(
 		//   101 -> 102
 		// Mempool after:
 		//   100
-		// https://gitlab.reappay.net/sucs-lab/reapchain/issues/3322.
+		// https://gitlab.reappay.net/reapchain/reapchain-core/issues/3322.
 		if e, ok := mem.txsMap.Load(TxKey(tx)); ok {
 			mem.removeTx(tx, e.(*clist.CElement), false)
 		}

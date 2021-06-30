@@ -3,10 +3,10 @@ package state
 import (
 	dbm "github.com/tendermint/tm-db"
 
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	tmstate "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/state"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	tmstate "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/state"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 //

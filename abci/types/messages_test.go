@@ -9,7 +9,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 func TestMarshalJSON(t *testing.T) {

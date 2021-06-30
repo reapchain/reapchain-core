@@ -7,8 +7,8 @@ import (
 	"log"
 	"reflect"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	tmnet "gitlab.reappay.net/sucs-lab/reapchain/libs/net"
+	"gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	tmnet "gitlab.reappay.net/reapchain/reapchain-core/libs/net"
 )
 
 func main() {

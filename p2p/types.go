@@ -1,7 +1,7 @@
 package p2p
 
 import (
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p/conn"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p/conn"
 )
 
 type ChannelDescriptor = conn.ChannelDescriptor

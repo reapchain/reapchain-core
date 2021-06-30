@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/crypto/nacl/secretbox"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
 )
 
 // TODO, make this into a struct that implements crypto.Symmetric.

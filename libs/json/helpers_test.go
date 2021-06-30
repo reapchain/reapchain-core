@@ -3,7 +3,7 @@ package json_test
 import (
 	"time"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/json"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/json"
 )
 
 // Register Car, an instance of the Vehicle interface.

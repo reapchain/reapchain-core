@@ -4,9 +4,9 @@ import (
 	"net"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/config"
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
+	"gitlab.reappay.net/reapchain/reapchain-core/config"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
 )
 
 // FuzzedConnection wraps any net.Conn and depending on the mode either delays

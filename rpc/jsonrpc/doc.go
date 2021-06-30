@@ -81,5 +81,5 @@
 //
 // Examples
 //
-// - [Reapchain](https://gitlab.reappay.net/sucs-lab/reapchain/blob/master/rpc/core/routes.go)
+// - [Reapchain](https://gitlab.reappay.net/reapchain/reapchain-core/blob/master/rpc/core/routes.go)
 package jsonrpc

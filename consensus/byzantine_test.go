@@ -14,18 +14,18 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	abcicli "gitlab.reappay.net/sucs-lab/reapchain/abci/client"
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/evidence"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
-	mempl "gitlab.reappay.net/sucs-lab/reapchain/mempool"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
-	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
-	"gitlab.reappay.net/sucs-lab/reapchain/store"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	abcicli "gitlab.reappay.net/reapchain/reapchain-core/abci/client"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/evidence"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	mempl "gitlab.reappay.net/reapchain/reapchain-core/mempool"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
+	"gitlab.reappay.net/reapchain/reapchain-core/store"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 //----------------------------------------------

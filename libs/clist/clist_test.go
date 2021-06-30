@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
 )
 
 func TestPanicOnMaxLength(t *testing.T) {

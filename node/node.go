@@ -16,39 +16,39 @@ import (
 	"github.com/rs/cors"
 	dbm "github.com/tendermint/tm-db"
 
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	bcv0 "gitlab.reappay.net/sucs-lab/reapchain/blockchain/v0"
-	bcv1 "gitlab.reappay.net/sucs-lab/reapchain/blockchain/v1"
-	bcv2 "gitlab.reappay.net/sucs-lab/reapchain/blockchain/v2"
-	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
-	cs "gitlab.reappay.net/sucs-lab/reapchain/consensus"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab/reapchain/evidence"
-	tmjson "gitlab.reappay.net/sucs-lab/reapchain/libs/json"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmpubsub "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
-	"gitlab.reappay.net/sucs-lab/reapchain/light"
-	mempl "gitlab.reappay.net/sucs-lab/reapchain/mempool"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p/pex"
-	"gitlab.reappay.net/sucs-lab/reapchain/privval"
-	"gitlab.reappay.net/sucs-lab/reapchain/proxy"
-	rpccore "gitlab.reappay.net/sucs-lab/reapchain/rpc/core"
-	grpccore "gitlab.reappay.net/sucs-lab/reapchain/rpc/grpc"
-	rpcserver "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/server"
-	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
-	"gitlab.reappay.net/sucs-lab/reapchain/state/indexer"
-	blockidxkv "gitlab.reappay.net/sucs-lab/reapchain/state/indexer/block/kv"
-	blockidxnull "gitlab.reappay.net/sucs-lab/reapchain/state/indexer/block/null"
-	"gitlab.reappay.net/sucs-lab/reapchain/state/txindex"
-	"gitlab.reappay.net/sucs-lab/reapchain/state/txindex/kv"
-	"gitlab.reappay.net/sucs-lab/reapchain/state/txindex/null"
-	"gitlab.reappay.net/sucs-lab/reapchain/statesync"
-	"gitlab.reappay.net/sucs-lab/reapchain/store"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
-	"gitlab.reappay.net/sucs-lab/reapchain/version"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	bcv0 "gitlab.reappay.net/reapchain/reapchain-core/blockchain/v0"
+	bcv1 "gitlab.reappay.net/reapchain/reapchain-core/blockchain/v1"
+	bcv2 "gitlab.reappay.net/reapchain/reapchain-core/blockchain/v2"
+	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
+	cs "gitlab.reappay.net/reapchain/reapchain-core/consensus"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	"gitlab.reappay.net/reapchain/reapchain-core/evidence"
+	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmpubsub "gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	"gitlab.reappay.net/reapchain/reapchain-core/light"
+	mempl "gitlab.reappay.net/reapchain/reapchain-core/mempool"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p/pex"
+	"gitlab.reappay.net/reapchain/reapchain-core/privval"
+	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
+	rpccore "gitlab.reappay.net/reapchain/reapchain-core/rpc/core"
+	grpccore "gitlab.reappay.net/reapchain/reapchain-core/rpc/grpc"
+	rpcserver "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/server"
+	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
+	"gitlab.reappay.net/reapchain/reapchain-core/state/indexer"
+	blockidxkv "gitlab.reappay.net/reapchain/reapchain-core/state/indexer/block/kv"
+	blockidxnull "gitlab.reappay.net/reapchain/reapchain-core/state/indexer/block/null"
+	"gitlab.reappay.net/reapchain/reapchain-core/state/txindex"
+	"gitlab.reappay.net/reapchain/reapchain-core/state/txindex/kv"
+	"gitlab.reappay.net/reapchain/reapchain-core/state/txindex/null"
+	"gitlab.reappay.net/reapchain/reapchain-core/statesync"
+	"gitlab.reappay.net/reapchain/reapchain-core/store"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	tmtime "gitlab.reappay.net/reapchain/reapchain-core/types/time"
+	"gitlab.reappay.net/reapchain/reapchain-core/version"
 )
 
 //------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ func DefaultMetricsProvider(config *cfg.InstrumentationConfig) MetricsProvider {
 type Option func(*Node)
 
 // Temporary interface for switching to fast sync, we should get rid of v0 and v1 reactors.
-// See: https://gitlab.reappay.net/sucs-lab/reapchain/issues/4595
+// See: https://gitlab.reappay.net/reapchain/reapchain-core/issues/4595
 type fastSyncReactor interface {
 	SwitchToFastSync(sm.State) error
 }
@@ -564,7 +564,7 @@ func createPEXReactorAndAddToSwitch(addrBook pex.AddrBook, config *cfg.Config,
 			// blocks assuming 10s blocks ~ 28 hours.
 			// TODO (melekes): make it dynamic based on the actual block latencies
 			// from the live network.
-			// https://gitlab.reappay.net/sucs-lab/reapchain/issues/3523
+			// https://gitlab.reappay.net/reapchain/reapchain-core/issues/3523
 			SeedDisconnectWaitPeriod:     28 * time.Hour,
 			PersistentPeersMaxDialPeriod: config.P2P.PersistentPeersMaxDialPeriod,
 		})
@@ -764,7 +764,7 @@ func NewNode(config *cfg.Config,
 	// Set up state sync reactor, and schedule a sync if requested.
 	// FIXME The way we do phased startups (e.g. replay -> fast sync -> consensus) is very messy,
 	// we should clean this whole thing up. See:
-	// https://gitlab.reappay.net/sucs-lab/reapchain/issues/4644
+	// https://gitlab.reappay.net/reapchain/reapchain-core/issues/4644
 	stateSyncReactor := statesync.NewReactor(proxyApp.Snapshot(), proxyApp.Query(),
 		config.StateSync.TempDir)
 	stateSyncReactor.SetLogger(logger.With("module", "statesync"))
@@ -1036,7 +1036,7 @@ func (n *Node) startRPC() ([]net.Listener, error) {
 	config.MaxOpenConnections = n.config.RPC.MaxOpenConnections
 	// If necessary adjust global WriteTimeout to ensure it's greater than
 	// TimeoutBroadcastTxCommit.
-	// See https://gitlab.reappay.net/sucs-lab/reapchain/issues/3435
+	// See https://gitlab.reappay.net/reapchain/reapchain-core/issues/3435
 	if config.WriteTimeout <= n.config.RPC.TimeoutBroadcastTxCommit {
 		config.WriteTimeout = n.config.RPC.TimeoutBroadcastTxCommit + 1*time.Second
 	}
@@ -1115,7 +1115,7 @@ func (n *Node) startRPC() ([]net.Listener, error) {
 		config.MaxOpenConnections = n.config.RPC.GRPCMaxOpenConnections
 		// If necessary adjust global WriteTimeout to ensure it's greater than
 		// TimeoutBroadcastTxCommit.
-		// See https://gitlab.reappay.net/sucs-lab/reapchain/issues/3435
+		// See https://gitlab.reappay.net/reapchain/reapchain-core/issues/3435
 		if config.WriteTimeout <= n.config.RPC.TimeoutBroadcastTxCommit {
 			config.WriteTimeout = n.config.RPC.TimeoutBroadcastTxCommit + 1*time.Second
 		}

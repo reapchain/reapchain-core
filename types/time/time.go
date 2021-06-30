@@ -12,7 +12,7 @@ func Now() time.Time {
 
 // Canonical returns UTC time with no monotonic component.
 // Stripping the monotonic component is for time equality.
-// See https://gitlab.reappay.net/sucs-lab/reapchain/pull/2203#discussion_r215064334
+// See https://gitlab.reappay.net/reapchain/reapchain-core/pull/2203#discussion_r215064334
 func Canonical(t time.Time) time.Time {
 	return t.Round(0).UTC()
 }

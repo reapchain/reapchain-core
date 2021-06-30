@@ -1,8 +1,8 @@
 package crypto
 
 import (
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
 )
 
 const (

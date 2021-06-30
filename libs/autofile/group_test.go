@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	tmos "gitlab.reappay.net/sucs-lab/reapchain/libs/os"
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
 )
 
 func createTestGroupWithHeadSizeLimit(t *testing.T, headSizeLimit int64) *Group {

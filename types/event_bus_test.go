@@ -10,10 +10,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	tmpubsub "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub"
-	tmquery "gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	tmpubsub "gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub"
+	tmquery "gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
 )
 
 func TestEventBusPublishEventTx(t *testing.T) {

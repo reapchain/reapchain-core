@@ -8,16 +8,16 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/tmhash"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	memmock "gitlab.reappay.net/sucs-lab/reapchain/mempool/mock"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
-	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
-	"gitlab.reappay.net/sucs-lab/reapchain/state/mocks"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	memmock "gitlab.reappay.net/reapchain/reapchain-core/mempool/mock"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
+	"gitlab.reappay.net/reapchain/reapchain-core/state/mocks"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	tmtime "gitlab.reappay.net/reapchain/reapchain-core/types/time"
 )
 
 const validationTestsStopHeight int64 = 10

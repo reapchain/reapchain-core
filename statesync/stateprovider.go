@@ -8,17 +8,17 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
-	"gitlab.reappay.net/sucs-lab/reapchain/light"
-	lightprovider "gitlab.reappay.net/sucs-lab/reapchain/light/provider"
-	lighthttp "gitlab.reappay.net/sucs-lab/reapchain/light/provider/http"
-	lightrpc "gitlab.reappay.net/sucs-lab/reapchain/light/rpc"
-	lightdb "gitlab.reappay.net/sucs-lab/reapchain/light/store/db"
-	tmstate "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/state"
-	rpchttp "gitlab.reappay.net/sucs-lab/reapchain/rpc/client/http"
-	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	"gitlab.reappay.net/reapchain/reapchain-core/light"
+	lightprovider "gitlab.reappay.net/reapchain/reapchain-core/light/provider"
+	lighthttp "gitlab.reappay.net/reapchain/reapchain-core/light/provider/http"
+	lightrpc "gitlab.reappay.net/reapchain/reapchain-core/light/rpc"
+	lightdb "gitlab.reappay.net/reapchain/reapchain-core/light/store/db"
+	tmstate "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/state"
+	rpchttp "gitlab.reappay.net/reapchain/reapchain-core/rpc/client/http"
+	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 //go:generate mockery --case underscore --name StateProvider

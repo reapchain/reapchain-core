@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 // Waiter is informed of current height, decided whether to quit early

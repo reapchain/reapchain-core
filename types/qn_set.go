@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"sort"
 
-	ce "gitlab.reappay.net/sucs-lab/reapchain/crypto/encoding"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/merkle"
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	ce "gitlab.reappay.net/reapchain/reapchain-core/crypto/encoding"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/merkle"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 var (

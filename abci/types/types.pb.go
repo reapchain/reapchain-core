@@ -10,8 +10,8 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/gogo/protobuf/types"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
-	crypto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/crypto"
-	types1 "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
+	crypto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/crypto"
+	types1 "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -3277,7 +3277,7 @@ type Evidence struct {
 	Time time.Time `protobuf:"bytes,4,opt,name=time,proto3,stdtime" json:"time"`
 	// Total voting power of the validator set in case the ABCI application does
 	// not store historical validators.
-	// https://gitlab.reappay.net/sucs-lab/reapchain/issues/4581
+	// https://gitlab.reappay.net/reapchain/reapchain-core/issues/4581
 	TotalVotingPower int64 `protobuf:"varint,5,opt,name=total_voting_power,json=totalVotingPower,proto3" json:"total_voting_power,omitempty"`
 }
 

@@ -7,7 +7,7 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	types "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
+	types "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

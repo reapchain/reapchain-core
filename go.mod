@@ -1,4 +1,4 @@
-module gitlab.reappay.net/sucs-lab/reapchain
+module gitlab.reappay.net/reapchain/reapchain-core
 
 go 1.16
 

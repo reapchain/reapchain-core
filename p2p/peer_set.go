@@ -3,7 +3,7 @@ package p2p
 import (
 	"net"
 
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
 )
 
 // IPeerSet has a (immutable) subset of the methods of PeerSet.

@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/light/provider"
-	"gitlab.reappay.net/sucs-lab/reapchain/light/provider/http"
-	"gitlab.reappay.net/sucs-lab/reapchain/light/store"
+	"gitlab.reappay.net/reapchain/reapchain-core/light/provider"
+	"gitlab.reappay.net/reapchain/reapchain-core/light/provider/http"
+	"gitlab.reappay.net/reapchain/reapchain-core/light/store"
 )
 
 // NewHTTPClient initiates an instance of a light client using HTTP addresses

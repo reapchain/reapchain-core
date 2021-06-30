@@ -8,13 +8,13 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/cmap"
-	tmmath "gitlab.reappay.net/sucs-lab/reapchain/libs/math"
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p/conn"
-	tmp2p "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/cmap"
+	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p/conn"
+	tmp2p "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/p2p"
 )
 
 type Peer = p2p.Peer

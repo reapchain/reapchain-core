@@ -7,7 +7,7 @@ import (
 
 	"github.com/Workiva/go-datastructures/queue"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
 )
 
 type handleFunc = func(event Event) (Event, error)

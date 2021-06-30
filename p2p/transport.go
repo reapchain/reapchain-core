@@ -8,10 +8,10 @@ import (
 
 	"golang.org/x/net/netutil"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/protoio"
-	"gitlab.reappay.net/sucs-lab/reapchain/p2p/conn"
-	tmp2p "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/p2p"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/protoio"
+	"gitlab.reappay.net/reapchain/reapchain-core/p2p/conn"
+	tmp2p "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/p2p"
 )
 
 const (
@@ -281,7 +281,7 @@ func (mt *MultiplexTransport) acceptPeers() {
 
 		// Connection upgrade and filtering should be asynchronous to avoid
 		// Head-of-line blocking[0].
-		// Reference:  https://gitlab.reappay.net/sucs-lab/reapchain/issues/2047
+		// Reference:  https://gitlab.reappay.net/reapchain/reapchain-core/issues/2047
 		//
 		// [0] https://en.wikipedia.org/wiki/Head-of-line_blocking
 		go func(c net.Conn) {

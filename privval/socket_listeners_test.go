@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
 )
 
 //-------------------------------------------

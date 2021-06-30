@@ -3,9 +3,9 @@ package types
 import (
 	fmt "fmt"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/ed25519"
-	cryptoenc "gitlab.reappay.net/sucs-lab/reapchain/crypto/encoding"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto/secp256k1"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
+	cryptoenc "gitlab.reappay.net/reapchain/reapchain-core/crypto/encoding"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto/secp256k1"
 )
 
 func Ed25519ValidatorUpdate(pk []byte, power int64) ValidatorUpdate {

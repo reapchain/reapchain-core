@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/light/provider"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/light/provider"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 // The detector component of the light client detects and handles attacks on the light client.
@@ -235,7 +235,7 @@ func (c *Client) handleConflictingHeaders(
 	if primaryBlock.Commit.Round != witnessTrace[len(witnessTrace)-1].Commit.Round {
 		c.logger.Info("The light client has detected, and prevented, an attempted amnesia attack." +
 			" We think this attack is pretty unlikely, so if you see it, that's interesting to us." +
-			" Can you let us know by opening an issue through https://gitlab.reappay.net/sucs-lab/reapchain/issues/new?")
+			" Can you let us know by opening an issue through https://gitlab.reappay.net/reapchain/reapchain-core/issues/new?")
 	}
 
 	// This may not be valid because the witness itself is at fault. So now we reverse it, examining the

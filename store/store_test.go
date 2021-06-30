@@ -14,16 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
 
-	cfg "gitlab.reappay.net/sucs-lab/reapchain/config"
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
-	tmstore "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/store"
-	tmversion "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/version"
-	sm "gitlab.reappay.net/sucs-lab/reapchain/state"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
-	tmtime "gitlab.reappay.net/sucs-lab/reapchain/types/time"
-	"gitlab.reappay.net/sucs-lab/reapchain/version"
+	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	tmstore "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/store"
+	tmversion "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/version"
+	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	tmtime "gitlab.reappay.net/reapchain/reapchain-core/types/time"
+	"gitlab.reappay.net/reapchain/reapchain-core/version"
 )
 
 // A cleanupFunc cleans up any config / test files created for a particular

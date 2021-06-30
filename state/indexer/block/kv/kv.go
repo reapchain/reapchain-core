@@ -11,10 +11,10 @@ import (
 	"github.com/google/orderedcode"
 	dbm "github.com/tendermint/tm-db"
 
-	abci "gitlab.reappay.net/sucs-lab/reapchain/abci/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/pubsub/query"
-	"gitlab.reappay.net/sucs-lab/reapchain/state/indexer"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
+	"gitlab.reappay.net/reapchain/reapchain-core/state/indexer"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 var _ indexer.BlockIndexer = (*BlockerIndexer)(nil)

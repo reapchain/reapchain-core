@@ -3,7 +3,7 @@ package types
 import (
 	gogotypes "github.com/gogo/protobuf/types"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/bytes"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
 )
 
 // cdcEncode returns nil if the input is nil, otherwise returns

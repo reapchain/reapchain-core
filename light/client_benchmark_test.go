@@ -7,11 +7,11 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
-	"gitlab.reappay.net/sucs-lab/reapchain/light"
-	"gitlab.reappay.net/sucs-lab/reapchain/light/provider"
-	mockp "gitlab.reappay.net/sucs-lab/reapchain/light/provider/mock"
-	dbs "gitlab.reappay.net/sucs-lab/reapchain/light/store/db"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	"gitlab.reappay.net/reapchain/reapchain-core/light"
+	"gitlab.reappay.net/reapchain/reapchain-core/light/provider"
+	mockp "gitlab.reappay.net/reapchain/reapchain-core/light/provider/mock"
+	dbs "gitlab.reappay.net/reapchain/reapchain-core/light/store/db"
 )
 
 // NOTE: block is produced every minute. Make sure the verification time

@@ -12,10 +12,10 @@ import (
 	"github.com/gorilla/websocket"
 	metrics "github.com/rcrowley/go-metrics"
 
-	tmrand "gitlab.reappay.net/sucs-lab/reapchain/libs/rand"
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/service"
-	tmsync "gitlab.reappay.net/sucs-lab/reapchain/libs/sync"
-	types "gitlab.reappay.net/sucs-lab/reapchain/rpc/jsonrpc/types"
+	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	types "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 const (
@@ -498,7 +498,7 @@ func (c *WSClient) readRoutine() {
 		// because they are implemented as responses with the subscribe request's
 		// ID. According to the spec, they should be notifications (requests
 		// without IDs).
-		// https://gitlab.reappay.net/sucs-lab/reapchain/issues/2949
+		// https://gitlab.reappay.net/reapchain/reapchain-core/issues/2949
 		// c.mtx.Lock()
 		// if _, ok := c.sentIDs[response.ID.(types.JSONRPCIntID)]; !ok {
 		// 	c.Logger.Error("unsolicited response ID", "id", response.ID, "expected", c.sentIDs)

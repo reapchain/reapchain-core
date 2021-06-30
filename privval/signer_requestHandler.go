@@ -3,12 +3,12 @@ package privval
 import (
 	"fmt"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/crypto"
-	cryptoenc "gitlab.reappay.net/sucs-lab/reapchain/crypto/encoding"
-	cryptoproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/crypto"
-	privvalproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/privval"
-	tmproto "gitlab.reappay.net/sucs-lab/reapchain/proto/reapchain/types"
-	"gitlab.reappay.net/sucs-lab/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	cryptoenc "gitlab.reappay.net/reapchain/reapchain-core/crypto/encoding"
+	cryptoproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/crypto"
+	privvalproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/privval"
+	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	"gitlab.reappay.net/reapchain/reapchain-core/types"
 )
 
 func DefaultValidationRequestHandler(

@@ -9,7 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"gitlab.reappay.net/sucs-lab/reapchain/libs/log"
+	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
 )
 
 func TestTracingLogger(t *testing.T) {
