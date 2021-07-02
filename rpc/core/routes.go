@@ -1,7 +1,7 @@
 package core
 
 import (
-	rpc "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/server"
+	rpc "github.com/reapchain/reapchain-core/rpc/jsonrpc/server"
 )
 
 // TODO: better system than "unsafe" prefix

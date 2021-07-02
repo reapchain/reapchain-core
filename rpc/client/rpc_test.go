@@ -13,17 +13,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
-	mempl "gitlab.reappay.net/reapchain/reapchain-core/mempool"
-	"gitlab.reappay.net/reapchain/reapchain-core/rpc/client"
-	rpchttp "gitlab.reappay.net/reapchain/reapchain-core/rpc/client/http"
-	rpclocal "gitlab.reappay.net/reapchain/reapchain-core/rpc/client/local"
-	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
-	rpcclient "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/client"
-	rpctest "gitlab.reappay.net/reapchain/reapchain-core/rpc/test"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	mempl "github.com/reapchain/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/rpc/client"
+	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
+	rpclocal "github.com/reapchain/reapchain-core/rpc/client/local"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpcclient "github.com/reapchain/reapchain-core/rpc/jsonrpc/client"
+	rpctest "github.com/reapchain/reapchain-core/rpc/test"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 var (

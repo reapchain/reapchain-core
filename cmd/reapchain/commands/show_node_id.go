@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/p2p"
 )
 
 // ShowNodeIDCmd dumps node's ID to the standard output.

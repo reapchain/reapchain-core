@@ -5,10 +5,10 @@ import (
 	"net"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/protoio"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	privvalproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/privval"
+	"github.com/reapchain/reapchain-core/libs/protoio"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain/privval"
 )
 
 const (

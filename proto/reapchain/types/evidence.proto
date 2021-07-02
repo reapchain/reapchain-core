@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.types;
 
-option go_package = "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types";
+option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/types";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";

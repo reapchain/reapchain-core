@@ -1,8 +1,8 @@
 package proxy
 
 import (
-	abcicli "gitlab.reappay.net/reapchain/reapchain-core/abci/client"
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/types"
+	abcicli "github.com/reapchain/reapchain-core/abci/client"
+	"github.com/reapchain/reapchain-core/abci/types"
 )
 
 //go:generate mockery --case underscore --name AppConnConsensus|AppConnMempool|AppConnQuery|AppConnSnapshot

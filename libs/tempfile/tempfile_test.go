@@ -11,7 +11,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
 )
 
 func TestWriteFileAtomic(t *testing.T) {

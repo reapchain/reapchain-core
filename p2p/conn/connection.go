@@ -14,14 +14,14 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	flow "gitlab.reappay.net/reapchain/reapchain-core/libs/flowrate"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/protoio"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/timer"
-	tmp2p "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/p2p"
+	flow "github.com/reapchain/reapchain-core/libs/flowrate"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	"github.com/reapchain/reapchain-core/libs/protoio"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/libs/timer"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
 )
 
 const (
@@ -609,7 +609,7 @@ FOR_LOOP:
 		switch pkt := packet.Sum.(type) {
 		case *tmp2p.Packet_PacketPing:
 			// TODO: prevent abuse, as they cause flush()'s.
-			// https://gitlab.reappay.net/reapchain/reapchain-core/issues/1190
+			// https://github.com/reapchain/reapchain-core/issues/1190
 			c.Logger.Debug("Receive Ping")
 			select {
 			case c.pong <- struct{}{}:

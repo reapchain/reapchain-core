@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/libs/bytes"
+	"github.com/reapchain/reapchain-core/libs/log"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/config"
-	tmconn "gitlab.reappay.net/reapchain/reapchain-core/p2p/conn"
+	"github.com/reapchain/reapchain-core/config"
+	tmconn "github.com/reapchain/reapchain-core/p2p/conn"
 )
 
 func TestPeerBasic(t *testing.T) {

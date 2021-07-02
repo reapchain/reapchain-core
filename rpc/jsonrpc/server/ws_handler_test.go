@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	types "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/libs/log"
+	types "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 func TestWebsocketManagerHandler(t *testing.T) {

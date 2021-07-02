@@ -7,12 +7,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	flow "gitlab.reappay.net/reapchain/reapchain-core/libs/flowrate"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	flow "github.com/reapchain/reapchain-core/libs/flowrate"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 /*

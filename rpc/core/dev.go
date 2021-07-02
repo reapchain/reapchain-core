@@ -1,8 +1,8 @@
 package core
 
 import (
-	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
-	rpctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 // UnsafeFlushMempool removes all transactions from the mempool.

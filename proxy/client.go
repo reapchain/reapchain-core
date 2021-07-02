@@ -3,11 +3,11 @@ package proxy
 import (
 	"fmt"
 
-	abcicli "gitlab.reappay.net/reapchain/reapchain-core/abci/client"
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/counter"
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	abcicli "github.com/reapchain/reapchain-core/abci/client"
+	"github.com/reapchain/reapchain-core/abci/example/counter"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	"github.com/reapchain/reapchain-core/abci/types"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 )
 
 // ClientCreator creates new ABCI clients.

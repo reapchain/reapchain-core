@@ -6,11 +6,11 @@ import (
 	"sync"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/config"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/cmap"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p/conn"
+	"github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/cmap"
+	"github.com/reapchain/reapchain-core/libs/rand"
+	"github.com/reapchain/reapchain-core/libs/service"
+	"github.com/reapchain/reapchain-core/p2p/conn"
 )
 
 const (
@@ -366,7 +366,7 @@ func (sw *Switch) stopAndRemovePeer(peer Peer, reason interface{}) {
 	// Removing a peer should go last to avoid a situation where a peer
 	// reconnect to our node and the switch calls InitPeer before
 	// RemovePeer is finished.
-	// https://gitlab.reappay.net/reapchain/reapchain-core/issues/3338
+	// https://github.com/reapchain/reapchain-core/issues/3338
 	if sw.peers.Remove(peer) {
 		sw.metrics.Peers.Add(float64(-1))
 	}

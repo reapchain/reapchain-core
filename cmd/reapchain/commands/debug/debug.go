@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/libs/log"
 )
 
 var (

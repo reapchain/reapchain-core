@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
-	types "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/libs/bytes"
+	types "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 func TestParseJSONMap(t *testing.T) {

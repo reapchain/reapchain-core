@@ -12,8 +12,8 @@ import (
 	"io"
 	"os"
 
-	cs "gitlab.reappay.net/reapchain/reapchain-core/consensus"
-	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
+	cs "github.com/reapchain/reapchain-core/consensus"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
 )
 
 func main() {

@@ -6,13 +6,13 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	cstypes "gitlab.reappay.net/reapchain/reapchain-core/consensus/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/bits"
-	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	tmcons "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/consensus"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	cstypes "github.com/reapchain/reapchain-core/consensus/types"
+	"github.com/reapchain/reapchain-core/libs/bits"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	"github.com/reapchain/reapchain-core/p2p"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain/consensus"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // MsgToProto takes a consensus message type and returns the proto defined consensus message

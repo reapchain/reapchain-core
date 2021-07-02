@@ -17,16 +17,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/counter"
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
-	abciserver "gitlab.reappay.net/reapchain/reapchain-core/abci/server"
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
-	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/abci/example/counter"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	abciserver "github.com/reapchain/reapchain-core/abci/server"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	"github.com/reapchain/reapchain-core/libs/service"
+	"github.com/reapchain/reapchain-core/proxy"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // A cleanupFunc cleans up any config / test files created for a particular
@@ -602,7 +602,7 @@ func TestMempoolTxsBytes(t *testing.T) {
 }
 
 // This will non-deterministically catch some concurrency failures like
-// https://gitlab.reappay.net/reapchain/reapchain-core/issues/3509
+// https://github.com/reapchain/reapchain-core/issues/3509
 // TODO: all of the tests should probably also run using the remote proxy app
 // since otherwise we're not actually testing the concurrency of the mempool here!
 func TestMempoolRemoteAppConcurrency(t *testing.T) {

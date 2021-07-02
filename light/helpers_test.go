@@ -3,14 +3,14 @@ package light_test
 import (
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
-	tmversion "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/version"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
-	tmtime "gitlab.reappay.net/reapchain/reapchain-core/types/time"
-	"gitlab.reappay.net/reapchain/reapchain-core/version"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain/version"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
+	"github.com/reapchain/reapchain-core/version"
 )
 
 // privKeys is a helper type for testing.

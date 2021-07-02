@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
 )
 
 // XXX/TODO: These types should be moved to the indexer package.

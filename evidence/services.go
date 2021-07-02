@@ -1,7 +1,7 @@
 package evidence
 
 import (
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 //go:generate mockery --case underscore --name BlockStore

@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 var (

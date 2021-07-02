@@ -12,13 +12,13 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
-	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
-	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
-	"gitlab.reappay.net/reapchain/reapchain-core/store"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	"github.com/reapchain/reapchain-core/proxy"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/store"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (

@@ -16,12 +16,12 @@ import (
 
 	"github.com/minio/highwayhash"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
-	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/crypto"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/p2p"
 )
 
 const (

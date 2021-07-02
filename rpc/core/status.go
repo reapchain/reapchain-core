@@ -3,11 +3,11 @@ package core
 import (
 	"time"
 
-	tmbytes "gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
-	rpctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
+	"github.com/reapchain/reapchain-core/p2p"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // Status returns Reapchain status including node info, pubkey, latest block

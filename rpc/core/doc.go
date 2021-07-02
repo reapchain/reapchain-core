@@ -2,7 +2,7 @@
 Package core defines the Reapchain RPC endpoints.
 
 Reapchain ships with its own JSONRPC library -
-https://gitlab.reappay.net/reapchain/reapchain-core/tree/master/rpc/jsonrpc.
+https://github.com/reapchain/reapchain-core/tree/master/rpc/jsonrpc.
 
 ## Get the list
 

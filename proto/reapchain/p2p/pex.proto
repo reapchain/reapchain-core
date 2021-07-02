@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.p2p;
 
-option go_package = "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/p2p";
+option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/p2p";
 
 import "reapchain/p2p/types.proto";
 import "gogoproto/gogo.proto";

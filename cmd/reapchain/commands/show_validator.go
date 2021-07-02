@@ -5,9 +5,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
-	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
-	"gitlab.reappay.net/reapchain/reapchain-core/privval"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	"github.com/reapchain/reapchain-core/privval"
 )
 
 // ShowValidatorCmd adds capabilities for showing the validator info.

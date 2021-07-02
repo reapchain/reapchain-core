@@ -1,11 +1,11 @@
 package core
 
 import (
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
-	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
-	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
-	rpctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/libs/bytes"
+	"github.com/reapchain/reapchain-core/proxy"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 // ABCIQuery queries the application for some information.

@@ -3,8 +3,8 @@ package consensus
 import (
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/libs/service"
 )
 
 var (

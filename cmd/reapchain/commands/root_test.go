@@ -13,9 +13,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/cli"
-	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/cli"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
 )
 
 var (

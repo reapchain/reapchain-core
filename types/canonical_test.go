@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"testing"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
-	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 func TestCanonicalizeBlockID(t *testing.T) {

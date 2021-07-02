@@ -8,7 +8,7 @@ builds:
   - id: "Reapchain"
     main: ./cmd/reapchain/main.go
     ldflags:
-      - -s -w -X gitlab.reappay.net/reapchain/reapchain-core/version.TMCoreSemVer={{ .Version }}
+      - -s -w -X github.com/reapchain/reapchain-core/version.TMCoreSemVer={{ .Version }}
     env:
       - CGO_ENABLED=0
     goos:

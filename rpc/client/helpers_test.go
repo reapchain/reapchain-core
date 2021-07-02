@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/rpc/client"
-	"gitlab.reappay.net/reapchain/reapchain-core/rpc/client/mock"
-	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
+	"github.com/reapchain/reapchain-core/rpc/client"
+	"github.com/reapchain/reapchain-core/rpc/client/mock"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
 )
 
 func TestWaitForHeight(t *testing.T) {

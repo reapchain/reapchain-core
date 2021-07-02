@@ -9,18 +9,18 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	cstypes "gitlab.reappay.net/reapchain/reapchain-core/consensus/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/bits"
-	tmevents "gitlab.reappay.net/reapchain/reapchain-core/libs/events"
-	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	tmcons "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/consensus"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
-	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
-	tmtime "gitlab.reappay.net/reapchain/reapchain-core/types/time"
+	cstypes "github.com/reapchain/reapchain-core/consensus/types"
+	"github.com/reapchain/reapchain-core/libs/bits"
+	tmevents "github.com/reapchain/reapchain-core/libs/events"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/p2p"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain/consensus"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
 const (

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"reflect"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
-	tmstrings "gitlab.reappay.net/reapchain/reapchain-core/libs/strings"
-	tmp2p "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/p2p"
-	"gitlab.reappay.net/reapchain/reapchain-core/version"
+	"github.com/reapchain/reapchain-core/libs/bytes"
+	tmstrings "github.com/reapchain/reapchain-core/libs/strings"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
+	"github.com/reapchain/reapchain-core/version"
 )
 
 const (

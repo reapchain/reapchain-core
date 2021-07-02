@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
-	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
-	cryptoproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/crypto"
-	privvalproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/privval"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	cryptoproto "github.com/reapchain/reapchain-core/proto/reapchain/crypto"
+	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain/privval"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 type signerTestCase struct {

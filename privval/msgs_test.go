@@ -8,14 +8,14 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
-	cryptoenc "gitlab.reappay.net/reapchain/reapchain-core/crypto/encoding"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
-	cryptoproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/crypto"
-	privproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/privval"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	cryptoproto "github.com/reapchain/reapchain-core/proto/reapchain/crypto"
+	privproto "github.com/reapchain/reapchain-core/proto/reapchain/privval"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 var stamp = time.Date(2019, 10, 13, 16, 14, 44, 0, time.UTC)

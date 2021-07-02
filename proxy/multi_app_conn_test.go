@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	abcimocks "gitlab.reappay.net/reapchain/reapchain-core/abci/client/mocks"
-	"gitlab.reappay.net/reapchain/reapchain-core/proxy/mocks"
+	abcimocks "github.com/reapchain/reapchain-core/abci/client/mocks"
+	"github.com/reapchain/reapchain-core/proxy/mocks"
 )
 
 func TestAppConns_Start_Stop(t *testing.T) {

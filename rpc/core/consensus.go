@@ -1,11 +1,11 @@
 package core
 
 import (
-	cm "gitlab.reappay.net/reapchain/reapchain-core/consensus"
-	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
-	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
-	rpctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	cm "github.com/reapchain/reapchain-core/consensus"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // Validators gets the validator set at the given block height.

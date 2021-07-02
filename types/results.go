@@ -1,8 +1,8 @@
 package types
 
 import (
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/merkle"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/crypto/merkle"
 )
 
 // ABCIResults wraps the deliver tx results to return a proof.

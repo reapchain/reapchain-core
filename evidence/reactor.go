@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	clist "gitlab.reappay.net/reapchain/reapchain-core/libs/clist"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	clist "github.com/reapchain/reapchain-core/libs/clist"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/p2p"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (

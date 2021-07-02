@@ -3,8 +3,8 @@ package types
 import (
 	"sync"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 type HeightQnSet struct {

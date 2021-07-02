@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmnet "gitlab.reappay.net/reapchain/reapchain-core/libs/net"
-	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 var (

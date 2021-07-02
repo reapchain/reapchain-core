@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
-	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
-	tmtime "gitlab.reappay.net/reapchain/reapchain-core/types/time"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
 func TestGenesisBad(t *testing.T) {

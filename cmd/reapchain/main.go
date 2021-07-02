@@ -4,11 +4,11 @@ import (
 	"os"
 	"path/filepath"
 
-	cmd "gitlab.reappay.net/reapchain/reapchain-core/cmd/reapchain/commands"
-	"gitlab.reappay.net/reapchain/reapchain-core/cmd/reapchain/commands/debug"
-	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/cli"
-	nm "gitlab.reappay.net/reapchain/reapchain-core/node"
+	cmd "github.com/reapchain/reapchain-core/cmd/reapchain/commands"
+	"github.com/reapchain/reapchain-core/cmd/reapchain/commands/debug"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/cli"
+	nm "github.com/reapchain/reapchain-core/node"
 )
 
 func main() {

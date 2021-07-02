@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/google/orderedcode"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 func intInSlice(a int, list []int) bool {

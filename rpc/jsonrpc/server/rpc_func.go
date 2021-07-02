@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/libs/log"
 )
 
 // RegisterRPCFuncs adds a route for each function in the funcMap, as well as

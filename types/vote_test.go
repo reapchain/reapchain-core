@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/protoio"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	"github.com/reapchain/reapchain-core/libs/protoio"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 func examplePrevote() *Vote {

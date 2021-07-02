@@ -13,16 +13,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p/mock"
-	memproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/mempool"
-	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/p2p/mock"
+	memproto "github.com/reapchain/reapchain-core/proto/reapchain/mempool"
+	"github.com/reapchain/reapchain-core/proxy"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (
@@ -65,7 +65,7 @@ func TestReactorBroadcastTxsMessage(t *testing.T) {
 	waitForTxsOnReactors(t, txs, reactors)
 }
 
-// regression test for https://gitlab.reappay.net/reapchain/reapchain-core/issues/5408
+// regression test for https://github.com/reapchain/reapchain-core/issues/5408
 func TestReactorConcurrency(t *testing.T) {
 	config := cfg.TestConfig()
 	const N = 2

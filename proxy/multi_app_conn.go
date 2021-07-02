@@ -3,10 +3,10 @@ package proxy
 import (
 	"fmt"
 
-	abcicli "gitlab.reappay.net/reapchain/reapchain-core/abci/client"
-	tmlog "gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	abcicli "github.com/reapchain/reapchain-core/abci/client"
+	tmlog "github.com/reapchain/reapchain-core/libs/log"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	"github.com/reapchain/reapchain-core/libs/service"
 )
 
 const (

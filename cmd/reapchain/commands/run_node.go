@@ -9,9 +9,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
-	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
-	nm "gitlab.reappay.net/reapchain/reapchain-core/node"
+	cfg "github.com/reapchain/reapchain-core/config"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	nm "github.com/reapchain/reapchain-core/node"
 )
 
 var (

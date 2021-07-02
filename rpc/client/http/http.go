@@ -7,16 +7,16 @@ import (
 	"strings"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
-	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmpubsub "gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	rpcclient "gitlab.reappay.net/reapchain/reapchain-core/rpc/client"
-	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
-	jsonrpcclient "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/client"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/libs/bytes"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmpubsub "github.com/reapchain/reapchain-core/libs/pubsub"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	rpcclient "github.com/reapchain/reapchain-core/rpc/client"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	jsonrpcclient "github.com/reapchain/reapchain-core/rpc/jsonrpc/client"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 /*

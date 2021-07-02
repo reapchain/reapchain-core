@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
-	rpctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // BroadcastEvidence broadcasts evidence of the misbehavior.

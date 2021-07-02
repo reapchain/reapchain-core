@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/libs/bytes"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 //-----------------------------------------------------------------------------

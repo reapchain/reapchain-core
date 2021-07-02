@@ -14,9 +14,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/cli"
-	rpchttp "gitlab.reappay.net/reapchain/reapchain-core/rpc/client/http"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/cli"
+	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
 )
 
 var killCmd = &cobra.Command{

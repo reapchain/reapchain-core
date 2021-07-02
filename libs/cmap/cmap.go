@@ -1,7 +1,7 @@
 package cmap
 
 import (
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 )
 
 // CMap is a goroutine-safe map

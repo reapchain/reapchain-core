@@ -6,11 +6,11 @@ import (
 	"strings"
 	"sync"
 
-	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
-	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	"github.com/reapchain/reapchain-core/p2p"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 type RoundVoteSet struct {

@@ -5,14 +5,14 @@ import (
 	"net"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmnet "gitlab.reappay.net/reapchain/reapchain-core/libs/net"
-	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/config"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p/conn"
+	"github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/p2p/conn"
 )
 
 const testCh = 0x01

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/p2p"
 )
 
 func setupChunkQueue(t *testing.T) (*chunkQueue, func()) {

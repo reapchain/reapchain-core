@@ -3,11 +3,11 @@ package v2
 import (
 	"fmt"
 
-	bc "gitlab.reappay.net/reapchain/reapchain-core/blockchain"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	bcproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/blockchain"
-	"gitlab.reappay.net/reapchain/reapchain-core/state"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	bc "github.com/reapchain/reapchain-core/blockchain"
+	"github.com/reapchain/reapchain-core/p2p"
+	bcproto "github.com/reapchain/reapchain-core/proto/reapchain/blockchain"
+	"github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 type iIO interface {

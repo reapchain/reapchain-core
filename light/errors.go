@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // ErrOldHeaderExpired means the old (trusted) header has expired according to

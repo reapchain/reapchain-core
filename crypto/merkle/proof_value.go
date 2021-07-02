@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
-	tmcrypto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/crypto"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	tmcrypto "github.com/reapchain/reapchain-core/proto/reapchain/crypto"
 )
 
 const ProofOpValue = "simple:v"

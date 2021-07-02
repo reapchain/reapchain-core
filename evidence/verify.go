@@ -7,8 +7,8 @@ import (
 	"sort"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/light"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/light"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // verify verifies the evidence fully by checking:

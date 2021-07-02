@@ -17,7 +17,7 @@ package crypto_test
 import (
 	"fmt"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto"
 )
 
 func ExampleSha256() {

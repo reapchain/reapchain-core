@@ -9,8 +9,8 @@ import (
 	"path"
 	"path/filepath"
 
-	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
-	rpchttp "gitlab.reappay.net/reapchain/reapchain-core/rpc/client/http"
+	cfg "github.com/reapchain/reapchain-core/config"
+	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
 )
 
 // dumpStatus gets node status state dump from the Reapchain RPC and writes it

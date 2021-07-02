@@ -3,7 +3,7 @@ package pex
 import (
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/p2p"
 )
 
 // knownAddress tracks information about a known network address

@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	tmbytes "gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
+	"github.com/reapchain/reapchain-core/crypto"
+	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
 )
 
 // Tx is an arbitrary byte array.

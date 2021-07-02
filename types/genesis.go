@@ -8,12 +8,12 @@ import (
 	"io/ioutil"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	tmbytes "gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
-	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
-	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
-	tmtime "gitlab.reappay.net/reapchain/reapchain-core/types/time"
+	"github.com/reapchain/reapchain-core/crypto"
+	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
 const (

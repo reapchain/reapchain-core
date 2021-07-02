@@ -3,8 +3,8 @@ package indexer
 import (
 	"context"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // BlockIndexer defines an interface contract for indexing block events.

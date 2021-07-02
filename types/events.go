@@ -3,10 +3,10 @@ package types
 import (
 	"fmt"
 
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
-	tmpubsub "gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub"
-	tmquery "gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	tmpubsub "github.com/reapchain/reapchain-core/libs/pubsub"
+	tmquery "github.com/reapchain/reapchain-core/libs/pubsub/query"
 )
 
 // Reserved event types (alphabetically sorted).

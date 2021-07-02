@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/behaviour"
-	bc "gitlab.reappay.net/reapchain/reapchain-core/blockchain"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	bcproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/blockchain"
-	"gitlab.reappay.net/reapchain/reapchain-core/state"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/behaviour"
+	bc "github.com/reapchain/reapchain-core/blockchain"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/p2p"
+	bcproto "github.com/reapchain/reapchain-core/proto/reapchain/blockchain"
+	"github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (

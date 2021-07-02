@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/merkle"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
-	tmbytes "gitlab.reappay.net/reapchain/reapchain-core/libs/bytes"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/crypto/merkle"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 // Tx is an arbitrary byte array.

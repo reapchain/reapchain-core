@@ -9,17 +9,17 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
-	"gitlab.reappay.net/reapchain/reapchain-core/evidence"
-	"gitlab.reappay.net/reapchain/reapchain-core/evidence/mocks"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
-	tmversion "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/version"
-	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
-	smmocks "gitlab.reappay.net/reapchain/reapchain-core/state/mocks"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/version"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	"github.com/reapchain/reapchain-core/evidence"
+	"github.com/reapchain/reapchain-core/evidence/mocks"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain/version"
+	sm "github.com/reapchain/reapchain-core/state"
+	smmocks "github.com/reapchain/reapchain-core/state/mocks"
+	"github.com/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/version"
 )
 
 func TestVerifyLightClientAttack_Lunatic(t *testing.T) {

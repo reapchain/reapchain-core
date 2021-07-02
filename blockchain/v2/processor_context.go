@@ -3,8 +3,8 @@ package v2
 import (
 	"fmt"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/state"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 type processorContext interface {

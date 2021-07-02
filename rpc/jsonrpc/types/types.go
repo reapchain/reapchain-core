@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strings"
 
-	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
 )
 
 // a wrapper to emulate a sum type: jsonrpcid = string | int

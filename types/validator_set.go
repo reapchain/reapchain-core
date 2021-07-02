@@ -9,9 +9,9 @@ import (
 	"sort"
 	"strings"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/merkle"
-	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/crypto/merkle"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 const (

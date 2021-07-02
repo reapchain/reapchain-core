@@ -12,11 +12,11 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/code"
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	mempl "gitlab.reappay.net/reapchain/reapchain-core/mempool"
-	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/abci/example/code"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	mempl "github.com/reapchain/reapchain-core/mempool"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // for testing

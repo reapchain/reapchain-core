@@ -11,23 +11,23 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
-	cstypes "gitlab.reappay.net/reapchain/reapchain-core/consensus/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto"
-	tmevents "gitlab.reappay.net/reapchain/reapchain-core/libs/events"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/fail"
-	tmjson "gitlab.reappay.net/reapchain/reapchain-core/libs/json"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
-	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
-	tmrand "gitlab.reappay.net/reapchain/reapchain-core/libs/rand"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
-	sm "gitlab.reappay.net/reapchain/reapchain-core/state"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
-	tmtime "gitlab.reappay.net/reapchain/reapchain-core/types/time"
+	cfg "github.com/reapchain/reapchain-core/config"
+	cstypes "github.com/reapchain/reapchain-core/consensus/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	tmevents "github.com/reapchain/reapchain-core/libs/events"
+	"github.com/reapchain/reapchain-core/libs/fail"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/p2p"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
 // Consensus sentinel errors
@@ -880,7 +880,7 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// We probably don't want to stop the peer here. The vote does not
 		// necessarily comes from a malicious peer but can be just broadcasted by
 		// a typical peer.
-		// https://gitlab.reappay.net/reapchain/reapchain-core/issues/1281
+		// https://github.com/reapchain/reapchain-core/issues/1281
 		// }
 
 		// NOTE: the vote is broadcast to peers by the reactor listening
@@ -2039,7 +2039,7 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 			// 1) bad peer OR
 			// 2) not a bad peer? this can also err sometimes with "Unexpected step" OR
 			// 3) tmkms use with multiple validators connecting to a single tmkms instance
-			// 		(https://gitlab.reappay.net/reapchain/reapchain-core/issues/3839).
+			// 		(https://github.com/reapchain/reapchain-core/issues/3839).
 			cs.Logger.Info("failed attempting to add vote", "err", err)
 			return added, ErrAddingVote
 		}

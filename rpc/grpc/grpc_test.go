@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
-	core_grpc "gitlab.reappay.net/reapchain/reapchain-core/rpc/grpc"
-	rpctest "gitlab.reappay.net/reapchain/reapchain-core/rpc/test"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	core_grpc "github.com/reapchain/reapchain-core/rpc/grpc"
+	rpctest "github.com/reapchain/reapchain-core/rpc/test"
 )
 
 func TestMain(m *testing.M) {

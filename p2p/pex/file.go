@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/tempfile"
+	"github.com/reapchain/reapchain-core/libs/tempfile"
 )
 
 /* Loading & Saving */

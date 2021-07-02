@@ -10,7 +10,7 @@ import (
 	"math"
 	"time"
 
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 )
 
 // Monitor monitors and limits the transfer rate of a data stream.

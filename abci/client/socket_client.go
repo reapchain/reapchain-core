@@ -10,11 +10,11 @@ import (
 	"reflect"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	tmnet "gitlab.reappay.net/reapchain/reapchain-core/libs/net"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/timer"
+	"github.com/reapchain/reapchain-core/abci/types"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/libs/timer"
 )
 
 const (

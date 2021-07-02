@@ -5,9 +5,9 @@ import (
 
 	"google.golang.org/grpc"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	tmnet "gitlab.reappay.net/reapchain/reapchain-core/libs/net"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/service"
+	"github.com/reapchain/reapchain-core/abci/types"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	"github.com/reapchain/reapchain-core/libs/service"
 )
 
 type GRPCServer struct {

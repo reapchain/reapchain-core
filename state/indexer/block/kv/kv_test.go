@@ -7,10 +7,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 	db "github.com/tendermint/tm-db"
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
-	blockidxkv "gitlab.reappay.net/reapchain/reapchain-core/state/indexer/block/kv"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
+	blockidxkv "github.com/reapchain/reapchain-core/state/indexer/block/kv"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 func TestBlockIndexer(t *testing.T) {

@@ -6,10 +6,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/libs/log"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
+	"github.com/reapchain/reapchain-core/libs/pubsub"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
 )
 
 func TestExample(t *testing.T) {

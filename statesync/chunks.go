@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"time"
 
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/p2p"
 )
 
 // errDone is returned by chunkQueue.Next() when all chunks have been returned.

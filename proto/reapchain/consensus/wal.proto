@@ -1,7 +1,7 @@
 syntax = "proto3";
 package reapchain.consensus;
 
-option go_package = "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/consensus";
+option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/consensus";
 
 import "gogoproto/gogo.proto";
 import "reapchain/consensus/types.proto";

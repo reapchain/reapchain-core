@@ -5,12 +5,12 @@ import (
 	"os"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmnet "gitlab.reappay.net/reapchain/reapchain-core/libs/net"
-	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/privval"
+	"github.com/reapchain/reapchain-core/privval"
 )
 
 func main() {

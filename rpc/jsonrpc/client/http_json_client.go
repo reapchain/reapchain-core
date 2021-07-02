@@ -11,8 +11,8 @@ import (
 	"net/url"
 	"strings"
 
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	types "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	types "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 const (

@@ -1,8 +1,8 @@
 package state
 
 import (
-	mempl "gitlab.reappay.net/reapchain/reapchain-core/mempool"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	mempl "github.com/reapchain/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // TxPreCheck returns a function to filter transactions before processing.

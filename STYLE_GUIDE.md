@@ -77,12 +77,12 @@ Sometimes it's necessary to rename libraries to avoid naming collisions or ambig
 * Separate imports into blocks - one for the standard lib, one for external libs and one for application libs.
 * Here are some common library labels for consistency:
     * dbm "github.com/tendermint/tm-db"
-    * tmcmd "gitlab.reappay.net/reapchain/reapchain-core/cmd/reapchain/commands"
-    * tmcfg "gitlab.reappay.net/reapchain/reapchain-core/config/reapchain"
-    * tmtypes "gitlab.reappay.net/reapchain/reapchain-core/types"
+    * tmcmd "github.com/reapchain/reapchain-core/cmd/reapchain/commands"
+    * tmcfg "github.com/reapchain/reapchain-core/config/reapchain"
+    * tmtypes "github.com/reapchain/reapchain-core/types"
 * Never use anonymous imports (the `.`), for example, `tmlibs/common` or anything else.
 * When importing a pkg from the `reapchain/libs` directory, prefix the pkg alias with tm.
-    * tmbits "gitlab.reappay.net/reapchain/reapchain-core/libs/bits"
+    * tmbits "github.com/reapchain/reapchain-core/libs/bits"
 * tip: Use the `_` library import to import a library for initialization effects (side effects)
 
 ## Dependencies

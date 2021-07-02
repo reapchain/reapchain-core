@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	tmmath "gitlab.reappay.net/reapchain/reapchain-core/libs/math"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 var (

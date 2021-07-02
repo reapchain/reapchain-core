@@ -9,11 +9,11 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/code"
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	cryptoenc "gitlab.reappay.net/reapchain/reapchain-core/crypto/encoding"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	pc "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/crypto"
+	"github.com/reapchain/reapchain-core/abci/example/code"
+	"github.com/reapchain/reapchain-core/abci/types"
+	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
+	"github.com/reapchain/reapchain-core/libs/log"
+	pc "github.com/reapchain/reapchain-core/proto/reapchain/crypto"
 )
 
 const (

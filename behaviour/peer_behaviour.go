@@ -1,7 +1,7 @@
 package behaviour
 
 import (
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/p2p"
 )
 
 // PeerBehaviour is a struct describing a behaviour a peer performed.

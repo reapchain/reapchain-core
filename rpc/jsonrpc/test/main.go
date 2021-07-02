@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"os"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
-	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
-	rpcserver "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/server"
-	rpctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	rpcserver "github.com/reapchain/reapchain-core/rpc/jsonrpc/server"
+	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 var routes = map[string]*rpcserver.RPCFunc{

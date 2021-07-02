@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"log"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
-	rpchttp "gitlab.reappay.net/reapchain/reapchain-core/rpc/client/http"
-	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
-	rpctest "gitlab.reappay.net/reapchain/reapchain-core/rpc/test"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpctest "github.com/reapchain/reapchain-core/rpc/test"
 )
 
 func ExampleHTTP_simple() {

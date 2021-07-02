@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/ed25519"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/protoio"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p/conn"
-	tmp2p "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/p2p"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/libs/protoio"
+	"github.com/reapchain/reapchain-core/p2p/conn"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
 )
 
 var defaultNodeName = "host_peer"

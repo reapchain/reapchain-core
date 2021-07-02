@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
-	"gitlab.reappay.net/reapchain/reapchain-core/state/indexer"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
+	"github.com/reapchain/reapchain-core/state/indexer"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 var _ indexer.BlockIndexer = (*BlockerIndexer)(nil)

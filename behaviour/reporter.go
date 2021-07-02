@@ -3,8 +3,8 @@ package behaviour
 import (
 	"errors"
 
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/p2p"
 )
 
 // Reporter provides an interface for reactors to report the behaviour

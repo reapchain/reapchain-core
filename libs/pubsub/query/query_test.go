@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/pubsub/query"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
 )
 
 func TestMatches(t *testing.T) {

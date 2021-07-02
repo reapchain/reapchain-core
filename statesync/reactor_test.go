@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	p2pmocks "gitlab.reappay.net/reapchain/reapchain-core/p2p/mocks"
-	ssproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/statesync"
-	proxymocks "gitlab.reappay.net/reapchain/reapchain-core/proxy/mocks"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/p2p"
+	p2pmocks "github.com/reapchain/reapchain-core/p2p/mocks"
+	ssproto "github.com/reapchain/reapchain-core/proto/reapchain/statesync"
+	proxymocks "github.com/reapchain/reapchain-core/proxy/mocks"
 )
 
 func TestReactor_Receive_ChunkRequest(t *testing.T) {

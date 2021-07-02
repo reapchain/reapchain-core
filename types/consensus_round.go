@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	tmproto "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 )
 
 const (

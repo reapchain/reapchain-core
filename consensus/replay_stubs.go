@@ -1,12 +1,12 @@
 package consensus
 
 import (
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/clist"
-	mempl "gitlab.reappay.net/reapchain/reapchain-core/mempool"
-	tmstate "gitlab.reappay.net/reapchain/reapchain-core/proto/reapchain/state"
-	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
-	"gitlab.reappay.net/reapchain/reapchain-core/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/libs/clist"
+	mempl "github.com/reapchain/reapchain-core/mempool"
+	tmstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
+	"github.com/reapchain/reapchain-core/proxy"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 //-----------------------------------------------------------------------------

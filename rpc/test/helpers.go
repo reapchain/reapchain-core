@@ -8,18 +8,18 @@ import (
 	"strings"
 	"time"
 
-	abci "gitlab.reappay.net/reapchain/reapchain-core/abci/types"
-	"gitlab.reappay.net/reapchain/reapchain-core/libs/log"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/libs/log"
 
-	cfg "gitlab.reappay.net/reapchain/reapchain-core/config"
-	tmnet "gitlab.reappay.net/reapchain/reapchain-core/libs/net"
-	nm "gitlab.reappay.net/reapchain/reapchain-core/node"
-	"gitlab.reappay.net/reapchain/reapchain-core/p2p"
-	"gitlab.reappay.net/reapchain/reapchain-core/privval"
-	"gitlab.reappay.net/reapchain/reapchain-core/proxy"
-	ctypes "gitlab.reappay.net/reapchain/reapchain-core/rpc/core/types"
-	core_grpc "gitlab.reappay.net/reapchain/reapchain-core/rpc/grpc"
-	rpcclient "gitlab.reappay.net/reapchain/reapchain-core/rpc/jsonrpc/client"
+	cfg "github.com/reapchain/reapchain-core/config"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	nm "github.com/reapchain/reapchain-core/node"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/privval"
+	"github.com/reapchain/reapchain-core/proxy"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	core_grpc "github.com/reapchain/reapchain-core/rpc/grpc"
+	rpcclient "github.com/reapchain/reapchain-core/rpc/jsonrpc/client"
 )
 
 // Options helps with specifying some parameters for our RPC testing for greater

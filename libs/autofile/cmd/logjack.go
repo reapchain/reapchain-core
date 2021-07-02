@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	auto "gitlab.reappay.net/reapchain/reapchain-core/libs/autofile"
-	tmos "gitlab.reappay.net/reapchain/reapchain-core/libs/os"
+	auto "github.com/reapchain/reapchain-core/libs/autofile"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
 )
 
 const Version = "0.0.1"

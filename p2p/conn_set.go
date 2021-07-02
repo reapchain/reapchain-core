@@ -3,7 +3,7 @@ package p2p
 import (
 	"net"
 
-	tmsync "gitlab.reappay.net/reapchain/reapchain-core/libs/sync"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 )
 
 // ConnSet is a lookup table for connections and all their ips.

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.reappay.net/reapchain/reapchain-core/crypto/tmhash"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
 )
 
 // TrustOptions are the trust parameters needed when a new light client

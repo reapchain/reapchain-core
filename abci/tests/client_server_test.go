@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	abciclient "gitlab.reappay.net/reapchain/reapchain-core/abci/client"
-	"gitlab.reappay.net/reapchain/reapchain-core/abci/example/kvstore"
-	abciserver "gitlab.reappay.net/reapchain/reapchain-core/abci/server"
+	abciclient "github.com/reapchain/reapchain-core/abci/client"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	abciserver "github.com/reapchain/reapchain-core/abci/server"
 )
 
 func TestClientServerNoAddrPrefix(t *testing.T) {
