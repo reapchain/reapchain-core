@@ -825,15 +825,15 @@ func (_m *Client) StandingMembers(ctx context.Context, height *int64, page *int,
 	return r0, r1
 }
 
-func (_m *Client) Qns(ctx context.Context, height *int64) (*coretypes.ResultQns, error) {
+func (_m *Client) Qrns(ctx context.Context, height *int64) (*coretypes.ResultQrns, error) {
 	ret := _m.Called(ctx, height)
 
-	var r0 *coretypes.ResultQns
-	if rf, ok := ret.Get(0).(func(context.Context, *int64) *coretypes.ResultQns); ok {
+	var r0 *coretypes.ResultQrns
+	if rf, ok := ret.Get(0).(func(context.Context, *int64) *coretypes.ResultQrns); ok {
 		r0 = rf(ctx, height)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*coretypes.ResultQns)
+			r0 = ret.Get(0).(*coretypes.ResultQrns)
 		}
 	}
 

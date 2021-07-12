@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	abci "github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
@@ -55,7 +57,7 @@ func (tm2pb) Header(header *Header) tmproto.Header {
 
 		StandingMembersHash: header.StandingMembersHash,
 		ConsensusRoundInfo:  header.ConsensusRoundInfo.ToProto(),
-		QnsHash:             header.QnsHash,
+		QrnsHash:            header.QrnsHash,
 	}
 }
 
@@ -72,10 +74,8 @@ func (tm2pb) StandingMember(val *StandingMember) abci.StandingMember {
 	}
 }
 
-func (tm2pb) Qn(val *Qn) abci.Qn {
-	return abci.Qn{
-		Address: val.PubKey.Address(),
-	}
+func (tm2pb) Qrn(val *Qrn) abci.Qrn {
+	return abci.Qrn{}
 }
 
 func (tm2pb) BlockID(blockID BlockID) tmproto.BlockID {
@@ -131,21 +131,23 @@ func (tm2pb) StandingMemberUpdates(sms *StandingMemberSet) []abci.StandingMember
 	return standingMembers
 }
 
-func (tm2pb) QnUpdate(val *Qn) abci.QnUpdate {
-	pk, err := cryptoenc.PubKeyToProto(val.PubKey)
+func (tm2pb) QrnUpdate(val *Qrn) abci.QrnUpdate {
+	pk, err := cryptoenc.PubKeyToProto(val.StandingMemberPubKey)
 	if err != nil {
 		panic(err)
 	}
-	return abci.QnUpdate{
+	return abci.QrnUpdate{
 		PubKey: pk,
 		Value:  val.Value,
 	}
 }
 
-func (tm2pb) QnUpdates(sms *QnSet) []abci.QnUpdate {
-	standingMembers := make([]abci.QnUpdate, sms.Size())
-	for i, sm := range sms.Qns {
-		standingMembers[i] = TM2PB.QnUpdate(sm)
+func (tm2pb) QrnUpdates(qrnSet *QrnSet) []abci.QrnUpdate {
+	standingMembers := make([]abci.QrnUpdate, qrnSet.Size())
+	fmt.Println(len(qrnSet.qrns))
+
+	for i, sm := range qrnSet.qrns {
+		standingMembers[i] = TM2PB.QrnUpdate(sm)
 	}
 	return standingMembers
 }
@@ -205,14 +207,14 @@ func (pb2tm) StandingMemberUpdates(sms []abci.StandingMemberUpdate) ([]*Standing
 	return smz, nil
 }
 
-func (pb2tm) QnUpdates(sms []abci.QnUpdate) ([]*Qn, error) {
-	smz := make([]*Qn, len(sms))
-	for i, v := range sms {
-		pub, err := cryptoenc.PubKeyFromProto(v.PubKey)
+func (pb2tm) QrnUpdates(qrnUpdates []abci.QrnUpdate) ([]*Qrn, error) {
+	qrns := make([]*Qrn, len(qrnUpdates))
+	for i, qrn := range qrnUpdates {
+		pub, err := cryptoenc.PubKeyFromProto(qrn.PubKey)
 		if err != nil {
 			return nil, err
 		}
-		smz[i] = NewQn(pub, v.Value, v.Height)
+		qrns[i] = NewQrn(pub, qrn.Value, qrn.Height, nil)
 	}
-	return smz, nil
+	return qrns, nil
 }

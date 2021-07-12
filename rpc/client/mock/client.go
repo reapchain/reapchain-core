@@ -178,8 +178,8 @@ func (c Client) StandingMembers(ctx context.Context, height *int64, page, perPag
 	return core.StandingMembers(&rpctypes.Context{}, height, page, perPage)
 }
 
-func (c Client) Qns(ctx context.Context, height *int64) (*ctypes.ResultQns, error) {
-	return core.Qns(&rpctypes.Context{}, height)
+func (c Client) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	return core.Qrns(&rpctypes.Context{}, height)
 }
 
 func (c Client) BroadcastEvidence(ctx context.Context, ev types.Evidence) (*ctypes.ResultBroadcastEvidence, error) {

@@ -149,10 +149,10 @@ type ResultStandingMembers struct {
 	Total int `json:"total"`
 }
 
-// Qns for a height.
-type ResultQns struct {
-	BlockHeight int64       `json:"block_height"`
-	Qns         []*types.Qn `json:"qns"`
+// Qrns for a height.
+type ResultQrns struct {
+	BlockHeight int64        `json:"block_height"`
+	Qrns        []*types.Qrn `json:"qrns"`
 	// Count of actual validators in this result
 	Count int `json:"count"`
 	// Total number of validators

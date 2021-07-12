@@ -2398,7 +2398,7 @@ components:
                             items:
                               type: string
                             example:
-                              - "eWb+HG/eMmukrQj4vNGyFYb3nKQncAWacq4HF5eFzDY="
+                              - "eWb+HG/eMmukrQj4vNGyFYb3nKQrncAWacq4HF5eFzDY="
                         type: object
                     type: object
             total_count:

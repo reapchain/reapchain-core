@@ -41,6 +41,12 @@ type GenesisStandingMember struct {
 	Name    string        `json:"name"`
 }
 
+type GenesisQrn struct {
+	Address Address       `json:"address"`
+	PubKey  crypto.PubKey `json:"pub_key"`
+	Value   uint64        `json:"value"`
+}
+
 // GenesisDoc defines the initial conditions for a reapchain blockchain, in particular its validator set.
 type GenesisDoc struct {
 	GenesisTime     time.Time                `json:"genesis_time"`
@@ -52,7 +58,7 @@ type GenesisDoc struct {
 	AppState        json.RawMessage          `json:"app_state,omitempty"`
 
 	StandingMembers    []GenesisStandingMember `json:"standing_members,omitempty"`
-	Qns                []Qn                    `json:"qns,omitempty"`
+	Qrns               []Qrn                   `json:"qrns,omitempty"`
 	ConsensusRoundInfo ConsensusRound          `json:"consensus_round_info"`
 }
 
@@ -84,13 +90,18 @@ func (genDoc *GenesisDoc) StandingMemberHash() []byte {
 	return smSet.Hash()
 }
 
-func (genDoc *GenesisDoc) QnHash() []byte {
-	qns := make([]*Qn, len(genDoc.Qns))
-	for i, qn := range genDoc.Qns {
-		qns[i] = NewQn(qn.PubKey, qn.Value, qn.Height)
+func (genDoc *GenesisDoc) QrnHash() []byte {
+	qrns := make([]*Qrn, len(genDoc.Qrns))
+	for i, qrn := range genDoc.Qrns {
+		//TODO: stompesi
+		qrns[i] = NewQrn(nil, qrn.Value, genDoc.InitialHeight, nil)
 	}
-	qnSet := NewQnSet(qns)
-	return qnSet.Hash()
+	qrnSet := &QrnSet{
+		height: genDoc.InitialHeight,
+		qrns:   qrns,
+	}
+
+	return qrnSet.Hash()
 }
 
 // ValidateAndComplete checks that all necessary fields are present
@@ -137,14 +148,15 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 		}
 	}
 
-	for i, qn := range genDoc.Qns {
-		if len(qn.Address) > 0 && !bytes.Equal(qn.PubKey.Address(), qn.Address) {
-			return fmt.Errorf("incorrect address for stending member %v in the genesis file, should be %v", qn, qn.PubKey.Address())
-		}
-		if len(qn.Address) == 0 {
-			genDoc.Qns[i].Address = qn.PubKey.Address()
-		}
-	}
+	//TODO: stomnpesi
+	// for i, qrn := range genDoc.Qrns {
+	// 	if len(qrn.Address) > 0 && !bytes.Equal(qrn.PubKey.Address(), qrn.Address) {
+	// 		return fmt.Errorf("incorrect address for stending member %v in the genesis file, should be %v", qrn, qrn.PubKey.Address())
+	// 	}
+	// 	if len(qrn.Address) == 0 {
+	// 		genDoc.Qrns[i].Address = qrn.PubKey.Address()
+	// 	}
+	// }
 
 	if genDoc.GenesisTime.IsZero() {
 		genDoc.GenesisTime = tmtime.Now()

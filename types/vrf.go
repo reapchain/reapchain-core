@@ -16,54 +16,55 @@ import (
 // Might we want types here ?
 type Vrfs []Vrf
 
-func (qns Vrfs) Hash() []byte {
-	bzs := make([][]byte, len(qns))
-	for i, qn := range qns {
-		bzs[i] = qn.Bytes()
+func (vrfs Vrfs) Hash() []byte {
+	vrfz := make([][]byte, len(vrfs))
+	for i, vrf := range vrfs {
+		vrfz[i] = vrf.Bytes()
 	}
-	return merkle.HashFromByteSlices(bzs)
+	return merkle.HashFromByteSlices(vrfz)
 }
 
 type Vrf struct {
-	Address Address       `json:"address"`
-	PubKey  crypto.PubKey `json:"pub_key"`
-	Value   uint64        `json:"value"`
+	SteeringMemberCandidatePubKey crypto.PubKey `json:"steering_member_candidate_pub_key"`
+	Value                         uint64        `json:"value"`
+	Proof                         []byte        `json:"proof"`
 }
 
+//TODO: stompesi
 func NewVrf(pubKey crypto.PubKey, value uint64) *Vrf {
 	return &Vrf{
-		Address: pubKey.Address(),
-		PubKey:  pubKey,
-		Value:   value,
+		SteeringMemberCandidatePubKey: pubKey,
+		Value:                         value,
 	}
 }
 
-func (qn *Vrf) ValidateBasic() error {
-	if qn == nil {
-		return errors.New("nil qn")
+func (qrn *Vrf) ValidateBasic() error {
+	steeringMemberCandidateAddress := qrn.SteeringMemberCandidatePubKey.Address()
+	if qrn == nil {
+		return errors.New("nil qrn")
 	}
 
-	if qn.PubKey == nil {
-		return errors.New("qn does not have a public key")
+	if qrn.SteeringMemberCandidatePubKey == nil {
+		return errors.New("qrn does not have a public key")
 	}
 
-	if len(qn.Address) != crypto.AddressSize {
-		return fmt.Errorf("qn of member address is the wrong size: %v", qn.Address)
+	if len(steeringMemberCandidateAddress) != crypto.AddressSize {
+		return fmt.Errorf("qrn of member address is the wrong size: %v", steeringMemberCandidateAddress)
 	}
 
 	//TODO: stompesi -
 	return nil
 }
 
-func (qn *Vrf) Bytes() []byte {
-	pk, err := ce.PubKeyToProto(qn.PubKey)
+func (qrn *Vrf) Bytes() []byte {
+	pk, err := ce.PubKeyToProto(qrn.SteeringMemberCandidatePubKey)
 	if err != nil {
 		panic(err)
 	}
 
 	pbv := tmproto.SimpleVrf{
 		PubKey: &pk,
-		Value:  qn.Value,
+		Value:  qrn.Value,
 	}
 
 	bz, err := pbv.Marshal()
@@ -73,10 +74,10 @@ func (qn *Vrf) Bytes() []byte {
 	return bz
 }
 
-func VrfListString(qns []*Vrf) string {
-	chunks := make([]string, len(qns))
-	for i, qn := range qns {
-		chunks[i] = fmt.Sprintf("%s:%d", qn.Address, qn.Value)
+func VrfListString(qrns []*Vrf) string {
+	chunks := make([]string, len(qrns))
+	for i, qrn := range qrns {
+		chunks[i] = fmt.Sprintf("%s:%d", qrn.SteeringMemberCandidatePubKey.Address(), qrn.Value)
 	}
 
 	return strings.Join(chunks, ",")

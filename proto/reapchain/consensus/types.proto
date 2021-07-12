@@ -5,7 +5,7 @@ option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/consens
 
 import "gogoproto/gogo.proto";
 import "reapchain/types/types.proto";
-import "reapchain/types/qn.proto";
+import "reapchain/types/qrn.proto";
 import "reapchain/types/vrf.proto";
 import "reapchain/libs/bits/types.proto";
 
@@ -79,8 +79,8 @@ message VoteSetBits {
   reapchain.libs.bits.BitArray  votes    = 5 [(gogoproto.nullable) = false];
 }
 
-message Qn {
-  reapchain.types.Qn qn = 1;
+message Qrn {
+  reapchain.types.Qrn qrn = 1;
 }
 
 message Vrf {
@@ -98,7 +98,7 @@ message Message {
     HasVote       has_vote        = 7;
     VoteSetMaj23  vote_set_maj23  = 8;
     VoteSetBits   vote_set_bits   = 9;
-    Qn            qn              = 10;
+    Qrn            qrn              = 10;
     Vrf           vrfn            = 11;
   }
 }

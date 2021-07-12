@@ -551,23 +551,23 @@ func (c *Client) StandingMembers(
 		Total:           totalCount}, nil
 }
 
-func (c *Client) Qns(
+func (c *Client) Qrns(
 	ctx context.Context,
 	height *int64,
-) (*ctypes.ResultQns, error) {
+) (*ctypes.ResultQrns, error) {
 
 	l, err := c.updateLightClientIfNeededTo(ctx, height)
 	if err != nil {
 		return nil, err
 	}
 
-	totalCount := len(l.QnSet.Qns)
+	totalCount := len(l.QrnSet.GetQrns())
 
-	v := l.QnSet.Qns[:]
+	v := l.QrnSet.GetQrns()[:]
 
-	return &ctypes.ResultQns{
+	return &ctypes.ResultQrns{
 		BlockHeight: l.Height,
-		Qns:         v,
+		Qrns:        v,
 		Count:       len(v),
 		Total:       totalCount}, nil
 }

@@ -79,27 +79,27 @@ func StandingMembers(ctx *rpctypes.Context, heightPtr *int64, pagePtr, perPagePt
 		Total:           totalCount}, nil
 }
 
-func Qns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQns, error) {
+func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {
 		return nil, err
 	}
 
-	qns, err := env.StateStore.LoadQns(height)
+	qrns, err := env.StateStore.LoadQrns(height)
 	if err != nil {
 		return nil, err
 	}
 
-	totalCount := len(qns.Qns)
+	totalCount := len(qrns.GetQrns())
 	if err != nil {
 		return nil, err
 	}
 
-	v := qns.Qns[:]
+	v := qrns.GetQrns()[:]
 
-	return &ctypes.ResultQns{
+	return &ctypes.ResultQrns{
 		BlockHeight: height,
-		Qns:         qns.Qns,
+		Qrns:        qrns.GetQrns(),
 		Count:       len(v),
 		Total:       totalCount}, nil
 }

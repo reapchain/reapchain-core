@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/spf13/cobra"
 
@@ -77,11 +78,20 @@ func initFilesWithConfig(config *cfg.Config) error {
 			PubKey:  pubKey,
 		}}
 
-		// Default 양자난수 추가
-		genDoc.Qns = []types.Qn{{
-			Address: pubKey.Address(),
-			PubKey:  pubKey,
-			Value:   tmrand.Uint64(),
+		rand := tmrand.Uint64()
+		randByte := []byte(strconv.FormatUint(rand, 10))
+		signature, err := pv.Key.PrivKey.Sign(randByte)
+		if err != nil {
+			return err
+		}
+
+		genDoc.Qrns = []types.Qrn{{
+			Height:               0,
+			Timestamp:            genDoc.GenesisTime,
+			StandingMemberPubKey: pubKey,
+			StandingMemberIndex:  0,
+			Value:                rand,
+			Signature:            signature,
 		}}
 
 		genDoc.ConsensusRoundInfo = types.NewConsensusRound(0, 0)

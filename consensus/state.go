@@ -35,7 +35,7 @@ var (
 	ErrInvalidProposalSignature   = errors.New("error invalid proposal signature")
 	ErrInvalidProposalPOLRound    = errors.New("error invalid proposal POL round")
 	ErrAddingVote                 = errors.New("error adding vote")
-	ErrAddingQn                   = errors.New("error adding qn")
+	ErrAddingQrn                  = errors.New("error adding qrn")
 	ErrSignatureFoundInPastBlocks = errors.New("found signature from the same key")
 
 	errPubKeyIsNotSet = errors.New("pubkey is not set. Look for \"Can't get private validator pubkey\" errors")
@@ -183,7 +183,7 @@ func NewState(
 		cs.reconstructLastCommit(state)
 	}
 
-	//fmt.Println("stompesi-으어", state.Qns)
+	//fmt.Println("stompesi-으어", state.Qrns)
 	cs.updateToState(state)
 
 	// NOTE: we do not call scheduleRound0 yet, we do that upon Start()
@@ -270,10 +270,10 @@ func (cs *State) GetStandingMembers() (int64, []*types.StandingMember) {
 	return cs.state.LastBlockHeight, cs.state.StandingMembers.Copy().StandingMembers
 }
 
-func (cs *State) GetQns() (int64, []*types.Qn) {
+func (cs *State) GetQrns() (int64, []*types.Qrn) {
 	cs.mtx.RLock()
 	defer cs.mtx.RUnlock()
-	return cs.state.LastBlockHeight, cs.state.Qns.Copy().Qns
+	return cs.state.LastBlockHeight, cs.state.Qrns.Copy().GetQrns()
 }
 
 // SetPrivValidator sets the private validator account for signing votes. It
@@ -591,7 +591,7 @@ func (cs *State) reconstructLastCommit(state sm.State) {
 // Updates State and increments height to match that of state.
 // The round becomes 0 and cs.Step becomes cstypes.RoundStepNewHeight.
 func (cs *State) updateToState(state sm.State) {
-	//fmt.Println("stompesi-jjjjjjkkkk", state.Qns)
+	//fmt.Println("stompesi-jjjjjjkkkk", state.Qrns)
 
 	if cs.CommitRound > -1 && 0 < cs.Height && cs.Height != state.LastBlockHeight {
 		panic(fmt.Sprintf(
@@ -694,7 +694,7 @@ func (cs *State) updateToState(state sm.State) {
 	cs.LastValidators = state.LastValidators
 	cs.TriggeredTimeoutPrecommit = false
 	cs.StandingMembers = state.StandingMembers
-	cs.Qns = state.Qns
+	cs.Qrns = state.Qrns
 
 	fmt.Println("3stompesi-updateToState", state)
 	cs.state = state
@@ -857,11 +857,11 @@ func (cs *State) handleMsg(mi msgInfo) {
 			err = nil
 		}
 
-	case *QnMessage:
+	case *QrnMessage:
 		// attempt to add the vote and dupeout the validator if its a duplicate signature
 		// if the vote gives us a 2/3-any or 2/3-one, we transition
 		//fmt.Println("2stompesi-block-3")
-		added, err = cs.tryAddQn(msg.Qn, peerID)
+		added, err = cs.tryAddQrn(msg.Qrn, peerID)
 		if added {
 			cs.statsMsgQueue <- mi
 		}
@@ -1661,7 +1661,7 @@ func (cs *State) finalizeCommit(height int64) {
 	fail.Fail() // XXX
 
 	// Create a copy of the state for staging and an event cache for txs.
-	//fmt.Println("stompesi-jjjjjjkkkk2", cs.state.Qns)
+	//fmt.Println("stompesi-jjjjjjkkkk2", cs.state.Qrns)
 	stateCopy := cs.state.Copy()
 
 	// Execute and commit the block, update and save the state, and update the mempool.
@@ -1703,7 +1703,7 @@ func (cs *State) finalizeCommit(height int64) {
 	// must be called before we update state
 	cs.recordMetrics(height, block)
 
-	//fmt.Println("stompesi-start-종빈-2", stateCopy.Qns)
+	//fmt.Println("stompesi-start-종빈-2", stateCopy.Qrns)
 
 	// NewHeightStep!
 	cs.updateToState(stateCopy)
@@ -1724,14 +1724,14 @@ func (cs *State) finalizeCommit(height int64) {
 	// * cs.Step is now cstypes.RoundStepNewHeight
 	// * cs.StartTime is set to when we will start round0.
 
-	fmt.Println("5stompesi-finalizeCommit", len(cs.state.Qns.Qns))
-	// genDoc.Qns = []types.Qn{{
+	fmt.Println("5stompesi-finalizeCommit", len(cs.state.Qrns.GetQrns()))
+	// genDoc.Qrns = []types.Qrn{{
 	// 	Address: pubKey.Address(),
 	// 	PubKey:  pubKey,
 	// 	Value:   tmrand.Uint64(),
 	// }}
 
-	cs.state.Qns.Qns[0].Value = tmrand.Uint64()
+	cs.state.Qrns.GetQrns()[0].Value = tmrand.Uint64()
 
 	// Value:   tmrand.Uint64(),
 
@@ -1760,7 +1760,7 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 	cs.metrics.ValidatorsPower.Set(float64(cs.Validators.TotalVotingPower()))
 
 	cs.metrics.StandingMembers.Set(float64(cs.StandingMembers.Size()))
-	cs.metrics.Qns.Set(float64(cs.Qns.Size()))
+	cs.metrics.Qrns.Set(float64(cs.Qrns.Size()))
 
 	//fmt.Println("stompesi-start-recordMetrics-1")
 	var (
@@ -2048,45 +2048,46 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 	return added, nil
 }
 
-func (cs *State) tryAddQn(qn *types.Qn, peerID p2p.ID) (bool, error) {
-	added, err := cs.addQn(qn, peerID)
-	if err != nil {
-		// If the qn height is off, we'll just ignore it,
-		// But if it's a conflicting sig, add it to the cs.evpool.
-		// If it's otherwise invalid, punish peer.
-		// nolint: gocritic
-		if qnErr, ok := err.(*types.ErrQnConflictingQns); ok {
-			if cs.privValidatorPubKey == nil {
-				return false, errPubKeyIsNotSet
-			}
+func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
+	added, _ := cs.addQrn(qrn, peerID)
+	//TODO: stompesi
+	// if err != nil {
+	// 	// If the qrn height is off, we'll just ignore it,
+	// 	// But if it's a conflicting sig, add it to the cs.evpool.
+	// 	// If it's otherwise invalid, punish peer.
+	// 	// nolint: gocritic
+	// 	if qrnErr, ok := err.(*types.ErrQrnConflictingQrns); ok {
+	// 		if cs.privValidatorPubKey == nil {
+	// 			return false, errPubKeyIsNotSet
+	// 		}
 
-			if bytes.Equal(qn.ValidatorAddress, cs.privValidatorPubKey.Address()) {
-				cs.Logger.Error(
-					"found conflicting qn from ourselves; did you unsafe_reset a validator?",
-					"height", qn.Height,
-					"round", qn.Round,
-					"type", qn.Type,
-				)
+	// 		if bytes.Equal(qrn.ValidatorAddress, cs.privValidatorPubKey.Address()) {
+	// 			cs.Logger.Error(
+	// 				"found conflicting qrn from ourselves; did you unsafe_reset a validator?",
+	// 				"height", qrn.Height,
+	// 				"round", qrn.Round,
+	// 				"type", qrn.Type,
+	// 			)
 
-				return added, err
-			}
+	// 			return added, err
+	// 		}
 
-			// report conflicting qns to the evidence pool
-			cs.evpool.ReportConflictingQns(qnErr.QnA, qnErr.QnB)
-			cs.Logger.Debug(
-				"found and sent conflicting qns to the evidence pool",
-				"qn_a", qnErr.QnA,
-				"qn_b", qnErr.QnB,
-			)
+	// 		// report conflicting qrns to the evidence pool
+	// 		cs.evpool.ReportConflictingQrns(qrnErr.QrnA, qrnErr.QrnB)
+	// 		cs.Logger.Debug(
+	// 			"found and sent conflicting qrns to the evidence pool",
+	// 			"qrn_a", qrnErr.QrnA,
+	// 			"qrn_b", qrnErr.QrnB,
+	// 		)
 
-			return added, err
-		} else if errors.Is(err, types.ErrQnNonDeterministicSignature) {
-			cs.Logger.Debug("qn has non-deterministic signature", "err", err)
-		} else {
-			cs.Logger.Info("failed attempting to add qn", "err", err)
-			return added, ErrAddingQn
-		}
-	}
+	// 		return added, err
+	// 	} else if errors.Is(err, types.ErrQrnNonDeterministicSignature) {
+	// 		cs.Logger.Debug("qrn has non-deterministic signature", "err", err)
+	// 	} else {
+	// 		cs.Logger.Info("failed attempting to add qrn", "err", err)
+	// 		return added, ErrAddingQrn
+	// 	}
+	// }
 
 	return added, nil
 }
@@ -2301,21 +2302,22 @@ func (cs *State) signVote(
 	return vote, err
 }
 
-func (cs *State) addQn(qn *types.Qn, peerID p2p.ID) (added bool, err error) {
+func (cs *State) addQrn(qrn *types.Qrn, peerID p2p.ID) (added bool, err error) {
 	cs.Logger.Debug(
 		"adding vote",
-		"vote_height", qn.Height,
-		"qn_address", qn.Address,
+		"vote_height", qrn.Height,
+		"qrn_address", qrn.StandingMemberPubKey.Address(),
 	)
 
 	// Height mismatch is ignored.
 	// Not necessarily a bad peer, but not favourable behaviour.
-	if qn.Height != cs.Height {
-		cs.Logger.Debug("qn ignored and not added", "vote_height", qn.Height, "cs_height", cs.Height, "peer", peerID)
+	if qrn.Height != cs.Height {
+		cs.Logger.Debug("qrn ignored and not added", "vote_height", qrn.Height, "cs_height", cs.Height, "peer", peerID)
 		return
 	}
 
-	added, err = cs.Qns.AddQn(qn, peerID)
+	//TODO: stompesi
+	added, err = cs.Qrns.AddQrn(qrn)
 	if !added {
 		// Either duplicate, or error upon cs.Votes.AddByIndex()
 		return

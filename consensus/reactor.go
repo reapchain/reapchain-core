@@ -28,6 +28,8 @@ const (
 	DataChannel        = byte(0x21)
 	VoteChannel        = byte(0x22)
 	VoteSetBitsChannel = byte(0x23)
+	QrnChannel         = byte(0x24)
+	VrfChannel         = byte(0x25)
 
 	maxMsgSize = 1048576 // 1MB; NOTE/TODO: keep in sync with types.PartSet sizes.
 
@@ -194,6 +196,9 @@ func (conR *Reactor) AddPeer(peer p2p.Peer) {
 	go conR.gossipVotesRoutine(peer, peerState)
 	go conR.queryMaj23Routine(peer, peerState)
 
+	go conR.gossipQrnRoutine(peer, peerState) //추가된 코드
+	go conR.gossipVrfRoutine(peer, peerState) //추가된 코드
+
 	// Send our state to peer.
 	// If we're fast_syncing, broadcast a RoundStepMessage later upon SwitchToConsensus().
 	if !conR.WaitSync() {
@@ -248,6 +253,21 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 	}
 
 	switch chID {
+	case QrnChannel:
+		//TODO: stompesi
+		if conR.WaitSync() {
+			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
+			return
+		}
+		conR.conS.peerMsgQueue <- msgInfo{msg, src.ID()}
+
+	case VrfChannel:
+		//TODO: stompesi
+		if conR.WaitSync() {
+			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
+			return
+		}
+		conR.conS.peerMsgQueue <- msgInfo{msg, src.ID()}
 	case StateChannel:
 		switch msg := msg.(type) {
 		case *NewRoundStepMessage:
@@ -701,6 +721,38 @@ OUTER_LOOP:
 	}
 }
 
+func (conR *Reactor) gossipQrnRoutine(peer p2p.Peer, ps *PeerState) {
+	logger := conR.Logger.With("peer", peer)
+
+OUTER_LOOP:
+	for {
+		// Manage disconnects from self or peer.
+		if !peer.IsRunning() || !conR.IsRunning() {
+			logger.Info("Stopping gossipVotesRoutine for peer")
+			return
+		}
+
+		// TODO: stompesi
+		continue OUTER_LOOP
+	}
+}
+
+func (conR *Reactor) gossipVrfRoutine(peer p2p.Peer, ps *PeerState) {
+	logger := conR.Logger.With("peer", peer)
+
+OUTER_LOOP:
+	for {
+		// Manage disconnects from self or peer.
+		if !peer.IsRunning() || !conR.IsRunning() {
+			logger.Info("Stopping gossipVotesRoutine for peer")
+			return
+		}
+
+		// TODO: stompesi
+		continue OUTER_LOOP
+	}
+}
+
 func (conR *Reactor) gossipVotesForHeight(
 	logger log.Logger,
 	rs *cstypes.RoundState,
@@ -856,7 +908,6 @@ func (conR *Reactor) peerStatsRoutine() {
 			conR.Logger.Info("Stopping peerStatsRoutine")
 			return
 		}
-
 		select {
 		case msg := <-conR.conS.statsMsgQueue:
 			// Get peer
@@ -883,7 +934,6 @@ func (conR *Reactor) peerStatsRoutine() {
 			}
 		case <-conR.conS.Quit():
 			return
-
 		case <-conR.Quit():
 			return
 		}
@@ -1609,12 +1659,9 @@ func (m *BlockPartMessage) String() string {
 }
 
 //-------------------------------------
-type QnMessage struct {
-	Qn *types.Qn
-}
 
-func (qnMessage *QnMessage) ValidateBasic() error {
-	return qnMessage.Qn.ValidateBasic()
+func (qrnMessage *QrnMessage) ValidateBasic() error {
+	return qrnMessage.Qrn.ValidateBasic()
 }
 
 // VoteMessage is sent when voting for a proposal (or lack thereof).
@@ -1731,3 +1778,19 @@ func (m *VoteSetBitsMessage) String() string {
 }
 
 //-------------------------------------
+
+//TODO: stompesi
+func (ps *PeerState) SendQrn(qrn types.Qrn) bool {
+
+	msg := &QrnMessage{&qrn}
+
+	ps.logger.Debug("Sending vote qrn message", "qrn", qrn)
+	if ps.peer.Send(QrnChannel, MustEncode(msg)) {
+		return true
+	}
+	return false
+}
+
+type QrnMessage struct {
+	Qrn *types.Qrn
+}

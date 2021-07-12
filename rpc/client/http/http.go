@@ -568,17 +568,17 @@ func (c *baseRPCClient) StandingMembers(
 	return result, nil
 }
 
-func (c *baseRPCClient) Qns(
+func (c *baseRPCClient) Qrns(
 	ctx context.Context,
 	height *int64,
-) (*ctypes.ResultQns, error) {
-	result := new(ctypes.ResultQns)
+) (*ctypes.ResultQrns, error) {
+	result := new(ctypes.ResultQrns)
 	params := make(map[string]interface{})
 
 	if height != nil {
 		params["height"] = height
 	}
-	_, err := c.caller.Call(ctx, "qns", params, result)
+	_, err := c.caller.Call(ctx, "qrns", params, result)
 	if err != nil {
 		return nil, err
 	}

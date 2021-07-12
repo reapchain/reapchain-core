@@ -8,7 +8,7 @@ import "google/protobuf/timestamp.proto";
 import "reapchain/crypto/proof.proto";
 import "reapchain/version/types.proto";
 import "reapchain/types/validator.proto";
-import "reapchain/types/qn.proto";
+import "reapchain/types/qrn.proto";
 import "reapchain/types/standing_member.proto";
 import "reapchain/types/consensus_round.proto";
 
@@ -85,7 +85,7 @@ message Header {
   
   bytes standing_members_hash = 15;
   types.ConsensusRound consensus_round_info = 16 [(gogoproto.nullable) = false];
-  bytes qns_hash = 17;
+  bytes qrns_hash = 17;
 }
 
 // Data contains the set of transactions included in the block
@@ -148,7 +148,7 @@ message LightBlock {
   SignedHeader                  signed_header = 1;
   reapchain.types.ValidatorSet validator_set = 2;
   reapchain.types.StandingMemberSet standing_member_set = 3;
-  reapchain.types.QnSet qn_set = 4;
+  reapchain.types.QrnSet qrn_set = 4;
 }
 
 message BlockMeta {

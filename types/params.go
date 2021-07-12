@@ -88,7 +88,7 @@ func IsValidStandingMemberPubkeyType(params tmproto.StandingMemberParams, pubkey
 	return false
 }
 
-func IsValidQnPubkeyType(params tmproto.QnParams, pubkeyType string) bool {
+func IsValidQrnPubkeyType(params tmproto.QrnParams, pubkeyType string) bool {
 	for i := 0; i < len(params.PubKeyTypes); i++ {
 		if params.PubKeyTypes[i] == pubkeyType {
 			return true

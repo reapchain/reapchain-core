@@ -32,7 +32,7 @@ func RPCRoutes(c *lrpc.Client) map[string]*rpcserver.RPCFunc {
 		"block_search":         rpcserver.NewRPCFunc(makeBlockSearchFunc(c), "query,page,per_page,order_by"),
 		"validators":           rpcserver.NewRPCFunc(makeValidatorsFunc(c), "height,page,per_page"),
 		"standing_members":     rpcserver.NewRPCFunc(makeStandingMembersFunc(c), "height,page,per_page"),
-		"qns":                  rpcserver.NewRPCFunc(makeStandingMembersFunc(c), "height"),
+		"qrns":                 rpcserver.NewRPCFunc(makeStandingMembersFunc(c), "height"),
 		"dump_consensus_state": rpcserver.NewRPCFunc(makeDumpConsensusStateFunc(c), ""),
 		"consensus_state":      rpcserver.NewRPCFunc(makeConsensusStateFunc(c), ""),
 		"consensus_params":     rpcserver.NewRPCFunc(makeConsensusParamsFunc(c), "height"),
@@ -192,11 +192,11 @@ func makeStandingMembersFunc(c *lrpc.Client) rpcStandingMembersFunc {
 	}
 }
 
-type rpcQnsFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultQns, error)
+type rpcQrnsFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultQrns, error)
 
-func makeQnsFunc(c *lrpc.Client) rpcQnsFunc {
-	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultQns, error) {
-		return c.Qns(ctx.Context(), height)
+func makeQrnsFunc(c *lrpc.Client) rpcQrnsFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultQrns, error) {
+		return c.Qrns(ctx.Context(), height)
 	}
 }
 

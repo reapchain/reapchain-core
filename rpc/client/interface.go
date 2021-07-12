@@ -70,7 +70,7 @@ type SignClient interface {
 	Commit(ctx context.Context, height *int64) (*ctypes.ResultCommit, error)
 	Validators(ctx context.Context, height *int64, page, perPage *int) (*ctypes.ResultValidators, error)
 	StandingMembers(ctx context.Context, height *int64, page, perPage *int) (*ctypes.ResultStandingMembers, error)
-	Qns(ctx context.Context, height *int64) (*ctypes.ResultQns, error)
+	Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error)
 	Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.ResultTx, error)
 
 	// TxSearch defines a method to search for a paginated set of transactions by

@@ -111,6 +111,9 @@ func standingMemberCopy(sms []*StandingMember) []*StandingMember {
 }
 
 func (sms *StandingMemberSet) Size() int {
+	if sms == nil {
+		return 0
+	}
 	return len(sms.StandingMembers)
 }
 

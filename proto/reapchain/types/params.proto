@@ -16,7 +16,7 @@ message ConsensusParams {
   ValidatorParams validator = 3 [(gogoproto.nullable) = false];
   VersionParams   version   = 4 [(gogoproto.nullable) = false];
   StandingMemberParams standing_member = 5 [(gogoproto.nullable) = false];
-  QnParams qn = 6 [(gogoproto.nullable) = false];
+  QrnParams qrn = 6 [(gogoproto.nullable) = false];
 }
 
 // BlockParams contains limits on the block size.
@@ -72,7 +72,7 @@ message StandingMemberParams {
   repeated string pub_key_types = 1;
 }
 
-message QnParams {
+message QrnParams {
   option (gogoproto.populate) = true;
   option (gogoproto.equal)    = true;
 

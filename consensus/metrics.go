@@ -64,7 +64,7 @@ type Metrics struct {
 	// Number of standing members.
 	StandingMembers metrics.Gauge
 
-	Qns metrics.Gauge
+	Qrns metrics.Gauge
 }
 
 // PrometheusMetrics returns Metrics build using Prometheus client library.
@@ -101,11 +101,11 @@ func PrometheusMetrics(namespace string, labelsAndValues ...string) *Metrics {
 			Name:      "standing_members",
 			Help:      "Number of standing members.",
 		}, labels).With(labelsAndValues...),
-		Qns: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
+		Qrns: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
 			Subsystem: MetricsSubsystem,
-			Name:      "qns",
-			Help:      "Number of qns.",
+			Name:      "qrns",
+			Help:      "Number of qrns.",
 		}, labels).With(labelsAndValues...),
 		ValidatorLastSignedHeight: prometheus.NewGaugeFrom(stdprometheus.GaugeOpts{
 			Namespace: namespace,
@@ -217,7 +217,7 @@ func NopMetrics() *Metrics {
 
 		Validators:               discard.NewGauge(),
 		StandingMembers:          discard.NewGauge(),
-		Qns:                      discard.NewGauge(),
+		Qrns:                     discard.NewGauge(),
 		ValidatorsPower:          discard.NewGauge(),
 		ValidatorPower:           discard.NewGauge(),
 		ValidatorMissedBlocks:    discard.NewGauge(),

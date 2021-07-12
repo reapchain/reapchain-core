@@ -76,9 +76,9 @@ func (cs *State) readReplayMessage(msg *TimedWALMessage, newStepSub types.Subscr
 			v := msg.Vote
 			cs.Logger.Info("Replay: Vote", "height", v.Height, "round", v.Round, "type", v.Type,
 				"blockID", v.BlockID, "peer", peerID)
-		case *QnMessage:
-			qn := msg.Qn
-			cs.Logger.Info("Replay: Qn", "height", qn.Height, "peer", peerID)
+		case *QrnMessage:
+			qrn := msg.Qrn
+			cs.Logger.Info("Replay: Qrn", "height", qrn.Height, "peer", peerID)
 		}
 
 		cs.handleMsg(m)
@@ -318,12 +318,14 @@ func (h *Handshaker) ReplayBlocks(
 		standingMemberSet := types.NewStandingMemberSet(standingMembers)
 		sms := types.TM2PB.StandingMemberUpdates(standingMemberSet)
 
-		qns := make([]*types.Qn, len(h.genDoc.Qns))
-		for i, val := range h.genDoc.Qns {
-			qns[i] = types.NewQn(val.PubKey, val.Value, val.Height)
+		qrns := make([]*types.Qrn, len(h.genDoc.Qrns))
+		for i, val := range h.genDoc.Qrns {
+			qrns[i] = types.NewQrn(val.StandingMemberPubKey, val.Value, val.Height, val.Signature)
 		}
-		qnSet := types.NewQnSet(qns)
-		qnz := types.TM2PB.QnUpdates(qnSet)
+
+		qrnSet := types.NewQrnSet(storeBlockHeight, standingMemberSet, qrns)
+		qrnz := types.TM2PB.QrnUpdates(qrnSet)
+		fmt.Println("stompesi-223", qrnz)
 
 		validatorSet := types.NewValidatorSet(validators)
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
@@ -338,7 +340,7 @@ func (h *Handshaker) ReplayBlocks(
 			ConsensusParams:    csParams,
 			Validators:         nextVals,
 			StandingMembers:    sms,
-			Qns:                qnz,
+			Qrns:               qrnz,
 			AppStateBytes:      h.genDoc.AppState,
 			ConsensusRoundInfo: h.genDoc.ConsensusRoundInfo.ToProto(),
 		}
@@ -383,14 +385,14 @@ func (h *Handshaker) ReplayBlocks(
 				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
 			}
 
-			if len(res.Qns) > 0 {
-				qns, err := types.PB2TM.QnUpdates(res.Qns)
+			if len(res.Qrns) > 0 {
+				qrns, err := types.PB2TM.QrnUpdates(res.Qrns)
 				if err != nil {
 					return nil, err
 				}
-				state.Qns = types.NewQnSet(qns)
-			} else if len(h.genDoc.Qns) == 0 {
-				return nil, fmt.Errorf("qn set is nil in genesis and still empty after InitChain")
+				state.Qrns = types.NewQrnSet(stateBlockHeight, state.StandingMembers, qrns)
+			} else if len(h.genDoc.Qrns) == 0 {
+				return nil, fmt.Errorf("qrn set is nil in genesis and still empty after InitChain")
 			}
 
 			if res.ConsensusParams != nil {

@@ -3,8 +3,8 @@
 package mocks
 
 import (
-	mock "github.com/stretchr/testify/mock"
 	state "github.com/reapchain/reapchain-core/state"
+	mock "github.com/stretchr/testify/mock"
 
 	reapchainstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
 
@@ -227,15 +227,15 @@ func (_m *Store) LoadStandingMembers(_a0 int64) (*reapchaintypes.StandingMemberS
 	return r0, r1
 }
 
-func (_m *Store) LoadQns(_a0 int64) (*reapchaintypes.QnSet, error) {
+func (_m *Store) LoadQrns(_a0 int64) (*reapchaintypes.QrnSet, error) {
 	ret := _m.Called(_a0)
 
-	var r0 *reapchaintypes.QnSet
-	if rf, ok := ret.Get(0).(func(int64) *reapchaintypes.QnSet); ok {
+	var r0 *reapchaintypes.QrnSet
+	if rf, ok := ret.Get(0).(func(int64) *reapchaintypes.QrnSet); ok {
 		r0 = rf(_a0)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*reapchaintypes.QnSet)
+			r0 = ret.Get(0).(*reapchaintypes.QrnSet)
 		}
 	}
 

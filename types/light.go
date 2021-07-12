@@ -14,7 +14,7 @@ type LightBlock struct {
 	*SignedHeader     `json:"signed_header"`
 	ValidatorSet      *ValidatorSet      `json:"validator_set"`
 	StandingMemberSet *StandingMemberSet `json:"standing_member_set"`
-	QnSet             *QnSet             `json:"qn_set"`
+	QrnSet            *QrnSet            `json:"qrn_set"`
 }
 
 // ValidateBasic checks that the data is correct and consistent
@@ -32,7 +32,7 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 		return errors.New("missing standing member set")
 	}
 
-	if lb.QnSet == nil {
+	if lb.QrnSet == nil {
 		return errors.New("missing standing member set")
 	}
 
@@ -48,8 +48,8 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 		return fmt.Errorf("invalid standing member set: %w", err)
 	}
 
-	if err := lb.QnSet.ValidateBasic(); err != nil {
-		return fmt.Errorf("invalid standing member set: %w", err)
+	if err := lb.QrnSet.ValidateBasic(); err != nil {
+		return fmt.Errorf("invalid qrn set: %w", err)
 	}
 
 	// make sure the validator set is consistent with the header
@@ -67,9 +67,9 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 	}
 
 	// 양자 난수 해시 검증
-	if qnsHash := lb.QnSet.Hash(); !bytes.Equal(lb.SignedHeader.QnsHash, qnsHash) {
+	if qrnsHash := lb.QrnSet.Hash(); !bytes.Equal(lb.SignedHeader.QrnsHash, qrnsHash) {
 		return fmt.Errorf("expected standing member hash of header to match standing member set hash (%X != %X)",
-			lb.SignedHeader.QnsHash, qnsHash,
+			lb.SignedHeader.QrnsHash, qrnsHash,
 		)
 	}
 
@@ -149,12 +149,12 @@ func LightBlockFromProto(pb *tmproto.LightBlock) (*LightBlock, error) {
 		lb.StandingMemberSet = sms
 	}
 
-	if pb.QnSet != nil {
-		qns, err := QnSetFromProto(pb.QnSet)
+	if pb.QrnSet != nil {
+		qrns, err := QrnSetFromProto(pb.QrnSet)
 		if err != nil {
 			return nil, err
 		}
-		lb.QnSet = qns
+		lb.QrnSet = qrns
 	}
 
 	return lb, nil

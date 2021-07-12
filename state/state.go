@@ -82,7 +82,7 @@ type State struct {
 	ConsensusRoundInfo       types.ConsensusRound
 	StandingMembers          *types.StandingMemberSet
 	SteeringMemberCandidates *types.SteeringMemberCandidateSet
-	Qns                      *types.QnSet
+	Qrns                     *types.QrnSet
 }
 
 // Copy makes a copy of the State for mutating.
@@ -111,7 +111,7 @@ func (state State) Copy() State {
 
 		ConsensusRoundInfo: state.ConsensusRoundInfo,
 		StandingMembers:    state.StandingMembers.Copy(),
-		Qns:                state.Qns.Copy(),
+		Qrns:               state.Qrns.Copy(),
 	}
 
 	if state.SteeringMemberCandidates != nil {
@@ -204,17 +204,18 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	}
 	sm.SteeringMemberCandidates = smcs
 
-	qns, err := state.Qns.ToProto()
+	qrns, err := state.Qrns.ToProto()
 	if err != nil {
 		return nil, err
 	}
-	sm.Qns = qns
+	sm.Qrns = qrns
 
 	return sm, nil
 }
 
 // StateFromProto takes a state proto message & returns the local state type
 func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
+	fmt.Println("stompesi-23-2")
 	//fmt.Println("stompesi-start-54564164")
 	if pb == nil {
 		return nil, errors.New("nil State")
@@ -277,11 +278,12 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	}
 	state.SteeringMemberCandidates = smcs
 
-	qns, err := types.QnSetFromProto(pb.Qns)
+	//TODO: stompesi 여기서부터
+	qrns, err := types.QrnSetFromProto(pb.Qrns)
 	if err != nil {
 		return nil, err
 	}
-	state.Qns = qns
+	state.Qrns = qrns
 
 	return state, nil
 }
@@ -295,14 +297,14 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 func (state State) MakeBlock(
 	height int64,
 	txs []types.Tx,
-	qns []types.Qn,
+	qrns []types.Qrn,
 	commit *types.Commit,
 	evidence []types.Evidence,
 	proposerAddress []byte,
 ) (*types.Block, *types.PartSet) {
 
 	// Build base block with block data.
-	block := types.MakeBlock(height, txs, qns, commit, evidence)
+	block := types.MakeBlock(height, txs, qrns, commit, evidence)
 
 	// Set time.
 	var timestamp time.Time
@@ -331,7 +333,7 @@ func (state State) MakeBlock(
 		proposerAddress,
 		state.StandingMembers.Hash(),
 		state.ConsensusRoundInfo,
-		state.Qns.Hash(),
+		state.Qrns.Hash(),
 	)
 
 	return block, block.MakePartSet(types.BlockPartSizeBytes)
@@ -419,15 +421,15 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		standingMemberSet = types.NewStandingMemberSet(standingMembers)
 	}
 
-	var qnSet *types.QnSet
-	if genDoc.Qns == nil {
-		qnSet = types.NewQnSet(nil)
+	var qrnSet *types.QrnSet
+	if genDoc.Qrns == nil {
+		qrnSet = types.NewQrnSet(0, standingMemberSet, nil)
 	} else {
-		qns := make([]*types.Qn, len(genDoc.Qns))
-		for i, qn := range genDoc.Qns {
-			qns[i] = types.NewQn(qn.PubKey, qn.Value, qn.Height)
+		qrns := make([]*types.Qrn, len(genDoc.Qrns))
+		for i, qrn := range genDoc.Qrns {
+			qrns[i] = types.NewQrn(qrn.StandingMemberPubKey, qrn.Value, qrn.Height, nil)
 		}
-		qnSet = types.NewQnSet(qns)
+		qrnSet = types.NewQrnSet(0, standingMemberSet, nil)
 	}
 
 	return State{
@@ -453,6 +455,6 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		StandingMembers:          standingMemberSet,
 		SteeringMemberCandidates: nil,
 		ConsensusRoundInfo:       genDoc.ConsensusRoundInfo,
-		Qns:                      qnSet,
+		Qrns:                     qrnSet,
 	}, nil
 }

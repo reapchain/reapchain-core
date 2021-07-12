@@ -74,7 +74,7 @@ type Store interface {
 	PruneStates(int64, int64) error
 
 	LoadStandingMembers(int64) (*types.StandingMemberSet, error)
-	LoadQns(int64) (*types.QnSet, error)
+	LoadQrns(int64) (*types.QrnSet, error)
 }
 
 // dbStore wraps a db (github.com/tendermint/tm-db)
@@ -193,7 +193,7 @@ func (store dbStore) save(state State, key []byte) error {
 		return err
 	}
 
-	if err := store.saveQnsInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.Qns); err != nil {
+	if err := store.saveQrnsInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.Qrns); err != nil {
 		return err
 	}
 
@@ -289,15 +289,15 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 		return fmt.Errorf("validators at height %v not found: %w", to, err)
 	}
 
-	qnInfo, err := loadQnsInfo(store.db, to)
+	qrnInfo, err := loadQrnsInfo(store.db, to)
 	if err != nil {
 		return fmt.Errorf("validators at height %v not found: %w", to, err)
 	}
 
-	keepQns := make(map[int64]bool)
-	if qnInfo.QnSet == nil {
-		keepQns[qnInfo.LastHeightChanged] = true
-		keepQns[lastStoredHeightFor(to, qnInfo.LastHeightChanged)] = true // qn last checkpoint too
+	keepQrns := make(map[int64]bool)
+	if qrnInfo.QrnSet == nil {
+		keepQrns[qrnInfo.LastHeightChanged] = true
+		keepQrns[lastStoredHeightFor(to, qrnInfo.LastHeightChanged)] = true // qrn last checkpoint too
 	}
 
 	keepVals := make(map[int64]bool)
@@ -391,10 +391,10 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 			}
 		}
 
-		if keepQns[h] {
-			v, err := loadQnsInfo(store.db, h)
-			if err != nil || v.QnSet == nil {
-				vip, err := store.LoadQns(h)
+		if keepQrns[h] {
+			v, err := loadQrnsInfo(store.db, h)
+			if err != nil || v.QrnSet == nil {
+				vip, err := store.LoadQrns(h)
 				if err != nil {
 					return err
 				}
@@ -404,20 +404,20 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 					return err
 				}
 
-				v.QnSet = pvi
+				v.QrnSet = pvi
 				v.LastHeightChanged = h
 
 				bz, err := v.Marshal()
 				if err != nil {
 					return err
 				}
-				err = batch.Set(calcQnsKey(h), bz)
+				err = batch.Set(calcQrnsKey(h), bz)
 				if err != nil {
 					return err
 				}
 			}
 		} else {
-			err = batch.Delete(calcQnsKey(h))
+			err = batch.Delete(calcQrnsKey(h))
 			if err != nil {
 				return err
 			}
@@ -688,13 +688,13 @@ func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, va
 	return nil
 }
 
-func (store dbStore) saveQnsInfo(height, lastHeightChanged int64, valSet *types.QnSet) error {
+func (store dbStore) saveQrnsInfo(height, lastHeightChanged int64, valSet *types.QrnSet) error {
 	//fmt.Println("stompesi-jkjkjkdjfkjdkf")
 
 	if lastHeightChanged > height {
-		return errors.New("lastHeightChanged cannot be greater than QnsInfo height")
+		return errors.New("lastHeightChanged cannot be greater than QrnsInfo height")
 	}
-	smInfo := &tmstate.QnsInfo{
+	smInfo := &tmstate.QrnsInfo{
 		LastHeightChanged: lastHeightChanged,
 	}
 	// Only persist validator set if it was updated or checkpoint height (see
@@ -704,7 +704,7 @@ func (store dbStore) saveQnsInfo(height, lastHeightChanged int64, valSet *types.
 		if err != nil {
 			return err
 		}
-		smInfo.QnSet = pv
+		smInfo.QrnSet = pv
 	}
 
 	bz, err := smInfo.Marshal()
@@ -712,8 +712,8 @@ func (store dbStore) saveQnsInfo(height, lastHeightChanged int64, valSet *types.
 		return err
 	}
 
-	//fmt.Println("stompesi-saveQnsInfo", smInfo)
-	err = store.db.Set(calcQnsKey(height), bz)
+	//fmt.Println("stompesi-saveQrnsInfo", smInfo)
+	err = store.db.Set(calcQrnsKey(height), bz)
 	if err != nil {
 		return err
 	}
@@ -883,24 +883,24 @@ func calcStandingMembersKey(height int64) []byte {
 	return []byte(fmt.Sprintf("standingMembersKey:%v", height))
 }
 
-func (store dbStore) LoadQns(height int64) (*types.QnSet, error) {
-	smInfo, err := loadQnsInfo(store.db, height)
+func (store dbStore) LoadQrns(height int64) (*types.QrnSet, error) {
+	smInfo, err := loadQrnsInfo(store.db, height)
 	if err != nil {
 		return nil, ErrNoValSetForHeight{height}
 	}
-	if smInfo.QnSet == nil {
+	if smInfo.QrnSet == nil {
 		lastStoredHeight := lastStoredHeightFor(height, smInfo.LastHeightChanged)
-		smInfo2, err := loadQnsInfo(store.db, lastStoredHeight)
-		if err != nil || smInfo2.QnSet == nil {
+		smInfo2, err := loadQrnsInfo(store.db, lastStoredHeight)
+		if err != nil || smInfo2.QrnSet == nil {
 			return nil,
-				fmt.Errorf("couldn't find qns at height %d (height %d was originally requested): %w",
+				fmt.Errorf("couldn't find qrns at height %d (height %d was originally requested): %w",
 					lastStoredHeight,
 					height,
 					err,
 				)
 		}
 
-		vs, err := types.QnSetFromProto(smInfo2.QnSet)
+		vs, err := types.QrnSetFromProto(smInfo2.QrnSet)
 		if err != nil {
 			return nil, err
 		}
@@ -910,11 +910,11 @@ func (store dbStore) LoadQns(height int64) (*types.QnSet, error) {
 			return nil, err
 		}
 
-		smInfo2.QnSet = vi2
+		smInfo2.QrnSet = vi2
 		smInfo = smInfo2
 	}
 
-	vip, err := types.QnSetFromProto(smInfo.QnSet)
+	vip, err := types.QrnSetFromProto(smInfo.QrnSet)
 	if err != nil {
 		return nil, err
 	}
@@ -922,9 +922,9 @@ func (store dbStore) LoadQns(height int64) (*types.QnSet, error) {
 	return vip, nil
 }
 
-// CONTRACT: Returned QnInfo can be mutated.
-func loadQnsInfo(db dbm.DB, height int64) (*tmstate.QnsInfo, error) {
-	buf, err := db.Get(calcQnsKey(height))
+// CONTRACT: Returned QrnInfo can be mutated.
+func loadQrnsInfo(db dbm.DB, height int64) (*tmstate.QrnsInfo, error) {
+	buf, err := db.Get(calcQrnsKey(height))
 	if err != nil {
 		return nil, err
 	}
@@ -933,11 +933,11 @@ func loadQnsInfo(db dbm.DB, height int64) (*tmstate.QnsInfo, error) {
 		return nil, errors.New("value retrieved from db is empty")
 	}
 
-	v := new(tmstate.QnsInfo)
+	v := new(tmstate.QrnsInfo)
 	err = v.Unmarshal(buf)
 	if err != nil {
 		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
-		tmos.Exit(fmt.Sprintf(`LoadQns: Data has been corrupted or its spec has changed:
+		tmos.Exit(fmt.Sprintf(`LoadQrns: Data has been corrupted or its spec has changed:
                 %v\n`, err))
 	}
 	// TODO: ensure that buf is completely read.
@@ -945,6 +945,6 @@ func loadQnsInfo(db dbm.DB, height int64) (*tmstate.QnsInfo, error) {
 	return v, nil
 }
 
-func calcQnsKey(height int64) []byte {
-	return []byte(fmt.Sprintf("qnsKey:%v", height))
+func calcQrnsKey(height int64) []byte {
+	return []byte(fmt.Sprintf("qrnsKey:%v", height))
 }

@@ -45,7 +45,7 @@ type Consensus interface {
 	GetState() sm.State
 	GetValidators() (int64, []*types.Validator)
 	GetStandingMembers() (int64, []*types.StandingMember)
-	GetQns() (int64, []*types.Qn)
+	GetQrns() (int64, []*types.Qrn)
 	GetLastHeight() int64
 	GetRoundStateJSON() ([]byte, error)
 	GetRoundStateSimpleJSON() ([]byte, error)

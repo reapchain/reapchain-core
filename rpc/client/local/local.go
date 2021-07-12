@@ -177,8 +177,8 @@ func (c *Local) StandingMembers(ctx context.Context, height *int64, page, perPag
 	return core.StandingMembers(c.ctx, height, page, perPage)
 }
 
-func (c *Local) Qns(ctx context.Context, height *int64) (*ctypes.ResultQns, error) {
-	return core.Qns(c.ctx, height)
+func (c *Local) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	return core.Qrns(c.ctx, height)
 }
 
 func (c *Local) Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.ResultTx, error) {

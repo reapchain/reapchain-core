@@ -65,7 +65,7 @@ message RequestInitChain {
   ConsensusParams          consensus_params = 3;
   repeated ValidatorUpdate validators       = 4 [(gogoproto.nullable) = false];
   repeated StandingMemberUpdate standing_members       = 5 [(gogoproto.nullable) = false];
-  repeated QnUpdate qns       = 9 [(gogoproto.nullable) = false];
+  repeated QrnUpdate qrns       = 9 [(gogoproto.nullable) = false];
   bytes                    app_state_bytes  = 6;
   int64                    initial_height   = 7;
   reapchain.types.ConsensusRound consensus_round_info       = 8 [(gogoproto.nullable) = false];
@@ -186,7 +186,7 @@ message ResponseInitChain {
   ConsensusParams          consensus_params = 1;
   repeated ValidatorUpdate validators       = 2 [(gogoproto.nullable) = false];
   repeated StandingMemberUpdate standing_members       = 3 [(gogoproto.nullable) = false];
-  repeated QnUpdate qns       = 6 [(gogoproto.nullable) = false];
+  repeated QrnUpdate qrns       = 6 [(gogoproto.nullable) = false];
   bytes                    app_hash         = 4;
   reapchain.types.ConsensusRound consensus_round_info       = 5 [(gogoproto.nullable) = false];
 }
@@ -241,7 +241,7 @@ message ResponseEndBlock {
       [(gogoproto.nullable) = false, (gogoproto.jsontag) = "events,omitempty"];
   repeated StandingMemberUpdate standing_member_updates = 4
       [(gogoproto.nullable) = false];
-  repeated QnUpdate qn_updates = 5
+  repeated QrnUpdate qrn_updates = 5
       [(gogoproto.nullable) = false];
 }
 
@@ -356,7 +356,7 @@ message StandingMember {
   bytes address = 1;  // The first 20 bytes of SHA256(public key)
 }
 
-message Qn {
+message Qrn {
   bytes address = 1;  // The first 20 bytes of SHA256(public key)
   uint64 power = 3;  // The voting power
 }
@@ -371,7 +371,7 @@ message StandingMemberUpdate {
   reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
 }
 
-message QnUpdate {
+message QrnUpdate {
   reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
   uint64 value = 2;
   int64 height = 3;
