@@ -5,20 +5,17 @@ option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/types";
 
 import "gogoproto/gogo.proto";
 import "reapchain/crypto/keys.proto";
+import "google/protobuf/timestamp.proto";
 
 message QrnSet {
   repeated Qrn qrns         = 1;
 }
 
 message Qrn {
-  bytes                       address           = 1;
-  reapchain.crypto.PublicKey pub_key           = 2 [(gogoproto.nullable) = false];
-  uint64 value = 3;
-  int64 height = 4;
-}
-
-message SimpleQrn {
-  reapchain.crypto.PublicKey pub_key      = 1;
-  uint64 value = 2;
-  int64 height = 3;
+  int64 height = 1;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  reapchain.crypto.PublicKey standing_member_pub_key           = 3 [(gogoproto.nullable) = false];
+  int32 standing_member_index = 4;
+  uint64 value = 5;
+  bytes signature         = 6;
 }

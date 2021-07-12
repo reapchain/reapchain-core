@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	cm "github.com/reapchain/reapchain-core/consensus"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
@@ -80,6 +82,7 @@ func StandingMembers(ctx *rpctypes.Context, heightPtr *int64, pagePtr, perPagePt
 }
 
 func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
+	fmt.Println("aa")
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {
 		return nil, err
@@ -90,16 +93,16 @@ func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 		return nil, err
 	}
 
-	totalCount := len(qrns.GetQrns())
+	totalCount := len(qrns.Qrns)
 	if err != nil {
 		return nil, err
 	}
 
-	v := qrns.GetQrns()[:]
+	v := qrns.Qrns[:]
 
 	return &ctypes.ResultQrns{
 		BlockHeight: height,
-		Qrns:        qrns.GetQrns(),
+		Qrns:        qrns.Qrns,
 		Count:       len(v),
 		Total:       totalCount}, nil
 }

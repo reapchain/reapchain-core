@@ -273,7 +273,7 @@ func (cs *State) GetStandingMembers() (int64, []*types.StandingMember) {
 func (cs *State) GetQrns() (int64, []*types.Qrn) {
 	cs.mtx.RLock()
 	defer cs.mtx.RUnlock()
-	return cs.state.LastBlockHeight, cs.state.Qrns.Copy().GetQrns()
+	return cs.state.LastBlockHeight, cs.state.Qrns.Copy().Qrns
 }
 
 // SetPrivValidator sets the private validator account for signing votes. It
@@ -662,6 +662,11 @@ func (cs *State) updateToState(state sm.State) {
 	height := state.LastBlockHeight + 1
 	if height == 1 {
 		height = state.InitialHeight
+		state.ConsensusRoundInfo = types.NewConsensusRound(0, 0)
+	}
+
+	if state.ConsensusRoundInfo.ConsensusStartBlockHeight+state.ConsensusRoundInfo.Peorid == height {
+		state.ConsensusRoundInfo.ConsensusStartBlockHeight = height
 	}
 
 	// RoundState fields
@@ -696,7 +701,7 @@ func (cs *State) updateToState(state sm.State) {
 	cs.StandingMembers = state.StandingMembers
 	cs.Qrns = state.Qrns
 
-	fmt.Println("3stompesi-updateToState", state)
+	fmt.Println("3stompesi-updateToState", state.StandingMembers.IsStandingMember)
 	cs.state = state
 
 	// Finally, broadcast RoundState
@@ -1136,6 +1141,10 @@ func (cs *State) enterPropose(height int64, round int32) {
 
 func (cs *State) isProposer(address []byte) bool {
 	return bytes.Equal(cs.Validators.GetProposer().Address, address)
+}
+
+func (cs *State) isCoordiantor(address []byte) bool {
+	return bytes.Equal(cs.StandingMembers.Coordinator.Address, address)
 }
 
 func (cs *State) defaultDecideProposal(height int64, round int32) {
@@ -1724,14 +1733,14 @@ func (cs *State) finalizeCommit(height int64) {
 	// * cs.Step is now cstypes.RoundStepNewHeight
 	// * cs.StartTime is set to when we will start round0.
 
-	fmt.Println("5stompesi-finalizeCommit", len(cs.state.Qrns.GetQrns()))
+	fmt.Println("5stompesi-finalizeCommit", len(cs.state.Qrns.Qrns))
 	// genDoc.Qrns = []types.Qrn{{
 	// 	Address: pubKey.Address(),
 	// 	PubKey:  pubKey,
 	// 	Value:   tmrand.Uint64(),
 	// }}
 
-	cs.state.Qrns.GetQrns()[0].Value = tmrand.Uint64()
+	cs.state.Qrns.Qrns[0].Value = tmrand.Uint64()
 
 	// Value:   tmrand.Uint64(),
 
@@ -2306,7 +2315,7 @@ func (cs *State) addQrn(qrn *types.Qrn, peerID p2p.ID) (added bool, err error) {
 	cs.Logger.Debug(
 		"adding vote",
 		"vote_height", qrn.Height,
-		"qrn_address", qrn.StandingMemberPubKey.Address(),
+		"qrn_standing_member_address", qrn.StandingMemberPubKey.Address(),
 	)
 
 	// Height mismatch is ignored.

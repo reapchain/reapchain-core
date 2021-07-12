@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"runtime/debug"
 	"sort"
 
-	ce "github.com/reapchain/reapchain-core/crypto/encoding"
 	"github.com/reapchain/reapchain-core/crypto/merkle"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
@@ -29,52 +29,27 @@ var (
 )
 
 type QrnSet struct {
-	height            int64
-	standingMemberSet *StandingMemberSet
+	Height            int64
+	StandingMemberSet *StandingMemberSet
 
-	qrns []*Qrn
+	Qrns []*Qrn
 
 	mtx tmsync.Mutex
 }
 
 func NewQrnSet(height int64, standingMemberSet *StandingMemberSet, qrns []*Qrn) *QrnSet {
 	return &QrnSet{
-		height:            height,
-		standingMemberSet: standingMemberSet,
-		qrns:              qrns,
+		Height:            height,
+		StandingMemberSet: standingMemberSet,
+		Qrns:              qrns,
 	}
-}
-
-// func NewQrnSet(height int64, standingMemberSet *StandingMemberSet) *QrnSet {
-// 	if height == 0 {
-// 		panic("Cannot make QrnSet for height == 0, doesn't make sense.")
-// 	}
-// 	return &QrnSet{
-// 		height:            height,
-// 		standingMemberSet: standingMemberSet,
-// 		qrns:              make([]*Qrn, standingMemberSet.Size()),
-// 	}
-// }
-
-func (qrnSet *QrnSet) GetQrns() []*Qrn {
-	if qrnSet == nil {
-		return nil
-	}
-	return qrnSet.qrns
-}
-
-func (qrnSet *QrnSet) GetHeight() int64 {
-	if qrnSet == nil {
-		return 0
-	}
-	return qrnSet.height
 }
 
 func (qrnSet *QrnSet) Size() int {
 	if qrnSet == nil {
 		return 0
 	}
-	return qrnSet.standingMemberSet.Size()
+	return len(qrnSet.Qrns)
 }
 
 func (qrnSet *QrnSet) AddQrn(qrn *Qrn) (added bool, err error) {
@@ -102,16 +77,16 @@ func (qrnSet *QrnSet) addQrn(qrn *Qrn) (added bool, err error) {
 	}
 
 	// Make sure the step matches.
-	if qrn.Height != qrnSet.height {
-		return false, fmt.Errorf("expected %d, but got %d: %w", qrnSet.height, qrn.Height)
+	if qrn.Height != qrnSet.Height {
+		return false, fmt.Errorf("expected %d, but got %d: %w", qrnSet.Height, qrn.Height)
 	}
 
 	// Ensure that signer is a standing member.
-	lookupAddr, standingMember := qrnSet.standingMemberSet.GetByIndex(standingMemberIndex)
+	lookupAddr, standingMember := qrnSet.StandingMemberSet.GetByIndex(standingMemberIndex)
 	if standingMember == nil {
 		return false, fmt.Errorf(
 			"cannot find standing member %d in standing member set of size %d: %w",
-			standingMemberIndex, qrnSet.standingMemberSet.Size(), ErrQrnInvalidStandingMemberIndex)
+			standingMemberIndex, qrnSet.StandingMemberSet.Size(), ErrQrnInvalidStandingMemberIndex)
 	}
 
 	// Ensure that the signer has the right address.
@@ -128,7 +103,7 @@ func (qrnSet *QrnSet) addQrn(qrn *Qrn) (added bool, err error) {
 	}
 
 	// Add qrn
-	qrnSet.qrns[standingMemberIndex] = qrn
+	qrnSet.Qrns[standingMemberIndex] = qrn
 
 	return added, nil
 }
@@ -137,12 +112,13 @@ func (qrns *QrnSet) UpdateWithChangeSet(qrnz []*Qrn) error {
 	return qrns.updateWithChangeSet(qrnz)
 }
 
-func (qrns *QrnSet) ValidateBasic() error {
-	if qrns.IsNilOrEmpty() {
+func (qrnSet *QrnSet) ValidateBasic() error {
+
+	if qrnSet.IsNilOrEmpty() {
 		return errors.New("qrn set is nil or empty")
 	}
 
-	for idx, qrn := range qrns.qrns {
+	for idx, qrn := range qrnSet.Qrns {
 		if err := qrn.ValidateBasic(); err != nil {
 			return fmt.Errorf("invalid qrn #%d: %w", idx, err)
 		}
@@ -152,12 +128,12 @@ func (qrns *QrnSet) ValidateBasic() error {
 }
 
 func (qrns *QrnSet) IsNilOrEmpty() bool {
-	return qrns == nil || len(qrns.qrns) == 0
+	return qrns == nil || len(qrns.Qrns) == 0
 }
 
 func (qrns *QrnSet) Hash() []byte {
-	bzs := make([][]byte, len(qrns.qrns))
-	for i, qrn := range qrns.qrns {
+	bzs := make([][]byte, len(qrns.Qrns))
+	for i, qrn := range qrns.Qrns {
 		bzs[i] = qrn.Bytes()
 	}
 	return merkle.HashFromByteSlices(bzs)
@@ -167,11 +143,12 @@ func QrnSetFromProto(vp *tmproto.QrnSet) (*QrnSet, error) {
 	if vp == nil {
 		return nil, errors.New("nil qrn set")
 	}
+	fmt.Println("kkkkkkstompesi", vp)
+	fmt.Println("kjkjkajsdfkjaksdjf", string(debug.Stack()))
 	qrns := new(QrnSet)
 
-	fmt.Println("dmdmdmdmdm", len(vp.Qrns))
-
 	qrnsProto := make([]*Qrn, len(vp.Qrns))
+
 	for i := 0; i < len(vp.Qrns); i++ {
 		v, err := QrnFromProto(vp.Qrns[i])
 		if err != nil {
@@ -179,33 +156,33 @@ func QrnSetFromProto(vp *tmproto.QrnSet) (*QrnSet, error) {
 		}
 		qrnsProto[i] = v
 	}
-	qrns.qrns = qrnsProto
-	fmt.Println("dmdmdmdmdm", qrns.qrns)
+	qrns.Qrns = qrnsProto
 
 	return qrns, qrns.ValidateBasic()
 }
 
-func (qrns *QrnSet) ToProto() (*tmproto.QrnSet, error) {
-	if qrns.IsNilOrEmpty() {
+func (qrnSet *QrnSet) ToProto() (*tmproto.QrnSet, error) {
+	if qrnSet.IsNilOrEmpty() {
 		return &tmproto.QrnSet{}, nil
 	}
 
-	vp := new(tmproto.QrnSet)
-	qrnsProto := make([]*tmproto.Qrn, len(qrns.qrns))
-	for i := 0; i < len(qrns.qrns); i++ {
-		valp := qrns.qrns[i].ToProto()
-		if valp != nil {
+	qrnSetProto := new(tmproto.QrnSet)
+	qrnsProto := make([]*tmproto.Qrn, len(qrnSet.Qrns))
+	for i := 0; i < len(qrnSet.Qrns); i++ {
+		valp, err := qrnSet.Qrns[i].ToProto()
+		if err == nil {
 			qrnsProto[i] = valp
 		}
 	}
-	vp.Qrns = qrnsProto
+	qrnSetProto.Qrns = qrnsProto
 
-	return vp, nil
+	fmt.Println("qrnSetProto.Qrns", qrnSetProto.Qrns)
+	return qrnSetProto, nil
 }
 
 func (qrns *QrnSet) Copy() *QrnSet {
 	return &QrnSet{
-		qrns: standingMemberListCopy(qrns.qrns),
+		Qrns: standingMemberListCopy(qrns.Qrns),
 	}
 }
 
@@ -236,50 +213,8 @@ func (qrns QrnsByAddress) Swap(i, j int) {
 func (qrns *QrnSet) updateWithChangeSet(qrnz []*Qrn) error {
 	if len(qrnz) != 0 {
 		sort.Sort(QrnsByAddress(qrnz))
-		qrns.qrns = qrnz[:]
+		qrns.Qrns = qrnz[:]
 	}
 
 	return nil
-}
-
-func QrnFromProto(vp *tmproto.Qrn) (*Qrn, error) {
-	if vp == nil {
-		return nil, errors.New("nil qrn")
-	}
-
-	pk, err := ce.PubKeyFromProto(vp.PubKey)
-	if err != nil {
-		return nil, err
-	}
-	v := new(Qrn)
-	v.StandingMemberPubKey = pk
-	v.Value = vp.Value
-	v.Height = vp.Height
-
-	return v, nil
-}
-
-func (qrn *Qrn) ToProto() *tmproto.Qrn {
-	if qrn == nil {
-		return nil
-	}
-
-	pk, err := ce.PubKeyToProto(qrn.StandingMemberPubKey)
-	if err != nil {
-		return nil
-	}
-
-	qrnProto := tmproto.Qrn{
-		Address: qrn.StandingMemberPubKey.Address(),
-		PubKey:  pk,
-		Value:   qrn.Value,
-		Height:  qrn.Height,
-	}
-
-	return &qrnProto
-}
-
-func (qrn *Qrn) Copy() *Qrn {
-	qrnCopy := *qrn
-	return &qrnCopy
 }

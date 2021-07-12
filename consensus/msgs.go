@@ -93,13 +93,15 @@ func MsgToProto(msg Message) (*tmcons.Message, error) {
 			},
 		}
 	case *QrnMessage:
-		qrn := msg.Qrn.ToProto()
-		pb = tmcons.Message{
-			Sum: &tmcons.Message_Qrn{
-				Qrn: &tmcons.Qrn{
-					Qrn: qrn,
+		qrn, err := msg.Qrn.ToProto()
+		if err == nil {
+			pb = tmcons.Message{
+				Sum: &tmcons.Message_Qrn{
+					Qrn: &tmcons.Qrn{
+						Qrn: qrn,
+					},
 				},
-			},
+			}
 		}
 	case *HasVoteMessage:
 		pb = tmcons.Message{

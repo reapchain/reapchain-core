@@ -21,6 +21,7 @@ const (
 	// https://github.com/reapchain/reapchain-core/pull/3438
 	// 100000 results in ~ 100ms to get 100 validators (see BenchmarkLoadValidators)
 	valSetCheckpointInterval = 100000
+	qrnSetCheckpointInterval = 100000
 )
 
 //------------------------------------------------------------------------
@@ -134,10 +135,8 @@ func (store dbStore) Load() (State, error) {
 }
 
 func (store dbStore) loadState(key []byte) (state State, err error) {
-	//fmt.Println("stompesi-start-4", key)
 	buf, err := store.db.Get(key)
 	if err != nil {
-		//fmt.Println("stompesi-start-4-1-return")
 		return state, err
 	}
 
@@ -157,7 +156,8 @@ func (store dbStore) loadState(key []byte) (state State, err error) {
 		%v\n`, err))
 	}
 
-	//fmt.Println("stompesi-start-end-Unmarshal", sp)
+	fmt.Println("stompesi-start-end-Unmarshal", sp.StandingMembers)
+	fmt.Println("stompesi-start-end-Unmarshal", sp.Qrns)
 
 	sm, err := StateFromProto(sp)
 	if err != nil {
@@ -193,7 +193,12 @@ func (store dbStore) save(state State, key []byte) error {
 		return err
 	}
 
+	fmt.Println("stompesk-kkk", state.Qrns)
 	if err := store.saveQrnsInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.Qrns); err != nil {
+		return err
+	}
+
+	if err := store.saveConsensusRoundInfo(nextHeight, state.LastHeightConsensusParamsChanged, tmproto.ConsensusRound(state.ConsensusRoundInfo)); err != nil {
 		return err
 	}
 
@@ -213,7 +218,7 @@ func (store dbStore) save(state State, key []byte) error {
 		state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
 		return err
 	}
-	//fmt.Println("stompesi-init-save-2", state.StandingMembers)
+	fmt.Println("stompesi-init-save-2", state.Qrns.Qrns)
 
 	err := store.db.SetSync(key, state.Bytes())
 	if err != nil {
@@ -243,6 +248,10 @@ func (store dbStore) Bootstrap(state State) error {
 		return err
 	}
 
+	if err := store.saveQrnsInfo(height, height, state.Qrns); err != nil {
+		return err
+	}
+
 	if err := store.saveConsensusRoundInfo(height, state.LastHeightConsensusParamsChanged, state.ConsensusRoundInfo.ToProto()); err != nil {
 		return err
 	}
@@ -256,7 +265,6 @@ func (store dbStore) Bootstrap(state State) error {
 		return err
 	}
 
-	//fmt.Println("stompesi-init-SetSync", state)
 	return store.db.SetSync(stateKey, state.Bytes())
 }
 
@@ -538,7 +546,7 @@ func (store dbStore) SaveABCIResponses(height int64, abciResponses *tmstate.ABCI
 		return err
 	}
 
-	//fmt.Println("stompesi-init-SetSync", bz)
+	fmt.Println("stompesi-init-SetSync", bz)
 	err = store.db.SetSync(calcABCIResponsesKey(height), bz)
 	if err != nil {
 		return err
@@ -646,7 +654,6 @@ func (store dbStore) saveValidatorsInfo(height, lastHeightChanged int64, valSet 
 		return err
 	}
 
-	//fmt.Println("stompesi-init-Set-calcValidatorsKey", valInfo)
 	err = store.db.Set(calcValidatorsKey(height), bz)
 	if err != nil {
 		return err
@@ -688,31 +695,29 @@ func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, va
 	return nil
 }
 
-func (store dbStore) saveQrnsInfo(height, lastHeightChanged int64, valSet *types.QrnSet) error {
-	//fmt.Println("stompesi-jkjkjkdjfkjdkf")
-
+func (store dbStore) saveQrnsInfo(height, lastHeightChanged int64, qrnSet *types.QrnSet) error {
 	if lastHeightChanged > height {
 		return errors.New("lastHeightChanged cannot be greater than QrnsInfo height")
 	}
-	smInfo := &tmstate.QrnsInfo{
+	qrnsInfo := &tmstate.QrnsInfo{
 		LastHeightChanged: lastHeightChanged,
 	}
 	// Only persist validator set if it was updated or checkpoint height (see
-	// valSetCheckpointInterval) is reached.
-	if height == lastHeightChanged || height%valSetCheckpointInterval == 0 {
-		pv, err := valSet.ToProto()
+	// qrnSetCheckpointInterval) is reached.
+	if height == lastHeightChanged || height%qrnSetCheckpointInterval == 0 {
+		qrnSetProto, err := qrnSet.ToProto()
 		if err != nil {
 			return err
 		}
-		smInfo.QrnSet = pv
+		qrnsInfo.QrnSet = qrnSetProto
 	}
 
-	bz, err := smInfo.Marshal()
+	bz, err := qrnsInfo.Marshal()
 	if err != nil {
 		return err
 	}
 
-	//fmt.Println("stompesi-saveQrnsInfo", smInfo)
+	fmt.Println("stompesi-saveQrnsInfo")
 	err = store.db.Set(calcQrnsKey(height), bz)
 	if err != nil {
 		return err

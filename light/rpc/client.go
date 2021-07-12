@@ -561,9 +561,9 @@ func (c *Client) Qrns(
 		return nil, err
 	}
 
-	totalCount := len(l.QrnSet.GetQrns())
+	totalCount := len(l.QrnSet.Qrns)
 
-	v := l.QrnSet.GetQrns()[:]
+	v := l.QrnSet.Qrns[:]
 
 	return &ctypes.ResultQrns{
 		BlockHeight: l.Height,

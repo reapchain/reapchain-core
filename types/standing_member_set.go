@@ -11,6 +11,7 @@ import (
 )
 
 type StandingMemberSet struct {
+	Coordinator     StandingMember    `json:"coordinator"`
 	StandingMembers []*StandingMember `json:"standing_members"`
 }
 
@@ -41,6 +42,15 @@ func (sms *StandingMemberSet) ValidateBasic() error {
 	}
 
 	return nil
+}
+
+func (standingMemberSet *StandingMemberSet) HasAddress(address []byte) bool {
+	for _, val := range standingMemberSet.StandingMembers {
+		if bytes.Equal(val.Address, address) {
+			return true
+		}
+	}
+	return false
 }
 
 func (sms *StandingMemberSet) IsNilOrEmpty() bool {

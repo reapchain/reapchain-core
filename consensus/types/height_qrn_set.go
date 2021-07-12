@@ -17,18 +17,19 @@ type HeightQrnSet struct {
 	// peerCatchupRounds map[p2p.ID][]int64 // keys: peer.ID; standingMemberues: at most 2 rounds
 }
 
-func NewHeightQrnSet(height int64, standingMemberSet *types.StandingMemberSet) *HeightQrnSet {
+func NewHeightQrnSet(height int64, standingMemberSet *types.StandingMemberSet, qrnSet *types.QrnSet) *HeightQrnSet {
 	heightQrnSet := &HeightQrnSet{}
-	heightQrnSet.Reset(height, standingMemberSet)
+	heightQrnSet.Reset(height, standingMemberSet, qrnSet)
 	return heightQrnSet
 }
 
-func (heightQrnSet *HeightQrnSet) Reset(height int64, standingMemberSet *types.StandingMemberSet) {
+func (heightQrnSet *HeightQrnSet) Reset(height int64, standingMemberSet *types.StandingMemberSet, qrnSet *types.QrnSet) {
 	heightQrnSet.mtx.Lock()
 	defer heightQrnSet.mtx.Unlock()
 
 	heightQrnSet.height = height
 	heightQrnSet.standingMemberSet = standingMemberSet
+	heightQrnSet.qrnSet = qrnSet
 }
 
 func (heightQrnSet *HeightQrnSet) Height() int64 {

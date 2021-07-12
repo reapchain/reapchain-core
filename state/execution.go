@@ -104,11 +104,11 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	evidence, evSize := blockExec.evpool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
 
 	// Fetch a limited amount of valid txs
-	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size(), state.StandingMembers.Size())
+	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size(), state.StandingMembers.Size(), state.Qrns.Size())
 
 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxDataBytes, maxGas)
 
-	qrns := make([]types.Qrn, 0, len(state.Qrns.GetQrns()))
+	qrns := make([]types.Qrn, 0, len(state.Qrns.Qrns))
 	for i, qrn := range qrns {
 		qrns[i] = qrn
 	}
@@ -197,13 +197,13 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	}
 
 	//TODO: stompesi
-	// qrnUpdates, err := types.PB2TM.QrnUpdates(abciQrnUpdates)
-	// if err != nil {
-	// 	return state, 0, err
-	// }
-	// if len(qrnUpdates) > 0 {
-	// 	blockExec.logger.Debug("updates to qrn", "updates", types.QrnListString(qrnUpdates))
-	// }
+	qrnUpdates, err := types.PB2TM.QrnUpdates(abciQrnUpdates)
+	if err != nil {
+		return state, 0, err
+	}
+	if len(qrnUpdates) > 0 {
+		blockExec.logger.Debug("updates to qrn", "updates", types.QrnListString(qrnUpdates))
+	}
 
 	// --------------------------
 

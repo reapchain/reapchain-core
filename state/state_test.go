@@ -235,6 +235,7 @@ func TestValidatorSimpleSaveLoad(t *testing.T) {
 	// Increment height, save; should be able to load for next & next next height.
 	state.LastBlockHeight++
 	nextHeight := state.LastBlockHeight + 1
+	fmt.Println("save-2")
 	err = statestore.Save(state)
 	require.NoError(t, err)
 	vp0, err := statestore.LoadValidators(nextHeight + 0)

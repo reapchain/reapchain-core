@@ -1,6 +1,8 @@
 package types
 
 import (
+	fmt "fmt"
+
 	context "golang.org/x/net/context"
 )
 
@@ -68,7 +70,7 @@ func (BaseApplication) Query(req RequestQuery) ResponseQuery {
 }
 
 func (BaseApplication) InitChain(req RequestInitChain) ResponseInitChain {
-	//fmt.Println("stompesi-start-InitChain")
+	fmt.Println("stompesi-start-InitChain")
 	return ResponseInitChain{}
 }
 

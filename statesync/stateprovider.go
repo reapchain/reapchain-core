@@ -187,6 +187,8 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 	state.ConsensusParams = result.ConsensusParams
 	state.LastHeightConsensusParamsChanged = currentLightBlock.Height
 
+	state.ConsensusRoundInfo = lastLightBlock.ConsensusRoundInfo
+
 	return state, nil
 }
 

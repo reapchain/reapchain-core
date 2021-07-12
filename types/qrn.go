@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/reapchain/reapchain-core/crypto"
@@ -46,6 +47,7 @@ func (qrnData *QrnData) Hash() tmbytes.HexBytes {
 	return qrnData.hash
 }
 
+// -------------------------------------------------------------------
 type Qrn struct {
 	Height               int64         `json:"height"`
 	Timestamp            time.Time     `json:"timestamp"`
@@ -93,61 +95,34 @@ func (qrn *Qrn) ValidateBasic() error {
 	return nil
 }
 
-// func (qrn *Qrn) Bytes() []byte {
-// 	pk, err := ce.PubKeyToProto(qrn.PubKey)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	pbv := tmproto.SimpleQrn{
-// 		PubKey: &pk,
-// 		Value:  qrn.Value,
-// 	}
-
-// 	bz, err := pbv.Marshal()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	return bz
-// }
-
-// func QrnListString(qrns []*Qrn) string {
-// 	chunks := make([]string, len(qrns))
-// 	for i, qrn := range qrns {
-// 		chunks[i] = fmt.Sprintf("%s:%d", qrn.Address, qrn.Value)
-// 	}
-
-// 	return strings.Join(chunks, ",")
-// }
-
 func (qrn *Qrn) Verify(pubKey crypto.PubKey) error {
 	if !bytes.Equal(pubKey.Address(), qrn.StandingMemberPubKey.Address()) {
 		return ErrQrnInvalidStandingMemberAddress
 	}
-	qrnProto := qrn.ToProto()
+	qrnProto, err := qrn.ToProto()
+	if err != nil {
+		return err
+	}
+
 	if !pubKey.VerifySignature(QrnValueToBytes(qrnProto.Value), qrn.Signature) {
 		return ErrQrnInvalidSignature
 	}
 	return nil
 }
 
-func QrnValueToBytes(value uint64) []byte {
-	qrnValueBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(qrnValueBytes, value)
-
-	return qrnValueBytes
-}
-
 func (qrn *Qrn) Bytes() []byte {
-	pk, err := ce.PubKeyToProto(qrn.StandingMemberPubKey)
+	pubKey, err := ce.PubKeyToProto(qrn.StandingMemberPubKey)
 	if err != nil {
 		panic(err)
 	}
 
-	pbv := tmproto.SimpleQrn{
-		Height: qrn.Height,
-		Value:  qrn.Value,
-		PubKey: &pk,
+	pbv := tmproto.Qrn{
+		Height:               qrn.Height,
+		Timestamp:            qrn.Timestamp,
+		StandingMemberPubKey: pubKey,
+		StandingMemberIndex:  qrn.StandingMemberIndex,
+		Value:                qrn.Value,
+		Signature:            qrn.Signature,
 	}
 
 	bz, err := pbv.Marshal()
@@ -155,4 +130,69 @@ func (qrn *Qrn) Bytes() []byte {
 		panic(err)
 	}
 	return bz
+}
+
+func (qrn *Qrn) ToProto() (*tmproto.Qrn, error) {
+	if qrn == nil {
+		return nil, errors.New("nil qrn")
+	}
+
+	pubKey, err := ce.PubKeyToProto(qrn.StandingMemberPubKey)
+	if err != nil {
+		return nil, err
+	}
+
+	qrnProto := tmproto.Qrn{
+		Height:               qrn.Height,
+		Timestamp:            qrn.Timestamp,
+		StandingMemberPubKey: pubKey,
+		StandingMemberIndex:  qrn.StandingMemberIndex,
+		Value:                qrn.Value,
+		Signature:            qrn.Signature,
+	}
+
+	return &qrnProto, nil
+}
+
+func (qrn *Qrn) Copy() *Qrn {
+	qrnCopy := *qrn
+	return &qrnCopy
+}
+
+// TODO: Check
+func QrnValueToBytes(value uint64) []byte {
+	qrnValueBytes := make([]byte, 8)
+	binary.LittleEndian.PutUint64(qrnValueBytes, value)
+
+	return qrnValueBytes
+}
+
+func QrnListString(qrns []*Qrn) string {
+	chunks := make([]string, len(qrns))
+	for i, qrn := range qrns {
+		chunks[i] = fmt.Sprintf("%s", qrn.StandingMemberPubKey.Address())
+	}
+
+	return strings.Join(chunks, ",")
+}
+
+func QrnFromProto(qrnProto *tmproto.Qrn) (*Qrn, error) {
+	if qrnProto == nil {
+		return nil, errors.New("nil qrn")
+	}
+
+	pubKey, err := ce.PubKeyFromProto(qrnProto.StandingMemberPubKey)
+	if err != nil {
+		return nil, err
+	}
+
+	qrn := new(Qrn)
+	qrn.Height = qrnProto.Height
+	qrn.Timestamp = qrnProto.Timestamp
+	qrn.StandingMemberPubKey = pubKey
+	qrn.StandingMemberIndex = qrnProto.StandingMemberIndex
+	qrn.Value = qrnProto.Value
+	qrn.Signature = qrnProto.Signature
+
+	return qrn, nil
 }

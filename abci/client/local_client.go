@@ -1,6 +1,8 @@
 package abcicli
 
 import (
+	"fmt"
+
 	types "github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/libs/service"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
@@ -263,7 +265,11 @@ func (app *localClient) InitChainSync(req types.RequestInitChain) (*types.Respon
 	app.mtx.Lock()
 	defer app.mtx.Unlock()
 
+	fmt.Println("kkkkkk", req.Qrns)
 	res := app.Application.InitChain(req)
+	fmt.Println("kkkkkk", res.StandingMembers)
+	fmt.Println("kkkkkk", res.Qrns)
+	// fmt.Println("kkkkkk", string(debug.Stack()))
 	return &res, nil
 }
 

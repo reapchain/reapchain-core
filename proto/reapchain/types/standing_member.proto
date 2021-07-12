@@ -8,6 +8,7 @@ import "reapchain/crypto/keys.proto";
 
 message StandingMemberSet {
   repeated StandingMember standing_members         = 1;
+  StandingMember coordinator         = 2;
 }
 
 message StandingMember {

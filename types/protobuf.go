@@ -143,13 +143,14 @@ func (tm2pb) QrnUpdate(val *Qrn) abci.QrnUpdate {
 }
 
 func (tm2pb) QrnUpdates(qrnSet *QrnSet) []abci.QrnUpdate {
-	standingMembers := make([]abci.QrnUpdate, qrnSet.Size())
-	fmt.Println(len(qrnSet.qrns))
+	qrns := make([]abci.QrnUpdate, qrnSet.Size())
+	fmt.Println(len(qrnSet.Qrns))
 
-	for i, sm := range qrnSet.qrns {
-		standingMembers[i] = TM2PB.QrnUpdate(sm)
+	for i, sm := range qrnSet.Qrns {
+		qrns[i] = TM2PB.QrnUpdate(sm)
 	}
-	return standingMembers
+	fmt.Println("qrns", qrns)
+	return qrns
 }
 
 func (tm2pb) ConsensusParams(params *tmproto.ConsensusParams) *abci.ConsensusParams {
@@ -214,7 +215,7 @@ func (pb2tm) QrnUpdates(qrnUpdates []abci.QrnUpdate) ([]*Qrn, error) {
 		if err != nil {
 			return nil, err
 		}
-		qrns[i] = NewQrn(pub, qrn.Value, qrn.Height, nil)
+		qrns[i] = NewQrn(pub, qrn.Value, qrn.Height, qrn.Signature)
 	}
 	return qrns, nil
 }

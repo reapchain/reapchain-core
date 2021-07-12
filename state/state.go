@@ -191,6 +191,8 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	sm.LastResultsHash = state.LastResultsHash
 	sm.AppHash = state.AppHash
 
+	fmt.Println("mansub1", state.ConsensusRoundInfo.ToProto())
+
 	sm.ConsensusRoundInfo = state.ConsensusRoundInfo.ToProto()
 	sms, err := state.StandingMembers.ToProto()
 	if err != nil {
@@ -215,7 +217,6 @@ func (state *State) ToProto() (*tmstate.State, error) {
 
 // StateFromProto takes a state proto message & returns the local state type
 func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
-	fmt.Println("stompesi-23-2")
 	//fmt.Println("stompesi-start-54564164")
 	if pb == nil {
 		return nil, errors.New("nil State")
@@ -265,6 +266,7 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.LastResultsHash = pb.LastResultsHash
 	state.AppHash = pb.AppHash
 
+	fmt.Println("mansub2", types.ConsensusRoundFromProto(pb.ConsensusRoundInfo))
 	state.ConsensusRoundInfo = types.ConsensusRoundFromProto(pb.ConsensusRoundInfo)
 	sms, err := types.StandingMemberSetFromProto(pb.StandingMembers)
 	if err != nil {
@@ -278,7 +280,6 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	}
 	state.SteeringMemberCandidates = smcs
 
-	//TODO: stompesi 여기서부터
 	qrns, err := types.QrnSetFromProto(pb.Qrns)
 	if err != nil {
 		return nil, err
@@ -313,6 +314,11 @@ func (state State) MakeBlock(
 	} else {
 		timestamp = MedianTime(commit, state.LastValidators)
 	}
+
+	fmt.Println("kajsdfkjasdkfjkkkkk")
+	fmt.Println(state.ConsensusRoundInfo.ConsensusStartBlockHeight)
+	fmt.Println(state.ConsensusRoundInfo.Peorid)
+	fmt.Println(height)
 
 	if state.ConsensusRoundInfo.ConsensusStartBlockHeight+state.ConsensusRoundInfo.Peorid < height {
 		state.ConsensusRoundInfo.ConsensusStartBlockHeight = height
@@ -392,6 +398,8 @@ func MakeGenesisDocFromFile(genDocFile string) (*types.GenesisDoc, error) {
 
 // MakeGenesisState creates state from types.GenesisDoc.
 func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
+	fmt.Println("MakeGenesisState")
+
 	err := genDoc.ValidateAndComplete()
 	if err != nil {
 		return State{}, fmt.Errorf("error in genesis file: %v", err)
@@ -422,16 +430,19 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 	}
 
 	var qrnSet *types.QrnSet
+
+	fmt.Println("MakeGenesisState", genDoc.Qrns)
 	if genDoc.Qrns == nil {
 		qrnSet = types.NewQrnSet(0, standingMemberSet, nil)
 	} else {
 		qrns := make([]*types.Qrn, len(genDoc.Qrns))
 		for i, qrn := range genDoc.Qrns {
-			qrns[i] = types.NewQrn(qrn.StandingMemberPubKey, qrn.Value, qrn.Height, nil)
+			qrns[i] = types.NewQrn(qrn.StandingMemberPubKey, qrn.Value, qrn.Height, qrn.Signature)
 		}
-		qrnSet = types.NewQrnSet(0, standingMemberSet, nil)
+		qrnSet = types.NewQrnSet(0, standingMemberSet, qrns)
 	}
 
+	fmt.Println("MakeGenesisState", qrnSet.Qrns)
 	return State{
 		Version: InitStateVersion,
 

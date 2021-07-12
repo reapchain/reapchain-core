@@ -358,7 +358,6 @@ message StandingMember {
 
 message Qrn {
   bytes address = 1;  // The first 20 bytes of SHA256(public key)
-  uint64 power = 3;  // The voting power
 }
 
 // ValidatorUpdate
@@ -375,6 +374,7 @@ message QrnUpdate {
   reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
   uint64 value = 2;
   int64 height = 3;
+  bytes signature = 4;
 }
 
 // VoteInfo

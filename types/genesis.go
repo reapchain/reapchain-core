@@ -94,11 +94,11 @@ func (genDoc *GenesisDoc) QrnHash() []byte {
 	qrns := make([]*Qrn, len(genDoc.Qrns))
 	for i, qrn := range genDoc.Qrns {
 		//TODO: stompesi
-		qrns[i] = NewQrn(nil, qrn.Value, genDoc.InitialHeight, nil)
+		qrns[i] = NewQrn(qrn.StandingMemberPubKey, qrn.Value, genDoc.InitialHeight, qrn.Signature)
 	}
 	qrnSet := &QrnSet{
-		height: genDoc.InitialHeight,
-		qrns:   qrns,
+		Height: genDoc.InitialHeight,
+		Qrns:   qrns,
 	}
 
 	return qrnSet.Hash()
@@ -148,15 +148,12 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 		}
 	}
 
-	//TODO: stomnpesi
-	// for i, qrn := range genDoc.Qrns {
-	// 	if len(qrn.Address) > 0 && !bytes.Equal(qrn.PubKey.Address(), qrn.Address) {
-	// 		return fmt.Errorf("incorrect address for stending member %v in the genesis file, should be %v", qrn, qrn.PubKey.Address())
-	// 	}
-	// 	if len(qrn.Address) == 0 {
-	// 		genDoc.Qrns[i].Address = qrn.PubKey.Address()
-	// 	}
-	// }
+	// Validate qrns
+	for i, qrn := range genDoc.Qrns {
+		if len(qrn.StandingMemberPubKey.Address()) > 0 && !bytes.Equal(qrn.StandingMemberPubKey.Address(), genDoc.StandingMembers[i].Address) {
+			return fmt.Errorf("incorrect address for stending member %v in the genesis file, should be %v", qrn, qrn.StandingMemberPubKey.Address())
+		}
+	}
 
 	if genDoc.GenesisTime.IsZero() {
 		genDoc.GenesisTime = tmtime.Now()

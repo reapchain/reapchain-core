@@ -320,6 +320,14 @@ func logNodeStartupInfo(state sm.State, pubKey crypto.PubKey, logger, consensusL
 	} else {
 		consensusLogger.Info("This node is not a validator", "addr", addr, "pubKey", pubKey)
 	}
+
+	if state.StandingMembers.HasAddress(addr) {
+		state.StandingMembers.IsStandingMember = true
+		consensusLogger.Info("This node is a standing member", "addr", addr, "pubKey", pubKey)
+	} else {
+		state.StandingMembers.IsStandingMember = false
+		consensusLogger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
+	}
 }
 
 func onlyValidatorIsUs(state sm.State, pubKey crypto.PubKey) bool {

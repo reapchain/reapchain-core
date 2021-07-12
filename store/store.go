@@ -405,6 +405,7 @@ func (bs *BlockStore) saveBlockPart(height int64, index int, part *types.Part) {
 }
 
 func (bs *BlockStore) saveState() {
+	fmt.Println("qqqqqqq2")
 	bs.mtx.RLock()
 	bss := tmstore.BlockStoreState{
 		Base:   bs.base,

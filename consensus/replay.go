@@ -214,6 +214,9 @@ type Handshaker struct {
 func NewHandshaker(stateStore sm.Store, state sm.State,
 	store sm.BlockStore, genDoc *types.GenesisDoc) *Handshaker {
 
+	fmt.Println("initialState1", len(state.StandingMembers.StandingMembers))
+	fmt.Println("initialState2", len(state.Qrns.Qrns))
+
 	return &Handshaker{
 		stateStore:   stateStore,
 		initialState: state,
@@ -268,7 +271,7 @@ func (h *Handshaker) Handshake(proxyApp proxy.AppConns) error {
 	}
 
 	// Replay blocks up to the latest in the blockstore.
-	//fmt.Println("stompesi-start-99")
+	fmt.Println("stompesi-start-initial", h.initialState.Qrns)
 
 	_, err = h.ReplayBlocks(h.initialState, appHash, blockHeight, proxyApp)
 	if err != nil {
@@ -331,7 +334,7 @@ func (h *Handshaker) ReplayBlocks(
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
 		csParams := types.TM2PB.ConsensusParams(h.genDoc.ConsensusParams)
 
-		//fmt.Println("stompesi-start-asdfasdf", len(sms))
+		fmt.Println("stompesi-start-asdfasdf", len(qrnz))
 
 		req := abci.RequestInitChain{
 			Time:               h.genDoc.GenesisTime,
@@ -344,7 +347,11 @@ func (h *Handshaker) ReplayBlocks(
 			AppStateBytes:      h.genDoc.AppState,
 			ConsensusRoundInfo: h.genDoc.ConsensusRoundInfo.ToProto(),
 		}
+
 		res, err := proxyApp.Consensus().InitChainSync(req)
+
+		fmt.Println("stompesi-jb1", len(res.StandingMembers))
+		fmt.Println("stompesi-jb2", len(res.Qrns))
 
 		//fmt.Println("stompesi-start-end-InitChainSync", len(res.Validators), len(res.StandingMembers))
 		if err != nil {
@@ -376,16 +383,20 @@ func (h *Handshaker) ReplayBlocks(
 			state.ConsensusRoundInfo = types.NewConsensusRound(res.ConsensusRoundInfo.ConsensusStartBlockHeight, res.ConsensusRoundInfo.Peorid)
 
 			if len(res.StandingMembers) > 0 {
+				fmt.Printf("hihih")
 				vals, err := types.PB2TM.StandingMemberUpdates(res.StandingMembers)
 				if err != nil {
 					return nil, err
 				}
+				fmt.Println("jbjb")
+
 				state.StandingMembers = types.NewStandingMemberSet(vals)
 			} else if len(h.genDoc.StandingMembers) == 0 {
 				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
 			}
 
 			if len(res.Qrns) > 0 {
+				fmt.Println("stompesi-save??")
 				qrns, err := types.PB2TM.QrnUpdates(res.Qrns)
 				if err != nil {
 					return nil, err
@@ -402,7 +413,7 @@ func (h *Handshaker) ReplayBlocks(
 
 			// We update the last results hash with the empty hash, to conform with RFC-6962.
 			state.LastResultsHash = merkle.HashFromByteSlices(nil)
-			//fmt.Println("stompesi-Save-1")
+			fmt.Println("stompesi-Save-1")
 			if err := h.stateStore.Save(state); err != nil {
 				return nil, err
 			}

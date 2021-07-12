@@ -16,18 +16,18 @@ import (
 // Might we want types here ?
 type Vrfs []Vrf
 
+type Vrf struct {
+	SteeringMemberCandidatePubKey crypto.PubKey `json:"steering_member_candidate_pub_key"`
+	Value                         uint64        `json:"value"`
+	Proof                         []byte        `json:"proof"`
+}
+
 func (vrfs Vrfs) Hash() []byte {
 	vrfz := make([][]byte, len(vrfs))
 	for i, vrf := range vrfs {
 		vrfz[i] = vrf.Bytes()
 	}
 	return merkle.HashFromByteSlices(vrfz)
-}
-
-type Vrf struct {
-	SteeringMemberCandidatePubKey crypto.PubKey `json:"steering_member_candidate_pub_key"`
-	Value                         uint64        `json:"value"`
-	Proof                         []byte        `json:"proof"`
 }
 
 //TODO: stompesi
