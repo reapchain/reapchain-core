@@ -93,7 +93,7 @@ type RoundState struct {
 	TriggeredTimeoutPrecommit bool                `json:"triggered_timeout_precommit"`
 
 	StandingMembers *types.StandingMemberSet `json:"standing_members"`
-	Qrns            *types.QrnSet            `json:"qrns"`
+	QrnSet          *types.QrnSet            `json:"qrns"`
 }
 
 // Compressed version of the RoundState for use in RPC
@@ -114,8 +114,8 @@ func (rs *RoundState) RoundStateSimple() RoundStateSimple {
 		panic(err)
 	}
 
-	addr := rs.Validators.GetProposer().Address
-	idx, _ := rs.Validators.GetByAddress(addr)
+	addr := rs.StandingMembers.GetCoordinator().Address
+	idx, _ := rs.StandingMembers.GetByAddress(addr)
 
 	return RoundStateSimple{
 		HeightRoundStep:   fmt.Sprintf("%d/%d/%d", rs.Height, rs.Round, rs.Step),
@@ -133,8 +133,8 @@ func (rs *RoundState) RoundStateSimple() RoundStateSimple {
 
 // NewRoundEvent returns the RoundState with proposer information as an event.
 func (rs *RoundState) NewRoundEvent() types.EventDataNewRound {
-	addr := rs.Validators.GetProposer().Address
-	idx, _ := rs.Validators.GetByAddress(addr)
+	addr := rs.StandingMembers.GetCoordinator().Address
+	idx, _ := rs.StandingMembers.GetByAddress(addr)
 
 	return types.EventDataNewRound{
 		Height: rs.Height,

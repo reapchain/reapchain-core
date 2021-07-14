@@ -2,7 +2,6 @@ package types
 
 import (
 	"bytes"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"strings"
@@ -10,44 +9,10 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto"
 	ce "github.com/reapchain/reapchain-core/crypto/encoding"
-	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
+	"github.com/reapchain/reapchain-core/libs/protoio"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 )
 
-// Tx is an arbitrary byte array.
-// NOTE: Tx has no types at this level, so when wire encoded it's just length-prefixed.
-// Might we want types here ?
-// type Qrns []Qrn
-
-// func (qrns Qrns) Hash() []byte {
-// 	bzs := make([][]byte, len(qrns))
-// 	for i, qrn := range qrns {
-// 		bzs[i] = qrn.Bytes()
-// 	}
-// 	return merkle.HashFromByteSlices(bzs)
-// }
-type QrnData struct {
-
-	// Txs that will be applied by state @ block.Height+1.
-	// NOTE: not all txs here are valid.  We're just agreeing on the order first.
-	// This means that block.AppHash does not include these txs.
-	Qrns QrnSet `json:"qrns"`
-
-	// Volatile
-	hash tmbytes.HexBytes
-}
-
-func (qrnData *QrnData) Hash() tmbytes.HexBytes {
-	if qrnData == nil {
-		return (&QrnSet{}).Hash()
-	}
-	if qrnData.hash == nil {
-		qrnData.hash = qrnData.Qrns.Hash() // NOTE: leaves of merkle tree are TxIDs
-	}
-	return qrnData.hash
-}
-
-// -------------------------------------------------------------------
 type Qrn struct {
 	Height               int64         `json:"height"`
 	Timestamp            time.Time     `json:"timestamp"`
@@ -97,14 +62,17 @@ func (qrn *Qrn) ValidateBasic() error {
 
 func (qrn *Qrn) Verify(pubKey crypto.PubKey) error {
 	if !bytes.Equal(pubKey.Address(), qrn.StandingMemberPubKey.Address()) {
+		fmt.Println("한종빈-11-1")
 		return ErrQrnInvalidStandingMemberAddress
 	}
 	qrnProto, err := qrn.ToProto()
 	if err != nil {
+		fmt.Println("한종빈-11-2")
 		return err
 	}
-
-	if !pubKey.VerifySignature(QrnValueToBytes(qrnProto.Value), qrn.Signature) {
+	qrnProto.Signature = nil
+	if !pubKey.VerifySignature(QrnSignBytes(qrnProto), qrn.Signature) {
+		fmt.Println("한종빈-11-3")
 		return ErrQrnInvalidSignature
 	}
 	return nil
@@ -115,11 +83,17 @@ func (qrn *Qrn) Bytes() []byte {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("qrn Bytes", qrn.Height)
+	fmt.Println("qrn Bytes", qrn.Timestamp)
+	fmt.Println("qrn Bytes", &pubKey)
+	fmt.Println("qrn Bytes", qrn.StandingMemberIndex)
+	fmt.Println("qrn Bytes", qrn.Value)
+	fmt.Println("qrn Bytes", qrn.Signature)
 
-	pbv := tmproto.Qrn{
+	pbv := tmproto.SimpleQrn{
 		Height:               qrn.Height,
 		Timestamp:            qrn.Timestamp,
-		StandingMemberPubKey: pubKey,
+		StandingMemberPubKey: &pubKey,
 		StandingMemberIndex:  qrn.StandingMemberIndex,
 		Value:                qrn.Value,
 		Signature:            qrn.Signature,
@@ -159,14 +133,6 @@ func (qrn *Qrn) Copy() *Qrn {
 	return &qrnCopy
 }
 
-// TODO: Check
-func QrnValueToBytes(value uint64) []byte {
-	qrnValueBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(qrnValueBytes, value)
-
-	return qrnValueBytes
-}
-
 func QrnListString(qrns []*Qrn) string {
 	chunks := make([]string, len(qrns))
 	for i, qrn := range qrns {
@@ -195,4 +161,13 @@ func QrnFromProto(qrnProto *tmproto.Qrn) (*Qrn, error) {
 	qrn.Signature = qrnProto.Signature
 
 	return qrn, nil
+}
+
+func QrnSignBytes(qrn *tmproto.Qrn) []byte {
+	bz, err := protoio.MarshalDelimited(qrn)
+	if err != nil {
+		panic(err)
+	}
+
+	return bz
 }

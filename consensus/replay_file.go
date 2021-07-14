@@ -262,7 +262,7 @@ func (pb *playback) replayConsoleLoop() int {
 				case "standing_members":
 					fmt.Println(rs.StandingMembers)
 				case "qrns":
-					fmt.Println(rs.Qrns)
+					fmt.Println(rs.QrnSet)
 				case "proposal":
 					fmt.Println(rs.Proposal)
 				case "proposal_block":

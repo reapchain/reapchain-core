@@ -19,3 +19,12 @@ message Qrn {
   uint64 value = 5;
   bytes signature         = 6;
 }
+
+message SimpleQrn {
+  int64 height = 1;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  reapchain.crypto.PublicKey standing_member_pub_key           = 3;
+  int32 standing_member_index = 4;
+  uint64 value = 5;
+  bytes signature         = 6;
+}

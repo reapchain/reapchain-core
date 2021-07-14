@@ -82,7 +82,7 @@ type State struct {
 	ConsensusRoundInfo       types.ConsensusRound
 	StandingMembers          *types.StandingMemberSet
 	SteeringMemberCandidates *types.SteeringMemberCandidateSet
-	Qrns                     *types.QrnSet
+	QrnSet                   *types.QrnSet
 }
 
 // Copy makes a copy of the State for mutating.
@@ -111,7 +111,7 @@ func (state State) Copy() State {
 
 		ConsensusRoundInfo: state.ConsensusRoundInfo,
 		StandingMembers:    state.StandingMembers.Copy(),
-		Qrns:               state.Qrns.Copy(),
+		QrnSet:             state.QrnSet.Copy(),
 	}
 
 	if state.SteeringMemberCandidates != nil {
@@ -206,7 +206,7 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	}
 	sm.SteeringMemberCandidates = smcs
 
-	qrns, err := state.Qrns.ToProto()
+	qrns, err := state.QrnSet.ToProto()
 	if err != nil {
 		return nil, err
 	}
@@ -280,11 +280,11 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	}
 	state.SteeringMemberCandidates = smcs
 
-	qrns, err := types.QrnSetFromProto(pb.Qrns)
+	qrnSet, err := types.QrnSetFromProto(pb.Qrns)
 	if err != nil {
 		return nil, err
 	}
-	state.Qrns = qrns
+	state.QrnSet = qrnSet
 
 	return state, nil
 }
@@ -315,15 +315,6 @@ func (state State) MakeBlock(
 		timestamp = MedianTime(commit, state.LastValidators)
 	}
 
-	fmt.Println("kajsdfkjasdkfjkkkkk")
-	fmt.Println(state.ConsensusRoundInfo.ConsensusStartBlockHeight)
-	fmt.Println(state.ConsensusRoundInfo.Peorid)
-	fmt.Println(height)
-
-	if state.ConsensusRoundInfo.ConsensusStartBlockHeight+state.ConsensusRoundInfo.Peorid < height {
-		state.ConsensusRoundInfo.ConsensusStartBlockHeight = height
-	}
-
 	//fmt.Println("2stompesi-skdfjkasjdfkjaskdfj", state)
 	// Fill rest of header with state data.
 	block.Header.Populate(
@@ -339,7 +330,7 @@ func (state State) MakeBlock(
 		proposerAddress,
 		state.StandingMembers.Hash(),
 		state.ConsensusRoundInfo,
-		state.Qrns.Hash(),
+		state.QrnSet.Hash(),
 	)
 
 	return block, block.MakePartSet(types.BlockPartSizeBytes)
@@ -466,6 +457,6 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		StandingMembers:          standingMemberSet,
 		SteeringMemberCandidates: nil,
 		ConsensusRoundInfo:       genDoc.ConsensusRoundInfo,
-		Qrns:                     qrnSet,
+		QrnSet:                   qrnSet,
 	}, nil
 }

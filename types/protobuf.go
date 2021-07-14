@@ -131,14 +131,16 @@ func (tm2pb) StandingMemberUpdates(sms *StandingMemberSet) []abci.StandingMember
 	return standingMembers
 }
 
-func (tm2pb) QrnUpdate(val *Qrn) abci.QrnUpdate {
-	pk, err := cryptoenc.PubKeyToProto(val.StandingMemberPubKey)
+func (tm2pb) QrnUpdate(qrn *Qrn) abci.QrnUpdate {
+	pk, err := cryptoenc.PubKeyToProto(qrn.StandingMemberPubKey)
 	if err != nil {
 		panic(err)
 	}
 	return abci.QrnUpdate{
-		PubKey: pk,
-		Value:  val.Value,
+		StandingMemberPubKey: pk,
+		Value:                qrn.Value,
+		Height:               qrn.Height,
+		Signature:            qrn.Signature,
 	}
 }
 
@@ -211,11 +213,11 @@ func (pb2tm) StandingMemberUpdates(sms []abci.StandingMemberUpdate) ([]*Standing
 func (pb2tm) QrnUpdates(qrnUpdates []abci.QrnUpdate) ([]*Qrn, error) {
 	qrns := make([]*Qrn, len(qrnUpdates))
 	for i, qrn := range qrnUpdates {
-		pub, err := cryptoenc.PubKeyFromProto(qrn.PubKey)
+		pubKey, err := cryptoenc.PubKeyFromProto(qrn.StandingMemberPubKey)
 		if err != nil {
 			return nil, err
 		}
-		qrns[i] = NewQrn(pub, qrn.Value, qrn.Height, qrn.Signature)
+		qrns[i] = NewQrn(pubKey, qrn.Value, qrn.Height, qrn.Signature)
 	}
 	return qrns, nil
 }

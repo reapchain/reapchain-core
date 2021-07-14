@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"runtime/debug"
 	"sort"
 
 	"github.com/reapchain/reapchain-core/crypto/merkle"
@@ -52,23 +51,26 @@ func (qrnSet *QrnSet) Size() int {
 	return len(qrnSet.Qrns)
 }
 
-func (qrnSet *QrnSet) AddQrn(qrn *Qrn) (added bool, err error) {
+func (qrnSet *QrnSet) UpdateQrn(qrn *Qrn) (added bool, err error) {
+	fmt.Println("한종빈4")
 	if qrnSet == nil {
-		panic("AddQrn() on nil QrnSet")
+		panic("UpdateQrn() on nil QrnSet")
 	}
 	qrnSet.mtx.Lock()
 	defer qrnSet.mtx.Unlock()
 
-	return qrnSet.addQrn(qrn)
+	return qrnSet.updateQrn(qrn)
 }
 
-func (qrnSet *QrnSet) addQrn(qrn *Qrn) (added bool, err error) {
+func (qrnSet *QrnSet) updateQrn(qrn *Qrn) (added bool, err error) {
+	fmt.Println("한종빈6")
 	if qrn == nil {
 		return false, ErrQrnNil
 	}
 	standingMemberIndex := qrn.StandingMemberIndex
 	standingMemberAddr := qrn.StandingMemberPubKey.Address()
 
+	fmt.Println("한종빈7")
 	// Ensure that standing member index was set
 	if standingMemberIndex < 0 {
 		return false, fmt.Errorf("index < 0: %w", ErrQrnInvalidStandingMemberIndex)
@@ -77,18 +79,23 @@ func (qrnSet *QrnSet) addQrn(qrn *Qrn) (added bool, err error) {
 	}
 
 	// Make sure the step matches.
+	fmt.Println("한종빈8", qrn.Height, qrnSet.Height)
 	if qrn.Height != qrnSet.Height {
-		return false, fmt.Errorf("expected %d, but got %d: %w", qrnSet.Height, qrn.Height)
+		return false, fmt.Errorf("expected %d, but got %d: %w", qrnSet.Height, qrn.Height, ErrQrnUnexpectedStep)
 	}
 
 	// Ensure that signer is a standing member.
+
+	fmt.Println("한종빈9", qrnSet.StandingMemberSet, standingMemberIndex)
 	lookupAddr, standingMember := qrnSet.StandingMemberSet.GetByIndex(standingMemberIndex)
+	fmt.Println("한종빈9", lookupAddr, standingMember)
 	if standingMember == nil {
 		return false, fmt.Errorf(
 			"cannot find standing member %d in standing member set of size %d: %w",
 			standingMemberIndex, qrnSet.StandingMemberSet.Size(), ErrQrnInvalidStandingMemberIndex)
 	}
 
+	fmt.Println("한종빈10")
 	// Ensure that the signer has the right address.
 	if !bytes.Equal(standingMemberAddr, lookupAddr) {
 		return false, fmt.Errorf(
@@ -98,11 +105,13 @@ func (qrnSet *QrnSet) addQrn(qrn *Qrn) (added bool, err error) {
 	}
 
 	// Check signature.
+	fmt.Println("한종빈11")
 	if err := qrn.Verify(standingMember.PubKey); err != nil {
 		return false, fmt.Errorf("failed to verify qrn and PubKey %s: %w", standingMember.PubKey, err)
 	}
 
 	// Add qrn
+	fmt.Println("한종빈12")
 	qrnSet.Qrns[standingMemberIndex] = qrn
 
 	return added, nil
@@ -131,22 +140,22 @@ func (qrns *QrnSet) IsNilOrEmpty() bool {
 	return qrns == nil || len(qrns.Qrns) == 0
 }
 
-func (qrns *QrnSet) Hash() []byte {
-	bzs := make([][]byte, len(qrns.Qrns))
-	for i, qrn := range qrns.Qrns {
-		bzs[i] = qrn.Bytes()
+func (qrnSet *QrnSet) Hash() []byte {
+	qrnBytesArray := make([][]byte, len(qrnSet.Qrns))
+	for i, qrn := range qrnSet.Qrns {
+		if qrn != nil {
+			qrnBytesArray[i] = qrn.Bytes()
+		}
 	}
-	return merkle.HashFromByteSlices(bzs)
+	return merkle.HashFromByteSlices(qrnBytesArray)
 }
 
 func QrnSetFromProto(vp *tmproto.QrnSet) (*QrnSet, error) {
 	if vp == nil {
 		return nil, errors.New("nil qrn set")
 	}
-	fmt.Println("kkkkkkstompesi", vp)
-	fmt.Println("kjkjkajsdfkjaksdjf", string(debug.Stack()))
-	qrns := new(QrnSet)
 
+	qrns := new(QrnSet)
 	qrnsProto := make([]*Qrn, len(vp.Qrns))
 
 	for i := 0; i < len(vp.Qrns); i++ {
@@ -169,9 +178,11 @@ func (qrnSet *QrnSet) ToProto() (*tmproto.QrnSet, error) {
 	qrnSetProto := new(tmproto.QrnSet)
 	qrnsProto := make([]*tmproto.Qrn, len(qrnSet.Qrns))
 	for i := 0; i < len(qrnSet.Qrns); i++ {
-		valp, err := qrnSet.Qrns[i].ToProto()
-		if err == nil {
-			qrnsProto[i] = valp
+		if qrnSet.Qrns[i] != nil {
+			valp, err := qrnSet.Qrns[i].ToProto()
+			if err == nil {
+				qrnsProto[i] = valp
+			}
 		}
 	}
 	qrnSetProto.Qrns = qrnsProto
@@ -182,17 +193,21 @@ func (qrnSet *QrnSet) ToProto() (*tmproto.QrnSet, error) {
 
 func (qrns *QrnSet) Copy() *QrnSet {
 	return &QrnSet{
-		Qrns: standingMemberListCopy(qrns.Qrns),
+		Height:            qrns.Height,
+		StandingMemberSet: qrns.StandingMemberSet,
+		Qrns:              qrnListCopy(qrns.Qrns),
 	}
 }
 
-func standingMemberListCopy(qrns []*Qrn) []*Qrn {
+func qrnListCopy(qrns []*Qrn) []*Qrn {
 	if qrns == nil {
 		return nil
 	}
 	qrnsCopy := make([]*Qrn, len(qrns))
 	for i, qrn := range qrns {
-		qrnsCopy[i] = qrn.Copy()
+		if qrn != nil {
+			qrnsCopy[i] = qrn.Copy()
+		}
 	}
 	return qrnsCopy
 }

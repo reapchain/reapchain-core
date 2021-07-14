@@ -51,7 +51,6 @@ var ErrTotalVotingPowerOverflow = fmt.Errorf("total voting power of resulting va
 type ValidatorSet struct {
 	// NOTE: persisted via reflect, must be exported.
 	Validators []*Validator `json:"validators"`
-	Proposer   *Validator   `json:"proposer"`
 
 	// cached (unexported)
 	totalVotingPower int64
@@ -90,10 +89,6 @@ func (vals *ValidatorSet) ValidateBasic() error {
 		}
 	}
 
-	if err := vals.Proposer.ValidateBasic(); err != nil {
-		return fmt.Errorf("proposer failed validate basic, error: %w", err)
-	}
-
 	return nil
 }
 
@@ -127,14 +122,6 @@ func (vals *ValidatorSet) IncrementProposerPriority(times int32) {
 	diffMax := PriorityWindowSizeFactor * vals.TotalVotingPower()
 	vals.RescalePriorities(diffMax)
 	vals.shiftByAvgProposerPriority()
-
-	var proposer *Validator
-	// Call IncrementProposerPriority(1) times times.
-	for i := int32(0); i < times; i++ {
-		proposer = vals.incrementProposerPriority()
-	}
-
-	vals.Proposer = proposer
 }
 
 // RescalePriorities rescales the priorities such that the distance between the
@@ -161,20 +148,6 @@ func (vals *ValidatorSet) RescalePriorities(diffMax int64) {
 			val.ProposerPriority /= ratio
 		}
 	}
-}
-
-func (vals *ValidatorSet) incrementProposerPriority() *Validator {
-	for _, val := range vals.Validators {
-		// Check for overflow for sum.
-		newPrio := safeAddClip(val.ProposerPriority, val.VotingPower)
-		val.ProposerPriority = newPrio
-	}
-	// Decrement the validator with most ProposerPriority.
-	mostest := vals.getValWithMostPriority()
-	// Mind the underflow.
-	mostest.ProposerPriority = safeSubClip(mostest.ProposerPriority, vals.TotalVotingPower())
-
-	return mostest
 }
 
 // Should not be called on an empty validator set.
@@ -215,14 +188,6 @@ func computeMaxMinPriorityDiff(vals *ValidatorSet) int64 {
 	return diff
 }
 
-func (vals *ValidatorSet) getValWithMostPriority() *Validator {
-	var res *Validator
-	for _, val := range vals.Validators {
-		res = res.CompareProposerPriority(val)
-	}
-	return res
-}
-
 func (vals *ValidatorSet) shiftByAvgProposerPriority() {
 	if vals.IsNilOrEmpty() {
 		panic("empty validator set")
@@ -249,7 +214,6 @@ func validatorListCopy(valsList []*Validator) []*Validator {
 func (vals *ValidatorSet) Copy() *ValidatorSet {
 	return &ValidatorSet{
 		Validators:       validatorListCopy(vals.Validators),
-		Proposer:         vals.Proposer,
 		totalVotingPower: vals.totalVotingPower,
 	}
 }
@@ -322,25 +286,6 @@ func (vals *ValidatorSet) TotalVotingPower() int64 {
 
 // GetProposer returns the current proposer. If the validator set is empty, nil
 // is returned.
-func (vals *ValidatorSet) GetProposer() (proposer *Validator) {
-	if len(vals.Validators) == 0 {
-		return nil
-	}
-	if vals.Proposer == nil {
-		vals.Proposer = vals.findProposer()
-	}
-	return vals.Proposer.Copy()
-}
-
-func (vals *ValidatorSet) findProposer() *Validator {
-	var proposer *Validator
-	for _, val := range vals.Validators {
-		if proposer == nil || !bytes.Equal(val.Address, proposer.Address) {
-			proposer = proposer.CompareProposerPriority(val)
-		}
-	}
-	return proposer
-}
 
 // Hash returns the Merkle root hash build using validators (as leaves) in the
 // set.
@@ -824,19 +769,6 @@ func (vals *ValidatorSet) VerifyCommitLightTrusting(chainID string, commit *Comm
 // with the lowest proposer priority which would have been the previous proposer.
 //
 // Is used when recreating a validator set from an existing array of validators.
-func (vals *ValidatorSet) findPreviousProposer() *Validator {
-	var previousProposer *Validator
-	for _, val := range vals.Validators {
-		if previousProposer == nil {
-			previousProposer = val
-			continue
-		}
-		if previousProposer == previousProposer.CompareProposerPriority(val) {
-			previousProposer = val
-		}
-	}
-	return previousProposer
-}
 
 //-----------------
 
@@ -879,11 +811,9 @@ func (vals *ValidatorSet) StringIndented(indent string) string {
 		return false
 	})
 	return fmt.Sprintf(`ValidatorSet{
-%s  Proposer: %v
 %s  Validators:
 %s    %v
 %s}`,
-		indent, vals.GetProposer().String(),
 		indent,
 		indent, strings.Join(valStrings, "\n"+indent+"    "),
 		indent)
@@ -940,12 +870,6 @@ func (vals *ValidatorSet) ToProto() (*tmproto.ValidatorSet, error) {
 	}
 	vp.Validators = valsProto
 
-	valProposer, err := vals.Proposer.ToProto()
-	if err != nil {
-		return nil, fmt.Errorf("toProto: validatorSet proposer error: %w", err)
-	}
-	vp.Proposer = valProposer
-
 	vp.TotalVotingPower = vals.totalVotingPower
 
 	return vp, nil
@@ -970,13 +894,6 @@ func ValidatorSetFromProto(vp *tmproto.ValidatorSet) (*ValidatorSet, error) {
 	}
 	vals.Validators = valsProto
 
-	p, err := ValidatorFromProto(vp.GetProposer())
-	if err != nil {
-		return nil, fmt.Errorf("fromProto: validatorSet proposer error: %w", err)
-	}
-
-	vals.Proposer = p
-
 	vals.totalVotingPower = vp.GetTotalVotingPower()
 
 	return vals, vals.ValidateBasic()
@@ -1000,7 +917,7 @@ func ValidatorSetFromExistingValidators(valz []*Validator) (*ValidatorSet, error
 	vals := &ValidatorSet{
 		Validators: valz,
 	}
-	vals.Proposer = vals.findPreviousProposer()
+
 	vals.updateTotalVotingPower()
 	sort.Sort(ValidatorsByVotingPower(vals.Validators))
 	return vals, nil

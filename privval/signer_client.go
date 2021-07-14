@@ -110,6 +110,25 @@ func (sc *SignerClient) SignVote(chainID string, vote *tmproto.Vote) error {
 	return nil
 }
 
+func (sc *SignerClient) SignQrn(qrn *tmproto.Qrn) error {
+	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignQrnRequest{Qrn: qrn}))
+	if err != nil {
+		return err
+	}
+
+	resp := response.GetSignedQrnResponse()
+	if resp == nil {
+		return ErrUnexpectedResponse
+	}
+	if resp.Error != nil {
+		return &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
+	}
+
+	*qrn = resp.Qrn
+
+	return nil
+}
+
 // SignProposal requests a remote signer to sign a proposal
 func (sc *SignerClient) SignProposal(chainID string, proposal *tmproto.Proposal) error {
 	response, err := sc.endpoint.SendRequest(mustWrapMsg(

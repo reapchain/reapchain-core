@@ -104,11 +104,11 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	evidence, evSize := blockExec.evpool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
 
 	// Fetch a limited amount of valid txs
-	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size(), state.StandingMembers.Size(), state.Qrns.Size())
+	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size(), state.StandingMembers.Size(), state.QrnSet.Size())
 
 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxDataBytes, maxGas)
 
-	qrns := make([]types.Qrn, 0, len(state.Qrns.Qrns))
+	qrns := make([]types.Qrn, 0, len(state.QrnSet.Qrns))
 	for i, qrn := range qrns {
 		qrns[i] = qrn
 	}
@@ -458,11 +458,12 @@ func validateStandingMemberUpdates(abciUpdates []abci.StandingMemberUpdate,
 	return nil
 }
 
+// TODO: stompesi
 func validateQrnUpdates(abciUpdates []abci.QrnUpdate,
 	params tmproto.QrnParams) error {
 	for _, valUpdate := range abciUpdates {
 		// Check if validator's pubkey matches an ABCI type in the consensus params
-		pk, err := cryptoenc.PubKeyFromProto(valUpdate.PubKey)
+		pk, err := cryptoenc.PubKeyFromProto(valUpdate.StandingMemberPubKey)
 		if err != nil {
 			return err
 		}
@@ -539,7 +540,7 @@ func updateState(
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
 		StandingMembers:                  state.StandingMembers.Copy(),
-		Qrns:                             state.Qrns.Copy(),
+		QrnSet:                           state.QrnSet.Copy(),
 		ConsensusRoundInfo:               state.ConsensusRoundInfo,
 	}, nil
 }

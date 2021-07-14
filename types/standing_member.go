@@ -17,6 +17,7 @@ import (
 type StandingMember struct {
 	Address Address       `json:"address"`
 	PubKey  crypto.PubKey `json:"pub_key"`
+	Qrn     *Qrn          `json:"qrn"`
 }
 
 // NewStandingMember returns a new standing member with the given pubkey and voting power.
@@ -106,4 +107,13 @@ func StandingMemberListString(vals []*StandingMember) string {
 	}
 
 	return strings.Join(chunks, ",")
+}
+
+func (standingMember *StandingMember) CompareCoordinatorPriority(other *StandingMember) *StandingMember {
+	if standingMember == nil {
+		return other
+	}
+	//TODO: stompesi
+	return other
+	// return nil
 }

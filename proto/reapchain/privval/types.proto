@@ -3,6 +3,7 @@ package reapchain.privval;
 
 import "reapchain/crypto/keys.proto";
 import "reapchain/types/types.proto";
+import "reapchain/types/qrn.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/privval";
@@ -38,9 +39,18 @@ message SignVoteRequest {
   string                chain_id = 2;
 }
 
+message SignQrnRequest {
+  reapchain.types.Qrn qrn     = 1;
+}
+
 // SignedVoteResponse is a response containing a signed vote or an error
 message SignedVoteResponse {
   reapchain.types.Vote vote  = 1 [(gogoproto.nullable) = false];
+  RemoteSignerError     error = 2;
+}
+
+message SignedQrnResponse {
+  reapchain.types.Qrn qrn  = 1 [(gogoproto.nullable) = false];
   RemoteSignerError     error = 2;
 }
 
@@ -72,5 +82,6 @@ message Message {
     SignedProposalResponse signed_proposal_response = 6;
     PingRequest            ping_request             = 7;
     PingResponse           ping_response            = 8;
+    SignedQrnResponse     signed_qrn_response     = 9;
   }
 }

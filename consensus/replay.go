@@ -215,7 +215,7 @@ func NewHandshaker(stateStore sm.Store, state sm.State,
 	store sm.BlockStore, genDoc *types.GenesisDoc) *Handshaker {
 
 	fmt.Println("initialState1", len(state.StandingMembers.StandingMembers))
-	fmt.Println("initialState2", len(state.Qrns.Qrns))
+	fmt.Println("initialState2", len(state.QrnSet.Qrns))
 
 	return &Handshaker{
 		stateStore:   stateStore,
@@ -271,7 +271,7 @@ func (h *Handshaker) Handshake(proxyApp proxy.AppConns) error {
 	}
 
 	// Replay blocks up to the latest in the blockstore.
-	fmt.Println("stompesi-start-initial", h.initialState.Qrns)
+	fmt.Println("stompesi-start-initial", h.initialState.QrnSet)
 
 	_, err = h.ReplayBlocks(h.initialState, appHash, blockHeight, proxyApp)
 	if err != nil {
@@ -322,8 +322,8 @@ func (h *Handshaker) ReplayBlocks(
 		sms := types.TM2PB.StandingMemberUpdates(standingMemberSet)
 
 		qrns := make([]*types.Qrn, len(h.genDoc.Qrns))
-		for i, val := range h.genDoc.Qrns {
-			qrns[i] = types.NewQrn(val.StandingMemberPubKey, val.Value, val.Height, val.Signature)
+		for i, qrn := range h.genDoc.Qrns {
+			qrns[i] = types.NewQrn(qrn.StandingMemberPubKey, qrn.Value, qrn.Height, qrn.Signature)
 		}
 
 		qrnSet := types.NewQrnSet(storeBlockHeight, standingMemberSet, qrns)
@@ -401,7 +401,7 @@ func (h *Handshaker) ReplayBlocks(
 				if err != nil {
 					return nil, err
 				}
-				state.Qrns = types.NewQrnSet(stateBlockHeight, state.StandingMembers, qrns)
+				state.QrnSet = types.NewQrnSet(stateBlockHeight, state.StandingMembers, qrns)
 			} else if len(h.genDoc.Qrns) == 0 {
 				return nil, fmt.Errorf("qrn set is nil in genesis and still empty after InitChain")
 			}

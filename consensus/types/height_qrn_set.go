@@ -42,6 +42,6 @@ func (hieghtQrnSet *HeightQrnSet) AddQrn(qrn *types.Qrn, peerID p2p.ID) (added b
 	hieghtQrnSet.mtx.Lock()
 	defer hieghtQrnSet.mtx.Unlock()
 
-	added, err = hieghtQrnSet.qrnSet.AddQrn(qrn)
+	added, err = hieghtQrnSet.qrnSet.UpdateQrn(qrn)
 	return
 }

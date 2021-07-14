@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/spf13/cobra"
 
@@ -30,6 +29,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 	// private validator
 	privValKeyFile := config.PrivValidatorKeyFile()
 	privValStateFile := config.PrivValidatorStateFile()
+	privValidator := privval.LoadOrGenFilePV(privValKeyFile, privValStateFile)
 	var pv *privval.FilePV
 	if tmos.FileExists(privValKeyFile) {
 		pv = privval.LoadFilePV(privValKeyFile, privValStateFile)
@@ -78,20 +78,47 @@ func initFilesWithConfig(config *cfg.Config) error {
 			PubKey:  pubKey,
 		}}
 
-		rand := tmrand.Uint64()
-		randByte := []byte(strconv.FormatUint(rand, 10))
-		signature, err := pv.Key.PrivKey.Sign(randByte)
-		if err != nil {
-			return err
-		}
+		// rand := tmrand.Uint64()
+		// randByte := []byte(strconv.FormatUint(rand, 10))
+		// signature, err := pv.Key.PrivKey.Sign(randByte)
+		// if err != nil {
+		// 	return err
+		// }
 
-		genDoc.Qrns = []types.Qrn{{
+		// genDoc.Qrns = []types.Qrn{{
+		// 	Height:               0,
+		// 	Timestamp:            genDoc.GenesisTime,
+		// 	StandingMemberPubKey: pubKey,
+		// 	StandingMemberIndex:  0,
+		// 	Value:                rand,
+		// 	Signature:            signature,
+		// }}
+
+		rand := tmrand.Uint64()
+
+		qrn := types.Qrn{
 			Height:               0,
-			Timestamp:            genDoc.GenesisTime,
+			Timestamp:            tmtime.Now(),
 			StandingMemberPubKey: pubKey,
 			StandingMemberIndex:  0,
 			Value:                rand,
-			Signature:            signature,
+		}
+
+		qrnProto, err := qrn.ToProto()
+		if err != nil {
+			logger.Error("can't get qrn proto", "err", err)
+		}
+
+		err = privValidator.SignQrn(qrnProto)
+		qrn.Signature = qrnProto.Signature
+
+		genDoc.Qrns = []types.Qrn{{
+			Height:               qrn.Height,
+			Timestamp:            qrn.Timestamp,
+			StandingMemberPubKey: qrn.StandingMemberPubKey,
+			StandingMemberIndex:  qrn.StandingMemberIndex,
+			Value:                qrn.Value,
+			Signature:            qrn.Signature,
 		}}
 
 		genDoc.ConsensusRoundInfo = types.NewConsensusRound(0, 0)

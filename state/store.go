@@ -188,13 +188,12 @@ func (store dbStore) save(state State, key []byte) error {
 		}
 	}
 
-	//fmt.Println("stompesi-init-save-3")
 	if err := store.saveStandingMembersInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.StandingMembers); err != nil {
 		return err
 	}
 
-	fmt.Println("stompesk-kkk", state.Qrns)
-	if err := store.saveQrnsInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.Qrns); err != nil {
+	fmt.Println("stompesi-kkkk", state.QrnSet.Height)
+	if err := store.saveQrnsInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.QrnSet); err != nil {
 		return err
 	}
 
@@ -218,7 +217,7 @@ func (store dbStore) save(state State, key []byte) error {
 		state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
 		return err
 	}
-	fmt.Println("stompesi-init-save-2", state.Qrns.Qrns)
+	fmt.Println("stompesi-init-save-2", state.QrnSet.Qrns)
 
 	err := store.db.SetSync(key, state.Bytes())
 	if err != nil {
@@ -248,7 +247,7 @@ func (store dbStore) Bootstrap(state State) error {
 		return err
 	}
 
-	if err := store.saveQrnsInfo(height, height, state.Qrns); err != nil {
+	if err := store.saveQrnsInfo(height, height, state.QrnSet); err != nil {
 		return err
 	}
 

@@ -322,10 +322,8 @@ func logNodeStartupInfo(state sm.State, pubKey crypto.PubKey, logger, consensusL
 	}
 
 	if state.StandingMembers.HasAddress(addr) {
-		state.StandingMembers.IsStandingMember = true
 		consensusLogger.Info("This node is a standing member", "addr", addr, "pubKey", pubKey)
 	} else {
-		state.StandingMembers.IsStandingMember = false
 		consensusLogger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
 	}
 }

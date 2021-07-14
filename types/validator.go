@@ -1,7 +1,6 @@
 package types
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"strings"
@@ -61,27 +60,6 @@ func (v *Validator) Copy() *Validator {
 }
 
 // Returns the one with higher ProposerPriority.
-func (v *Validator) CompareProposerPriority(other *Validator) *Validator {
-	if v == nil {
-		return other
-	}
-	switch {
-	case v.ProposerPriority > other.ProposerPriority:
-		return v
-	case v.ProposerPriority < other.ProposerPriority:
-		return other
-	default:
-		result := bytes.Compare(v.Address, other.Address)
-		switch {
-		case result < 0:
-			return v
-		case result > 0:
-			return other
-		default:
-			panic("Cannot compare identical validators")
-		}
-	}
-}
 
 // String returns a string representation of String.
 //

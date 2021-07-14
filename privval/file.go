@@ -259,6 +259,13 @@ func (pv *FilePV) SignVote(chainID string, vote *tmproto.Vote) error {
 	return nil
 }
 
+func (pv *FilePV) SignQrn(qrn *tmproto.Qrn) error {
+	if err := pv.signQrn(qrn); err != nil {
+		return fmt.Errorf("error signing qrn: %v", err)
+	}
+	return nil
+}
+
 // SignProposal signs a canonical representation of the proposal, along with
 // the chainID. Implements PrivValidator.
 func (pv *FilePV) SignProposal(chainID string, proposal *tmproto.Proposal) error {
@@ -338,6 +345,19 @@ func (pv *FilePV) signVote(chainID string, vote *tmproto.Vote) error {
 	}
 	pv.saveSigned(height, round, step, signBytes, sig)
 	vote.Signature = sig
+	return nil
+}
+
+func (pv *FilePV) signQrn(qrn *tmproto.Qrn) error {
+	signBytes := types.QrnSignBytes(qrn)
+
+	// It passed the checks. Sign the vote
+	sig, err := pv.Key.PrivKey.Sign(signBytes)
+	if err != nil {
+		return err
+	}
+
+	qrn.Signature = sig
 	return nil
 }
 

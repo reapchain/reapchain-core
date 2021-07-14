@@ -721,7 +721,7 @@ OUTER_LOOP:
 	}
 }
 
-func (conR *Reactor) gossipQrnRoutine(peer p2p.Peer, ps *PeerState) {
+func (conR *Reactor) gossipQrnRoutine(peer p2p.Peer, peerState *PeerState) {
 	logger := conR.Logger.With("peer", peer)
 
 OUTER_LOOP:
@@ -733,6 +733,23 @@ OUTER_LOOP:
 		}
 
 		// TODO: stompesi
+		// consensusRoundState := conR.conS.GetRoundState()
+		// peerRoundState := peerState.GetRoundState()
+
+		// if consensusRoundState.Height == peerRoundState.Height {
+		// 	heightLogger := logger.With("height", peerRoundState.Height)
+		// 	if conR.gossipQrnsForHeight(heightLogger, consensusRoundState, peerRoundState, peerState) {
+		// 		continue OUTER_LOOP
+		// 	}
+		// }
+
+		// if peerRoundState.Height != 0 && consensusRoundState.Height == peerRoundState.Height+1 {
+		// 	if peerState.PickSendVote(rs.LastCommit) {
+		// 		logger.Debug("Picked rs.LastCommit to send", "height", prs.Height)
+		// 		continue OUTER_LOOP
+		// 	}
+		// }
+
 		continue OUTER_LOOP
 	}
 }
@@ -1780,12 +1797,12 @@ func (m *VoteSetBitsMessage) String() string {
 //-------------------------------------
 
 //TODO: stompesi
-func (ps *PeerState) SendQrn(qrn types.Qrn) bool {
+func (peerState *PeerState) SendQrn(qrn types.Qrn) bool {
 
 	msg := &QrnMessage{&qrn}
 
-	ps.logger.Debug("Sending vote qrn message", "qrn", qrn)
-	if ps.peer.Send(QrnChannel, MustEncode(msg)) {
+	peerState.logger.Debug("Sending vote qrn message", "qrn", qrn)
+	if peerState.peer.Send(QrnChannel, MustEncode(msg)) {
 		return true
 	}
 	return false
@@ -1793,4 +1810,23 @@ func (ps *PeerState) SendQrn(qrn types.Qrn) bool {
 
 type QrnMessage struct {
 	Qrn *types.Qrn
+}
+
+func (conR *Reactor) gossipQrnsForHeight(
+	logger log.Logger,
+	consensusRoundState *cstypes.RoundState,
+	peerRoundState *cstypes.PeerRoundState,
+	peerState *PeerState,
+) bool {
+
+	//TODO: stompesi
+	// consensusRoundState.
+	// // If there are lastCommits to send...
+	// if peerState.PickSendQrn(polPrevotes) {
+	// 	logger.Debug("Picked rs.Prevotes(prs.ProposalPOLRound) to send",
+	// 		"round", prs.ProposalPOLRound)
+	// 	return true
+	// }
+
+	return false
 }
