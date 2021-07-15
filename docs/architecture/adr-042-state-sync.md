@@ -13,13 +13,13 @@ and eventually participate in consensus. The goal of StateSync is to
 facilitate setting up a new node as quickly as possible.
 
 ## Considerations
-Because Tendermint doesn't know anything about the application state,
+Because Reapchain doesn't know anything about the application state,
 StateSync will broker messages between nodes and through
 the ABCI to an opaque applicaton. The implementation will have multiple
-touch points on both the tendermint code base and ABCI application.
+touch points on both the reapchain code base and ABCI application.
 
-* A StateSync reactor to facilitate peer communication - Tendermint
-* A Set of ABCI messages to transmit application state to the reactor - Tendermint
+* A StateSync reactor to facilitate peer communication - Reapchain
+* A Set of ABCI messages to transmit application state to the reactor - Reapchain
 * A Set of MultiStore APIs for exposing snapshot data to the ABCI - ABCI application
 * A Storage format with validation and performance considerations - ABCI application
 
@@ -93,7 +93,7 @@ from other peers.
 Additionally, per chunk validation tends to come more naturally to the
 Lazy approach since it tends to use the existing structure of the tree
 (ie. keys or nodes) rather than state-sync specific chunks. Such a
-design for tendermint was originally tracked in
+design for reapchain was originally tracked in
 [#828](https://github.com/reapchain/reapchain-core/issues/828).
 
 #### Eager StateSync
@@ -120,7 +120,7 @@ time.
 
 ### Analysis of Lazy vs Eager
 Lazy vs Eager have more in common than they differ. They all require
-reactors on the tendermint side, a set of ABCI messages and a method for
+reactors on the reapchain side, a set of ABCI messages and a method for
 serializing/deserializing snapshots facilitated by a SnapshotFormat.
 
 The biggest difference between Lazy and Eager proposals is in the
@@ -180,7 +180,7 @@ receipt and avoid the potential eclipse attack of majority of peer based
 security.
 
 ### Implementation
-Tendermint is responsible for downloading and verifying chunks of
+Reapchain is responsible for downloading and verifying chunks of
 AppState from peers. ABCI Application is responsible for taking
 AppStateChunk objects from TM and constructing a valid state tree whose
 root corresponds with the AppHash of syncing block. In particular we
@@ -229,7 +229,7 @@ Proposed
 
 ## References
 [sync: Sync current state without full replay for Applications](https://github.com/reapchain/reapchain-core/issues/828) - original issue
-[tendermint state sync proposal 2](https://docs.google.com/document/d/1npGTAa1qxe8EQZ1wG0a0Sip9t5oX2vYZNUDwr_LVRR4/edit) - ackratos proposal
+[reapchain state sync proposal 2](https://docs.google.com/document/d/1npGTAa1qxe8EQZ1wG0a0Sip9t5oX2vYZNUDwr_LVRR4/edit) - ackratos proposal
 [proposal 2 implementation](https://github.com/reapchain/reapchain-core/pull/3243)  - ackratos implementation
 [WIP General/Lazy State-Sync pseudo-spec](https://github.com/reapchain/reapchain-core/issues/3639) - Jae Proposal
 [Warp Sync Implementation](https://github.com/reapchain/reapchain-core/pull/3594) - ackratos

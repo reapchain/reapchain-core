@@ -6,7 +6,7 @@ parent:
 
 # Architecture Decision Records (ADR)
 
-This is a location to record all high-level architecture decisions in the tendermint project.
+This is a location to record all high-level architecture decisions in the reapchain project.
 
 You can read more about the ADR concept in this [blog post](https://product.reverb.com/documenting-architecture-decisions-the-reverb-way-a3563bb24bd0#.78xhdix6t).
 
@@ -72,7 +72,7 @@ Note the context/background should be written in the present tense.
 - [ADR-046-Light-Client-Implementation](./adr-046-light-client-implementation.md)
 - [ADR-047-Handling-Evidence-From-Light-Client](./adr-047-handling-evidence-from-light-client.md)
 - [ADR-051-Double-Signing-Risk-Reduction](./adr-051-double-signing-risk-reduction.md)
-- [ADR-052-Tendermint-Mode](./adr-052-tendermint-mode.md)
+- [ADR-052-Reapchain-Mode](./adr-052-reapchain-mode.md)
 - [ADR-053-State-Sync-Prototype](./adr-053-state-sync-prototype.md)
 - [ADR-054-crypto-encoding-2](./adr-054-crypto-encoding-2.md)
 - [ADR-055-protobuf-design](./adr-055-protobuf-design.md)

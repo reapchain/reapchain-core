@@ -3,7 +3,7 @@
 ## Context
 
 We require symmetric ciphers to handle how we encrypt keys in the sdk,
-and to potentially encrypt `priv_validator.json` in tendermint.
+and to potentially encrypt `priv_validator.json` in reapchain.
 
 Currently we use AEAD's to support symmetric encryption,
 which is great since we want data integrity in addition to privacy and authenticity.

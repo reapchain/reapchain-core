@@ -2,7 +2,7 @@
 order: 3
 ---
 
-# Install Tendermint
+# Install Reapchain
 
 ## From Binary
 
@@ -22,7 +22,7 @@ echo export PATH=\"\$PATH:\$GOPATH/bin\" >> ~/.bash_profile
 
 ```sh
 git clone https://github.com/reapchain/reapchain-core.git
-cd tendermint
+cd reapchain
 ```
 
 ### Compile
@@ -39,16 +39,16 @@ make build
 
 to put the binary in `./build`.
 
-_DISCLAIMER_ The binary of Tendermint is build/installed without the DWARF
-symbol table. If you would like to build/install Tendermint with the DWARF
+_DISCLAIMER_ The binary of Reapchain is build/installed without the DWARF
+symbol table. If you would like to build/install Reapchain with the DWARF
 symbol and debug information, remove `-s -w` from `BUILD_FLAGS` in the make
 file.
 
-The latest Tendermint is now installed. You can verify the installation by
+The latest Reapchain is now installed. You can verify the installation by
 running:
 
 ```sh
-tendermint version
+reapchain version
 ```
 
 ## Run
@@ -56,13 +56,13 @@ tendermint version
 To start a one-node blockchain with a simple in-process application:
 
 ```sh
-tendermint init
-tendermint node --proxy_app=kvstore
+reapchain init
+reapchain node --proxy_app=kvstore
 ```
 
 ## Reinstall
 
-If you already have Tendermint installed, and you make updates, simply
+If you already have Reapchain installed, and you make updates, simply
 
 ```sh
 make install
@@ -105,16 +105,16 @@ Set a database backend to `cleveldb`:
 db_backend = "cleveldb"
 ```
 
-To install Tendermint, run:
+To install Reapchain, run:
 
 ```sh
-CGO_LDFLAGS="-lsnappy" make install TENDERMINT_BUILD_OPTIONS=cleveldb
+CGO_LDFLAGS="-lsnappy" make install REAPCHAIN_BUILD_OPTIONS=cleveldb
 ```
 
 or run:
 
 ```sh
-CGO_LDFLAGS="-lsnappy" make build TENDERMINT_BUILD_OPTIONS=cleveldb
+CGO_LDFLAGS="-lsnappy" make build REAPCHAIN_BUILD_OPTIONS=cleveldb
 ```
 
 which puts the binary in `./build`.

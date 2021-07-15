@@ -8,7 +8,7 @@
 
 ## Context
 
-In order to bring more visibility into Tendermint, we would like it to report
+In order to bring more visibility into Reapchain, we would like it to report
 metrics and, maybe later, traces of transactions and RPC queries. See
 https://github.com/reapchain/reapchain-core/issues/986.
 
@@ -28,7 +28,7 @@ a Go client library, powerful queries, alerts.
 
 **a) Prometheus API**
 
-We can commit to using Prometheus in Tendermint, but I think Tendermint users
+We can commit to using Prometheus in Reapchain, but I think Reapchain users
 should be free to choose whatever monitoring tool they feel will better suit
 their needs (if they don't have existing one already). So we should try to
 abstract interface enough so people can switch between Prometheus and other
@@ -47,9 +47,9 @@ metrics creation into a separate function (see "providers" in node/node.go).
 
 **c) telegraf**
 
-Unlike already discussed options, telegraf does not require modifying Tendermint
+Unlike already discussed options, telegraf does not require modifying Reapchain
 source code. You create something called an input plugin, which polls
-Tendermint RPC every second and calculates the metrics itself.
+Reapchain RPC every second and calculates the metrics itself.
 
 While it may sound good, but some metrics we want to report are not exposed via
 RPC or pubsub, therefore can't be accessed externally.

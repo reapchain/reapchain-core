@@ -87,7 +87,7 @@ The test suite will do black-box testing against a single node's RPC service. We
 
 The tests must take into account the node configuration (e.g. some nodes may be pruned, others may not be validators), and should somehow be provided access to expected data (i.e. complete block headers for the entire chain).
 
-The test suite should use the Tendermint RPC client and the Tendermint light client, to exercise the client code as well.
+The test suite should use the Reapchain RPC client and the Reapchain light client, to exercise the client code as well.
 
 ### Implementation Considerations
 
@@ -113,7 +113,7 @@ Accepted
 
 ### Positive
 
-- Comprehensive end-to-end test coverage of basic Tendermint functionality, exercising common code paths in the same way that users would
+- Comprehensive end-to-end test coverage of basic Reapchain functionality, exercising common code paths in the same way that users would
 
 - Test environments can easily be reproduced locally and debugged via standard tooling
 

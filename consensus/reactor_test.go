@@ -31,7 +31,7 @@ import (
 	mempl "github.com/reapchain/reapchain-core/mempool"
 	"github.com/reapchain/reapchain-core/p2p"
 	p2pmock "github.com/reapchain/reapchain-core/p2p/mock"
-	tmproto "github.com/reapchain/reapchain-core/proto/tendermint/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	statemocks "github.com/reapchain/reapchain-core/state/mocks"
 	"github.com/reapchain/reapchain-core/store"

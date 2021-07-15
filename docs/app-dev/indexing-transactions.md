@@ -4,7 +4,7 @@ order: 6
 
 # Indexing Transactions
 
-Tendermint allows you to index transactions and blocks and later query or
+Reapchain allows you to index transactions and blocks and later query or
 subscribe to their results. Transactions are indexed by `TxResult.Events` and
 blocks are indexed by `Response(Begin|End)Block.Events`. However, transactions
 are also indexed by a primary key which includes the transaction hash and maps
@@ -15,7 +15,7 @@ the block itself is never stored.
 Each event contains a type and a list of attributes, which are key-value pairs
 denoting something about what happened during the method's execution. For more
 details on `Events`, see the
-[ABCI](https://github.com/tendermint/spec/blob/master/spec/abci/abci.md#events)
+[ABCI](https://github.com/reapchain/spec/blob/master/spec/abci/abci.md#events)
 documentation.
 
 An `Event` has a composite key associated with it. A `compositeKey` is
@@ -45,14 +45,14 @@ Let's take a look at the `[tx_index]` config section:
 indexer = "kv"
 ```
 
-By default, Tendermint will index all transactions by their respective hashes
+By default, Reapchain will index all transactions by their respective hashes
 and height and blocks by their height.
 
 You can turn off indexing completely by setting `tx_index` to `null`.
 
 ## Default Indexes
 
-The Tendermint tx and block event indexer indexes a few select reserved events
+The Reapchain tx and block event indexer indexes a few select reserved events
 by default.
 
 ### Transactions
@@ -70,7 +70,7 @@ The following indexes are indexed by default:
 
 ## Adding Events
 
-Applications are free to define which events to index. Tendermint does not
+Applications are free to define which events to index. Reapchain does not
 expose functionality to define which events to index and which to ignore. In
 your application's `DeliverTx` method, add the `Events` field with pairs of
 UTF-8 encoded strings (e.g. "transfer.sender": "Bob", "transfer.recipient":
@@ -109,7 +109,7 @@ You can query for a paginated set of transaction by their events by calling the
 curl "localhost:26657/tx_search?query=\"message.sender='cosmos1...'\"&prove=true"
 ```
 
-Check out [API docs](https://docs.tendermint.com/master/rpc/#/Info/tx_search)
+Check out [API docs](https://docs.reapchain.com/master/rpc/#/Info/tx_search)
 for more information on query syntax and other options.
 
 ## Subscribing to Transactions
@@ -128,7 +128,7 @@ a query to `/subscribe` RPC endpoint.
 }
 ```
 
-Check out [API docs](https://docs.tendermint.com/master/rpc/#subscribe) for more information
+Check out [API docs](https://docs.reapchain.com/master/rpc/#subscribe) for more information
 on query syntax and other options.
 
 ## Querying Blocks Events
@@ -140,5 +140,5 @@ You can query for a paginated set of blocks by their events by calling the
 curl "localhost:26657/block_search?query=\"block.height > 10 AND val_set.num_changed > 0\""
 ```
 
-Check out [API docs](https://docs.tendermint.com/master/rpc/#/Info/block_search)
+Check out [API docs](https://docs.reapchain.com/master/rpc/#/Info/block_search)
 for more information on query syntax and other options.

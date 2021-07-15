@@ -1,32 +1,32 @@
 ---
-title: Tendermint Core Documentation
-description: Tendermint Core is a blockchain application platform.
+title: Reapchain Core Documentation
+description: Reapchain Core is a blockchain application platform.
 footer:
   newsletter: false
 ---
 
-# Tendermint
+# Reapchain
 
-Welcome to the Tendermint Core documentation!
+Welcome to the Reapchain Core documentation!
 
-Tendermint Core is a blockchain application platform; it provides the equivalent
+Reapchain Core is a blockchain application platform; it provides the equivalent
 of a web-server, database, and supporting libraries for blockchain applications
 written in any programming language. Like a web-server serving web applications,
-Tendermint serves blockchain applications.
+Reapchain serves blockchain applications.
 
-More formally, Tendermint Core performs Byzantine Fault Tolerant (BFT)
+More formally, Reapchain Core performs Byzantine Fault Tolerant (BFT)
 State Machine Replication (SMR) for arbitrary deterministic, finite state machines.
 For more background, see [What is
-Tendermint?](introduction/what-is-tendermint.md).
+Reapchain?](introduction/what-is-reapchain.md).
 
 To get started quickly with an example application, see the [quick start guide](introduction/quick-start.md).
 
-To learn about application development on Tendermint, see the [Application Blockchain Interface](https://github.com/tendermint/spec/tree/master/spec/abci).
+To learn about application development on Reapchain, see the [Application Blockchain Interface](https://github.com/reapchain/spec/tree/master/spec/abci).
 
-For more details on using Tendermint, see the respective documentation for
-[Tendermint Core](tendermint-core/), [benchmarking and monitoring](tools/), and [network deployments](networks/).
+For more details on using Reapchain, see the respective documentation for
+[Reapchain Core](reapchain-core/), [benchmarking and monitoring](tools/), and [network deployments](networks/).
 
-To find out about the Tendermint ecosystem you can go [here](https://github.com/tendermint/awesome#ecosystem). If you are a project that is using Tendermint you are welcome to make a PR to add your project to the list.
+To find out about the Reapchain ecosystem you can go [here](https://github.com/reapchain/awesome#ecosystem). If you are a project that is using Reapchain you are welcome to make a PR to add your project to the list.
 
 ## Contribute
 

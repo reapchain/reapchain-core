@@ -15,7 +15,7 @@ import (
 	lighthttp "github.com/reapchain/reapchain-core/light/provider/http"
 	lightrpc "github.com/reapchain/reapchain-core/light/rpc"
 	lightdb "github.com/reapchain/reapchain-core/light/store/db"
-	tmstate "github.com/reapchain/reapchain-core/proto/tendermint/state"
+	tmstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
 	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"

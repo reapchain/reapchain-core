@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	abci "github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/libs/pubsub/query"
 	blockidxkv "github.com/reapchain/reapchain-core/state/indexer/block/kv"
 	"github.com/reapchain/reapchain-core/types"
+	"github.com/stretchr/testify/require"
 	db "github.com/tendermint/tm-db"
 )
 

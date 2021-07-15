@@ -1,8 +1,8 @@
 # Docs Build Workflow
 
-The documentation for Tendermint Core is hosted at:
+The documentation for Reapchain Core is hosted at:
 
-- <https://docs.tendermint.com/master/>
+- <https://docs.reapchain.com/master/>
 
 built from the files in this (`/docs`) directory for
 [master](https://github.com/reapchain/reapchain-core/tree/master/docs) respectively.
@@ -87,7 +87,7 @@ To build documentation as a static website run `npm run build`. You will find th
 
 ## Search
 
-We are using [Algolia](https://www.algolia.com) to power full-text search. This uses a public API search-only key in the `config.js` as well as a [tendermint.json](https://github.com/algolia/docsearch-configs/blob/master/configs/tendermint.json) configuration file that we can update with PRs.
+We are using [Algolia](https://www.algolia.com) to power full-text search. This uses a public API search-only key in the `config.js` as well as a [reapchain.json](https://github.com/algolia/docsearch-configs/blob/master/configs/reapchain.json) configuration file that we can update with PRs.
 
 ## Consistency
 

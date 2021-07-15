@@ -1,7 +1,7 @@
 package version
 
 var (
-	// TMCoreSemVer is the current version of Tendermint Core.
+	// TMCoreSemVer is the current version of Reapchain Core.
 	// It's the Semantic Version of the software.
 	TMCoreSemVer string
 )

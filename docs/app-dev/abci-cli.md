@@ -16,7 +16,7 @@ Next, install the `abci-cli` tool and example applications:
 
 ```sh
 git clone https://github.com/reapchain/reapchain-core.git
-cd tendermint
+cd reapchain
 make install_abci
 ```
 
@@ -139,7 +139,7 @@ response.
 The server may be generic for a particular language, and we provide a
 [reference implementation in
 Golang](https://github.com/reapchain/reapchain-core/tree/master/abci/server). See the
-[list of other ABCI implementations](https://github.com/tendermint/awesome#ecosystem) for servers in
+[list of other ABCI implementations](https://github.com/reapchain/awesome#ecosystem) for servers in
 other languages.
 
 The handler is specific to the application, and may be arbitrary, so
@@ -327,10 +327,10 @@ application easily in any language.
 We have implemented the counter in a number of languages [see the
 example directory](https://github.com/reapchain/reapchain-core/tree/master/abci/example).
 
-To run the Node.js version, fist download & install [the Javascript ABCI server](https://github.com/tendermint/js-abci):
+To run the Node.js version, fist download & install [the Javascript ABCI server](https://github.com/reapchain/js-abci):
 
 ```sh
-git clone https://github.com/tendermint/js-abci.git
+git clone https://github.com/reapchain/js-abci.git
 cd js-abci
 npm install abci
 ```
@@ -348,16 +348,16 @@ the same results as for the Go version.
 ## Bounties
 
 Want to write the counter app in your favorite language?! We'd be happy
-to add you to our [ecosystem](https://github.com/tendermint/awesome#ecosystem)!
+to add you to our [ecosystem](https://github.com/reapchain/awesome#ecosystem)!
 See [funding](https://github.com/interchainio/funding) opportunities from the
 [Interchain Foundation](https://interchain.io/) for implementations in new languages and more.
 
 The `abci-cli` is designed strictly for testing and debugging. In a real
-deployment, the role of sending messages is taken by Tendermint, which
+deployment, the role of sending messages is taken by Reapchain, which
 connects to the app using three separate connections, each with its own
 pattern of messages.
 
 For more information, see the [application developers
 guide](./app-development.md). For examples of running an ABCI app with
-Tendermint, see the [getting started guide](./getting-started.md).
+Reapchain, see the [getting started guide](./getting-started.md).
 Next is the ABCI specification.

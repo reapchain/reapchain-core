@@ -50,7 +50,7 @@ type Application interface {
    CheckTx(tx []byte) ResponseCheckTx // Validate a tx for the mempool
 
    // Consensus Connection
-   InitChain(RequestInitChain) ResponseInitChain // Initialize blockchain with validators and other info from TendermintCore
+   InitChain(RequestInitChain) ResponseInitChain // Initialize blockchain with validators and other info from ReapchainCore
    CheckBlock(RequestCheckBlock) ResponseCheckBlock
    BeginBlock(RequestBeginBlock) ResponseBeginBlock // Signals the beginning of a block
    DeliverTx(tx []byte) ResponseDeliverTx           // Deliver a tx for full processing

@@ -11,9 +11,9 @@ import (
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	cryptoproto "github.com/reapchain/reapchain-core/proto/tendermint/crypto"
-	privvalproto "github.com/reapchain/reapchain-core/proto/tendermint/privval"
-	tmproto "github.com/reapchain/reapchain-core/proto/tendermint/types"
+	cryptoproto "github.com/reapchain/reapchain-core/proto/reapchain/crypto"
+	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain/privval"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

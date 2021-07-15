@@ -59,7 +59,7 @@ and adds a DDOS vector to the full node.
 ## Decision
 
 The light client will be divided into two components: a `Verifier` (either sequential or
-skipping) and a `Detector` (see [Informal's Detector](https://github.com/informalsystems/tendermint-rs/blob/master/docs/spec/lightclient/detection/detection.md))
+skipping) and a `Detector` (see [Informal's Detector](https://github.com/informalsystems/reapchain-rs/blob/master/docs/spec/lightclient/detection/detection.md))
 . The detector will take the trace of headers from the primary and check it against all
 witnesses. For a witness with a diverging header, the detector will first verify the header
 by bisecting through all the heights defined by the trace that the primary provided. If valid,
@@ -179,7 +179,7 @@ This then ends the process and the verify function that was called at the start 
 the user.
 
 For a detailed overview of how each of these three attacks can be conducted please refer to the
-[fork accountability spec]((https://github.com/tendermint/spec/blob/master/spec/consensus/light-client/accountability.md)).
+[fork accountability spec]((https://github.com/reapchain/spec/blob/master/spec/consensus/light-client/accountability.md)).
 
 ## Full Node Verification
 
@@ -212,10 +212,10 @@ clear from the current information which nodes behaved maliciously.
 
 ## References
 
-* [Fork accountability spec](https://github.com/tendermint/spec/blob/master/spec/consensus/light-client/accountability.md)
+* [Fork accountability spec](https://github.com/reapchain/spec/blob/master/spec/consensus/light-client/accountability.md)
 * [ADR 056: Proving amnesia attacks](https://github.com/reapchain/reapchain-core/blob/master/docs/architecture/adr-056-proving-amnesia-attacks.md)
 * [ADR-059: Evidence Composition and Lifecycle](https://github.com/reapchain/reapchain-core/blob/master/docs/architecture/adr-059-evidence-composition-and-lifecycle.md)
-* [Informal's Light Client Detector](https://github.com/informalsystems/tendermint-rs/blob/master/docs/spec/lightclient/detection/detection.md)
+* [Informal's Light Client Detector](https://github.com/informalsystems/reapchain-rs/blob/master/docs/spec/lightclient/detection/detection.md)
 
 
 ## Appendix A

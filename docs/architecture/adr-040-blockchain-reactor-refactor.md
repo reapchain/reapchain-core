@@ -218,7 +218,7 @@ type MessageToSend struct {
 
 The Controller state machine can be in two modes: `ModeFastSync` when
 a node is trying to catch up with the network by downloading committed blocks,
-and `ModeConsensus` in which it executes Tendermint consensus protocol. We
+and `ModeConsensus` in which it executes Reapchain consensus protocol. We
 consider that `fast sync` mode terminates once the Controller switch to
 `ModeConsensus`.
 

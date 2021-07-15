@@ -1,12 +1,12 @@
 # tm-signer-harness
 
-Located under the `tools/tm-signer-harness` folder in the [Tendermint
+Located under the `tools/tm-signer-harness` folder in the [Reapchain
 repository](https://github.com/reapchain/reapchain-core).
 
-The Tendermint remote signer test harness facilitates integration testing
-between Tendermint and remote signers such as
-[KMS](https://github.com/tendermint/kms). Such remote signers allow for signing
-of important Tendermint messages using
+The Reapchain remote signer test harness facilitates integration testing
+between Reapchain and remote signers such as
+[KMS](https://github.com/reapchain/kms). Such remote signers allow for signing
+of important Reapchain messages using
 [HSMs](https://en.wikipedia.org/wiki/Hardware_security_module), providing
 additional security.
 
@@ -23,11 +23,11 @@ When executed, `tm-signer-harness`:
 ## Prerequisites
 
 Requires the same prerequisites as for building
-[Tendermint](https://github.com/reapchain/reapchain-core).
+[Reapchain](https://github.com/reapchain/reapchain-core).
 
 ## Building
 
-From the `tools/tm-signer-harness` directory in your Tendermint source
+From the `tools/tm-signer-harness` directory in your Reapchain source
 repository, simply run:
 
 ```bash
@@ -40,7 +40,7 @@ make install
 ## Docker Image
 
 To build a Docker image containing the `tm-signer-harness`, also from the
-`tools/tm-signer-harness` directory of your Tendermint source repo, simply run:
+`tools/tm-signer-harness` directory of your Reapchain source repo, simply run:
 
 ```bash
 make docker-image
@@ -49,14 +49,14 @@ make docker-image
 ## Running against KMS
 
 As an example of how to use `tm-signer-harness`, the following instructions show
-you how to execute its tests against [KMS](https://github.com/tendermint/kms).
+you how to execute its tests against [KMS](https://github.com/reapchain/kms).
 For this example, we will make use of the **software signing module in KMS**, as
 the hardware signing module requires a physical
 [YubiHSM](https://www.yubico.com/products/yubihsm/) device.
 
 ### Step 1: Install KMS on your local machine
 
-See the [KMS repo](https://github.com/tendermint/kms) for details on how to set
+See the [KMS repo](https://github.com/reapchain/kms) for details on how to set
 KMS up on your local machine.
 
 If you have [Rust](https://www.rust-lang.org/) installed on your local machine,
@@ -69,17 +69,17 @@ cargo install tmkms
 ### Step 2: Make keys for KMS
 
 The KMS software signing module needs a key with which to sign messages. In our
-example, we will simply export a signing key from our local Tendermint instance.
+example, we will simply export a signing key from our local Reapchain instance.
 
 ```bash
-# Will generate all necessary Tendermint configuration files, including:
-# - ~/.tendermint/config/priv_validator_key.json
-# - ~/.tendermint/data/priv_validator_state.json
-tendermint init
+# Will generate all necessary Reapchain configuration files, including:
+# - ~/.reapchain/config/priv_validator_key.json
+# - ~/.reapchain/data/priv_validator_state.json
+reapchain init
 
-# Extract the signing key from our local Tendermint instance
+# Extract the signing key from our local Reapchain instance
 tm-signer-harness extract_key \      # Use the "extract_key" command
-    -tmhome ~/.tendermint \          # Where to find the Tendermint home directory
+    -tmhome ~/.reapchain \          # Where to find the Reapchain home directory
     -output ./signing.key            # Where to write the key
 ```
 
@@ -99,12 +99,12 @@ as the `signing.key` file we just generated. Save the following to a file called
 ```toml
 [[validator]]
 addr = "tcp://127.0.0.1:61219"         # This is where we will find tm-signer-harness.
-chain_id = "test-chain-0XwP5E"         # The Tendermint chain ID for which KMS will be signing (found in ~/.tendermint/config/genesis.json).
+chain_id = "test-chain-0XwP5E"         # The Reapchain chain ID for which KMS will be signing (found in ~/.reapchain/config/genesis.json).
 reconnect = true                       # true is the default
 secret_key = "./secret_connection.key" # Where to find our secret connection key.
 
 [[providers.softsign]]
-id = "test-chain-0XwP5E"               # The Tendermint chain ID for which KMS will be signing (same as validator.chain_id above).
+id = "test-chain-0XwP5E"               # The Reapchain chain ID for which KMS will be signing (same as validator.chain_id above).
 path = "./signing.key"                 # The signing key we extracted earlier.
 ```
 
@@ -124,10 +124,10 @@ Now we get to run the signer test harness:
 ```bash
 tm-signer-harness run \             # The "run" command executes the tests
     -addr tcp://127.0.0.1:61219 \   # The address we promised KMS earlier
-    -tmhome ~/.tendermint           # Where to find our Tendermint configuration/data files.
+    -tmhome ~/.reapchain           # Where to find our Reapchain configuration/data files.
 ```
 
-If the current version of Tendermint and KMS are compatible, `tm-signer-harness`
+If the current version of Reapchain and KMS are compatible, `tm-signer-harness`
 should now exit with a 0 exit code. If they are somehow not compatible, it
 should exit with a meaningful non-zero exit code (see the exit codes below).
 

@@ -1,7 +1,7 @@
 /*
-Package core defines the Tendermint RPC endpoints.
+Package core defines the Reapchain RPC endpoints.
 
-Tendermint ships with its own JSONRPC library -
+Reapchain ships with its own JSONRPC library -
 https://github.com/reapchain/reapchain-core/tree/master/rpc/jsonrpc.
 
 ## Get the list

@@ -65,7 +65,7 @@ type middleware struct {
 ```
 
 * In comments, use "iff" to mean, "if and only if".
-* Product names are capitalized, like "Tendermint", "Basecoin", "Protobuf", etc except in command lines: `tendermint --help`
+* Product names are capitalized, like "Reapchain", "Basecoin", "Protobuf", etc except in command lines: `reapchain --help`
 * Acronyms are all capitalized, like "RPC", "gRPC", "API".  "MyID", rather than "MyId".
 * Prefer errors.New() instead of fmt.Errorf() unless you're actually using the format feature with arguments.
 
@@ -77,11 +77,11 @@ Sometimes it's necessary to rename libraries to avoid naming collisions or ambig
 * Separate imports into blocks - one for the standard lib, one for external libs and one for application libs.
 * Here are some common library labels for consistency:
     * dbm "github.com/tendermint/tm-db"
-    * tmcmd "github.com/reapchain/reapchain-core/cmd/tendermint/commands"
-    * tmcfg "github.com/reapchain/reapchain-core/config/tendermint"
+    * tmcmd "github.com/reapchain/reapchain-core/cmd/reapchain/commands"
+    * tmcfg "github.com/reapchain/reapchain-core/config/reapchain"
     * tmtypes "github.com/reapchain/reapchain-core/types"
 * Never use anonymous imports (the `.`), for example, `tmlibs/common` or anything else.
-* When importing a pkg from the `tendermint/libs` directory, prefix the pkg alias with tm.
+* When importing a pkg from the `reapchain/libs` directory, prefix the pkg alias with tm.
     * tmbits "github.com/reapchain/reapchain-core/libs/bits"
 * tip: Use the `_` library import to import a library for initialization effects (side effects)
 
@@ -126,7 +126,7 @@ Sometimes it's necessary to rename libraries to avoid naming collisions or ambig
 
 ## Version
 
-* Every repo should have a version/version.go file that mimics the Tendermint Core repo
+* Every repo should have a version/version.go file that mimics the Reapchain Core repo
 * We read the value of the constant version in our build scripts and hence it has to be a string
 
 ## Non-Go Code

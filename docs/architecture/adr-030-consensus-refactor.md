@@ -6,13 +6,13 @@ One of the biggest challenges this project faces is to proof that the
 implementations of the specifications are correct, much like we strive to
 formaly verify our alogrithms and protocols we should work towards high
 confidence about the correctness of our program code. One of those is the core
-of Tendermint - Consensus - which currently resides in the `consensus` package.
+of Reapchain - Consensus - which currently resides in the `consensus` package.
 Over time there has been high friction making changes to the package due to the
 algorithm being scattered in a side-effectful container (the current
 `ConsensusState`). In order to test the algorithm a large object-graph needs to
 be set up and even than the non-deterministic parts of the container makes will
 prevent high certainty. Where ideally we have a 1-to-1 representation of the
-[spec](https://github.com/tendermint/spec), ready and easy to test for domain
+[spec](https://github.com/reapchain/spec), ready and easy to test for domain
 experts.
 
 Addresses:

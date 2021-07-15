@@ -11,7 +11,7 @@ import (
 	abci "github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/p2p"
 	p2pmocks "github.com/reapchain/reapchain-core/p2p/mocks"
-	ssproto "github.com/reapchain/reapchain-core/proto/tendermint/statesync"
+	ssproto "github.com/reapchain/reapchain-core/proto/reapchain/statesync"
 	proxymocks "github.com/reapchain/reapchain-core/proxy/mocks"
 )
 

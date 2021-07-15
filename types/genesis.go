@@ -12,7 +12,7 @@ import (
 	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
 	tmjson "github.com/reapchain/reapchain-core/libs/json"
 	tmos "github.com/reapchain/reapchain-core/libs/os"
-	tmproto "github.com/reapchain/reapchain-core/proto/tendermint/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
@@ -25,7 +25,7 @@ const (
 // core types for a genesis definition
 // NOTE: any changes to the genesis definition should
 // be reflected in the documentation:
-// docs/tendermint-core/using-tendermint.md
+// docs/reapchain-core/using-reapchain.md
 
 // GenesisValidator is an initial validator.
 type GenesisValidator struct {
@@ -35,7 +35,7 @@ type GenesisValidator struct {
 	Name    string        `json:"name"`
 }
 
-// GenesisDoc defines the initial conditions for a tendermint blockchain, in particular its validator set.
+// GenesisDoc defines the initial conditions for a reapchain blockchain, in particular its validator set.
 type GenesisDoc struct {
 	GenesisTime     time.Time                `json:"genesis_time"`
 	ChainID         string                   `json:"chain_id"`

@@ -2,7 +2,7 @@
 
 ## Context
 
-Currently, the messages exchanged between tendermint and a (potentially remote) signer/validator, 
+Currently, the messages exchanged between reapchain and a (potentially remote) signer/validator, 
 namely votes, proposals, and heartbeats, are encoded as a JSON string 
 (e.g., via `Vote.SignBytes(...)`) and then 
 signed . JSON encoding is sub-optimal for both, hardware wallets 
@@ -10,7 +10,7 @@ and for usage in ethereum smart contracts. Both is laid down in detail in [issue
 
 Also, there are currently no differences between sign-request and -replies. Also, there is no possibility 
 for a remote signer to include an error code or message in case something went wrong.
-The messages exchanged between tendermint and a remote signer currently live in 
+The messages exchanged between reapchain and a remote signer currently live in 
 [privval/socket.go] and encapsulate the corresponding types in [types].
 
 
@@ -23,7 +23,7 @@ The messages exchanged between tendermint and a remote signer currently live in
 
 - restructure vote, proposal, and heartbeat such that their encoding is easily parseable by 
 hardware devices and smart contracts using a  binary encoding format ([amino] in this case)
-- split up the messages exchanged between tendermint and remote signers into requests and 
+- split up the messages exchanged between reapchain and remote signers into requests and 
 responses (see details below)
 - include an error type in responses
 
@@ -31,7 +31,7 @@ responses (see details below)
 ```
 +--------------+                      +----------------+
 |              |     SignXRequest     |                |
-|Remote signer |<---------------------+  tendermint    |
+|Remote signer |<---------------------+  reapchain    |
 | (e.g. KMS)   |                      |                |
 |              +--------------------->|                |
 +--------------+    SignedXReply      +----------------+
@@ -81,7 +81,7 @@ use to sign the message. This is particularly relevant in the context of the KMS
 but is currently not considered in this ADR. 
 
 
-[amino]: https://github.com/tendermint/go-amino/
+[amino]: https://github.com/reapchain/go-amino/
 
 ### Vote
 
@@ -101,13 +101,13 @@ message Vote {
 }
 
 // this is an amino registered type; like currently privval.SignVoteMsg: 
-// registered with "tendermint/socketpv/SignVoteRequest"
+// registered with "reapchain/socketpv/SignVoteRequest"
 message SignVoteRequest {
    Vote vote
 }
 
 //  amino registered type
-// registered with "tendermint/socketpv/SignedVoteReply"
+// registered with "reapchain/socketpv/SignedVoteReply"
 message SignedVoteReply { 
    Vote      Vote
    Signature Signature 
@@ -141,12 +141,12 @@ message Proposal {
     POLBlockID        BlockID           // << as already defined    
 }
  
-// amino registered with "tendermint/socketpv/SignProposalRequest"
+// amino registered with "reapchain/socketpv/SignProposalRequest"
 message SignProposalRequest {
    Proposal proposal
 }
 
-// amino registered with "tendermint/socketpv/SignProposalReply"
+// amino registered with "reapchain/socketpv/SignProposalReply"
 message SignProposalReply { 
    Prop   Proposal
    Sig    Signature 
@@ -166,12 +166,12 @@ message Heartbeat {
 	Round            int     
 	Sequence         int     
 }
-// amino registered with "tendermint/socketpv/SignHeartbeatRequest"
+// amino registered with "reapchain/socketpv/SignHeartbeatRequest"
 message SignHeartbeatRequest {
    Hb Heartbeat
 }
 
-// amino registered with "tendermint/socketpv/SignHeartbeatReply"
+// amino registered with "reapchain/socketpv/SignHeartbeatReply"
 message SignHeartbeatReply { 
    Hb     Heartbeat
    Sig    Signature 

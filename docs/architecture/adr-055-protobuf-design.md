@@ -7,15 +7,15 @@
 
 ## Context
 
-Currently we use [go-amino](https://github.com/tendermint/go-amino) throughout Tendermint. Amino is not being maintained anymore (April 15, 2020) by the Tendermint team and has been found to have issues:
+Currently we use [go-amino](https://github.com/reapchain/go-amino) throughout Reapchain. Amino is not being maintained anymore (April 15, 2020) by the Reapchain team and has been found to have issues:
 
-- https://github.com/tendermint/go-amino/issues/286
-- https://github.com/tendermint/go-amino/issues/230
-- https://github.com/tendermint/go-amino/issues/121
+- https://github.com/reapchain/go-amino/issues/286
+- https://github.com/reapchain/go-amino/issues/230
+- https://github.com/reapchain/go-amino/issues/121
 
 These are a few of the known issues that users could run into.
 
-Amino enables quick prototyping and development of features. While this is nice, amino does not provide the performance and developer convenience that is expected. For Tendermint to see wider adoption as a BFT protocol engine a transition to an adopted encoding format is needed. Below are some possible options that can be explored.
+Amino enables quick prototyping and development of features. While this is nice, amino does not provide the performance and developer convenience that is expected. For Reapchain to see wider adoption as a BFT protocol engine a transition to an adopted encoding format is needed. Below are some possible options that can be explored.
 
 There are a few options to pick from:
 
@@ -32,7 +32,7 @@ There are a few options to pick from:
 
 ## Decision
 
-Transition Tendermint to Protobuf because of its performance and tooling. The Ecosystem behind Protobuf is vast and has outstanding [support for many languages](https://developers.google.com/protocol-buffers/docs/tutorials).
+Transition Reapchain to Protobuf because of its performance and tooling. The Ecosystem behind Protobuf is vast and has outstanding [support for many languages](https://developers.google.com/protocol-buffers/docs/tutorials).
 
 We will be making this possible by keeping the current types in there current form (handwritten) and creating a `/proto` directory in which all the `.proto` files will live. Where encoding is needed, on disk and over the wire, we will call util functions that will transition the types from handwritten go types to protobuf generated types. This is inline with the recommended file structure from [buf](https://buf.build). You can find more information on this file structure [here](https://buf.build/docs/lint-checkers#file_layout).
 

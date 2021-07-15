@@ -5,7 +5,7 @@ RUN apt-get update && \
   apt-get install -y --no-install-recommends \
   jq bsdmainutils vim-common psmisc netcat curl
 
-# Setup tendermint repo
+# Setup reapchain repo
 ENV REPO $GOPATH/src/github.com/reapchain/reapchain-core
 ENV GOBIN $GOPATH/bin
 WORKDIR $REPO
@@ -21,10 +21,10 @@ RUN make tools
 # install ABCI CLI
 RUN make install_abci
 
-# install Tendermint
+# install Reapchain
 RUN make install
 
-RUN tendermint testnet \
+RUN reapchain testnet \
   --config $REPO/test/docker/config-template.toml \
   --node-dir-prefix="mach" \
   --v=4 \

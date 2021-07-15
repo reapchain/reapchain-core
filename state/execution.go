@@ -10,8 +10,8 @@ import (
 	"github.com/reapchain/reapchain-core/libs/fail"
 	"github.com/reapchain/reapchain-core/libs/log"
 	mempl "github.com/reapchain/reapchain-core/mempool"
-	tmstate "github.com/reapchain/reapchain-core/proto/tendermint/state"
-	tmproto "github.com/reapchain/reapchain-core/proto/tendermint/types"
+	tmstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 	"github.com/reapchain/reapchain-core/proxy"
 	"github.com/reapchain/reapchain-core/types"
 )
@@ -155,7 +155,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	fail.Fail() // XXX
 
-	// validate the validator updates and convert to tendermint types
+	// validate the validator updates and convert to reapchain types
 	abciValUpdates := abciResponses.EndBlock.ValidatorUpdates
 	err = validateValidatorUpdates(abciValUpdates, state.ConsensusParams.Validator)
 	if err != nil {
@@ -467,7 +467,7 @@ func updateState(
 
 // Fire NewBlock, NewBlockHeader.
 // Fire TxEvent for every tx.
-// NOTE: if Tendermint crashes before commit, some or all of these events may be published again.
+// NOTE: if Reapchain crashes before commit, some or all of these events may be published again.
 func fireEvents(
 	logger log.Logger,
 	eventBus types.BlockEventPublisher,

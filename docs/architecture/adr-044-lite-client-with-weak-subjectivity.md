@@ -10,10 +10,10 @@ The concept of light clients was introduced in the Bitcoin white paper. It
 describes a watcher of distributed consensus process that only validates the
 consensus algorithm and not the state machine transactions within.
 
-Tendermint light clients allow bandwidth & compute-constrained devices, such as smartphones, low-power embedded chips, or other blockchains to
-efficiently verify the consensus of a Tendermint blockchain. This forms the
+Reapchain light clients allow bandwidth & compute-constrained devices, such as smartphones, low-power embedded chips, or other blockchains to
+efficiently verify the consensus of a Reapchain blockchain. This forms the
 basis of safe and efficient state synchronization for new network nodes and
-inter-blockchain communication (where a light client of one Tendermint instance
+inter-blockchain communication (where a light client of one Reapchain instance
 runs in another chain's state machine).
 
 In a network that is expected to reliably punish validators for misbehavior
@@ -31,7 +31,7 @@ fork the network at some point in its prior history. See Vitalik’s post at
 [Proof of Stake: How I Learned to Love Weak
 Subjectivity](https://blog.ethereum.org/2014/11/25/proof-stake-learned-love-weak-subjectivity/).
 
-Currently, Tendermint provides a lite client implementation in the
+Currently, Reapchain provides a lite client implementation in the
 [light](https://github.com/reapchain/reapchain-core/tree/master/light) package. This
 lite client implements a bisection algorithm that tries to use a binary search
 to find the minimum number of block headers where the validator set voting
@@ -40,7 +40,7 @@ subjectivity at this time. The Cosmos SDK also does not support counterfactual
 slashing, nor does the lite client have any capacity to report evidence making
 these systems *theoretically unsafe*.
 
-NOTE: Tendermint provides a somewhat different (stronger) light client model
+NOTE: Reapchain provides a somewhat different (stronger) light client model
 than Bitcoin under eclipse, since the eclipsing node(s) can only fool the light
 client if they have two-thirds of the private keys from the last root-of-trust.
 
@@ -83,8 +83,8 @@ of roots-of-trust (e.g. on the Cosmos Hub) seems likely in the future.
 The linear verification algorithm requires downloading all headers
 between the `TrustHeight` and the `LatestHeight`. The lite client downloads the
 full header for the provided `TrustHeight` and then proceeds to download `N+1`
-headers and applies the [Tendermint validation
-rules](https://docs.tendermint.com/master/spec/blockchain/blockchain.html#validation)
+headers and applies the [Reapchain validation
+rules](https://docs.reapchain.com/master/spec/blockchain/blockchain.html#validation)
 to each block.
 
 ### Bisecting Verification
@@ -119,7 +119,7 @@ network usage.
 ---
 
 Check out the formal specification
-[here](https://docs.tendermint.com/master/spec/consensus/light-client.html).
+[here](https://docs.reapchain.com/master/spec/consensus/light-client.html).
 
 ## Status
 

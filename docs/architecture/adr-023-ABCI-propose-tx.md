@@ -7,7 +7,7 @@
 ## Context
 
 [#1776](https://github.com/reapchain/reapchain-core/issues/1776) was
-opened in relation to implementation of a Plasma child chain using Tendermint
+opened in relation to implementation of a Plasma child chain using Reapchain
 Core as consensus/replication engine.
 
 Due to the requirements of [Minimal Viable Plasma (MVP)](https://ethresear.ch/t/minimal-viable-plasma/426) and [Plasma Cash](https://ethresear.ch/t/plasma-cash-plasma-with-much-less-per-user-data-checking/1298), it is necessary for ABCI apps to have a mechanism to handle the following cases (more may emerge in the near future):
@@ -53,7 +53,7 @@ blocks and other "internal" transactions. These "virtual" blocks are then broadc
 to the Root Chain.
 
 This naive approach is, however, fundamentally flawed, as it by definition
-diverges from the canonical chain maintained by Tendermint. This is further
+diverges from the canonical chain maintained by Reapchain. This is further
 exacerbated if the business logic for generating such transactions is
 potentially non-deterministic, as this should not even be done in
 `Begin/EndBlock`, which may, as a result, break consensus guarantees.
@@ -61,19 +61,19 @@ potentially non-deterministic, as this should not even be done in
 Additinoally, this has serious implications for "watchers" - independent third parties,
 or even an auxilliary blockchain, responsible for ensuring that blocks recorded
 on the Root Chain are consistent with the Plasma chain's. Since, in this case,
-the Plasma chain is inconsistent with the canonical one maintained by Tendermint
+the Plasma chain is inconsistent with the canonical one maintained by Reapchain
 Core, it seems that there exists no compact means of verifying the legitimacy of
 the Plasma chain without replaying every state transition from genesis (!).
 
-### Solution 2: Broadcast to Tendermint Core from ABCI app
+### Solution 2: Broadcast to Reapchain Core from ABCI app
 
-This approach is inspired by `tendermint`, in which Ethereum transactions are
-relayed to Tendermint Core. It requires the app to maintain a client connection
+This approach is inspired by `reapchain`, in which Ethereum transactions are
+relayed to Reapchain Core. It requires the app to maintain a client connection
 to the consensus engine.
 
 Whenever an "internal" transaction needs to be created, the proposer of the
-current block broadcasts the transaction or transactions to Tendermint as
-needed in order to ensure that the Tendermint chain and Plasma chain are
+current block broadcasts the transaction or transactions to Reapchain as
+needed in order to ensure that the Reapchain chain and Plasma chain are
 completely consistent.
 
 This allows "internal" transactions to pass through the full consensus
@@ -85,9 +85,9 @@ current proposer is passed to `BeginBlock`.
 
 It is much easier to relay these transactions directly to the Root
 Chain smart contract and/or maintain a "compressed" auxiliary chain comprised
-of Plasma-friendly blocks that 100% reflect the canonical (Tendermint)
+of Plasma-friendly blocks that 100% reflect the canonical (Reapchain)
 blockchain. Unfortunately, this approach not idiomatic (i.e., utilises the
-Tendermint consensus engine in unintended ways). Additionally, it does not
+Reapchain consensus engine in unintended ways). Additionally, it does not
 allow the application developer to:
 
 - Control the _ordering_ of transactions in the proposed block (e.g., index 0,
@@ -161,7 +161,7 @@ Pending
 
 ### Positive
 
-- Tendermint ABCI apps will be able to function as minimally viable Plasma chains.
+- Reapchain ABCI apps will be able to function as minimally viable Plasma chains.
 - It will thereby become possible to add an extension to `cosmos-sdk` to enable
   ABCI apps to support both IBC and Plasma, maximising interop.
 - ABCI apps will have great control and flexibility in managing blockchain state,

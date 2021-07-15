@@ -31,7 +31,7 @@ of MaxDataBytes in addition to, or instead of, MaxBytes.
 
 MaxBytes provides a clear limit on the total size of a block that requires no
 additional calculation if you want to use it to bound resource usage, and there
-has been considerable discussions about optimizing tendermint around 1MB blocks.
+has been considerable discussions about optimizing reapchain around 1MB blocks.
 Regardless, we need some maximum on the size of a block so we can avoid
 unmarshalling blocks that are too big during the consensus, and it seems more
 straightforward to provide a single fixed number for this rather than a

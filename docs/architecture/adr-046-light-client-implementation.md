@@ -109,7 +109,7 @@ type Store interface {
 ```
 
 At the moment, the only implementation is the `db` store (wrapper around the KV
-database, used in Tendermint). In the future, remote adapters are possible
+database, used in Reapchain). In the future, remote adapters are possible
 (e.g. `Postgresql`).
 
 ```go
@@ -146,7 +146,7 @@ _Fig. 1: Differences between recursive and non-recursive bisections_
 ![Fig. 1](./img/adr-046-fig1.png)
 
 Specification of the non-recursive bisection can be found
-[here](https://github.com/tendermint/spec/blob/zm_non-recursive-verification/spec/consensus/light-client/non-recursive-verification.md).
+[here](https://github.com/reapchain/spec/blob/zm_non-recursive-verification/spec/consensus/light-client/non-recursive-verification.md).
 
 ## Status
 

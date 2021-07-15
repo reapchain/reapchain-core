@@ -4,8 +4,8 @@
 *.bak
 .DS_Store
 build/*
-rpc/test/.tendermint
-.tendermint
+rpc/test/.reapchain
+.reapchain
 remote_dump
 .revision
 vendor
@@ -35,7 +35,7 @@ scripts/cutWALUntil/cutWALUntil
 libs/pubsub/query/fuzz_test/output
 shunit2
 
-.tendermint-lite
+.reapchain-lite
 addrbook.json
 
 */vendor

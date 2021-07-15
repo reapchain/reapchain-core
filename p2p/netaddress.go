@@ -1,4 +1,4 @@
-// Modified for Tendermint
+// Modified for Reapchain
 // Originally Copyright (c) 2013-2014 Conformal Systems LLC.
 // https://github.com/conformal/btcd/blob/master/LICENSE
 
@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	tmp2p "github.com/reapchain/reapchain-core/proto/tendermint/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
 )
 
 // EmptyNetAddress defines the string representation of an empty NetAddress

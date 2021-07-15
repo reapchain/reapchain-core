@@ -9,7 +9,7 @@ account. Same for fetching. The user may want to **fetch transactions based on
 some filter** (rather than fetching all the blocks). For example, I want to get
 all transactions for a particular account in the last two weeks (`tx's block time >= '2017-06-05'`).
 
-Now you can't even subscribe to "all txs" in Tendermint.
+Now you can't even subscribe to "all txs" in Reapchain.
 
 The goal is a simple and easy to use API for doing that.
 

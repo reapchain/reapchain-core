@@ -3,7 +3,7 @@
 ## Changelog
 
 * 27-11-2019: Initial draft
-* 13-01-2020: Separate into 2 ADR, This ADR will only cover Double signing Protection and ADR-052 handle Tendermint Mode
+* 13-01-2020: Separate into 2 ADR, This ADR will only cover Double signing Protection and ADR-052 handle Reapchain Mode
 * 22-01-2020: change the title from "Double signing Protection" to "Double Signing Risk Reduction"
 
 ## Context
@@ -28,7 +28,7 @@ We would like to suggest a double signing risk reduction method.
 - Configuration
     - We would like to suggest by introducing `double_sign_check_height` parameter in `config.toml` and cli, how many blocks state machine looks back to check votes
     - <span v-pre>`double_sign_check_height = {{ .Consensus.DoubleSignCheckHeight }}`</span> in `config.toml`
-    - `tendermint node --consensus.double_sign_check_height` in cli
+    - `reapchain node --consensus.double_sign_check_height` in cli
     - State machine ignore checking procedure when `double_sign_check_height == 0`
 
 ## Status

@@ -22,7 +22,7 @@ import (
 
 // Automatically getting new headers and verifying them.
 func ExampleClient_Update() {
-	// give Tendermint time to generate some blocks
+	// give Reapchain time to generate some blocks
 	time.Sleep(5 * time.Second)
 
 	dbDir, err := ioutil.TempDir("", "light-client-example")
@@ -90,7 +90,7 @@ func ExampleClient_Update() {
 
 // Manually getting light blocks and verifying them.
 func ExampleClient_VerifyLightBlockAtHeight() {
-	// give Tendermint time to generate some blocks
+	// give Reapchain time to generate some blocks
 	time.Sleep(5 * time.Second)
 
 	dbDir, err := ioutil.TempDir("", "light-client-example")
@@ -156,13 +156,13 @@ func ExampleClient_VerifyLightBlockAtHeight() {
 }
 
 func TestMain(m *testing.M) {
-	// start a tendermint node (and kvstore) in the background to test against
+	// start a reapchain node (and kvstore) in the background to test against
 	app := kvstore.NewApplication()
-	node := rpctest.StartTendermint(app, rpctest.SuppressStdout)
+	node := rpctest.StartReapchain(app, rpctest.SuppressStdout)
 
 	code := m.Run()
 
 	// and shut down proper at the end
-	rpctest.StopTendermint(node)
+	rpctest.StopReapchain(node)
 	os.Exit(code)
 }

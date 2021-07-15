@@ -56,7 +56,7 @@ BREAKING CHANGES
 
 BREAKING CHANGES
 
-- Update Amino names from "com.tendermint/..." to "tendermint/"
+- Update Amino names from "com.reapchain/..." to "reapchain/"
 
 ## 0.5.0 (March 2, 2018)
 
@@ -138,7 +138,7 @@ BREAKING CHANGES:
 
 FEATURES:
 
-- `github.com/tendermint/go-keys -> github.com/tendermint/go-crypto/keys` - command and lib for generating and managing encrypted keys
+- `github.com/reapchain/go-keys -> github.com/reapchain/go-crypto/keys` - command and lib for generating and managing encrypted keys
 - [hd] New function `WIFFromPrivKeyBytes(privKeyBytes []byte, compress bool) string`
 - Changes to `PrivKey`, `PubKey`, and `Signature` (denoted `Xxx` below):
   - Expose a new method `Unwrap() XxxInner` on the `Xxx` struct which returns the corresponding `XxxInner` interface

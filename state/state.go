@@ -9,9 +9,9 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	tmstate "github.com/reapchain/reapchain-core/proto/tendermint/state"
-	tmproto "github.com/reapchain/reapchain-core/proto/tendermint/types"
-	tmversion "github.com/reapchain/reapchain-core/proto/tendermint/version"
+	tmstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain/version"
 	"github.com/reapchain/reapchain-core/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 	"github.com/reapchain/reapchain-core/version"
@@ -38,7 +38,7 @@ var InitStateVersion = tmstate.Version{
 
 //-----------------------------------------------------------------------------
 
-// State is a short description of the latest committed block of the Tendermint consensus.
+// State is a short description of the latest committed block of the Reapchain consensus.
 // It keeps all information necessary to validate new blocks,
 // including the last validator set and the consensus params.
 // All fields are exposed so the struct can be easily serialized,

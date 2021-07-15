@@ -4,8 +4,8 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	abci "github.com/reapchain/reapchain-core/abci/types"
-	tmstate "github.com/reapchain/reapchain-core/proto/tendermint/state"
-	tmproto "github.com/reapchain/reapchain-core/proto/tendermint/types"
+	tmstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

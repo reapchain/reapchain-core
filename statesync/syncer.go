@@ -11,7 +11,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/log"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	"github.com/reapchain/reapchain-core/p2p"
-	ssproto "github.com/reapchain/reapchain-core/proto/tendermint/statesync"
+	ssproto "github.com/reapchain/reapchain-core/proto/reapchain/statesync"
 	"github.com/reapchain/reapchain-core/proxy"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"

@@ -20,7 +20,7 @@ import (
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
 	"github.com/reapchain/reapchain-core/p2p"
 	"github.com/reapchain/reapchain-core/p2p/mock"
-	memproto "github.com/reapchain/reapchain-core/proto/tendermint/mempool"
+	memproto "github.com/reapchain/reapchain-core/proto/reapchain/mempool"
 	"github.com/reapchain/reapchain-core/proxy"
 	"github.com/reapchain/reapchain-core/types"
 )

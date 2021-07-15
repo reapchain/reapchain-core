@@ -17,7 +17,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/merkle"
 	"github.com/reapchain/reapchain-core/libs/bytes"
 	lcmock "github.com/reapchain/reapchain-core/light/rpc/mocks"
-	tmcrypto "github.com/reapchain/reapchain-core/proto/tendermint/crypto"
+	tmcrypto "github.com/reapchain/reapchain-core/proto/reapchain/crypto"
 	rpcmock "github.com/reapchain/reapchain-core/rpc/client/mocks"
 	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
 	"github.com/reapchain/reapchain-core/types"

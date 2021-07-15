@@ -67,20 +67,20 @@ possible.
 
 To change the validator set, applications can return a list of validator updates
 with ResponseEndBlock. In these updates, the public key _must_ be included,
-because Tendermint requires the public key to verify validator signatures. This
+because Reapchain requires the public key to verify validator signatures. This
 means ABCI developers have to work with PubKeys. That said, it would also be
 convenient to work with address information, and for it to be simple to do so.
 
 ### AbsentValidators
 
-Tendermint also provides a list of validators in BeginBlock who did not sign the
+Reapchain also provides a list of validators in BeginBlock who did not sign the
 last block. This allows applications to reflect availability behaviour in the
 application, for instance by punishing validators for not having votes included
 in commits.
 
 ### InitChain
 
-Tendermint passes in a list of validators here, and nothing else. It would
+Reapchain passes in a list of validators here, and nothing else. It would
 benefit the application to be able to control the initial validator set. For
 instance the genesis file could include application-based information about the
 initial validator set that the application could process to determine the
@@ -229,9 +229,9 @@ message ResponseInitChain {
 
 ### Header
 
-Now that Tendermint Amino will be compatible with proto3, the Header in ABCI
-should exactly match the Tendermint header - they will then be encoded
-identically in ABCI and in Tendermint Core.
+Now that Reapchain Amino will be compatible with proto3, the Header in ABCI
+should exactly match the Reapchain header - they will then be encoded
+identically in ABCI and in Reapchain Core.
 
 ## Status
 
@@ -242,7 +242,7 @@ Accepted.
 ### Positive
 
 - Easier for developers to build on the ABCI
-- ABCI and Tendermint headers are identically serialized
+- ABCI and Reapchain headers are identically serialized
 
 ### Negative
 
@@ -258,14 +258,14 @@ Accepted.
 ## References
 
 - [ABCI v0.10.3 Specification (before this
-  proposal)](https://github.com/tendermint/abci/blob/v0.10.3/specification.rst)
+  proposal)](https://github.com/reapchain/abci/blob/v0.10.3/specification.rst)
 - [ABCI v0.11.0 Specification (implementing first draft of this
-  proposal)](https://github.com/tendermint/abci/blob/v0.11.0/specification.md)
-- [Ed25519 addresses](https://github.com/tendermint/go-crypto/issues/103)
+  proposal)](https://github.com/reapchain/abci/blob/v0.11.0/specification.md)
+- [Ed25519 addresses](https://github.com/reapchain/go-crypto/issues/103)
 - [InitChain contains the
-  Genesis](https://github.com/tendermint/abci/issues/216)
+  Genesis](https://github.com/reapchain/abci/issues/216)
 - [PubKeys](https://github.com/reapchain/reapchain-core/issues/1524)
 - [Notes on
   Header](https://github.com/reapchain/reapchain-core/issues/1605)
-- [Gogoproto issues](https://github.com/tendermint/abci/issues/256)
-- [Absent Validators](https://github.com/tendermint/abci/issues/231)
+- [Gogoproto issues](https://github.com/reapchain/abci/issues/256)
+- [Absent Validators](https://github.com/reapchain/abci/issues/231)

@@ -4,7 +4,7 @@ order: 3
 
 # Terraform & Ansible
 
-> Note: These commands/files are not being maintained by the tendermint team currently. Please use them carefully.
+> Note: These commands/files are not being maintained by the reapchain team currently. Please use them carefully.
 
 Automated deployments are done using
 [Terraform](https://www.terraform.io/) to create servers on Digital
@@ -65,7 +65,7 @@ switch to this directory to run ansible
 
 There are several roles that are self-explanatory:
 
-First, we configure our droplets by specifying the paths for tendermint
+First, we configure our droplets by specifying the paths for reapchain
 (`BINARY`) and the node files (`CONFIGDIR`). The latter expects any
 number of directories named `node0, node1, ...` and so on (equal to the
 number of droplets created).
@@ -73,16 +73,16 @@ number of droplets created).
 To create the node files run:
 
 ```sh
-tendermint testnet
+reapchain testnet
 ```
 
 Then, to configure our droplets run:
 
 ```sh
-ansible-playbook -i inventory/digital_ocean.py -l sentrynet config.yml -e BINARY=$GOPATH/src/github.com/reapchain/reapchain-core/build/tendermint -e CONFIGDIR=$GOPATH/src/github.com/reapchain/reapchain-core/networks/remote/ansible/mytestnet
+ansible-playbook -i inventory/digital_ocean.py -l sentrynet config.yml -e BINARY=$GOPATH/src/github.com/reapchain/reapchain-core/build/reapchain -e CONFIGDIR=$GOPATH/src/github.com/reapchain/reapchain-core/networks/remote/ansible/mytestnet
 ```
 
-Voila! All your droplets now have the `tendermint` binary and required
+Voila! All your droplets now have the `reapchain` binary and required
 configuration files to run a testnet.
 
 Next, we run the install role:
@@ -92,7 +92,7 @@ ansible-playbook -i inventory/digital_ocean.py -l sentrynet install.yml
 ```
 
 which as you'll see below, executes
-`tendermint node --proxy_app=kvstore` on all droplets. Although we'll
+`reapchain node --proxy_app=kvstore` on all droplets. Although we'll
 soon be modifying this role and running it again, this first execution
 allows us to get each `node_info.id` that corresponds to each
 `node_info.listen_addr`. (This part will be automated in the future). In
@@ -105,7 +105,7 @@ Next, open `roles/install/templates/systemd.service.j2` and look for the
 line `ExecStart` which should look something like:
 
 ```sh
-ExecStart=/usr/bin/tendermint node --proxy_app=kvstore
+ExecStart=/usr/bin/reapchain node --proxy_app=kvstore
 ```
 
 and add the `--p2p.persistent_peers` flag with the relevant information
@@ -122,7 +122,7 @@ Restart=on-failure
 User={{service}}
 Group={{service}}
 PermissionsStartOnly=true
-ExecStart=/usr/bin/tendermint node --proxy_app=kvstore --p2p.persistent_peers=167b80242c300bf0ccfb3ced3dec60dc2a81776e@165.227.41.206:26656,3c7a5920811550c04bf7a0b2f1e02ab52317b5e6@165.227.43.146:26656,303a1a4312c30525c99ba66522dd81cca56a361a@159.89.115.32:26656,b686c2a7f4b1b46dca96af3a0f31a6a7beae0be4@159.89.119.125:26656
+ExecStart=/usr/bin/reapchain node --proxy_app=kvstore --p2p.persistent_peers=167b80242c300bf0ccfb3ced3dec60dc2a81776e@165.227.41.206:26656,3c7a5920811550c04bf7a0b2f1e02ab52317b5e6@165.227.43.146:26656,303a1a4312c30525c99ba66522dd81cca56a361a@159.89.115.32:26656,b686c2a7f4b1b46dca96af3a0f31a6a7beae0be4@159.89.119.125:26656
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGTERM
 
@@ -142,7 +142,7 @@ Finally, we run the install role again:
 ansible-playbook -i inventory/digital_ocean.py -l sentrynet install.yml
 ```
 
-to re-run `tendermint node` with the new flag, on all droplets. The
+to re-run `reapchain node` with the new flag, on all droplets. The
 `latest_block_hash` should now be changing and `latest_block_height`
 increasing. Your testnet is now up and running :)
 

@@ -2,13 +2,13 @@
 
 ## Context
 
-Tendermint is a cryptographic protocol that uses and composes a variety of cryptographic primitives.
+Reapchain is a cryptographic protocol that uses and composes a variety of cryptographic primitives.
 
-After nearly 4 years of development, Tendermint has recently undergone multiple security reviews to search for vulnerabilities and to assess the the use and composition of cryptographic primitives.
+After nearly 4 years of development, Reapchain has recently undergone multiple security reviews to search for vulnerabilities and to assess the the use and composition of cryptographic primitives.
 
 ### Hash Functions
 
-Tendermint uses RIPEMD160 universally as a hash function, most notably in its Merkle tree implementation.
+Reapchain uses RIPEMD160 universally as a hash function, most notably in its Merkle tree implementation.
 
 RIPEMD160 was chosen because it provides the shortest fingerprint that is long enough to be considered secure (ie. birthday bound of 80-bits).
 It was also developed in the open academic community, unlike NSA-designed algorithms like SHA256.
@@ -17,7 +17,7 @@ That said, the cryptographic community appears to unanimously agree on the secur
 
 ### Merkle Trees
 
-Tendermint uses a simple Merkle tree to compute digests of large structures like transaction batches
+Reapchain uses a simple Merkle tree to compute digests of large structures like transaction batches
 and even blockchain headers. The Merkle tree length prefixes byte arrays before concatenating and hashing them.
 It uses RIPEMD160.
 
@@ -29,7 +29,7 @@ than more modern functions like SHA256 or Blake2.
 
 ### Authenticated Encryption
 
-Tendermint P2P connections use authenticated encryption to provide privacy and authentication in the communications.
+Reapchain P2P connections use authenticated encryption to provide privacy and authentication in the communications.
 This is done using the simple Station-to-Station protocol with the NaCL Ed25519 library.
 
 While there have been no vulnerabilities found in the implementation, there are some concerns:

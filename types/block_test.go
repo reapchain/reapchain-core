@@ -21,8 +21,8 @@ import (
 	"github.com/reapchain/reapchain-core/libs/bits"
 	"github.com/reapchain/reapchain-core/libs/bytes"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	tmproto "github.com/reapchain/reapchain-core/proto/tendermint/types"
-	tmversion "github.com/reapchain/reapchain-core/proto/tendermint/version"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain/version"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 	"github.com/reapchain/reapchain-core/version"
 )

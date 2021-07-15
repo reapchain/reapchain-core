@@ -12,15 +12,15 @@ Initial conversation: https://github.com/reapchain/reapchain-core/issues/2901
 
 Some applications can handle transactions in parallel, or at least some
 part of tx processing can be parallelized. Now it is not possible for developer
-to execute txs in parallel because Tendermint delivers them consequentially.
+to execute txs in parallel because Reapchain delivers them consequentially.
 
 ## Decision
 
-Now Tendermint have `BeginBlock`, `EndBlock`, `Commit`, `DeliverTx` steps
+Now Reapchain have `BeginBlock`, `EndBlock`, `Commit`, `DeliverTx` steps
 while executing block. This doc proposes merging this steps into one `DeliverBlock`
 step. It will allow developers of applications to decide how they want to
 execute transactions (in parallel or consequentially). Also it will simplify and
-speed up communications between application and Tendermint.
+speed up communications between application and Reapchain.
 
 As @jaekwon [mentioned](https://github.com/reapchain/reapchain-core/issues/2901#issuecomment-477746128)
 in discussion not all application will benefit from this solution. In some cases,
@@ -39,7 +39,7 @@ type Application interface {
     // Info and Mempool methods...
 
     // Consensus Connection
-    InitChain(RequestInitChain) ResponseInitChain    // Initialize blockchain with validators and other info from TendermintCore
+    InitChain(RequestInitChain) ResponseInitChain    // Initialize blockchain with validators and other info from ReapchainCore
     BeginBlock(RequestBeginBlock) ResponseBeginBlock // Signals the beginning of a block
     DeliverTx(tx []byte) ResponseDeliverTx           // Deliver a tx for full processing
     EndBlock(RequestEndBlock) ResponseEndBlock       // Signals the end of a block, returns changes to the validator set
@@ -54,7 +54,7 @@ type Application interface {
     // Info and Mempool methods...
 
     // Consensus Connection
-    InitChain(RequestInitChain) ResponseInitChain           // Initialize blockchain with validators and other info from TendermintCore
+    InitChain(RequestInitChain) ResponseInitChain           // Initialize blockchain with validators and other info from ReapchainCore
     DeliverBlock(RequestDeliverBlock) ResponseDeliverBlock  // Deliver full block
     Commit() ResponseCommit                                 // Commit the state and return the application Merkle root hash
 }
@@ -93,8 +93,8 @@ In review
 will need to implement only 3)
 - txs can be handled in parallel
 - simpler interface
-- faster communications between Tendermint and application
+- faster communications between Reapchain and application
 
 ### Negative
 
-- Tendermint should now support 2 kinds of ABCI
+- Reapchain should now support 2 kinds of ABCI

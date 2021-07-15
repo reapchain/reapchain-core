@@ -21,7 +21,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/service"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	"github.com/reapchain/reapchain-core/libs/timer"
-	tmp2p "github.com/reapchain/reapchain-core/proto/tendermint/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
 )
 
 const (

@@ -1,5 +1,5 @@
 # tools
 
-Tools for working with Tendermint and associated technologies. Documentation for
-these tools can be found online in the [Tendermint tools
-documentation](https://docs.tendermint.com/master/tools/).
+Tools for working with Reapchain and associated technologies. Documentation for
+these tools can be found online in the [Reapchain tools
+documentation](https://docs.reapchain.com/master/tools/).

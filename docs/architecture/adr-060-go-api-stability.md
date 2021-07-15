@@ -10,7 +10,7 @@
 
 ## Context
 
-With the release of Tendermint 1.0 we will adopt [semantic versioning](https://semver.org). One major implication is a guarantee that we will not make backwards-incompatible changes until Tendermint 2.0 (except in pre-release versions). In order to provide this guarantee for our Go API, we must clearly define which of our APIs are public, and what changes are considered backwards-compatible.
+With the release of Reapchain 1.0 we will adopt [semantic versioning](https://semver.org). One major implication is a guarantee that we will not make backwards-incompatible changes until Reapchain 2.0 (except in pre-release versions). In order to provide this guarantee for our Go API, we must clearly define which of our APIs are public, and what changes are considered backwards-compatible.
 
 Currently, we list packages that we consider public in our [README](https://github.com/reapchain/reapchain-core#versioning), but since we are still at version 0.x we do not provide any backwards compatiblity guarantees at all.
 
@@ -34,15 +34,15 @@ Currently, we list packages that we consider public in our [README](https://gith
 
 ## Alternative Approaches
 
-- Split all public APIs out to separate Go modules in separate Git repositories, and consider all Tendermint code internal and not subject to API backwards compatibility at all. This was rejected, since it has been attempted by the Tendermint project earlier, resulting in too much dependency management overhead.
+- Split all public APIs out to separate Go modules in separate Git repositories, and consider all Reapchain code internal and not subject to API backwards compatibility at all. This was rejected, since it has been attempted by the Reapchain project earlier, resulting in too much dependency management overhead.
 
 - Simply document which APIs are public and which are private. This is the current approach, but users should not be expected to self-enforce this, the documentation is not always up-to-date, and external projects will often end up depending on internal code anyway.
 
 ## Decision
 
-From Tendermint 1.0, all internal code (except private APIs) will be placed in a root-level [`internal` directory](https://golang.org/cmd/go/#hdr-Internal_Directories), which the Go compiler will block for use by external projects. All exported items outside of the `internal` directory are considered a public API and subject to backwards compatibility guarantees, except files ending in `_test.go`.
+From Reapchain 1.0, all internal code (except private APIs) will be placed in a root-level [`internal` directory](https://golang.org/cmd/go/#hdr-Internal_Directories), which the Go compiler will block for use by external projects. All exported items outside of the `internal` directory are considered a public API and subject to backwards compatibility guarantees, except files ending in `_test.go`.
 
-The `crypto` package may be split out to a separate module in a separate repo. This is the main general-purpose package used by external projects, and is the only Tendermint dependency in e.g. IAVL which can cause some problems for projects depending on both IAVL and Tendermint. This will be decided after further discussion.
+The `crypto` package may be split out to a separate module in a separate repo. This is the main general-purpose package used by external projects, and is the only Reapchain dependency in e.g. IAVL which can cause some problems for projects depending on both IAVL and Reapchain. This will be decided after further discussion.
 
 The `tm-db` package will remain a separate module in a separate repo. The `crypto` package may possibly be split out, pending further discussion, as this is the main general-purpose package used by other projects.
 
@@ -65,12 +65,12 @@ The following is the minimum set of public APIs that will be included in 1.0, in
 
 We may offer additional APIs as well, following further discussions internally and with other stakeholders. However, public APIs for providing custom components (e.g. reactors and mempools) are not planned for 1.0, but may be added in a later 1.x version if this is something we want to offer.
 
-For comparison, the following are the number of Tendermint imports in the Cosmos SDK (excluding tests), which should be mostly satisfied by the planned APIs.
+For comparison, the following are the number of Reapchain imports in the Cosmos SDK (excluding tests), which should be mostly satisfied by the planned APIs.
 
 ```
       1 github.com/reapchain/reapchain-core/abci/server
      73 github.com/reapchain/reapchain-core/abci/types
-      2 github.com/reapchain/reapchain-core/cmd/tendermint/commands
+      2 github.com/reapchain/reapchain-core/cmd/reapchain/commands
       7 github.com/reapchain/reapchain-core/config
      68 github.com/reapchain/reapchain-core/crypto
       1 github.com/reapchain/reapchain-core/crypto/armor
@@ -95,10 +95,10 @@ For comparison, the following are the number of Tendermint imports in the Cosmos
       3 github.com/reapchain/reapchain-core/node
       5 github.com/reapchain/reapchain-core/p2p
       4 github.com/reapchain/reapchain-core/privval
-     10 github.com/reapchain/reapchain-core/proto/tendermint/crypto
-      1 github.com/reapchain/reapchain-core/proto/tendermint/libs/bits
-     24 github.com/reapchain/reapchain-core/proto/tendermint/types
-      3 github.com/reapchain/reapchain-core/proto/tendermint/version
+     10 github.com/reapchain/reapchain-core/proto/reapchain/crypto
+      1 github.com/reapchain/reapchain-core/proto/reapchain/libs/bits
+     24 github.com/reapchain/reapchain-core/proto/reapchain/types
+      3 github.com/reapchain/reapchain-core/proto/reapchain/version
       2 github.com/reapchain/reapchain-core/proxy
       3 github.com/reapchain/reapchain-core/rpc/client
       1 github.com/reapchain/reapchain-core/rpc/client/http
@@ -112,7 +112,7 @@ For comparison, the following are the number of Tendermint imports in the Cosmos
 
 ### Backwards-Compatible Changes
 
-In Go, [almost all API changes are backwards-incompatible](https://blog.golang.org/module-compatibility) and thus exported items in public APIs generally cannot be changed until Tendermint 2.0. The only backwards-compatible changes we can make to public APIs are:
+In Go, [almost all API changes are backwards-incompatible](https://blog.golang.org/module-compatibility) and thus exported items in public APIs generally cannot be changed until Reapchain 2.0. The only backwards-compatible changes we can make to public APIs are:
 
 - Adding a package.
 
@@ -142,11 +142,11 @@ The above changes can still break programs in a few ways - these are _not_ consi
 
 - If a program uses unkeyed struct literals (e.g. `Foo{"bar", "baz"}`) and we add fields or change the field order, the program will no longer compile or may have logic errors.
 
-- If a program embeds two structs in a struct, and we add a new field or method to an embedded Tendermint struct which also exists in the other embedded struct, the program will no longer compile.
+- If a program embeds two structs in a struct, and we add a new field or method to an embedded Reapchain struct which also exists in the other embedded struct, the program will no longer compile.
 
-- If a program compares two structs (e.g. with `==`), and we add a new field of an incomparable type (slice, map, func, or struct that contains these) to a Tendermint struct which is compared, the program will no longer compile.
+- If a program compares two structs (e.g. with `==`), and we add a new field of an incomparable type (slice, map, func, or struct that contains these) to a Reapchain struct which is compared, the program will no longer compile.
 
-- If a program assigns a Tendermint function to an identifier, and we add a variadic parameter to the function signature, the program will no longer compile.
+- If a program assigns a Reapchain function to an identifier, and we add a variadic parameter to the function signature, the program will no longer compile.
 
 ### Strategies for API Evolution
 

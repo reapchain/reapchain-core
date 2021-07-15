@@ -10,13 +10,13 @@ Author: @zramsay (Zach Ramsay)
 
 ## Context
 
-The Tendermint documentation has undergone several changes until settling on the current model. Originally, the documentation was hosted on the website and had to be updated asynchronously from the code. Along with the other repositories requiring documentation, the whole stack moved to using Read The Docs to automatically generate, publish, and host the documentation. This, however, was insufficient; the RTD site had advertisement, it wasn't easily accessible to devs, didn't collect metrics, was another set of external links, etc.
+The Reapchain documentation has undergone several changes until settling on the current model. Originally, the documentation was hosted on the website and had to be updated asynchronously from the code. Along with the other repositories requiring documentation, the whole stack moved to using Read The Docs to automatically generate, publish, and host the documentation. This, however, was insufficient; the RTD site had advertisement, it wasn't easily accessible to devs, didn't collect metrics, was another set of external links, etc.
 
 ## Decision
 
 For two reasons, the decision was made to use VuePress:
 
-1) ability to get metrics (implemented on both Tendermint and SDK)
+1) ability to get metrics (implemented on both Reapchain and SDK)
 2) host the documentation on the website as a `/docs` endpoint.
 
 This is done while maintaining synchrony between the docs and code, i.e., the website is built whenever the docs are updated.
@@ -27,7 +27,7 @@ The two points above have been implemented; the `config.js` has a Google Analyti
 
 ## Consequences
 
-Because of the organizational seperation between Tendermint & Cosmos, there is a challenge of "what goes where" for certain aspects of documentation.
+Because of the organizational seperation between Reapchain & Cosmos, there is a challenge of "what goes where" for certain aspects of documentation.
 
 ### Positive
 

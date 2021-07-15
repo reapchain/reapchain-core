@@ -2,37 +2,37 @@
 
 ## Supported tags and respective `Dockerfile` links
 
-DockerHub tags for official releases are [here](https://hub.docker.com/r/tendermint/tendermint/tags/). The "latest" tag will always point to the highest version number.
+DockerHub tags for official releases are [here](https://hub.docker.com/r/reapchain/reapchain/tags/). The "latest" tag will always point to the highest version number.
 
 Official releases can be found [here](https://github.com/reapchain/reapchain-core/releases).
 
-The Dockerfile for tendermint is not expected to change in the near future. The master file used for all builds can be found [here](https://raw.githubusercontent.com/tendermint/tendermint/master/DOCKER/Dockerfile).
+The Dockerfile for reapchain is not expected to change in the near future. The master file used for all builds can be found [here](https://raw.githubusercontent.com/reapchain/reapchain/master/DOCKER/Dockerfile).
 
-Respective versioned files can be found <https://raw.githubusercontent.com/tendermint/tendermint/vX.XX.XX/DOCKER/Dockerfile> (replace the Xs with the version number).
+Respective versioned files can be found <https://raw.githubusercontent.com/reapchain/reapchain/vX.XX.XX/DOCKER/Dockerfile> (replace the Xs with the version number).
 
 ## Quick reference
 
-- **Where to get help:** <https://tendermint.com/>
+- **Where to get help:** <https://reapchain.com/>
 - **Where to file issues:** <https://github.com/reapchain/reapchain-core/issues>
 - **Supported Docker versions:** [the latest release](https://github.com/moby/moby/releases) (down to 1.6 on a best-effort basis)
 
-## Tendermint
+## Reapchain
 
-Tendermint Core is Byzantine Fault Tolerant (BFT) middleware that takes a state transition machine, written in any programming language, and securely replicates it on many machines.
+Reapchain Core is Byzantine Fault Tolerant (BFT) middleware that takes a state transition machine, written in any programming language, and securely replicates it on many machines.
 
-For more background, see the [the docs](https://docs.tendermint.com/master/introduction/#quick-start).
+For more background, see the [the docs](https://docs.reapchain.com/master/introduction/#quick-start).
 
-To get started developing applications, see the [application developers guide](https://docs.tendermint.com/master/introduction/quick-start.html).
+To get started developing applications, see the [application developers guide](https://docs.reapchain.com/master/introduction/quick-start.html).
 
 ## How to use this image
 
-### Start one instance of the Tendermint core with the `kvstore` app
+### Start one instance of the Reapchain core with the `kvstore` app
 
-A quick example of a built-in app and Tendermint core in one container.
+A quick example of a built-in app and Reapchain core in one container.
 
 ```sh
-docker run -it --rm -v "/tmp:/tendermint" tendermint/tendermint init
-docker run -it --rm -v "/tmp:/tendermint" tendermint/tendermint node --proxy_app=kvstore
+docker run -it --rm -v "/tmp:/reapchain" reapchain/reapchain init
+docker run -it --rm -v "/tmp:/reapchain" reapchain/reapchain node --proxy_app=kvstore
 ```
 
 ## Local cluster
@@ -49,7 +49,7 @@ Note that this will build and use a different image than the ones provided here.
 
 ## License
 
-- Tendermint's license is [Apache 2.0](https://github.com/reapchain/reapchain-core/blob/master/LICENSE).
+- Reapchain's license is [Apache 2.0](https://github.com/reapchain/reapchain-core/blob/master/LICENSE).
 
 ## Contributing
 

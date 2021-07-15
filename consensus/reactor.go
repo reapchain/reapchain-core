@@ -16,8 +16,8 @@ import (
 	"github.com/reapchain/reapchain-core/libs/log"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	"github.com/reapchain/reapchain-core/p2p"
-	tmcons "github.com/reapchain/reapchain-core/proto/tendermint/consensus"
-	tmproto "github.com/reapchain/reapchain-core/proto/tendermint/types"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain/consensus"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
@@ -1409,15 +1409,15 @@ type Message interface {
 }
 
 func init() {
-	tmjson.RegisterType(&NewRoundStepMessage{}, "tendermint/NewRoundStepMessage")
-	tmjson.RegisterType(&NewValidBlockMessage{}, "tendermint/NewValidBlockMessage")
-	tmjson.RegisterType(&ProposalMessage{}, "tendermint/Proposal")
-	tmjson.RegisterType(&ProposalPOLMessage{}, "tendermint/ProposalPOL")
-	tmjson.RegisterType(&BlockPartMessage{}, "tendermint/BlockPart")
-	tmjson.RegisterType(&VoteMessage{}, "tendermint/Vote")
-	tmjson.RegisterType(&HasVoteMessage{}, "tendermint/HasVote")
-	tmjson.RegisterType(&VoteSetMaj23Message{}, "tendermint/VoteSetMaj23")
-	tmjson.RegisterType(&VoteSetBitsMessage{}, "tendermint/VoteSetBits")
+	tmjson.RegisterType(&NewRoundStepMessage{}, "reapchain/NewRoundStepMessage")
+	tmjson.RegisterType(&NewValidBlockMessage{}, "reapchain/NewValidBlockMessage")
+	tmjson.RegisterType(&ProposalMessage{}, "reapchain/Proposal")
+	tmjson.RegisterType(&ProposalPOLMessage{}, "reapchain/ProposalPOL")
+	tmjson.RegisterType(&BlockPartMessage{}, "reapchain/BlockPart")
+	tmjson.RegisterType(&VoteMessage{}, "reapchain/Vote")
+	tmjson.RegisterType(&HasVoteMessage{}, "reapchain/HasVote")
+	tmjson.RegisterType(&VoteSetMaj23Message{}, "reapchain/VoteSetMaj23")
+	tmjson.RegisterType(&VoteSetBitsMessage{}, "reapchain/VoteSetBits")
 }
 
 func decodeMsg(bz []byte) (msg Message, err error) {

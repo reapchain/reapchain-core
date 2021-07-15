@@ -17,7 +17,7 @@
     - Remove signalling for next version from Header/ABCI
 - 03-08-2018: Updates from discussion with Jae:
   - ProtocolVersion contains Block/AppVersion, not Current/Next
-  - signal upgrades to Tendermint using EndBlock fields
+  - signal upgrades to Reapchain using EndBlock fields
   - dont restrict peer compatibilty by version to simplify syncing old nodes
 - 28-07-2018: Updates from review
   - split into two ADRs - one for protocol, one for chains
@@ -66,11 +66,11 @@ to connect to peers with older version.
 
 ### BlockVersion
 
-- All tendermint hashed data-structures (headers, votes, txs, responses, etc.).
+- All reapchain hashed data-structures (headers, votes, txs, responses, etc.).
   - Note the semantic meaning of a transaction may change according to the AppVersion, but the way txs are merklized into the header is part of the BlockVersion
 - It should be the least frequent/likely to change.
-  - Tendermint should be stabilizing - it's just Atomic Broadcast.
-  - We can start considering for Tendermint v2.0 in a year
+  - Reapchain should be stabilizing - it's just Atomic Broadcast.
+  - We can start considering for Reapchain v2.0 in a year
 - It's easy to determine the version of a block from its serialized form
 
 ### P2PVersion
@@ -143,12 +143,12 @@ should be easy to read this out of the serialized header if need be to facilitat
 
 The `Version.Other` here should include additional information like the name of the software client and
 it's SemVer version - this is for convenience only. Eg.
-`tendermint-core/v0.22.8`. It's a `[]string` so it can include information about
-the version of Tendermint, of the app, of Tendermint libraries, etc.
+`reapchain-core/v0.22.8`. It's a `[]string` so it can include information about
+the version of Reapchain, of the app, of Reapchain libraries, etc.
 
 ### ABCI
 
-Since the ABCI is responsible for keeping Tendermint and the App in sync, we
+Since the ABCI is responsible for keeping Reapchain and the App in sync, we
 need to communicate version information through it.
 
 On startup, we use Info to perform a basic handshake. It should include all the
@@ -195,7 +195,7 @@ them for now to reduce the number of breaking changes.
 
 Updating the version could be done either with new fields or by using the
 existing `tags`. Since we're trying to communicate information that will be
-included in Tendermint block Headers, it should be native to the ABCI, and not
+included in Reapchain block Headers, it should be native to the ABCI, and not
 something embedded through some scheme in the tags. Thus, version updates should
 be communicated through EndBlock.
 
@@ -277,7 +277,7 @@ compatibiltiy to a future proposal.
 
 ### Future Changes
 
-It may be valuable to support an `/unsafe_stop?height=_` endpoint to tell Tendermint to shutdown at a given height.
+It may be valuable to support an `/unsafe_stop?height=_` endpoint to tell Reapchain to shutdown at a given height.
 This could be use by an external manager process that oversees upgrades by
 checking out and installing new software versions and restarting the process. It
 would subscribe to the relevant upgrade event (needs to be implemented) and call `/unsafe_stop` at
@@ -287,7 +287,7 @@ the correct height (of course only after getting approval from its user!)
 
 ### Positive
 
-- Make tendermint and application versions native to the ABCI to more clearly
+- Make reapchain and application versions native to the ABCI to more clearly
   communicate about them
 - Distinguish clearly between protocol versions and software version to
   facilitate implementations in other languages

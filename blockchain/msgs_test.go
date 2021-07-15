@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	bcproto "github.com/reapchain/reapchain-core/proto/tendermint/blockchain"
+	bcproto "github.com/reapchain/reapchain-core/proto/reapchain/blockchain"
 	"github.com/reapchain/reapchain-core/types"
 )
 

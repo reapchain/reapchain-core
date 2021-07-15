@@ -27,7 +27,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/async"
 	"github.com/reapchain/reapchain-core/libs/protoio"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
-	tmp2p "github.com/reapchain/reapchain-core/proto/tendermint/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
 )
 
 // 4 + 1024 == 1028 total frame size
@@ -48,7 +48,7 @@ var (
 	labelDHSecret                = []byte("DH_SECRET")
 	labelSecretConnectionMac     = []byte("SECRET_CONNECTION_MAC")
 
-	secretConnKeyAndChallengeGen = []byte("TENDERMINT_SECRET_CONNECTION_KEY_AND_CHALLENGE_GEN")
+	secretConnKeyAndChallengeGen = []byte("REAPCHAIN_SECRET_CONNECTION_KEY_AND_CHALLENGE_GEN")
 )
 
 // SecretConnection implements net.Conn.
@@ -108,7 +108,7 @@ func MakeSecretConnection(conn io.ReadWriteCloser, locPrivKey crypto.PrivKey) (*
 	// Sort by lexical order.
 	loEphPub, hiEphPub := sort32(locEphPub, remEphPub)
 
-	transcript := merlin.NewTranscript("TENDERMINT_SECRET_CONNECTION_TRANSCRIPT_HASH")
+	transcript := merlin.NewTranscript("REAPCHAIN_SECRET_CONNECTION_TRANSCRIPT_HASH")
 
 	transcript.AppendMessage(labelEphemeralLowerPublicKey, loEphPub[:])
 	transcript.AppendMessage(labelEphemeralUpperPublicKey, hiEphPub[:])

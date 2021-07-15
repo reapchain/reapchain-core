@@ -15,7 +15,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
 	"github.com/reapchain/reapchain-core/libs/protoio"
-	tmp2p "github.com/reapchain/reapchain-core/proto/tendermint/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
 )
 
 type buffer struct {
@@ -184,7 +184,7 @@ func (c *evilConn) signChallenge() []byte {
 	// Sort by lexical order.
 	loEphPub, hiEphPub := sort32(c.locEphPub, c.remEphPub)
 
-	transcript := merlin.NewTranscript("TENDERMINT_SECRET_CONNECTION_TRANSCRIPT_HASH")
+	transcript := merlin.NewTranscript("REAPCHAIN_SECRET_CONNECTION_TRANSCRIPT_HASH")
 
 	transcript.AppendMessage(labelEphemeralLowerPublicKey, loEphPub[:])
 	transcript.AppendMessage(labelEphemeralUpperPublicKey, hiEphPub[:])

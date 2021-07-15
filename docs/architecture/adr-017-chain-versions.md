@@ -45,7 +45,7 @@ We need to support existing networks upgrading and forking, wherein they may do 
     - arbitrarily mutate state at some height, continue with the same versions (eg. Dao Fork)
     - change the AppVersion at some height
 
-Note because of Tendermint's voting power threshold rules, a chain can only be extended under the "original" rules and under the new rules
+Note because of Reapchain's voting power threshold rules, a chain can only be extended under the "original" rules and under the new rules
 if 1/3 or more is double signing, which is expressly prohibited, and is supposed to result in their punishment on both chains. Since they can censor
 the punishment, the chain is expected to be hardforked to remove the validators. Thus, if both branches are to continue after a fork,
 they will each require a new identifier, and the old chain identifier will be retired (ie. only useful for syncing history, not for new blocks)..
@@ -64,8 +64,8 @@ ChainDescription is a complete immutable description of a blockchain. It takes t
 ChainDescription = <NetworkName>/<BlockVersion>/<AppVersion>/<StateHash>/<ValHash>/<ConsensusParamsHash>
 ```
 
-Here, StateHash is the merkle root of the initial state, ValHash is the merkle root of the initial Tendermint validator set,
-and ConsensusParamsHash is the merkle root of the initial Tendermint consensus parameters.
+Here, StateHash is the merkle root of the initial state, ValHash is the merkle root of the initial Reapchain validator set,
+and ConsensusParamsHash is the merkle root of the initial Reapchain consensus parameters.
 
 The `genesis.json` file must contain enough information to compute this value. It need not contain the StateHash or ValHash itself,
 but contain the state from which they can be computed with the given protocol versions.
@@ -96,4 +96,4 @@ Where
 - `x` denotes that a change occured
 - `Height` is the height the change occured
 - ForkDescription has the same form as ChainDescription but for the fork
-- this allows forks to specify new versions for tendermint or the app, as well as arbitrary changes to the state or validator set
+- this allows forks to specify new versions for reapchain or the app, as well as arbitrary changes to the state or validator set

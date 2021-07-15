@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
-  title: Tendermint RPC
+  title: Reapchain RPC
   contact:
-    name: Tendermint RPC
+    name: Reapchain RPC
     url: https://github.com/reapchain/reapchain-core/issues/new/choose
   description: |
-    Tendermint supports the following RPC protocols:
+    Reapchain supports the following RPC protocols:
 
     * URI over HTTP
     * JSONRPC over HTTP
@@ -57,9 +57,9 @@ info:
     url: https://github.com/reapchain/reapchain-core/blob/master/LICENSE
 servers:
   - url: https://rpc.cosmos.network
-    description: Cosmos mainnet node to interact with the Tendermint RPC
+    description: Cosmos mainnet node to interact with the Reapchain RPC
   - url: http://localhost:26657
-    description: Interact with the Tendermint RPC locally on your device
+    description: Interact with the Reapchain RPC locally on your device
 tags:
   - name: Websocket
     description: Subscribe/unsubscribe are reserved for websocket events.
@@ -83,7 +83,7 @@ paths:
       description: |
         If you want to be sure that the transaction is included in a block, you can
         subscribe for the result using JSONRPC via a websocket. See
-        https://docs.tendermint.com/master/app-dev/subscribing-to-events-via-websocket.html
+        https://docs.reapchain.com/master/app-dev/subscribing-to-events-via-websocket.html
         If you haven't received anything after a couple of blocks, resend it. If the
         same happens again, send it to some other node. A few reasons why it could
         happen:
@@ -95,7 +95,7 @@ paths:
 
 
         Please refer to
-        https://docs.tendermint.com/master/tendermint-core/using-tendermint.html#formatting
+        https://docs.reapchain.com/master/reapchain-core/using-reapchain.html#formatting
         for formatting/encoding rules.
       parameters:
         - in: query
@@ -127,7 +127,7 @@ paths:
       description: |
         If you want to be sure that the transaction is included in a block, you can
         subscribe for the result using JSONRPC via a websocket. See
-        https://docs.tendermint.com/master/app-dev/subscribing-to-events-via-websocket.html
+        https://docs.reapchain.com/master/app-dev/subscribing-to-events-via-websocket.html
         If you haven't received anything after a couple of blocks, resend it. If the
         same happens again, send it to some other node. A few reasons why it could
         happen:
@@ -139,7 +139,7 @@ paths:
         3. node can be offline
 
         Please refer to
-        https://docs.tendermint.com/master/tendermint-core/using-tendermint.html#formatting
+        https://docs.reapchain.com/master/reapchain-core/using-reapchain.html#formatting
         for formatting/encoding rules.
       parameters:
         - in: query
@@ -172,7 +172,7 @@ paths:
         IMPORTANT: use only for testing and development. In production, use
         BroadcastTxSync or BroadcastTxAsync. You can subscribe for the transaction
         result using JSONRPC via a websocket. See
-        https://docs.tendermint.com/master/app-dev/subscribing-to-events-via-websocket.html
+        https://docs.reapchain.com/master/app-dev/subscribing-to-events-via-websocket.html
 
         CONTRACT: only returns error if mempool.CheckTx() errs or if we timeout
         waiting for tx to commit.
@@ -181,7 +181,7 @@ paths:
         will contain a non-OK ABCI code.
 
         Please refer to
-        https://docs.tendermint.com/master/tendermint-core/using-tendermint.html#formatting
+        https://docs.reapchain.com/master/reapchain-core/using-reapchain.html#formatting
         for formatting/encoding rules.
       parameters:
         - in: query
@@ -214,7 +214,7 @@ paths:
         The transaction won't be added to the mempool.
 
         Please refer to
-        https://docs.tendermint.com/master/tendermint-core/using-tendermint.html#formatting
+        https://docs.reapchain.com/master/reapchain-core/using-reapchain.html#formatting
         for formatting/encoding rules.
       parameters:
         - in: query
@@ -258,7 +258,7 @@ paths:
               tm.event = 'Tx' AND tx.height = 5   # all txs of the fifth block
               tx.height = 5                       # all txs of the fifth block
 
-        Tendermint provides a few predefined keys: tm.event, tx.hash and tx.height.
+        Reapchain provides a few predefined keys: tm.event, tx.hash and tx.height.
         Note for transactions, you can define additional keys by providing events with
         DeliverTx response.
 
@@ -337,7 +337,7 @@ paths:
         https://godoc.org/github.com/reapchain/reapchain-core/libs/pubsub/query.
 
         ```go
-        import rpchttp "github.com/tendermint/rpc/client/http"
+        import rpchttp "github.com/reapchain/rpc/client/http"
         import "github.com/reapchain/reapchain-core/types"
 
         client := rpchttp.New("tcp:0.0.0.0:26657", "/websocket")
@@ -361,7 +361,7 @@ paths:
         }()
         ```
 
-        NOTE: if you're not reading events fast enough, Tendermint might
+        NOTE: if you're not reading events fast enough, Reapchain might
         terminate the subscription.
       parameters:
         - in: query
@@ -484,7 +484,7 @@ paths:
       tags:
         - Info
       description: |
-        Get Tendermint status including node info, pubkey, latest block hash, app hash, block height and time.
+        Get Reapchain status including node info, pubkey, latest block hash, app hash, block height and time.
       responses:
         "200":
           description: Status of the node
@@ -1258,7 +1258,7 @@ components:
       properties:
         type:
           type: string
-          example: "tendermint/PubKeyEd25519"
+          example: "reapchain/PubKeyEd25519"
         value:
           type: string
           example: "A6DoBUypNtUAyEHWtQ9bFjfNg8Bo9CrnkUGl6k6OHN4="
@@ -1702,7 +1702,7 @@ components:
                     properties:
                       type:
                         type: string
-                        example: "tendermint/PubKeyEd25519"
+                        example: "reapchain/PubKeyEd25519"
                       value:
                         type: string
                         example: "9tK9IT+FPdf2qm+5c2qaxi10sWP+3erWTKgftn2PaQM="
@@ -1861,7 +1861,7 @@ components:
                         properties:
                           type:
                             type: string
-                            example: "tendermint/PubKeyEd25519"
+                            example: "reapchain/PubKeyEd25519"
                           value:
                             type: string
                             example: "cOQZvh/h9ZioSeUMZB/1Vy1Xo5x2sjrVjlE/qHnYifM="
@@ -2758,7 +2758,7 @@ components:
           properties:
             type:
               type: string
-              example: "tendermint/PubKeyEd25519"
+              example: "reapchain/PubKeyEd25519"
             value:
               type: string
               example: "9tK9IT+FPdf2qm+5c2qaxi10sWP+3erWTKgftn2PaQM="
@@ -2826,7 +2826,7 @@ components:
               example:
                 - "ed25519"
 
-    # Events in tendermint
+    # Events in reapchain
     Event:
       type: object
       properties:

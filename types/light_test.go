@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/reapchain/reapchain-core/crypto"
-	tmversion "github.com/reapchain/reapchain-core/proto/tendermint/version"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain/version"
 	"github.com/reapchain/reapchain-core/version"
 )
 

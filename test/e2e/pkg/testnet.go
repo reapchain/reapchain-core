@@ -62,7 +62,7 @@ type Testnet struct {
 	KeyType          string
 }
 
-// Node represents a Tendermint node in a testnet.
+// Node represents a Reapchain node in a testnet.
 type Node struct {
 	Name             string
 	Testnet          *Testnet

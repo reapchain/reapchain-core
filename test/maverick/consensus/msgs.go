@@ -8,8 +8,8 @@ import (
 	cstypes "github.com/reapchain/reapchain-core/consensus/types"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	"github.com/reapchain/reapchain-core/p2p"
-	tmcons "github.com/reapchain/reapchain-core/proto/tendermint/consensus"
-	tmproto "github.com/reapchain/reapchain-core/proto/tendermint/types"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain/consensus"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

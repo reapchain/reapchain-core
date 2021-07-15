@@ -153,7 +153,7 @@ Proposed.
 
 ### Negative
 
-- Larger codebase, however this should reside in a subfolder of tendermint/crypto, as it provides no new interfaces. (Ref #https://github.com/tendermint/go-crypto/issues/136)
+- Larger codebase, however this should reside in a subfolder of reapchain/crypto, as it provides no new interfaces. (Ref #https://github.com/reapchain/go-crypto/issues/136)
 - Space inefficient due to utilization of amino encoding
 - Suggested implementation requires a new struct for every ASM.
 

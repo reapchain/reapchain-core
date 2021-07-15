@@ -2,7 +2,7 @@
 
 ## Context
 
-Current logging system in Tendermint is very static and not flexible enough.
+Current logging system in Reapchain is very static and not flexible enough.
 
 Issues: [358](https://github.com/reapchain/reapchain-core/issues/358), [375](https://github.com/reapchain/reapchain-core/issues/375).
 
@@ -19,7 +19,7 @@ What we want from the new system:
 
 ### 1) An interface
 
-First, we will need an interface for all of our libraries (`tmlibs`, Tendermint, etc.). My personal preference is go-kit `Logger` interface (see Appendix A.), but that is too much a bigger change. Plus we will still need levels.
+First, we will need an interface for all of our libraries (`tmlibs`, Reapchain, etc.). My personal preference is go-kit `Logger` interface (see Appendix A.), but that is too much a bigger change. Plus we will still need levels.
 
 ```go
 # log.go
@@ -43,11 +43,11 @@ have some in `tmlibs/common`.
 
 `Notice` should become `Info`, `Warn` either `Error` or `Debug` depending on the message, `Crit` -> `Error`.
 
-This interface should go into `tmlibs/log`. All libraries which are part of the core (tendermint/tendermint) should obey it.
+This interface should go into `tmlibs/log`. All libraries which are part of the core (reapchain/reapchain) should obey it.
 
 ### 2) Logger with our current formatting
 
-On top of this interface, we will need to implement a stdout logger, which will be used when Tendermint is configured to output logs to STDOUT.
+On top of this interface, we will need to implement a stdout logger, which will be used when Reapchain is configured to output logs to STDOUT.
 
 Many people say that they like the current output, so let's stick with it.
 
@@ -195,7 +195,7 @@ proposed
 
 ### Positive
 
-Dynamic logger, which could be turned off for some modules at runtime. Public interface for other projects using Tendermint libraries.
+Dynamic logger, which could be turned off for some modules at runtime. Public interface for other projects using Reapchain libraries.
 
 ### Negative
 

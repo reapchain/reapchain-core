@@ -26,7 +26,7 @@ option in the language of choice.
 The reason for continuing to use amino however is that people can create code
 more easily in languages that already have an up to date amino library.
 It is possible that this will change in the future, if it is deemed that
-requiring amino for interacting with Tendermint cryptography is unnecessary.
+requiring amino for interacting with Reapchain cryptography is unnecessary.
 
 The arguments for space efficiency here are refuted on the basis that there are
 far more egregious wastages of space in the SDK.

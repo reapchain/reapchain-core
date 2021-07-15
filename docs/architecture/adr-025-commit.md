@@ -112,7 +112,7 @@ is for. The only options are:
 
 Note this means we don't allow votes for any other blockIDs. If a signature is
 included in a commit, it is either for nil or the correct blockID. According to
-the Tendermint protocol and assumptions, there is no way for a correct validator to
+the Reapchain protocol and assumptions, there is no way for a correct validator to
 precommit for a conflicting blockID in the same round an actual commit was
 created. This was the consensus from
 [#3485](https://github.com/reapchain/reapchain-core/issues/3485)

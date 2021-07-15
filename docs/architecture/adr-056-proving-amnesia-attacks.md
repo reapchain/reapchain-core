@@ -9,11 +9,11 @@
 
 ## Context
 
-Whilst most created evidence of malicious behaviour is self evident such that any individual can verify them independently there are types of evidence, known collectively as global evidence, that require further collaboration from the network in order to accumulate enough information to create evidence that is individually verifiable and can therefore be processed through consensus. [Fork Accountability](https://github.com/tendermint/spec/blob/master/spec/consensus/light-client/accountability.md) has been coined to describe the entire process of detection, proving and punishing of malicious behaviour. This ADR addresses specifically how to prove an amnesia attack but also generally outlines how global evidence can be converted to individual evidence.
+Whilst most created evidence of malicious behaviour is self evident such that any individual can verify them independently there are types of evidence, known collectively as global evidence, that require further collaboration from the network in order to accumulate enough information to create evidence that is individually verifiable and can therefore be processed through consensus. [Fork Accountability](https://github.com/reapchain/spec/blob/master/spec/consensus/light-client/accountability.md) has been coined to describe the entire process of detection, proving and punishing of malicious behaviour. This ADR addresses specifically how to prove an amnesia attack but also generally outlines how global evidence can be converted to individual evidence.
 
 ### Amnesia Attack
 
-The currently only known form of global evidence stems from [flip flopping](https://github.com/tendermint/spec/blob/master/spec/consensus/light-client/accountability.md#flip-flopping) attacks. The schematic below explains one scenario where an amnesia attack, a form of flip flopping, can occur such that two sets of honest nodes, C1 and C2, commit different blocks.
+The currently only known form of global evidence stems from [flip flopping](https://github.com/reapchain/spec/blob/master/spec/consensus/light-client/accountability.md#flip-flopping) attacks. The schematic below explains one scenario where an amnesia attack, a form of flip flopping, can occur such that two sets of honest nodes, C1 and C2, commit different blocks.
 
 ![](../imgs/tm-amnesia-attack.png)
 
@@ -35,7 +35,7 @@ An amnesia protocol was outlined in a previous revision of this ADR and for comp
 
 The decision surrounding amnesia attacks has both a short term and long term component. In the long term, a more sturdy protocol will need to be fleshed out and implemented. There is already draft documents outlining what such a protocol would look like and the resources it would require. In the short term, it was discussed whether the protocol should be completely removed or if there should remain some logic in handling the aforementioned scenarios.
 
-The latter of the two options was decided chiefly because it is important for the tendermint incentivisation mechanism that such behavior towards a light client is not only detectable but punishable. The logic that will need to be in place will involve the bare minimum to enable manual intervention. This therefore requires the on-chain submission of the faulty header that the light client witnessed plus the storing of vote sets by validators.
+The latter of the two options was decided chiefly because it is important for the reapchain incentivisation mechanism that such behavior towards a light client is not only detectable but punishable. The logic that will need to be in place will involve the bare minimum to enable manual intervention. This therefore requires the on-chain submission of the faulty header that the light client witnessed plus the storing of vote sets by validators.
 
 ## Detailed Design
 
@@ -112,7 +112,7 @@ A delay between the detection of a fork and the punishment of one
 ## References
 
 - [Fork accountability algorithm](https://docs.google.com/document/d/11ZhMsCj3y7zIZz4udO9l25xqb0kl7gmWqNpGVRzOeyY/edit)
-- [Fork accountability spec](https://github.com/tendermint/spec/blob/master/spec/consensus/light-client/accountability.md)
+- [Fork accountability spec](https://github.com/reapchain/spec/blob/master/spec/consensus/light-client/accountability.md)
 
 ## Appendix A: Prior AmnesiaEvidence Implementation
 
@@ -141,7 +141,7 @@ This trial period will be discussed later.
 
 Returning to the event of an amnesia attack, if we were to examine the behaviour of the honest nodes, C1 and C2, in the schematic, C2 will not PRECOMMIT an earlier round, but it is likely, if a node in C1 were to receive +2/3 PREVOTE's or PRECOMMIT's for a higher round, that it would remove the lock and PREVOTE and PRECOMMIT for the later round. Therefore, unfortunately it is not a case of simply punishing all nodes that have double voted in the `PotentialAmnesiaEvidence`.
 
-Instead we use the Proof of Lock Change (PoLC) referred to in the [consensus spec](https://github.com/tendermint/spec/blob/master/spec/consensus/consensus.md#terms). When an honest node votes again for a different block in a later round
+Instead we use the Proof of Lock Change (PoLC) referred to in the [consensus spec](https://github.com/reapchain/spec/blob/master/spec/consensus/consensus.md#terms). When an honest node votes again for a different block in a later round
 (which will only occur in very rare cases), it will generate the PoLC and store it in the evidence reactor for a time equal to the `MaxEvidenceAge`
 
 ```golang

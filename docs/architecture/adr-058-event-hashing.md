@@ -36,7 +36,7 @@ results are hashed into the `LastResultsHash` as follows:
   ignored), and proto-encoded `ResponseEndBlock#Events`.
 - Order of events is unchanged - same as received from the ABCI application.
 
-[Spec PR](https://github.com/tendermint/spec/pull/97/files)
+[Spec PR](https://github.com/reapchain/spec/pull/97/files)
 
 While it's certainly good to be able to prove something, introducing new events
 or removing such becomes difficult because it breaks the `LastResultsHash`. It
@@ -51,7 +51,7 @@ As a middle ground approach, the proposal is to add the
 are to be hashed in the header.
 
 ```
-@ proto/tendermint/abci/types.proto:295 @ message BlockParams {
+@ proto/reapchain/abci/types.proto:295 @ message BlockParams {
   int64 max_bytes = 1;
   // Note: must be greater or equal to -1
   int64 max_gas = 2;
@@ -92,7 +92,7 @@ push this entirely application side and just have apps which want events to be
 provable to insert them into their application-side merkle trees. Of course
 this puts more pressure on their application state and makes event proving
 application specific, but it might help built up a better sense of use-cases
-and how this ought to ultimately be done by Tendermint.**
+and how this ought to ultimately be done by Reapchain.**
 
 ## Consequences
 
@@ -105,7 +105,7 @@ and how this ought to ultimately be done by Tendermint.**
 ### Negative
 
 1. yet another consensus parameter
-2. more things to track in the tendermint state
+2. more things to track in the reapchain state
 
 ## References
 
@@ -115,7 +115,7 @@ and how this ought to ultimately be done by Tendermint.**
 ## Appendix A. Alternative proposals
 
 The other proposal was to add `Hash bool` flag to the `Event`, similarly to
-`Index bool` EventAttribute's field. When `true`, Tendermint would hash it into
+`Index bool` EventAttribute's field. When `true`, Reapchain would hash it into
 the `LastResultsEvents`. The downside is that the logic is implicit and depends
 largely on the node's operator, who decides what application code to run. The
 above proposal makes it (the logic) explicit and easy to upgrade via

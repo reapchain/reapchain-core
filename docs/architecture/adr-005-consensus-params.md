@@ -62,7 +62,7 @@ The EndBlock response includes a `ConsensusParams`, which includes BlockSize and
 Other param struct can be added to `ConsensusParams` in the future.
 The `0` value is used to denote no change.
 Any other value will update that parameter in the `State.ConsensusParams`, to be applied for the next block.
-Tendermint should have hard-coded upper limits as sanity checks.
+Reapchain should have hard-coded upper limits as sanity checks.
 
 ## Status
 

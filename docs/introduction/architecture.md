@@ -1,16 +1,16 @@
 ---
 order: false
 ---
-# Tendermint Architectural Overview
+# Reapchain Architectural Overview
 
 
 > **November 2019**
 
-Over the next few weeks, @brapse, @marbar3778 and I (@tessr) are having a series of meetings to go over the architecture of Tendermint Core. These are my notes from these meetings, which will either serve as an artifact for onboarding future engineers; or will provide the basis for such a document.
+Over the next few weeks, @brapse, @marbar3778 and I (@tessr) are having a series of meetings to go over the architecture of Reapchain Core. These are my notes from these meetings, which will either serve as an artifact for onboarding future engineers; or will provide the basis for such a document.
 
 ## Communication
 
-There are three forms of communication (e.g., requests, responses, connections) that can happen in Tendermint Core: *internode communication*, *intranode communication*, and *client communication*.
+There are three forms of communication (e.g., requests, responses, connections) that can happen in Reapchain Core: *internode communication*, *intranode communication*, and *client communication*.
 
 - Internode communication: Happens between a node and other peers. This kind of communication happens over TCP or HTTP. More on this below.
 - Intranode communication: Happens within the node itself (i.e., between reactors or other components). These are typically function or method calls, or occasionally happen through an event bus.
@@ -61,7 +61,7 @@ Here are some relevant facts about TCP:
 
 ![tcp](../imgs/tcp-window.png)
 
-In order to have performant TCP connections under the conditions  created in Tendermint, we've created the `mconnection`, or the multiplexing connection. It is our own protocol built on top of TCP. It lets us reuse TCP connections to minimize overhead, and it keeps the window size high by sending auxiliary messages when necessary.
+In order to have performant TCP connections under the conditions  created in Reapchain, we've created the `mconnection`, or the multiplexing connection. It is our own protocol built on top of TCP. It lets us reuse TCP connections to minimize overhead, and it keeps the window size high by sending auxiliary messages when necessary.
 
 The `mconnection` is represented by a struct, which contains a batch of messages, read and write buffers, and a map of channel IDs to reactors. It communicates with TCP via file descriptors, which it can write to. There is one `mconnection` per peer connection.
 

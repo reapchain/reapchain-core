@@ -13,7 +13,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	"github.com/reapchain/reapchain-core/libs/protoio"
 	"github.com/reapchain/reapchain-core/p2p/conn"
-	tmp2p "github.com/reapchain/reapchain-core/proto/tendermint/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
 )
 
 var defaultNodeName = "host_peer"

@@ -1,6 +1,6 @@
 # ADR 053: State Sync Prototype
 
-State sync is now [merged](https://github.com/reapchain/reapchain-core/pull/4705). Up-to-date ABCI documentation is [available](https://github.com/tendermint/spec/pull/90), refer to it rather than this ADR for details.
+State sync is now [merged](https://github.com/reapchain/reapchain-core/pull/4705). Up-to-date ABCI documentation is [available](https://github.com/reapchain/spec/pull/90), refer to it rather than this ADR for details.
 
 This ADR outlines the plan for an initial state sync prototype, and is subject to change as we gain feedback and experience. It builds on discussions and findings in [ADR-042](./adr-042-state-sync.md), see that for background information.
 
@@ -36,15 +36,15 @@ Background discussions and justifications are detailed in [ADR-042](./adr-042-st
 
 * The application splits snapshots into smaller chunks that can be individually verified against a chain app hash.
 
-* Tendermint uses the light client to obtain a trusted chain app hash for verification.
+* Reapchain uses the light client to obtain a trusted chain app hash for verification.
 
-* Tendermint discovers and downloads snapshot chunks in parallel from multiple peers, and passes them to the application via ABCI to be applied and verified against the chain app hash.
+* Reapchain discovers and downloads snapshot chunks in parallel from multiple peers, and passes them to the application via ABCI to be applied and verified against the chain app hash.
 
 * Historical blocks are not backfilled, so state synced nodes will have a truncated block history.
 
-## Tendermint Proposal
+## Reapchain Proposal
 
-This describes the snapshot/restore process seen from Tendermint. The interface is kept as small and general as possible to give applications maximum flexibility.
+This describes the snapshot/restore process seen from Reapchain. The interface is kept as small and general as possible to give applications maximum flexibility.
 
 ### Snapshot Data Structure
 
@@ -125,7 +125,7 @@ message ResponseApplySnapshotChunk {
 
 ### Taking Snapshots
 
-Tendermint is not aware of the snapshotting process at all, it is entirely an application concern. The following guarantees must be provided:
+Reapchain is not aware of the snapshotting process at all, it is entirely an application concern. The following guarantees must be provided:
 
 * **Periodic:** snapshots must be taken periodically, not on-demand, for faster restores, lower load, and less DoS risk.
 
@@ -211,7 +211,7 @@ Snapshots must also be garbage collected after some configurable time, e.g. by k
 
 * Do we need incremental chunk verification for first version?
 
-    > No, we'll start simple. Can add chunk verification via a new snapshot format without any breaking changes in Tendermint. For adversarial conditions, maybe consider support for whitelisting peers to download chunks from.
+    > No, we'll start simple. Can add chunk verification via a new snapshot format without any breaking changes in Reapchain. For adversarial conditions, maybe consider support for whitelisting peers to download chunks from.
 
 * Should the snapshot ABCI interface be a separate optional ABCI service, or mandatory?
 
