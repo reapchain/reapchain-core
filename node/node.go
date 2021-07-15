@@ -89,7 +89,6 @@ type Provider func(*cfg.Config, log.Logger) (*Node, error)
 // PrivValidator, ClientCreator, GenesisDoc, and DBProvider.
 // It implements NodeProvider.
 func DefaultNewNode(config *cfg.Config, logger log.Logger) (*Node, error) {
-	//fmt.Println("stompesi-start-00")
 	nodeKey, err := p2p.LoadOrGenNodeKey(config.NodeKeyFile())
 	if err != nil {
 		return nil, fmt.Errorf("failed to load or gen node key %s: %w", config.NodeKeyFile(), err)
@@ -321,7 +320,7 @@ func logNodeStartupInfo(state sm.State, pubKey crypto.PubKey, logger, consensusL
 		consensusLogger.Info("This node is not a validator", "addr", addr, "pubKey", pubKey)
 	}
 
-	if state.StandingMembers.HasAddress(addr) {
+	if state.StandingMemberSet.HasAddress(addr) {
 		consensusLogger.Info("This node is a standing member", "addr", addr, "pubKey", pubKey)
 	} else {
 		consensusLogger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
@@ -646,7 +645,6 @@ func NewNode(config *cfg.Config,
 	logger log.Logger,
 	options ...Option) (*Node, error) {
 
-	//fmt.Println("stompesi-start-0")
 	blockStore, stateDB, err := initDBs(config, dbProvider)
 	if err != nil {
 		return nil, err
@@ -683,7 +681,6 @@ func NewNode(config *cfg.Config,
 	// external signing process.
 	if config.PrivValidatorListenAddr != "" {
 		// FIXME: we should start services inside OnStart
-		//fmt.Println("stompesi-start-05343434344")
 		privValidator, err = createAndStartPrivValidatorSocketClient(config.PrivValidatorListenAddr, genDoc.ChainID, logger)
 		if err != nil {
 			return nil, fmt.Errorf("error with private validator socket client: %w", err)
@@ -706,11 +703,9 @@ func NewNode(config *cfg.Config,
 	// and replays any blocks as necessary to sync reapchain with the app.
 	consensusLogger := logger.With("module", "consensus")
 	if !stateSync {
-		//fmt.Println("stompesi-start-05454")
 		if err := doHandshake(stateStore, state, blockStore, genDoc, eventBus, proxyApp, consensusLogger); err != nil {
 			return nil, err
 		}
-		//fmt.Println("stompesi-start-end-doHandshake", len(state.Validators.Validators), len(state.StandingMembers.StandingMembers))
 
 		// Reload the state. It will have the Version.Consensus.App set by the
 		// Handshake, and may have other modifications as well (ie. depending on
@@ -721,7 +716,6 @@ func NewNode(config *cfg.Config,
 		}
 	}
 
-	//fmt.Println("stompesi-start-545454545")
 	// Determine whether we should do fast sync. This must happen after the handshake, since the
 	// app may modify the validator set, specifying ourself as the only validator.
 	fastSync := config.FastSyncMode && !onlyValidatorIsUs(state, pubKey)
@@ -1282,6 +1276,7 @@ func makeNodeInfo(
 		Channels: []byte{
 			bcChannel,
 			cs.StateChannel, cs.DataChannel, cs.VoteChannel, cs.VoteSetBitsChannel,
+			cs.QrnChannel, cs.VrfChannel,
 			mempl.MempoolChannel,
 			evidence.EvidenceChannel,
 			statesync.SnapshotChannel, statesync.ChunkChannel,
@@ -1322,7 +1317,6 @@ func LoadStateFromDBOrGenesisDocProvider(
 	stateDB dbm.DB,
 	genesisDocProvider GenesisDocProvider,
 ) (sm.State, *types.GenesisDoc, error) {
-	//fmt.Println("stompesi-start-1")
 	// Get genesis doc
 	genDoc, err := loadGenesisDoc(stateDB)
 	if err != nil {
@@ -1346,7 +1340,6 @@ func LoadStateFromDBOrGenesisDocProvider(
 
 // panics if failed to unmarshal bytes
 func loadGenesisDoc(db dbm.DB) (*types.GenesisDoc, error) {
-	//fmt.Println("stompesi-start-10")
 
 	b, err := db.Get(genesisDocKey)
 	if err != nil {

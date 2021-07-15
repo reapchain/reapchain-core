@@ -36,6 +36,7 @@ const (
 	EventUnlock           = "Unlock"
 	EventValidBlock       = "ValidBlock"
 	EventVote             = "Vote"
+	EventQrn              = "Qrn"
 )
 
 // ENCODING / DECODING
@@ -117,6 +118,10 @@ type EventDataCompleteProposal struct {
 
 type EventDataVote struct {
 	Vote *Vote
+}
+
+type EventDataQrn struct {
+	Qrn *Qrn
 }
 
 type EventDataString string

@@ -79,10 +79,9 @@ type State struct {
 	// the latest AppHash we've received from calling abci.Commit()
 	AppHash []byte
 
-	ConsensusRoundInfo       types.ConsensusRound
-	StandingMembers          *types.StandingMemberSet
-	SteeringMemberCandidates *types.SteeringMemberCandidateSet
-	QrnSet                   *types.QrnSet
+	ConsensusRound             *types.ConsensusRound
+	StandingMemberSet          *types.StandingMemberSet
+	SteeringMemberCandidateSet *types.SteeringMemberCandidateSet
 }
 
 // Copy makes a copy of the State for mutating.
@@ -109,13 +108,13 @@ func (state State) Copy() State {
 
 		LastResultsHash: state.LastResultsHash,
 
-		ConsensusRoundInfo: state.ConsensusRoundInfo,
-		StandingMembers:    state.StandingMembers.Copy(),
-		QrnSet:             state.QrnSet.Copy(),
+		ConsensusRound:    state.ConsensusRound,
+		StandingMemberSet: state.StandingMemberSet.Copy(),
+		QrnSet:            state.QrnSet.Copy(),
 	}
 
-	if state.SteeringMemberCandidates != nil {
-		tempState.SteeringMemberCandidates = state.SteeringMemberCandidates.Copy()
+	if state.SteeringMemberCandidateSet != nil {
+		tempState.SteeringMemberCandidateSet = state.SteeringMemberCandidateSet.Copy()
 	}
 
 	return tempState
@@ -191,33 +190,30 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	sm.LastResultsHash = state.LastResultsHash
 	sm.AppHash = state.AppHash
 
-	fmt.Println("mansub1", state.ConsensusRoundInfo.ToProto())
-
-	sm.ConsensusRoundInfo = state.ConsensusRoundInfo.ToProto()
-	sms, err := state.StandingMembers.ToProto()
+	sm.ConsensusRound = state.ConsensusRound.ToProto()
+	sms, err := state.StandingMemberSet.ToProto()
 	if err != nil {
 		return nil, err
 	}
-	sm.StandingMembers = sms
+	sm.StandingMemberSet = sms
 
-	smcs, err := state.SteeringMemberCandidates.ToProto()
+	smcs, err := state.SteeringMemberCandidateSet.ToProto()
 	if err != nil {
 		return nil, err
 	}
-	sm.SteeringMemberCandidates = smcs
+	sm.SteeringMemberCandidateSet = smcs
 
-	qrns, err := state.QrnSet.ToProto()
+	qrnSetProto, err := state.QrnSet.ToProto()
 	if err != nil {
 		return nil, err
 	}
-	sm.Qrns = qrns
+	sm.QrnSet = qrnSetProto
 
 	return sm, nil
 }
 
 // StateFromProto takes a state proto message & returns the local state type
 func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
-	//fmt.Println("stompesi-start-54564164")
 	if pb == nil {
 		return nil, errors.New("nil State")
 	}
@@ -266,21 +262,20 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.LastResultsHash = pb.LastResultsHash
 	state.AppHash = pb.AppHash
 
-	fmt.Println("mansub2", types.ConsensusRoundFromProto(pb.ConsensusRoundInfo))
-	state.ConsensusRoundInfo = types.ConsensusRoundFromProto(pb.ConsensusRoundInfo)
-	sms, err := types.StandingMemberSetFromProto(pb.StandingMembers)
+	state.ConsensusRound = types.ConsensusRoundFromProto(pb.ConsensusRound)
+	sms, err := types.StandingMemberSetFromProto(pb.StandingMemberSet)
 	if err != nil {
 		return nil, err
 	}
-	state.StandingMembers = sms
+	state.StandingMemberSet = sms
 
-	smcs, err := types.SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidates)
+	smcs, err := types.SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidateSet)
 	if err != nil {
 		return nil, err
 	}
-	state.SteeringMemberCandidates = smcs
+	state.SteeringMemberCandidateSet = smcs
 
-	qrnSet, err := types.QrnSetFromProto(pb.Qrns)
+	qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
 	if err != nil {
 		return nil, err
 	}
@@ -315,7 +310,6 @@ func (state State) MakeBlock(
 		timestamp = MedianTime(commit, state.LastValidators)
 	}
 
-	//fmt.Println("2stompesi-skdfjkasjdfkjaskdfj", state)
 	// Fill rest of header with state data.
 	block.Header.Populate(
 		state.Version.Consensus,
@@ -328,8 +322,8 @@ func (state State) MakeBlock(
 		state.AppHash,
 		state.LastResultsHash,
 		proposerAddress,
-		state.StandingMembers.Hash(),
-		state.ConsensusRoundInfo,
+		state.StandingMemberSet.Hash(),
+		*state.ConsensusRound,
 		state.QrnSet.Hash(),
 	)
 
@@ -454,9 +448,9 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 
 		AppHash: genDoc.AppHash,
 
-		StandingMembers:          standingMemberSet,
-		SteeringMemberCandidates: nil,
-		ConsensusRoundInfo:       genDoc.ConsensusRoundInfo,
-		QrnSet:                   qrnSet,
+		StandingMemberSet:          standingMemberSet,
+		SteeringMemberCandidateSet: nil,
+		ConsensusRound:             &genDoc.ConsensusRound,
+		QrnSet:                     qrnSet,
 	}, nil
 }

@@ -45,8 +45,6 @@ func loadState(db dbm.DB) State {
 }
 
 func saveState(state State) {
-
-	fmt.Println("qqqqqqq")
 	stateBytes, err := json.Marshal(state)
 	if err != nil {
 		panic(err)

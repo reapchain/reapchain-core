@@ -84,7 +84,7 @@ message Header {
   bytes proposer_address = 14;  // original proposer of the block
   
   bytes standing_members_hash = 15;
-  types.ConsensusRound consensus_round_info = 16 [(gogoproto.nullable) = false];
+  types.ConsensusRound consensus_round = 16 [(gogoproto.nullable) = false];
   bytes qrns_hash = 17;
 }
 

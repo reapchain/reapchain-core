@@ -15,7 +15,7 @@ type ConsensusRound struct {
 	Peorid                    int64 `json:"peorid"`
 }
 
-func NewConsensusRound(consensusStartBlockHeight, peorid int64) ConsensusRound {
+func NewConsensusRound(consensusStartBlockHeight, peorid int64) *ConsensusRound {
 	consensusRound := ConsensusRound{
 		ConsensusStartBlockHeight: consensusStartBlockHeight,
 		Peorid:                    peorid,
@@ -29,30 +29,30 @@ func NewConsensusRound(consensusStartBlockHeight, peorid int64) ConsensusRound {
 		consensusRound.Peorid = DefaultConsensusRoundPeorid
 	}
 
-	return consensusRound
+	return &consensusRound
 }
 
-func (consensusRoundInfo ConsensusRound) ValidateBasic() error {
-	if consensusRoundInfo.ConsensusStartBlockHeight < 0 {
-		return fmt.Errorf("wrong ConsensusStartBlockHeight (got: %d)", consensusRoundInfo.ConsensusStartBlockHeight)
+func (consensusRound ConsensusRound) ValidateBasic() error {
+	if consensusRound.ConsensusStartBlockHeight < 0 {
+		return fmt.Errorf("wrong ConsensusStartBlockHeight (got: %d)", consensusRound.ConsensusStartBlockHeight)
 	}
 
-	if consensusRoundInfo.Peorid < 0 {
-		return fmt.Errorf("wrong consensus peorid (got: %d)", consensusRoundInfo.Peorid)
+	if consensusRound.Peorid < 0 {
+		return fmt.Errorf("wrong consensus peorid (got: %d)", consensusRound.Peorid)
 	}
 
 	return nil
 }
 
-func (consensusRoundInfo ConsensusRound) ToProto() tmproto.ConsensusRound {
+func (consensusRound ConsensusRound) ToProto() tmproto.ConsensusRound {
 	return tmproto.ConsensusRound{
-		ConsensusStartBlockHeight: consensusRoundInfo.ConsensusStartBlockHeight,
-		Peorid:                    consensusRoundInfo.Peorid,
+		ConsensusStartBlockHeight: consensusRound.ConsensusStartBlockHeight,
+		Peorid:                    consensusRound.Peorid,
 	}
 }
 
-func ConsensusRoundFromProto(crProto tmproto.ConsensusRound) ConsensusRound {
-	return ConsensusRound{
+func ConsensusRoundFromProto(crProto tmproto.ConsensusRound) *ConsensusRound {
+	return &ConsensusRound{
 		ConsensusStartBlockHeight: crProto.ConsensusStartBlockHeight,
 		Peorid:                    crProto.Peorid,
 	}

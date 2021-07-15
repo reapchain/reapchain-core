@@ -360,7 +360,7 @@ type Header struct {
 	StandingMembersHash tmbytes.HexBytes `json:"standing_members_hash"`
 
 	// 합의 정보
-	ConsensusRoundInfo ConsensusRound `json:"consensus_round_info"`
+	ConsensusRound ConsensusRound `json:"consensus_round"`
 
 	// 양자 난수 해시
 	QrnsHash tmbytes.HexBytes `json:"qrns_hash"`
@@ -375,7 +375,7 @@ func (h *Header) Populate(
 	consensusHash, appHash, lastResultsHash []byte,
 	proposerAddress Address,
 	standingMembersHash []byte,
-	consensusRoundInfo ConsensusRound,
+	consensusRound ConsensusRound,
 	qrnsHash []byte,
 ) {
 	h.Version = version
@@ -390,7 +390,7 @@ func (h *Header) Populate(
 	h.ProposerAddress = proposerAddress
 
 	h.StandingMembersHash = standingMembersHash
-	h.ConsensusRoundInfo = consensusRoundInfo
+	h.ConsensusRound = consensusRound
 	h.QrnsHash = qrnsHash
 }
 
@@ -412,7 +412,7 @@ func (h Header) ValidateBasic() error {
 		return errors.New("zero Height")
 	}
 
-	if h.Height < h.ConsensusRoundInfo.ConsensusStartBlockHeight {
+	if h.Height < h.ConsensusRound.ConsensusStartBlockHeight {
 		return errors.New("ConsensusStartBlockHeight can not greater than block height")
 	}
 
@@ -467,8 +467,8 @@ func (h Header) ValidateBasic() error {
 		return fmt.Errorf("wrong QrnsHash: %v", err)
 	}
 
-	if err := h.ConsensusRoundInfo.ValidateBasic(); err != nil {
-		return fmt.Errorf("wrong ConsensusRoundInfo: %w", err)
+	if err := h.ConsensusRound.ValidateBasic(); err != nil {
+		return fmt.Errorf("wrong ConsensusRound: %w", err)
 	}
 	return nil
 }
@@ -512,7 +512,7 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		return nil
 	}
 
-	crbi := h.ConsensusRoundInfo.ToProto()
+	crbi := h.ConsensusRound.ToProto()
 	crbz, err := crbi.Marshal()
 	if err != nil {
 		return nil
@@ -534,7 +534,7 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		cdcEncode(h.EvidenceHash),
 		cdcEncode(h.ProposerAddress),
 		cdcEncode(h.StandingMembersHash),
-		cdcEncode(h.ConsensusRoundInfo),
+		cdcEncode(h.ConsensusRound),
 		cdcEncode(h.QrnsHash),
 		crbz,
 	})
@@ -561,7 +561,7 @@ func (h *Header) StringIndented(indent string) string {
 %s  Evidence:       %v
 %s  Proposer:       %v
 %s  StandingMembers:       %v
-%s  ConsensusRoundInfo:       %v
+%s  ConsensusRound:       %v
 %s  Qrns:       %v
 %s}#%v`,
 		indent, h.Version,
@@ -579,7 +579,7 @@ func (h *Header) StringIndented(indent string) string {
 		indent, h.EvidenceHash,
 		indent, h.ProposerAddress,
 		indent, h.StandingMembersHash,
-		indent, h.ConsensusRoundInfo,
+		indent, h.ConsensusRound,
 		indent, h.QrnsHash,
 		indent, h.Hash())
 }
@@ -606,7 +606,7 @@ func (h *Header) ToProto() *tmproto.Header {
 		LastCommitHash:      h.LastCommitHash,
 		ProposerAddress:     h.ProposerAddress,
 		StandingMembersHash: h.StandingMembersHash,
-		ConsensusRoundInfo:  h.ConsensusRoundInfo.ToProto(),
+		ConsensusRound:      h.ConsensusRound.ToProto(),
 		QrnsHash:            h.QrnsHash,
 	}
 }
@@ -641,7 +641,7 @@ func HeaderFromProto(ph *tmproto.Header) (Header, error) {
 	h.LastCommitHash = ph.LastCommitHash
 	h.ProposerAddress = ph.ProposerAddress
 	h.StandingMembersHash = ph.StandingMembersHash
-	h.ConsensusRoundInfo = ConsensusRoundFromProto(ph.ConsensusRoundInfo)
+	h.ConsensusRound = *ConsensusRoundFromProto(ph.ConsensusRound)
 	h.QrnsHash = ph.QrnsHash
 
 	return *h, h.ValidateBasic()

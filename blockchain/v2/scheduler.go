@@ -639,7 +639,6 @@ func (sc *scheduler) handleResetState(event bcResetState) (Event, error) {
 		initHeight = event.state.InitialHeight
 	}
 
-	fmt.Println("mansub4")
 	sc.initHeight = initHeight
 	sc.height = initHeight
 	sc.lastAdvance = time.Now()

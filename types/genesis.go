@@ -57,9 +57,9 @@ type GenesisDoc struct {
 	AppHash         tmbytes.HexBytes         `json:"app_hash"`
 	AppState        json.RawMessage          `json:"app_state,omitempty"`
 
-	StandingMembers    []GenesisStandingMember `json:"standing_members,omitempty"`
-	Qrns               []Qrn                   `json:"qrns,omitempty"`
-	ConsensusRoundInfo ConsensusRound          `json:"consensus_round_info"`
+	StandingMembers []GenesisStandingMember `json:"standing_members,omitempty"`
+	Qrns            []Qrn                   `json:"qrns,omitempty"`
+	ConsensusRound  ConsensusRound          `json:"consensus_round"`
 }
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.

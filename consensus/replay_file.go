@@ -259,8 +259,8 @@ func (pb *playback) replayConsoleLoop() int {
 					fmt.Printf("%v/%v/%v\n", rs.Height, rs.Round, rs.Step)
 				case "validators":
 					fmt.Println(rs.Validators)
-				case "standing_members":
-					fmt.Println(rs.StandingMembers)
+				case "standing_member_set":
+					fmt.Println(rs.StandingMemberSet)
 				case "qrns":
 					fmt.Println(rs.QrnSet)
 				case "proposal":

@@ -146,7 +146,6 @@ func MsgToProto(msg Message) (*tmcons.Message, error) {
 		pb = tmcons.Message{
 			Sum: vsb,
 		}
-
 	default:
 		return nil, fmt.Errorf("consensus: message not recognized: %T", msg)
 	}
@@ -270,7 +269,7 @@ func MsgFromProto(msg *tmcons.Message) (Message, error) {
 			Votes:   bits,
 		}
 	default:
-		return nil, fmt.Errorf("consensus: message not recognized: %T", msg)
+		return nil, fmt.Errorf("consensus: message not recognized - 2: %T", msg)
 	}
 
 	if err := pb.ValidateBasic(); err != nil {
@@ -309,7 +308,7 @@ func WALToProto(msg WALMessage) (*tmcons.WALMessage, error) {
 				},
 			},
 		}
-	case msgInfo:
+	case MsgInfo:
 		consMsg, err := MsgToProto(msg.Msg)
 		if err != nil {
 			return nil, err
@@ -367,7 +366,7 @@ func WALFromProto(msg *tmcons.WALMessage) (WALMessage, error) {
 		if err != nil {
 			return nil, fmt.Errorf("msgInfo from proto error: %w", err)
 		}
-		pb = msgInfo{
+		pb = MsgInfo{
 			Msg:    walMsg,
 			PeerID: p2p.ID(msg.MsgInfo.PeerID),
 		}

@@ -18,7 +18,7 @@ type PrivValidator interface {
 	SignVote(chainID string, vote *tmproto.Vote) error
 	SignProposal(chainID string, proposal *tmproto.Proposal) error
 
-	SignQrn(vote *tmproto.Qrn) error
+	SignQrn(chainID string, vote *tmproto.Qrn) error
 }
 
 type PrivValidatorsByAddress []PrivValidator

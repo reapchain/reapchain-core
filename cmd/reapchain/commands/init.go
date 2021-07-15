@@ -121,7 +121,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 			Signature:            qrn.Signature,
 		}}
 
-		genDoc.ConsensusRoundInfo = types.NewConsensusRound(0, 0)
+		genDoc.ConsensusRound = *types.NewConsensusRound(0, 0)
 
 		if err := genDoc.SaveAs(genFile); err != nil {
 			return err

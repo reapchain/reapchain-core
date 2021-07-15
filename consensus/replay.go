@@ -60,7 +60,7 @@ func (cs *State) readReplayMessage(msg *TimedWALMessage, newStepSub types.Subscr
 				return fmt.Errorf("failed to read off newStepSub.Out()")
 			}
 		}
-	case msgInfo:
+	case MsgInfo:
 		peerID := m.PeerID
 		if peerID == "" {
 			peerID = "local"
@@ -214,9 +214,6 @@ type Handshaker struct {
 func NewHandshaker(stateStore sm.Store, state sm.State,
 	store sm.BlockStore, genDoc *types.GenesisDoc) *Handshaker {
 
-	fmt.Println("initialState1", len(state.StandingMembers.StandingMembers))
-	fmt.Println("initialState2", len(state.QrnSet.Qrns))
-
 	return &Handshaker{
 		stateStore:   stateStore,
 		initialState: state,
@@ -337,15 +334,15 @@ func (h *Handshaker) ReplayBlocks(
 		fmt.Println("stompesi-start-asdfasdf", len(qrnz))
 
 		req := abci.RequestInitChain{
-			Time:               h.genDoc.GenesisTime,
-			ChainId:            h.genDoc.ChainID,
-			InitialHeight:      h.genDoc.InitialHeight,
-			ConsensusParams:    csParams,
-			Validators:         nextVals,
-			StandingMembers:    sms,
-			Qrns:               qrnz,
-			AppStateBytes:      h.genDoc.AppState,
-			ConsensusRoundInfo: h.genDoc.ConsensusRoundInfo.ToProto(),
+			Time:            h.genDoc.GenesisTime,
+			ChainId:         h.genDoc.ChainID,
+			InitialHeight:   h.genDoc.InitialHeight,
+			ConsensusParams: csParams,
+			Validators:      nextVals,
+			StandingMembers: sms,
+			Qrns:            qrnz,
+			AppStateBytes:   h.genDoc.AppState,
+			ConsensusRound:  h.genDoc.ConsensusRound.ToProto(),
 		}
 
 		res, err := proxyApp.Consensus().InitChainSync(req)
@@ -380,7 +377,7 @@ func (h *Handshaker) ReplayBlocks(
 				return nil, fmt.Errorf("validator set is nil in genesis and still empty after InitChain")
 			}
 
-			state.ConsensusRoundInfo = types.NewConsensusRound(res.ConsensusRoundInfo.ConsensusStartBlockHeight, res.ConsensusRoundInfo.Peorid)
+			state.ConsensusRound = types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.Peorid)
 
 			if len(res.StandingMembers) > 0 {
 				fmt.Printf("hihih")
@@ -390,7 +387,7 @@ func (h *Handshaker) ReplayBlocks(
 				}
 				fmt.Println("jbjb")
 
-				state.StandingMembers = types.NewStandingMemberSet(vals)
+				state.StandingMemberSet = types.NewStandingMemberSet(vals)
 			} else if len(h.genDoc.StandingMembers) == 0 {
 				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
 			}
@@ -401,7 +398,7 @@ func (h *Handshaker) ReplayBlocks(
 				if err != nil {
 					return nil, err
 				}
-				state.QrnSet = types.NewQrnSet(stateBlockHeight, state.StandingMembers, qrns)
+				state.QrnSet = types.NewQrnSet(stateBlockHeight, state.StandingMemberSet, qrns)
 			} else if len(h.genDoc.Qrns) == 0 {
 				return nil, fmt.Errorf("qrn set is nil in genesis and still empty after InitChain")
 			}

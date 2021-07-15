@@ -166,6 +166,10 @@ func (b *EventBus) PublishEventVote(data EventDataVote) error {
 	return b.Publish(EventVote, data)
 }
 
+func (b *EventBus) PublishEventQrn(data EventDataQrn) error {
+	return b.Publish(EventQrn, data)
+}
+
 func (b *EventBus) PublishEventValidBlock(data EventDataRoundState) error {
 	return b.Publish(EventValidBlock, data)
 }

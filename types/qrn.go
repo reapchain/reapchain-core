@@ -9,12 +9,18 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto"
 	ce "github.com/reapchain/reapchain-core/crypto/encoding"
+	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
 	"github.com/reapchain/reapchain-core/libs/protoio"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 )
 
+const (
+	nilQrnStr string = "nil-Qrn"
+)
+
 type Qrn struct {
 	Height               int64         `json:"height"`
+	BlockID              BlockID       `json:"block_id"`
 	Timestamp            time.Time     `json:"timestamp"`
 	StandingMemberPubKey crypto.PubKey `json:"standing_member_pub_key"`
 	StandingMemberIndex  int32         `json:"standing_member_index"`
@@ -28,6 +34,12 @@ func NewQrn(pubKey crypto.PubKey, value uint64, height int64, signature []byte) 
 		Value:                value,
 		Height:               height,
 		Signature:            signature,
+	}
+}
+
+func NewQrnAsEmpty(pubKey crypto.PubKey) *Qrn {
+	return &Qrn{
+		StandingMemberPubKey: pubKey,
 	}
 }
 
@@ -62,17 +74,14 @@ func (qrn *Qrn) ValidateBasic() error {
 
 func (qrn *Qrn) Verify(pubKey crypto.PubKey) error {
 	if !bytes.Equal(pubKey.Address(), qrn.StandingMemberPubKey.Address()) {
-		fmt.Println("한종빈-11-1")
 		return ErrQrnInvalidStandingMemberAddress
 	}
 	qrnProto, err := qrn.ToProto()
 	if err != nil {
-		fmt.Println("한종빈-11-2")
 		return err
 	}
 	qrnProto.Signature = nil
 	if !pubKey.VerifySignature(QrnSignBytes(qrnProto), qrn.Signature) {
-		fmt.Println("한종빈-11-3")
 		return ErrQrnInvalidSignature
 	}
 	return nil
@@ -83,12 +92,6 @@ func (qrn *Qrn) Bytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("qrn Bytes", qrn.Height)
-	fmt.Println("qrn Bytes", qrn.Timestamp)
-	fmt.Println("qrn Bytes", &pubKey)
-	fmt.Println("qrn Bytes", qrn.StandingMemberIndex)
-	fmt.Println("qrn Bytes", qrn.Value)
-	fmt.Println("qrn Bytes", qrn.Signature)
 
 	pbv := tmproto.SimpleQrn{
 		Height:               qrn.Height,
@@ -170,4 +173,19 @@ func QrnSignBytes(qrn *tmproto.Qrn) []byte {
 	}
 
 	return bz
+}
+
+func (qrn *Qrn) String() string {
+	if qrn == nil {
+		return nilQrnStr
+	}
+
+	return fmt.Sprintf("Qrn{%v:%X (%v) %X %X @ %s}",
+		qrn.StandingMemberIndex,
+		tmbytes.Fingerprint(qrn.StandingMemberPubKey.Address()),
+		qrn.Height,
+		tmbytes.Fingerprint(qrn.BlockID.Hash),
+		tmbytes.Fingerprint(qrn.Signature),
+		CanonicalTime(qrn.Timestamp),
+	)
 }

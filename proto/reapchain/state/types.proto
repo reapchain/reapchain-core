@@ -42,8 +42,8 @@ message QrnsInfo {
   int64                         last_height_changed = 2;
 }
 
-message ConsensusRoundInfo {
-  reapchain.types.ConsensusRound consensus_round_info       = 1;
+message ConsensusRound {
+  reapchain.types.ConsensusRound consensus_round       = 1;
   int64                         last_height_changed = 2;
 }
 
@@ -79,8 +79,8 @@ message State {
   // we set s.LastHeightValidatorsChanged = s.LastBlockHeight + 1 + 1
   // Extra +1 due to nextValSet delay.
   reapchain.types.ValidatorSet next_validators                = 6;
-  reapchain.types.StandingMemberSet standing_members          = 15;
-  reapchain.types.SteeringMemberCandidateSet steering_member_candidates          = 18;
+  reapchain.types.StandingMemberSet standing_member_set          = 15;
+  reapchain.types.SteeringMemberCandidateSet steering_member_candidate_set          = 18;
   reapchain.types.ValidatorSet validators                     = 7;
   reapchain.types.ValidatorSet last_validators                = 8;
   int64                         last_height_validators_changed = 9;
@@ -96,7 +96,7 @@ message State {
   // the latest AppHash we've received from calling abci.Commit()
   bytes app_hash = 13;
 
-  reapchain.types.ConsensusRound consensus_round_info                     = 16 [(gogoproto.nullable) = false];
-  reapchain.types.QrnSet qrns          = 17;
+  reapchain.types.ConsensusRound consensus_round                     = 16 [(gogoproto.nullable) = false];
+  reapchain.types.QrnSet qrn_set          = 17;
 }
 

@@ -92,8 +92,10 @@ type RoundState struct {
 	LastValidators            *types.ValidatorSet `json:"last_validators"`
 	TriggeredTimeoutPrecommit bool                `json:"triggered_timeout_precommit"`
 
-	StandingMembers *types.StandingMemberSet `json:"standing_members"`
-	QrnSet          *types.QrnSet            `json:"qrns"`
+	ConsensusRound             *types.ConsensusRound             `json:"consensus_round"`
+	StandingMemberSet          *types.StandingMemberSet          `json:"standing_member_set"`
+	SteeringMemberCandidateSet *types.SteeringMemberCandidateSet `json:"steering_member_candidate_set"`
+	HeightQrnSet               *HeightQrnSet                     `json:"qrn_set"`
 }
 
 // Compressed version of the RoundState for use in RPC
@@ -104,6 +106,7 @@ type RoundStateSimple struct {
 	LockedBlockHash   bytes.HexBytes      `json:"locked_block_hash"`
 	ValidBlockHash    bytes.HexBytes      `json:"valid_block_hash"`
 	Votes             json.RawMessage     `json:"height_vote_set"`
+	HeightQrnSet      json.RawMessage     `json:"height_qrn_set"`
 	Proposer          types.ValidatorInfo `json:"proposer"`
 }
 
@@ -114,8 +117,13 @@ func (rs *RoundState) RoundStateSimple() RoundStateSimple {
 		panic(err)
 	}
 
-	addr := rs.StandingMembers.GetCoordinator().Address
-	idx, _ := rs.StandingMembers.GetByAddress(addr)
+	qrnsJSON, err := rs.HeightQrnSet.MarshalJSON()
+	if err != nil {
+		panic(err)
+	}
+
+	addr := rs.StandingMemberSet.GetCoordinator().Address
+	idx, _ := rs.StandingMemberSet.GetByAddress(addr)
 
 	return RoundStateSimple{
 		HeightRoundStep:   fmt.Sprintf("%d/%d/%d", rs.Height, rs.Round, rs.Step),
@@ -124,6 +132,7 @@ func (rs *RoundState) RoundStateSimple() RoundStateSimple {
 		LockedBlockHash:   rs.LockedBlock.Hash(),
 		ValidBlockHash:    rs.ValidBlock.Hash(),
 		Votes:             votesJSON,
+		HeightQrnSet:      qrnsJSON,
 		Proposer: types.ValidatorInfo{
 			Address: addr,
 			Index:   idx,
@@ -133,8 +142,8 @@ func (rs *RoundState) RoundStateSimple() RoundStateSimple {
 
 // NewRoundEvent returns the RoundState with proposer information as an event.
 func (rs *RoundState) NewRoundEvent() types.EventDataNewRound {
-	addr := rs.StandingMembers.GetCoordinator().Address
-	idx, _ := rs.StandingMembers.GetByAddress(addr)
+	addr := rs.StandingMemberSet.GetCoordinator().Address
+	idx, _ := rs.StandingMemberSet.GetByAddress(addr)
 
 	return types.EventDataNewRound{
 		Height: rs.Height,
@@ -192,6 +201,7 @@ func (rs *RoundState) StringIndented(indent string) string {
 %s  ValidRound:   %v
 %s  ValidBlock:   %v %v
 %s  Votes:         %v
+%s  HeightQrnSet:         %v
 %s  LastCommit:    %v
 %s  LastValidators:%v
 %s}`,
@@ -206,6 +216,7 @@ func (rs *RoundState) StringIndented(indent string) string {
 		indent, rs.ValidRound,
 		indent, rs.ValidBlockParts.StringShort(), rs.ValidBlock.StringShort(),
 		indent, rs.Votes.StringIndented(indent+"  "),
+		indent, rs.HeightQrnSet.StringIndented(indent+"  "),
 		indent, rs.LastCommit.StringShort(),
 		indent, rs.LastValidators.StringIndented(indent+"  "),
 		indent)

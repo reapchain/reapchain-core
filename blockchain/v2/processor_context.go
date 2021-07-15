@@ -75,7 +75,6 @@ func (mpc *mockPContext) applyBlock(blockID types.BlockID, block *types.Block) e
 		}
 	}
 
-	fmt.Println("mansub3")
 	mpc.state.LastBlockHeight = block.Height
 	return nil
 }

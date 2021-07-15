@@ -96,7 +96,6 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	state State, commit *types.Commit,
 	proposerAddr []byte,
 ) (*types.Block, *types.PartSet) {
-	//fmt.Println("2stompesi-지금테스트")
 
 	maxBytes := state.ConsensusParams.Block.MaxBytes
 	maxGas := state.ConsensusParams.Block.MaxGas
@@ -104,7 +103,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	evidence, evSize := blockExec.evpool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
 
 	// Fetch a limited amount of valid txs
-	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size(), state.StandingMembers.Size(), state.QrnSet.Size())
+	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size(), state.StandingMemberSet.Size(), state.QrnSet.Size())
 
 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxDataBytes, maxGas)
 
@@ -196,7 +195,6 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		return state, 0, fmt.Errorf("error in qrn updates: %v", err)
 	}
 
-	//TODO: stompesi
 	qrnUpdates, err := types.PB2TM.QrnUpdates(abciQrnUpdates)
 	if err != nil {
 		return state, 0, err
@@ -208,14 +206,11 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	// --------------------------
 
 	// Update the state with the block and responses.
-	//fmt.Println("stompesi-이쯤1", len(state.StandingMembers.StandingMembers), len(state.Validators.Validators))
-	fmt.Println("3stompesi-ApplyBlock", state)
 
 	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
-	fmt.Println("stompesi-이쯤2", len(state.StandingMembers.StandingMembers), len(state.Validators.Validators))
 
 	// Lock mempool, commit app state, update mempoool.
 	appHash, retainHeight, err := blockExec.Commit(state, block, abciResponses.DeliverTxs)
@@ -539,9 +534,9 @@ func updateState(
 		LastHeightConsensusParamsChanged: lastHeightParamsChanged,
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
-		StandingMembers:                  state.StandingMembers.Copy(),
+		StandingMemberSet:                state.StandingMemberSet.Copy(),
 		QrnSet:                           state.QrnSet.Copy(),
-		ConsensusRoundInfo:               state.ConsensusRoundInfo,
+		ConsensusRound:                   state.ConsensusRound,
 	}, nil
 }
 

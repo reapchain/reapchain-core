@@ -1,8 +1,6 @@
 package types
 
 import (
-	"fmt"
-
 	abci "github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
@@ -56,7 +54,7 @@ func (tm2pb) Header(header *Header) tmproto.Header {
 		ProposerAddress: header.ProposerAddress,
 
 		StandingMembersHash: header.StandingMembersHash,
-		ConsensusRoundInfo:  header.ConsensusRoundInfo.ToProto(),
+		ConsensusRound:      header.ConsensusRound.ToProto(),
 		QrnsHash:            header.QrnsHash,
 	}
 }
@@ -146,12 +144,10 @@ func (tm2pb) QrnUpdate(qrn *Qrn) abci.QrnUpdate {
 
 func (tm2pb) QrnUpdates(qrnSet *QrnSet) []abci.QrnUpdate {
 	qrns := make([]abci.QrnUpdate, qrnSet.Size())
-	fmt.Println(len(qrnSet.Qrns))
 
 	for i, sm := range qrnSet.Qrns {
 		qrns[i] = TM2PB.QrnUpdate(sm)
 	}
-	fmt.Println("qrns", qrns)
 	return qrns
 }
 
