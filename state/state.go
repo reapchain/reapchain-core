@@ -80,6 +80,7 @@ type State struct {
 	AppHash []byte
 
 	StandingMemberSet *types.StandingMemberSet
+	ConsensusRound    types.ConsensusRound
 }
 
 // Copy makes a copy of the State for mutating.
@@ -107,6 +108,7 @@ func (state State) Copy() State {
 		LastResultsHash: state.LastResultsHash,
 
 		StandingMemberSet: state.StandingMemberSet.Copy(),
+		ConsensusRound:    state.ConsensusRound,
 	}
 }
 
@@ -182,6 +184,8 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	}
 	sm.StandingMemberSet = standingMemberSetProto
 
+	sm.ConsensusRound = state.ConsensusRound.ToProto()
+
 	return sm, nil
 }
 
@@ -239,6 +243,8 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	}
 	state.StandingMemberSet = standingMemberSet
 
+	state.ConsensusRound = types.ConsensusRoundFromProto(pb.ConsensusRound)
+
 	return state, nil
 }
 
@@ -275,6 +281,7 @@ func (state State) MakeBlock(
 		types.HashConsensusParams(state.ConsensusParams), state.AppHash, state.LastResultsHash,
 		proposerAddress,
 		state.StandingMemberSet.Hash(),
+		state.ConsensusRound,
 	)
 
 	return block, block.MakePartSet(types.BlockPartSizeBytes)
@@ -382,5 +389,6 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		AppHash: genDoc.AppHash,
 
 		StandingMemberSet: standingMemberSet,
+		ConsensusRound:    genDoc.ConsensusRound,
 	}, nil
 }

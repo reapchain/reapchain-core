@@ -76,6 +76,8 @@ func initFilesWithConfig(config *cfg.Config) error {
 			PubKey:  pubKey,
 		}}
 
+		genDoc.ConsensusRound = types.NewConsensusRound(0, 0)
+
 		if err := genDoc.SaveAs(genFile); err != nil {
 			return err
 		}

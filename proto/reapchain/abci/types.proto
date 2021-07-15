@@ -11,6 +11,7 @@ import "reapchain/crypto/keys.proto";
 import "reapchain/types/params.proto";
 import "google/protobuf/timestamp.proto";
 import "gogoproto/gogo.proto";
+import "reapchain/types/consensus_round.proto";
 
 // This file is copied from http://github.com/reapchain/abci
 // NOTE: When using custom types, mind the warnings.
@@ -66,6 +67,7 @@ message RequestInitChain {
   bytes                    app_state_bytes  = 5;
   int64                    initial_height   = 6;
   repeated StandingMemberUpdate standing_member_updates       = 7 [(gogoproto.nullable) = false];
+  reapchain.types.ConsensusRound consensus_round       = 8 [(gogoproto.nullable) = false];
 }
 
 message RequestQuery {
@@ -184,6 +186,7 @@ message ResponseInitChain {
   repeated ValidatorUpdate validators       = 2 [(gogoproto.nullable) = false];
   bytes                    app_hash         = 3;
   repeated StandingMemberUpdate standing_member_updates       = 4 [(gogoproto.nullable) = false];
+  reapchain.types.ConsensusRound consensus_round       = 5 [(gogoproto.nullable) = false];
 }
 
 message ResponseQuery {

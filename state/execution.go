@@ -494,6 +494,7 @@ func updateState(
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
 		StandingMemberSet:                state.StandingMemberSet.Copy(),
+		ConsensusRound:                   state.ConsensusRound,
 	}, nil
 }
 

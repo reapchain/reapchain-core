@@ -54,6 +54,7 @@ func (tm2pb) Header(header *Header) tmproto.Header {
 		ProposerAddress: header.ProposerAddress,
 
 		StandingMembersHash: header.StandingMembersHash,
+		ConsensusRound:      header.ConsensusRound.ToProto(),
 	}
 }
 

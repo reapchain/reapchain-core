@@ -42,6 +42,12 @@ type GenesisStandingMember struct {
 	Name    string        `json:"name"`
 }
 
+type GenesisQrn struct {
+	Address Address       `json:"address"`
+	PubKey  crypto.PubKey `json:"pub_key"`
+	Value   uint64        `json:"value"`
+}
+
 // GenesisDoc defines the initial conditions for a reapchain blockchain, in particular its validator set.
 type GenesisDoc struct {
 	GenesisTime     time.Time                `json:"genesis_time"`
@@ -52,6 +58,7 @@ type GenesisDoc struct {
 	AppHash         tmbytes.HexBytes         `json:"app_hash"`
 	AppState        json.RawMessage          `json:"app_state,omitempty"`
 	StandingMembers []GenesisStandingMember  `json:"standing_members,omitempty"`
+	ConsensusRound  ConsensusRound           `json:"consensus_round"`
 }
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.

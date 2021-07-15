@@ -324,6 +324,7 @@ func (h *Handshaker) ReplayBlocks(
 			Validators:            nextVals,
 			AppStateBytes:         h.genDoc.AppState,
 			StandingMemberUpdates: standingMemberUpdates,
+			ConsensusRound:        h.genDoc.ConsensusRound.ToProto(),
 		}
 		res, err := proxyApp.Consensus().InitChainSync(req)
 		if err != nil {
@@ -364,6 +365,8 @@ func (h *Handshaker) ReplayBlocks(
 			} else if len(h.genDoc.StandingMembers) == 0 {
 				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
 			}
+
+			state.ConsensusRound = types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.Peorid)
 
 			if res.ConsensusParams != nil {
 				state.ConsensusParams = types.UpdateConsensusParams(state.ConsensusParams, res.ConsensusParams)

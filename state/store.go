@@ -37,6 +37,10 @@ func calcABCIResponsesKey(height int64) []byte {
 	return []byte(fmt.Sprintf("abciResponsesKey:%v", height))
 }
 
+func calcConsensusRoundKey(height int64) []byte {
+	return []byte(fmt.Sprintf("consensusRoundKey:%v", height))
+}
+
 //----------------------
 
 //go:generate mockery --case underscore --name Store
@@ -676,6 +680,27 @@ func (store dbStore) saveConsensusParamsInfo(nextHeight, changeHeight int64, par
 	}
 
 	err = store.db.Set(calcConsensusParamsKey(nextHeight), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (store dbStore) saveConsensusRound(nextHeight, changeHeight int64, params tmproto.ConsensusRound) error {
+	paramsInfo := &tmstate.ConsensusRoundInfo{
+		LastHeightChanged: changeHeight,
+	}
+
+	if changeHeight == nextHeight {
+		paramsInfo.ConsensusRound = &params
+	}
+	bz, err := paramsInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = store.db.Set(calcConsensusRoundKey(nextHeight), bz)
 	if err != nil {
 		return err
 	}
