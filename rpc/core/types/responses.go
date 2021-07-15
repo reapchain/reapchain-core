@@ -83,9 +83,10 @@ type ValidatorInfo struct {
 
 // Node Status
 type ResultStatus struct {
-	NodeInfo      p2p.DefaultNodeInfo `json:"node_info"`
-	SyncInfo      SyncInfo            `json:"sync_info"`
-	ValidatorInfo ValidatorInfo       `json:"validator_info"`
+	NodeInfo       p2p.DefaultNodeInfo  `json:"node_info"`
+	SyncInfo       SyncInfo             `json:"sync_info"`
+	ValidatorInfo  ValidatorInfo        `json:"validator_info"`
+	StandingMember types.StandingMember `json:"standing_member_info"`
 }
 
 // Is TxIndexing enabled
@@ -126,6 +127,16 @@ type Peer struct {
 type ResultValidators struct {
 	BlockHeight int64              `json:"block_height"`
 	Validators  []*types.Validator `json:"validators"`
+	// Count of actual validators in this result
+	Count int `json:"count"`
+	// Total number of validators
+	Total int `json:"total"`
+}
+
+// StandingMembers for a height.
+type ResultStandingMembers struct {
+	BlockHeight     int64                   `json:"block_height"`
+	StandingMembers []*types.StandingMember `json:"standing_members"`
 	// Count of actual validators in this result
 	Count int `json:"count"`
 	// Total number of validators

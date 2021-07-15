@@ -68,6 +68,8 @@ type Store interface {
 	Bootstrap(State) error
 	// PruneStates takes the height from which to start prning and which height stop at
 	PruneStates(int64, int64) error
+
+	LoadStandingMembers(int64) (*types.StandingMemberSet, error)
 }
 
 // dbStore wraps a db (github.com/tendermint/tm-db)
@@ -129,6 +131,7 @@ func (store dbStore) loadState(key []byte) (state State, err error) {
 	if err != nil {
 		return state, err
 	}
+
 	if len(buf) == 0 {
 		return state, nil
 	}
@@ -157,6 +160,7 @@ func (store dbStore) Save(state State) error {
 }
 
 func (store dbStore) save(state State, key []byte) error {
+
 	nextHeight := state.LastBlockHeight + 1
 	// If first block, save validators for the block.
 	if nextHeight == 1 {
@@ -167,6 +171,11 @@ func (store dbStore) save(state State, key []byte) error {
 			return err
 		}
 	}
+
+	if err := store.saveStandingMembersInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.StandingMemberSet); err != nil {
+		return err
+	}
+
 	// Save next validators.
 	if err := store.saveValidatorsInfo(nextHeight+1, state.LastHeightValidatorsChanged, state.NextValidators); err != nil {
 		return err
@@ -177,6 +186,7 @@ func (store dbStore) save(state State, key []byte) error {
 		state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
 		return err
 	}
+
 	err := store.db.SetSync(key, state.Bytes())
 	if err != nil {
 		return err
@@ -198,6 +208,10 @@ func (store dbStore) Bootstrap(state State) error {
 	}
 
 	if err := store.saveValidatorsInfo(height, height, state.Validators); err != nil {
+		return err
+	}
+
+	if err := store.saveStandingMembersInfo(height, height, state.StandingMemberSet); err != nil {
 		return err
 	}
 
@@ -237,11 +251,23 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 		return fmt.Errorf("consensus params at height %v not found: %w", to, err)
 	}
 
+	smInfo, err := loadStandingMembersInfo(store.db, to)
+	if err != nil {
+		return fmt.Errorf("validators at height %v not found: %w", to, err)
+	}
+
 	keepVals := make(map[int64]bool)
 	if valInfo.ValidatorSet == nil {
 		keepVals[valInfo.LastHeightChanged] = true
 		keepVals[lastStoredHeightFor(to, valInfo.LastHeightChanged)] = true // keep last checkpoint too
 	}
+
+	keepSms := make(map[int64]bool)
+	if smInfo.StandingMemberSet == nil {
+		keepSms[smInfo.LastHeightChanged] = true
+		keepSms[lastStoredHeightFor(to, smInfo.LastHeightChanged)] = true // keep last checkpoint too
+	}
+
 	keepParams := make(map[int64]bool)
 	if paramsInfo.ConsensusParams.Equal(&tmproto.ConsensusParams{}) {
 		keepParams[paramsInfo.LastHeightChanged] = true
@@ -284,6 +310,38 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 			}
 		} else {
 			err = batch.Delete(calcValidatorsKey(h))
+			if err != nil {
+				return err
+			}
+		}
+
+		if keepSms[h] {
+			v, err := loadStandingMembersInfo(store.db, h)
+			if err != nil || v.StandingMemberSet == nil {
+				vip, err := store.LoadStandingMembers(h)
+				if err != nil {
+					return err
+				}
+
+				pvi, err := vip.ToProto()
+				if err != nil {
+					return err
+				}
+
+				v.StandingMemberSet = pvi
+				v.LastHeightChanged = h
+
+				bz, err := v.Marshal()
+				if err != nil {
+					return err
+				}
+				err = batch.Set(calcStandingMembersKey(h), bz)
+				if err != nil {
+					return err
+				}
+			}
+		} else {
+			err = batch.Delete(calcStandingMembersKey(h))
 			if err != nil {
 				return err
 			}
@@ -519,6 +577,37 @@ func (store dbStore) saveValidatorsInfo(height, lastHeightChanged int64, valSet 
 	return nil
 }
 
+func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, valSet *types.StandingMemberSet) error {
+
+	if lastHeightChanged > height {
+		return errors.New("lastHeightChanged cannot be greater than StandingMembersInfo height")
+	}
+	smInfo := &tmstate.StandingMembersInfo{
+		LastHeightChanged: lastHeightChanged,
+	}
+	// Only persist validator set if it was updated or checkpoint height (see
+	// valSetCheckpointInterval) is reached.
+	if height == lastHeightChanged || height%valSetCheckpointInterval == 0 {
+		pv, err := valSet.ToProto()
+		if err != nil {
+			return err
+		}
+		smInfo.StandingMemberSet = pv
+	}
+
+	bz, err := smInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = store.db.Set(calcStandingMembersKey(height), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 //-----------------------------------------------------------------------------
 
 // ConsensusParamsInfo represents the latest consensus params, or the last height it changed
@@ -592,4 +681,70 @@ func (store dbStore) saveConsensusParamsInfo(nextHeight, changeHeight int64, par
 	}
 
 	return nil
+}
+
+func (store dbStore) LoadStandingMembers(height int64) (*types.StandingMemberSet, error) {
+	smInfo, err := loadStandingMembersInfo(store.db, height)
+	if err != nil {
+		return nil, ErrNoValSetForHeight{height}
+	}
+	if smInfo.StandingMemberSet == nil {
+		lastStoredHeight := lastStoredHeightFor(height, smInfo.LastHeightChanged)
+		smInfo2, err := loadStandingMembersInfo(store.db, lastStoredHeight)
+		if err != nil || smInfo2.StandingMemberSet == nil {
+			return nil,
+				fmt.Errorf("couldn't find standing members at height %d (height %d was originally requested): %w",
+					lastStoredHeight,
+					height,
+					err,
+				)
+		}
+
+		vs, err := types.StandingMemberSetFromProto(smInfo2.StandingMemberSet)
+		if err != nil {
+			return nil, err
+		}
+
+		vi2, err := vs.ToProto()
+		if err != nil {
+			return nil, err
+		}
+
+		smInfo2.StandingMemberSet = vi2
+		smInfo = smInfo2
+	}
+
+	vip, err := types.StandingMemberSetFromProto(smInfo.StandingMemberSet)
+	if err != nil {
+		return nil, err
+	}
+
+	return vip, nil
+}
+
+// CONTRACT: Returned StandingMemberInfo can be mutated.
+func loadStandingMembersInfo(db dbm.DB, height int64) (*tmstate.StandingMembersInfo, error) {
+	buf, err := db.Get(calcStandingMembersKey(height))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	v := new(tmstate.StandingMembersInfo)
+	err = v.Unmarshal(buf)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadStandingMembers: Data has been corrupted or its spec has changed:
+                %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return v, nil
+}
+
+func calcStandingMembersKey(height int64) []byte {
+	return []byte(fmt.Sprintf("standingMembersKey:%v", height))
 }

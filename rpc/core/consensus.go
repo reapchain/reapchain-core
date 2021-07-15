@@ -45,6 +45,35 @@ func Validators(ctx *rpctypes.Context, heightPtr *int64, pagePtr, perPagePtr *in
 		Total:       totalCount}, nil
 }
 
+func StandingMembers(ctx *rpctypes.Context, heightPtr *int64, pagePtr, perPagePtr *int) (*ctypes.ResultStandingMembers, error) {
+	height, err := getHeight(latestUncommittedHeight(), heightPtr)
+	if err != nil {
+		return nil, err
+	}
+
+	standingMembers, err := env.StateStore.LoadStandingMembers(height)
+	if err != nil {
+		return nil, err
+	}
+
+	totalCount := len(standingMembers.StandingMembers)
+	perPage := validatePerPage(perPagePtr)
+	page, err := validatePage(pagePtr, perPage, totalCount)
+	if err != nil {
+		return nil, err
+	}
+
+	skipCount := validateSkipCount(page, perPage)
+
+	v := standingMembers.StandingMembers[skipCount : skipCount+tmmath.MinInt(perPage, totalCount-skipCount)]
+
+	return &ctypes.ResultStandingMembers{
+		BlockHeight:     height,
+		StandingMembers: v,
+		Count:           len(v),
+		Total:           totalCount}, nil
+}
+
 // DumpConsensusState dumps consensus state.
 // UNSTABLE
 // More: https://docs.reapchain.com/master/rpc/#/Info/dump_consensus_state

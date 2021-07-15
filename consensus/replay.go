@@ -306,15 +306,24 @@ func (h *Handshaker) ReplayBlocks(
 			validators[i] = types.NewValidator(val.PubKey, val.Power)
 		}
 		validatorSet := types.NewValidatorSet(validators)
+
+		standingMembers := make([]*types.StandingMember, len(h.genDoc.StandingMembers))
+		for i, val := range h.genDoc.StandingMembers {
+			standingMembers[i] = types.NewStandingMember(val.PubKey)
+		}
+		standingMemberSet := types.NewStandingMemberSet(standingMembers)
+		standingMemberUpdates := types.TM2PB.StandingMemberSetUpdate(standingMemberSet)
+
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
 		csParams := types.TM2PB.ConsensusParams(h.genDoc.ConsensusParams)
 		req := abci.RequestInitChain{
-			Time:            h.genDoc.GenesisTime,
-			ChainId:         h.genDoc.ChainID,
-			InitialHeight:   h.genDoc.InitialHeight,
-			ConsensusParams: csParams,
-			Validators:      nextVals,
-			AppStateBytes:   h.genDoc.AppState,
+			Time:                  h.genDoc.GenesisTime,
+			ChainId:               h.genDoc.ChainID,
+			InitialHeight:         h.genDoc.InitialHeight,
+			ConsensusParams:       csParams,
+			Validators:            nextVals,
+			AppStateBytes:         h.genDoc.AppState,
+			StandingMemberUpdates: standingMemberUpdates,
 		}
 		res, err := proxyApp.Consensus().InitChainSync(req)
 		if err != nil {
@@ -341,6 +350,19 @@ func (h *Handshaker) ReplayBlocks(
 			} else if len(h.genDoc.Validators) == 0 {
 				// If validator set is not set in genesis and still empty after InitChain, exit.
 				return nil, fmt.Errorf("validator set is nil in genesis and still empty after InitChain")
+			}
+
+			if len(res.StandingMemberUpdates) > 0 {
+				fmt.Printf("hihih")
+				vals, err := types.PB2TM.StandingMemberUpdates(res.StandingMemberUpdates)
+				if err != nil {
+					return nil, err
+				}
+				fmt.Println("jbjb")
+
+				state.StandingMemberSet = types.NewStandingMemberSet(vals)
+			} else if len(h.genDoc.StandingMembers) == 0 {
+				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
 			}
 
 			if res.ConsensusParams != nil {

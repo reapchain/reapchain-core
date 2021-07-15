@@ -801,3 +801,25 @@ func (_m *Client) Validators(ctx context.Context, height *int64, page *int, perP
 
 	return r0, r1
 }
+
+func (_m *Client) StandingMembers(ctx context.Context, height *int64, page *int, perPage *int) (*coretypes.ResultStandingMembers, error) {
+	ret := _m.Called(ctx, height, page, perPage)
+
+	var r0 *coretypes.ResultStandingMembers
+	if rf, ok := ret.Get(0).(func(context.Context, *int64, *int, *int) *coretypes.ResultStandingMembers); ok {
+		r0 = rf(ctx, height, page, perPage)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*coretypes.ResultStandingMembers)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, *int64, *int, *int) error); ok {
+		r1 = rf(ctx, height, page, perPage)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}

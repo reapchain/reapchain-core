@@ -65,6 +65,7 @@ message RequestInitChain {
   repeated ValidatorUpdate validators       = 4 [(gogoproto.nullable) = false];
   bytes                    app_state_bytes  = 5;
   int64                    initial_height   = 6;
+  repeated StandingMemberUpdate standing_member_updates       = 7 [(gogoproto.nullable) = false];
 }
 
 message RequestQuery {
@@ -182,6 +183,7 @@ message ResponseInitChain {
   ConsensusParams          consensus_params = 1;
   repeated ValidatorUpdate validators       = 2 [(gogoproto.nullable) = false];
   bytes                    app_hash         = 3;
+  repeated StandingMemberUpdate standing_member_updates       = 4 [(gogoproto.nullable) = false];
 }
 
 message ResponseQuery {
@@ -232,6 +234,8 @@ message ResponseEndBlock {
   ConsensusParams consensus_param_updates = 2;
   repeated Event  events                  = 3
       [(gogoproto.nullable) = false, (gogoproto.jsontag) = "events,omitempty"];
+  repeated StandingMemberUpdate standing_member_updates = 4
+      [(gogoproto.nullable) = false];
 }
 
 message ResponseCommit {
@@ -339,10 +343,18 @@ message Validator {
   int64 power = 3;  // The voting power
 }
 
+message StandingMember {
+  bytes address = 1;  // The first 20 bytes of SHA256(public key)
+}
+
 // ValidatorUpdate
 message ValidatorUpdate {
   reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
   int64                       power   = 2;
+}
+
+message StandingMemberUpdate {
+  reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
 }
 
 // VoteInfo

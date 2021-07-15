@@ -79,13 +79,16 @@ type State struct {
 	// the latest AppHash we've received from calling abci.Commit()
 	AppHash []byte
 
-	StandingMemberSet *types.StandingMemberSet
+	ConsensusRoundInfo       types.ConsensusRound
+	StandingMembers          *types.StandingMemberSet
+	SteeringMemberCandidates *types.SteeringMemberCandidateSet
+	QrnSet                   *types.QrnSet
 }
 
 // Copy makes a copy of the State for mutating.
 func (state State) Copy() State {
 
-	return State{
+	tempState := State{
 		Version:       state.Version,
 		ChainID:       state.ChainID,
 		InitialHeight: state.InitialHeight,
@@ -106,8 +109,16 @@ func (state State) Copy() State {
 
 		LastResultsHash: state.LastResultsHash,
 
-		StandingMemberSet: state.StandingMemberSet.Copy(),
+		ConsensusRoundInfo: state.ConsensusRoundInfo,
+		StandingMembers:    state.StandingMembers.Copy(),
+		QrnSet:             state.QrnSet.Copy(),
 	}
+
+	if state.SteeringMemberCandidates != nil {
+		tempState.SteeringMemberCandidates = state.SteeringMemberCandidates.Copy()
+	}
+
+	return tempState
 }
 
 // Equals returns true if the States are identical.
@@ -144,23 +155,25 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	sm := new(tmstate.State)
 
 	sm.Version = state.Version
+
 	sm.ChainID = state.ChainID
 	sm.InitialHeight = state.InitialHeight
-	sm.LastBlockHeight = state.LastBlockHeight
 
+	sm.LastBlockHeight = state.LastBlockHeight
 	sm.LastBlockID = state.LastBlockID.ToProto()
 	sm.LastBlockTime = state.LastBlockTime
-	vals, err := state.Validators.ToProto()
-	if err != nil {
-		return nil, err
-	}
-	sm.Validators = vals
 
 	nVals, err := state.NextValidators.ToProto()
 	if err != nil {
 		return nil, err
 	}
 	sm.NextValidators = nVals
+
+	vals, err := state.Validators.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.Validators = vals
 
 	if state.LastBlockHeight >= 1 { // At Block 1 LastValidators is nil
 		lVals, err := state.LastValidators.ToProto()
@@ -171,22 +184,40 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	}
 
 	sm.LastHeightValidatorsChanged = state.LastHeightValidatorsChanged
+
 	sm.ConsensusParams = state.ConsensusParams
 	sm.LastHeightConsensusParamsChanged = state.LastHeightConsensusParamsChanged
+
 	sm.LastResultsHash = state.LastResultsHash
 	sm.AppHash = state.AppHash
 
-	standingMemberSetProto, err := state.StandingMemberSet.ToProto()
+	fmt.Println("mansub1", state.ConsensusRoundInfo.ToProto())
+
+	sm.ConsensusRoundInfo = state.ConsensusRoundInfo.ToProto()
+	sms, err := state.StandingMembers.ToProto()
 	if err != nil {
 		return nil, err
 	}
-	sm.StandingMemberSet = standingMemberSetProto
+	sm.StandingMembers = sms
+
+	smcs, err := state.SteeringMemberCandidates.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.SteeringMemberCandidates = smcs
+
+	qrns, err := state.QrnSet.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.Qrns = qrns
 
 	return sm, nil
 }
 
 // StateFromProto takes a state proto message & returns the local state type
 func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
+	//fmt.Println("stompesi-start-54564164")
 	if pb == nil {
 		return nil, errors.New("nil State")
 	}
@@ -194,6 +225,7 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state := new(State)
 
 	state.Version = pb.Version
+
 	state.ChainID = pb.ChainID
 	state.InitialHeight = pb.InitialHeight
 
@@ -201,21 +233,21 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	if err != nil {
 		return nil, err
 	}
-	state.LastBlockID = *bi
 	state.LastBlockHeight = pb.LastBlockHeight
+	state.LastBlockID = *bi
 	state.LastBlockTime = pb.LastBlockTime
-
-	vals, err := types.ValidatorSetFromProto(pb.Validators)
-	if err != nil {
-		return nil, err
-	}
-	state.Validators = vals
 
 	nVals, err := types.ValidatorSetFromProto(pb.NextValidators)
 	if err != nil {
 		return nil, err
 	}
 	state.NextValidators = nVals
+
+	vals, err := types.ValidatorSetFromProto(pb.Validators)
+	if err != nil {
+		return nil, err
+	}
+	state.Validators = vals
 
 	if state.LastBlockHeight >= 1 { // At Block 1 LastValidators is nil
 		lVals, err := types.ValidatorSetFromProto(pb.LastValidators)
@@ -226,18 +258,33 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	} else {
 		state.LastValidators = types.NewValidatorSet(nil)
 	}
-
 	state.LastHeightValidatorsChanged = pb.LastHeightValidatorsChanged
+
 	state.ConsensusParams = pb.ConsensusParams
 	state.LastHeightConsensusParamsChanged = pb.LastHeightConsensusParamsChanged
+
 	state.LastResultsHash = pb.LastResultsHash
 	state.AppHash = pb.AppHash
 
-	standingMemberSet, err := types.StandingMemberSetFromProto(pb.StandingMemberSet)
+	fmt.Println("mansub2", types.ConsensusRoundFromProto(pb.ConsensusRoundInfo))
+	state.ConsensusRoundInfo = types.ConsensusRoundFromProto(pb.ConsensusRoundInfo)
+	sms, err := types.StandingMemberSetFromProto(pb.StandingMembers)
 	if err != nil {
 		return nil, err
 	}
-	state.StandingMemberSet = standingMemberSet
+	state.StandingMembers = sms
+
+	smcs, err := types.SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidates)
+	if err != nil {
+		return nil, err
+	}
+	state.SteeringMemberCandidates = smcs
+
+	qrnSet, err := types.QrnSetFromProto(pb.Qrns)
+	if err != nil {
+		return nil, err
+	}
+	state.QrnSet = qrnSet
 
 	return state, nil
 }
@@ -251,13 +298,14 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 func (state State) MakeBlock(
 	height int64,
 	txs []types.Tx,
+	qrns []types.Qrn,
 	commit *types.Commit,
 	evidence []types.Evidence,
 	proposerAddress []byte,
 ) (*types.Block, *types.PartSet) {
 
 	// Build base block with block data.
-	block := types.MakeBlock(height, txs, commit, evidence)
+	block := types.MakeBlock(height, txs, qrns, commit, evidence)
 
 	// Set time.
 	var timestamp time.Time
@@ -267,14 +315,22 @@ func (state State) MakeBlock(
 		timestamp = MedianTime(commit, state.LastValidators)
 	}
 
+	//fmt.Println("2stompesi-skdfjkasjdfkjaskdfj", state)
 	// Fill rest of header with state data.
 	block.Header.Populate(
-		state.Version.Consensus, state.ChainID,
-		timestamp, state.LastBlockID,
-		state.Validators.Hash(), state.NextValidators.Hash(),
-		types.HashConsensusParams(state.ConsensusParams), state.AppHash, state.LastResultsHash,
+		state.Version.Consensus,
+		state.ChainID,
+		timestamp,
+		state.LastBlockID,
+		state.Validators.Hash(),
+		state.NextValidators.Hash(),
+		types.HashConsensusParams(state.ConsensusParams),
+		state.AppHash,
+		state.LastResultsHash,
 		proposerAddress,
-		state.StandingMemberSet.Hash(),
+		state.StandingMembers.Hash(),
+		state.ConsensusRoundInfo,
+		state.QrnSet.Hash(),
 	)
 
 	return block, block.MakePartSet(types.BlockPartSizeBytes)
@@ -333,6 +389,8 @@ func MakeGenesisDocFromFile(genDocFile string) (*types.GenesisDoc, error) {
 
 // MakeGenesisState creates state from types.GenesisDoc.
 func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
+	fmt.Println("MakeGenesisState")
+
 	err := genDoc.ValidateAndComplete()
 	if err != nil {
 		return State{}, fmt.Errorf("error in genesis file: %v", err)
@@ -356,14 +414,29 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		standingMemberSet = types.NewStandingMemberSet(nil)
 	} else {
 		standingMembers := make([]*types.StandingMember, len(genDoc.StandingMembers))
-		for i, standingMember := range genDoc.StandingMembers {
-			standingMembers[i] = types.NewStandingMember(standingMember.PubKey)
+		for i, val := range genDoc.StandingMembers {
+			standingMembers[i] = types.NewStandingMember(val.PubKey)
 		}
 		standingMemberSet = types.NewStandingMemberSet(standingMembers)
 	}
 
+	var qrnSet *types.QrnSet
+
+	fmt.Println("MakeGenesisState", genDoc.Qrns)
+	if genDoc.Qrns == nil {
+		qrnSet = types.NewQrnSet(0, standingMemberSet, nil)
+	} else {
+		qrns := make([]*types.Qrn, len(genDoc.Qrns))
+		for i, qrn := range genDoc.Qrns {
+			qrns[i] = types.NewQrn(qrn.StandingMemberPubKey, qrn.Value, qrn.Height, qrn.Signature)
+		}
+		qrnSet = types.NewQrnSet(0, standingMemberSet, qrns)
+	}
+
+	fmt.Println("MakeGenesisState", qrnSet.Qrns)
 	return State{
-		Version:       InitStateVersion,
+		Version: InitStateVersion,
+
 		ChainID:       genDoc.ChainID,
 		InitialHeight: genDoc.InitialHeight,
 
@@ -381,6 +454,9 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 
 		AppHash: genDoc.AppHash,
 
-		StandingMemberSet: standingMemberSet,
+		StandingMembers:          standingMemberSet,
+		SteeringMemberCandidates: nil,
+		ConsensusRoundInfo:       genDoc.ConsensusRoundInfo,
+		QrnSet:                   qrnSet,
 	}, nil
 }

@@ -35,6 +35,13 @@ type GenesisValidator struct {
 	Name    string        `json:"name"`
 }
 
+// GenesisStandingMember is an initial standingMember.
+type GenesisStandingMember struct {
+	Address Address       `json:"address"`
+	PubKey  crypto.PubKey `json:"pub_key"`
+	Name    string        `json:"name"`
+}
+
 // GenesisDoc defines the initial conditions for a reapchain blockchain, in particular its validator set.
 type GenesisDoc struct {
 	GenesisTime     time.Time                `json:"genesis_time"`
@@ -44,6 +51,7 @@ type GenesisDoc struct {
 	Validators      []GenesisValidator       `json:"validators,omitempty"`
 	AppHash         tmbytes.HexBytes         `json:"app_hash"`
 	AppState        json.RawMessage          `json:"app_state,omitempty"`
+	StandingMembers []GenesisStandingMember  `json:"standing_members,omitempty"`
 }
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.
@@ -96,6 +104,15 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 		}
 		if len(v.Address) == 0 {
 			genDoc.Validators[i].Address = v.PubKey.Address()
+		}
+	}
+
+	for i, standingMember := range genDoc.StandingMembers {
+		if len(standingMember.Address) > 0 && !bytes.Equal(standingMember.PubKey.Address(), standingMember.Address) {
+			return fmt.Errorf("incorrect address for validator %v in the genesis file, should be %v", standingMember, standingMember.PubKey.Address())
+		}
+		if len(standingMember.Address) == 0 {
+			genDoc.StandingMembers[i].Address = standingMember.PubKey.Address()
 		}
 	}
 

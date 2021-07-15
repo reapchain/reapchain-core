@@ -170,6 +170,20 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		blockExec.logger.Debug("updates to validators", "updates", types.ValidatorListString(validatorUpdates))
 	}
 
+	abciStandingMemberUpdates := abciResponses.EndBlock.StandingMemberUpdates
+	err = validateStandingMemberUpdates(abciStandingMemberUpdates, state.ConsensusParams.StandingMemberParam)
+	if err != nil {
+		return state, 0, fmt.Errorf("error in standing member updates: %v", err)
+	}
+
+	standingMemberUpdates, err := types.PB2TM.StandingMemberUpdates(abciStandingMemberUpdates)
+	if err != nil {
+		return state, 0, err
+	}
+	if len(standingMemberUpdates) > 0 {
+		blockExec.logger.Debug("updates to standing members", "updates", types.StandingMemberListString(standingMemberUpdates))
+	}
+
 	// Update the state with the block and responses.
 	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates)
 	if err != nil {
@@ -399,6 +413,23 @@ func validateValidatorUpdates(abciUpdates []abci.ValidatorUpdate,
 	return nil
 }
 
+func validateStandingMemberUpdates(standingMemberUpdatesAbci []abci.StandingMemberUpdate,
+	params tmproto.StandingMemberParam) error {
+	for _, valUpdate := range standingMemberUpdatesAbci {
+		// Check if validator's pubkey matches an ABCI type in the consensus params
+		pk, err := cryptoenc.PubKeyFromProto(valUpdate.PubKey)
+		if err != nil {
+			return err
+		}
+
+		if !types.IsValidStandingMemberPubkeyType(params, pk.Type()) {
+			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
+				valUpdate, pk.Type())
+		}
+	}
+	return nil
+}
+
 // updateState returns a new State updated according to the header and responses.
 func updateState(
 	state State,
@@ -462,6 +493,7 @@ func updateState(
 		LastHeightConsensusParamsChanged: lastHeightParamsChanged,
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
+		StandingMemberSet:                state.StandingMemberSet.Copy(),
 	}, nil
 }
 

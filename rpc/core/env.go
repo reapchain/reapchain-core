@@ -47,6 +47,8 @@ type Consensus interface {
 	GetLastHeight() int64
 	GetRoundStateJSON() ([]byte, error)
 	GetRoundStateSimpleJSON() ([]byte, error)
+
+	GetStandingMembers() (int64, []*types.StandingMember)
 }
 
 type transport interface {

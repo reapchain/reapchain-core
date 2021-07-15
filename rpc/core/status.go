@@ -69,6 +69,10 @@ func Status(ctx *rpctypes.Context) (*ctypes.ResultStatus, error) {
 			PubKey:      env.PubKey,
 			VotingPower: votingPower,
 		},
+		StandingMember: types.StandingMember{
+			PubKey:  env.PubKey,
+			Address: env.PubKey.Address(),
+		},
 	}
 
 	return result, nil

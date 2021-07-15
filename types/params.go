@@ -72,6 +72,15 @@ func IsValidPubkeyType(params tmproto.ValidatorParams, pubkeyType string) bool {
 	return false
 }
 
+func IsValidStandingMemberPubkeyType(params tmproto.StandingMemberParam, pubkeyType string) bool {
+	for i := 0; i < len(params.PubKeyTypes); i++ {
+		if params.PubKeyTypes[i] == pubkeyType {
+			return true
+		}
+	}
+	return false
+}
+
 // Validate validates the ConsensusParams to ensure all values are within their
 // allowed limits, and returns an error if they are not.
 func ValidateConsensusParams(params tmproto.ConsensusParams) error {

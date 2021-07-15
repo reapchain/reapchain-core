@@ -177,3 +177,7 @@ func (c Client) Validators(ctx context.Context, height *int64, page, perPage *in
 func (c Client) BroadcastEvidence(ctx context.Context, ev types.Evidence) (*ctypes.ResultBroadcastEvidence, error) {
 	return core.BroadcastEvidence(&rpctypes.Context{}, ev)
 }
+
+func (c Client) StandingMembers(ctx context.Context, height *int64, page, perPage *int) (*ctypes.ResultStandingMembers, error) {
+	return core.StandingMembers(&rpctypes.Context{}, height, page, perPage)
+}

@@ -31,6 +31,7 @@ func RPCRoutes(c *lrpc.Client) map[string]*rpcserver.RPCFunc {
 		"tx_search":            rpcserver.NewRPCFunc(makeTxSearchFunc(c), "query,prove,page,per_page,order_by"),
 		"block_search":         rpcserver.NewRPCFunc(makeBlockSearchFunc(c), "query,page,per_page,order_by"),
 		"validators":           rpcserver.NewRPCFunc(makeValidatorsFunc(c), "height,page,per_page"),
+		"standing_members":     rpcserver.NewRPCFunc(makeStandingMembersFunc(c), "height"),
 		"dump_consensus_state": rpcserver.NewRPCFunc(makeDumpConsensusStateFunc(c), ""),
 		"consensus_state":      rpcserver.NewRPCFunc(makeConsensusStateFunc(c), ""),
 		"consensus_params":     rpcserver.NewRPCFunc(makeConsensusParamsFunc(c), "height"),
@@ -178,6 +179,15 @@ type rpcValidatorsFunc func(ctx *rpctypes.Context, height *int64,
 func makeValidatorsFunc(c *lrpc.Client) rpcValidatorsFunc {
 	return func(ctx *rpctypes.Context, height *int64, page, perPage *int) (*ctypes.ResultValidators, error) {
 		return c.Validators(ctx.Context(), height, page, perPage)
+	}
+}
+
+type rpcStandingMembersFunc func(ctx *rpctypes.Context, height *int64,
+	page, perPage *int) (*ctypes.ResultStandingMembers, error)
+
+func makeStandingMembersFunc(c *lrpc.Client) rpcStandingMembersFunc {
+	return func(ctx *rpctypes.Context, height *int64, page, perPage *int) (*ctypes.ResultStandingMembers, error) {
+		return c.StandingMembers(ctx.Context(), height, page, perPage)
 	}
 }
 

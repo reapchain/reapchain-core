@@ -71,6 +71,11 @@ func initFilesWithConfig(config *cfg.Config) error {
 			Power:   10,
 		}}
 
+		genDoc.StandingMembers = []types.GenesisStandingMember{{
+			Address: pubKey.Address(),
+			PubKey:  pubKey,
+		}}
+
 		if err := genDoc.SaveAs(genFile); err != nil {
 			return err
 		}
