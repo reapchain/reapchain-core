@@ -103,7 +103,7 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 	evidence, evSize := blockExec.evpool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
 
 	// Fetch a limited amount of valid txs
-	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size(), state.StandingMemberSet.Size(), state.QrnSet.Size())
+	maxDataBytes := types.MaxDataBytes(maxBytes, evSize, state.Validators.Size(), state.StandingMemberSet.Size())
 
 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxDataBytes, maxGas)
 

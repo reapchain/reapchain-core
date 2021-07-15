@@ -89,7 +89,7 @@ func (cs *State) signQrn() (*types.Qrn, error) {
 		fmt.Println("can't get qrn proto", "err", err)
 	}
 
-	err = cs.privValidator.SignQrn(cs.state.ChainID, qrnProto)
+	err = cs.privValidator.SignQrn(qrnProto)
 	qrn.Signature = qrnProto.Signature
 
 	return qrn, err

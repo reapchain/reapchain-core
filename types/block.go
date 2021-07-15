@@ -280,13 +280,12 @@ func BlockFromProto(bp *tmproto.Block) (*Block, error) {
 // MaxDataBytes returns the maximum size of block's data.
 //
 // XXX: Panics on negative result.
-func MaxDataBytes(maxBytes, evidenceBytes int64, valsCount, smsCount, qrnsCount int) int64 {
+func MaxDataBytes(maxBytes, evidenceBytes int64, valsCount, smsCount int) int64 {
 	maxDataBytes := maxBytes -
 		MaxOverheadForBlock -
 		MaxHeaderBytes -
 		MaxCommitBytes(valsCount) -
 		MaxCommitBytes(smsCount) -
-		MaxCommitBytes(qrnsCount) -
 		evidenceBytes
 
 	if maxDataBytes < 0 {

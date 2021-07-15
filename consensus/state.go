@@ -269,12 +269,6 @@ func (consensusState *State) GetStandingMembers() (int64, []*types.StandingMembe
 	return consensusState.state.LastBlockHeight, consensusState.state.StandingMemberSet.Copy().StandingMembers
 }
 
-func (consensusState *State) GetQrns() (int64, []*types.Qrn) {
-	consensusState.mtx.RLock()
-	defer consensusState.mtx.RUnlock()
-	return consensusState.state.LastBlockHeight, consensusState.state.QrnSet.Copy().Qrns
-}
-
 // SetPrivValidator sets the private validator account for signing votes. It
 // immediately requests pubkey and caches it.
 func (consensusState *State) SetPrivValidator(priv types.PrivValidator) {
@@ -598,7 +592,6 @@ func (consensusState *State) updateToState(state sm.State) {
 
 	if state.ConsensusRound.ConsensusStartBlockHeight+state.ConsensusRound.Peorid == height {
 		state.ConsensusRound.ConsensusStartBlockHeight = height
-		state.QrnSet = types.NewQrnSet(height, state.StandingMemberSet, nil)
 	}
 
 	// RoundState fields
@@ -631,7 +624,7 @@ func (consensusState *State) updateToState(state sm.State) {
 	consensusState.LastValidators = state.LastValidators
 	consensusState.TriggeredTimeoutPrecommit = false
 	consensusState.StandingMemberSet = state.StandingMemberSet
-	consensusState.QrnSet = state.QrnSet
+	consensusState.HeightQrnSet = cstypes.NewHeightQrnSet(state.ChainID, height, state.StandingMemberSet)
 	consensusState.ConsensusRound = state.ConsensusRound
 
 	fmt.Println("3stompesi-updateToState")
@@ -799,7 +792,7 @@ func (consensusState *State) handleMsg(mi MsgInfo) {
 		// attempt to add the vote and dupeout the validator if its a duplicate signature
 		// if the vote gives us a 2/3-any or 2/3-one, we transition
 		fmt.Println("handleMsg-QrnMessage")
-		added, err = consensusState.addQrn(msg.Qrn)
+		added, err = consensusState.addQrn(msg.Qrn, peerID)
 
 	case *VoteMessage:
 		// attempt to add the vote and dupeout the validator if its a duplicate signature
