@@ -29,6 +29,8 @@ func initFilesWithConfig(config *cfg.Config) error {
 	// private validator
 	privValKeyFile := config.PrivValidatorKeyFile()
 	privValStateFile := config.PrivValidatorStateFile()
+	privValidator := privval.LoadOrGenFilePV(privValKeyFile, privValStateFile)
+
 	var pv *privval.FilePV
 	if tmos.FileExists(privValKeyFile) {
 		pv = privval.LoadFilePV(privValKeyFile, privValStateFile)
@@ -77,6 +79,21 @@ func initFilesWithConfig(config *cfg.Config) error {
 		}}
 
 		genDoc.ConsensusRound = types.NewConsensusRound(0, 0)
+
+		qrnValue := tmrand.Uint64()
+		qrn := types.NewQrn(0, pubKey, qrnValue)
+		qrn.Timestamp = genDoc.GenesisTime
+
+		err = privValidator.SignQrn(&qrn)
+		if err != nil {
+			logger.Error("Can't sign qrn", "err", err)
+		}
+
+		if qrn.VerifySign() == false {
+			logger.Error("Is invalid sign of qrn")
+		}
+
+		genDoc.Qrns = []types.Qrn{qrn}
 
 		if err := genDoc.SaveAs(genFile); err != nil {
 			return err

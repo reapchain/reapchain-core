@@ -436,3 +436,18 @@ func checkProposalsOnlyDifferByTimestamp(lastSignBytes, newSignBytes []byte) (ti
 
 	return lastTime, proto.Equal(&newProposal, &lastProposal)
 }
+
+func (pv *FilePV) SignQrn(qrn *types.Qrn) error {
+	signBytes := qrn.GetQrnSignBytes()
+	if signBytes == nil {
+		return fmt.Errorf("error signing qrn: qrn is nil")
+	}
+
+	sig, err := pv.Key.PrivKey.Sign(signBytes)
+	if err != nil {
+		return err
+	}
+
+	qrn.Signature = sig
+	return nil
+}
