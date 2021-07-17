@@ -31,7 +31,6 @@ func RPCRoutes(c *lrpc.Client) map[string]*rpcserver.RPCFunc {
 		"tx_search":            rpcserver.NewRPCFunc(makeTxSearchFunc(c), "query,prove,page,per_page,order_by"),
 		"block_search":         rpcserver.NewRPCFunc(makeBlockSearchFunc(c), "query,page,per_page,order_by"),
 		"validators":           rpcserver.NewRPCFunc(makeValidatorsFunc(c), "height,page,per_page"),
-		"standing_members":     rpcserver.NewRPCFunc(makeStandingMembersFunc(c), "height"),
 		"dump_consensus_state": rpcserver.NewRPCFunc(makeDumpConsensusStateFunc(c), ""),
 		"consensus_state":      rpcserver.NewRPCFunc(makeConsensusStateFunc(c), ""),
 		"consensus_params":     rpcserver.NewRPCFunc(makeConsensusParamsFunc(c), "height"),
@@ -49,6 +48,9 @@ func RPCRoutes(c *lrpc.Client) map[string]*rpcserver.RPCFunc {
 
 		// evidence API
 		"broadcast_evidence": rpcserver.NewRPCFunc(makeBroadcastEvidenceFunc(c), "evidence"),
+
+		"standing_members": rpcserver.NewRPCFunc(makeStandingMembersFunc(c), "height"),
+		"qrns":             rpcserver.NewRPCFunc(makeQrnsFunc(c), "height"),
 	}
 }
 
@@ -182,12 +184,19 @@ func makeValidatorsFunc(c *lrpc.Client) rpcValidatorsFunc {
 	}
 }
 
-type rpcStandingMembersFunc func(ctx *rpctypes.Context, height *int64,
-	page, perPage *int) (*ctypes.ResultStandingMembers, error)
+type rpcStandingMembersFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultStandingMembers, error)
 
 func makeStandingMembersFunc(c *lrpc.Client) rpcStandingMembersFunc {
-	return func(ctx *rpctypes.Context, height *int64, page, perPage *int) (*ctypes.ResultStandingMembers, error) {
-		return c.StandingMembers(ctx.Context(), height, page, perPage)
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultStandingMembers, error) {
+		return c.StandingMembers(ctx.Context(), height)
+	}
+}
+
+type rpcQrnsFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultQrns, error)
+
+func makeQrnsFunc(c *lrpc.Client) rpcQrnsFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultQrns, error) {
+		return c.Qrns(ctx.Context(), height)
 	}
 }
 

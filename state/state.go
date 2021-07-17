@@ -79,8 +79,13 @@ type State struct {
 	// the latest AppHash we've received from calling abci.Commit()
 	AppHash []byte
 
-	StandingMemberSet *types.StandingMemberSet
-	ConsensusRound    types.ConsensusRound
+	StandingMemberSet                *types.StandingMemberSet
+	LastHeightStandingMembersChanged int64
+
+	ConsensusRound                  types.ConsensusRound
+	LastHeightConsensusRoundChanged int64
+
+	QrnSet *types.QrnSet
 }
 
 // Copy makes a copy of the State for mutating.
@@ -107,8 +112,13 @@ func (state State) Copy() State {
 
 		LastResultsHash: state.LastResultsHash,
 
-		StandingMemberSet: state.StandingMemberSet.Copy(),
-		ConsensusRound:    state.ConsensusRound,
+		StandingMemberSet:                state.StandingMemberSet.Copy(),
+		LastHeightStandingMembersChanged: state.LastHeightStandingMembersChanged,
+
+		ConsensusRound:                  state.ConsensusRound,
+		LastHeightConsensusRoundChanged: state.LastHeightConsensusRoundChanged,
+
+		QrnSet: state.QrnSet.Copy(),
 	}
 }
 
@@ -183,8 +193,16 @@ func (state *State) ToProto() (*tmstate.State, error) {
 		return nil, err
 	}
 	sm.StandingMemberSet = standingMemberSetProto
+	sm.LastHeightStandingMembersChanged = state.LastHeightStandingMembersChanged
 
 	sm.ConsensusRound = state.ConsensusRound.ToProto()
+	sm.LastHeightConsensusRoundChanged = state.LastHeightConsensusRoundChanged
+
+	qrnSetProto, err := state.QrnSet.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.QrnSet = qrnSetProto
 
 	return sm, nil
 }
@@ -242,8 +260,16 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 		return nil, err
 	}
 	state.StandingMemberSet = standingMemberSet
+	state.LastHeightStandingMembersChanged = pb.LastHeightStandingMembersChanged
 
 	state.ConsensusRound = types.ConsensusRoundFromProto(pb.ConsensusRound)
+	state.LastHeightConsensusRoundChanged = pb.LastHeightConsensusRoundChanged
+
+	qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
+	if err != nil {
+		return nil, err
+	}
+	state.QrnSet = qrnSet
 
 	return state, nil
 }
@@ -282,6 +308,7 @@ func (state State) MakeBlock(
 		proposerAddress,
 		state.StandingMemberSet.Hash(),
 		state.ConsensusRound,
+		state.QrnSet.Hash(),
 	)
 
 	return block, block.MakePartSet(types.BlockPartSizeBytes)
@@ -369,6 +396,17 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		standingMemberSet = types.NewStandingMemberSet(standingMembers)
 	}
 
+	var qrnSet *types.QrnSet
+	if genDoc.Qrns == nil {
+		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, nil)
+	} else {
+		qrns := make([]*types.Qrn, len(genDoc.Qrns))
+		for i, qrn := range genDoc.Qrns {
+			qrns[i] = &qrn
+		}
+		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, qrns)
+	}
+
 	return State{
 		Version:       InitStateVersion,
 		ChainID:       genDoc.ChainID,
@@ -388,7 +426,12 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 
 		AppHash: genDoc.AppHash,
 
-		StandingMemberSet: standingMemberSet,
-		ConsensusRound:    genDoc.ConsensusRound,
+		StandingMemberSet:                standingMemberSet,
+		LastHeightStandingMembersChanged: genDoc.InitialHeight,
+
+		ConsensusRound:                  genDoc.ConsensusRound,
+		LastHeightConsensusRoundChanged: genDoc.InitialHeight,
+
+		QrnSet: qrnSet,
 	}, nil
 }

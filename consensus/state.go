@@ -20,6 +20,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/log"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	tmos "github.com/reapchain/reapchain-core/libs/os"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
 	"github.com/reapchain/reapchain-core/libs/service"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	"github.com/reapchain/reapchain-core/p2p"
@@ -651,7 +652,7 @@ func (cs *State) updateToState(state sm.State) {
 		state.ConsensusRound = types.NewConsensusRound(0, 0)
 	}
 
-	if state.ConsensusRound.ConsensusStartBlockHeight+state.ConsensusRound.Peorid == height {
+	if state.ConsensusRound.ConsensusStartBlockHeight+int64(state.ConsensusRound.Peorid) == height {
 		state.ConsensusRound.ConsensusStartBlockHeight = height
 	}
 	// RoundState fields
@@ -689,6 +690,7 @@ func (cs *State) updateToState(state sm.State) {
 
 	// Finally, broadcast RoundState
 	cs.newStep()
+
 }
 
 func (cs *State) newStep() {
@@ -865,6 +867,9 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// TODO: If rs.Height == vote.Height && rs.Round < vote.Round,
 		// the peer is sending us CatchupCommit precommits.
 		// We could make note of this and help filter in broadcastHasVoteMessage().
+
+	case *QrnMessage:
+		added, err = cs.tryAddQrn(msg.Qrn, peerID)
 
 	default:
 		cs.Logger.Error("unknown msg type", "type", fmt.Sprintf("%T", msg))
@@ -1681,6 +1686,18 @@ func (cs *State) finalizeCommit(height int64) {
 		logger.Error("failed to get private validator pubkey", "err", err)
 	}
 
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight-1 == height {
+		cs.state.QrnSet = types.NewQrnSet(height+1, cs.RoundState.StandingMemberSet, nil)
+		qrnValue := tmrand.Uint64()
+		qrn := types.NewQrn(height+1, cs.privValidatorPubKey, qrnValue)
+		err = cs.privValidator.SignQrn(qrn)
+		if err != nil {
+			logger.Error("Can't sign qrn", "err", err)
+		} else {
+			cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
+		}
+	}
+
 	// cs.StartTime is already set.
 	// Schedule Round0 to start soon.
 	cs.scheduleRound0(&cs.RoundState)
@@ -2339,4 +2356,16 @@ func repairWalFile(src, dst string) error {
 	}
 
 	return nil
+}
+
+func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
+	if qrn.Height != cs.Height {
+		return false, fmt.Errorf("Failed to add qrn: difference height / qrnHeight: %v & consensusRoundHeight: %v", qrn.Height, cs.Height)
+	}
+
+	if err := cs.state.QrnSet.AddQrn(qrn); err != nil {
+		return false, fmt.Errorf("Failed to add qrn: %v", err)
+	}
+
+	return true, nil
 }

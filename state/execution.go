@@ -171,7 +171,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	}
 
 	abciStandingMemberUpdates := abciResponses.EndBlock.StandingMemberUpdates
-	err = validateStandingMemberUpdates(abciStandingMemberUpdates, state.ConsensusParams.StandingMemberParam)
+	err = validateStandingMemberUpdates(abciStandingMemberUpdates, state.ConsensusParams.Validator)
 	if err != nil {
 		return state, 0, fmt.Errorf("error in standing member updates: %v", err)
 	}
@@ -413,8 +413,7 @@ func validateValidatorUpdates(abciUpdates []abci.ValidatorUpdate,
 	return nil
 }
 
-func validateStandingMemberUpdates(standingMemberUpdatesAbci []abci.StandingMemberUpdate,
-	params tmproto.StandingMemberParam) error {
+func validateStandingMemberUpdates(standingMemberUpdatesAbci []abci.StandingMemberUpdate, params tmproto.ValidatorParams) error {
 	for _, valUpdate := range standingMemberUpdatesAbci {
 		// Check if validator's pubkey matches an ABCI type in the consensus params
 		pk, err := cryptoenc.PubKeyFromProto(valUpdate.PubKey)
@@ -422,7 +421,7 @@ func validateStandingMemberUpdates(standingMemberUpdatesAbci []abci.StandingMemb
 			return err
 		}
 
-		if !types.IsValidStandingMemberPubkeyType(params, pk.Type()) {
+		if !types.IsValidPubkeyType(params, pk.Type()) {
 			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
 				valUpdate, pk.Type())
 		}
@@ -454,6 +453,15 @@ func updateState(
 		lastHeightValsChanged = header.Height + 1 + 1
 	}
 
+	lastHeightStandingMembersChanged := state.LastHeightStandingMembersChanged
+	if len(validatorUpdates) > 0 {
+		err := nValSet.UpdateWithChangeSet(validatorUpdates)
+		if err != nil {
+			return state, fmt.Errorf("error changing validator set: %v", err)
+		}
+		lastHeightStandingMembersChanged = header.Height + 1
+	}
+
 	// Update validator proposer priority and set state variables.
 	nValSet.IncrementProposerPriority(1)
 
@@ -469,6 +477,15 @@ func updateState(
 		}
 
 		state.Version.Consensus.App = nextParams.Version.AppVersion
+
+		// Change results from this height but only applies to the next height.
+		lastHeightParamsChanged = header.Height + 1
+	}
+
+	nextConsensusRound := state.ConsensusRound
+	lastHeightConsensusRoundChanged := state.LastHeightConsensusRoundChanged
+	if abciResponses.EndBlock.ConsensusRoundUpdates != nil {
+		nextConsensusRound = types.ConsensusRoundFromProto(types.UpdateConsensusRound(state.ConsensusRound.ToProto(), abciResponses.EndBlock.ConsensusRoundUpdates))
 
 		// Change results from this height but only applies to the next height.
 		lastHeightParamsChanged = header.Height + 1
@@ -494,7 +511,10 @@ func updateState(
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
 		StandingMemberSet:                state.StandingMemberSet.Copy(),
-		ConsensusRound:                   state.ConsensusRound,
+		LastHeightStandingMembersChanged: lastHeightStandingMembersChanged,
+		ConsensusRound:                   nextConsensusRound,
+		LastHeightConsensusRoundChanged:  lastHeightConsensusRoundChanged,
+		QrnSet:                           state.QrnSet.Copy(),
 	}, nil
 }
 

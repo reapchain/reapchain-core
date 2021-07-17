@@ -351,6 +351,8 @@ type Header struct {
 
 	StandingMembersHash tmbytes.HexBytes `json:"standing_members_hash"`
 	ConsensusRound      ConsensusRound   `json:"consensus_round"`
+
+	QrnsHash tmbytes.HexBytes `json:"qrns_hash"`
 }
 
 // Populate the Header with state-derived data.
@@ -363,6 +365,7 @@ func (h *Header) Populate(
 	proposerAddress Address,
 	standingMembersHash []byte,
 	consensusRound ConsensusRound,
+	qrnsHash []byte,
 ) {
 	h.Version = version
 	h.ChainID = chainID
@@ -376,6 +379,8 @@ func (h *Header) Populate(
 	h.ProposerAddress = proposerAddress
 	h.StandingMembersHash = standingMembersHash
 	h.ConsensusRound = consensusRound
+
+	h.QrnsHash = qrnsHash
 }
 
 // ValidateBasic performs stateless validation on a Header returning an error
@@ -447,6 +452,10 @@ func (h Header) ValidateBasic() error {
 		return fmt.Errorf("wrong ConsensusRound: %w", err)
 	}
 
+	if err := ValidateHash(h.QrnsHash); err != nil {
+		return fmt.Errorf("wrong QrnsHash: %v", err)
+	}
+
 	return nil
 }
 
@@ -462,6 +471,10 @@ func (h *Header) Hash() tmbytes.HexBytes {
 	}
 
 	if h == nil || len(h.StandingMembersHash) == 0 {
+		return nil
+	}
+
+	if h == nil || len(h.QrnsHash) == 0 {
 		return nil
 	}
 
@@ -502,6 +515,8 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		cdcEncode(h.EvidenceHash),
 		cdcEncode(h.ProposerAddress),
 		cdcEncode(h.StandingMembersHash),
+		cdcEncode(h.ConsensusRound),
+		cdcEncode(h.QrnsHash),
 		crbz,
 	})
 }
@@ -528,6 +543,7 @@ func (h *Header) StringIndented(indent string) string {
 %s  Proposer:       %v
 %s  StandingMembers:       %v
 %s  ConsensusRound:       %v
+%s  QrnsRound:       %v
 %s}#%v`,
 		indent, h.Version,
 		indent, h.ChainID,
@@ -545,6 +561,7 @@ func (h *Header) StringIndented(indent string) string {
 		indent, h.ProposerAddress,
 		indent, h.StandingMembersHash,
 		indent, h.ConsensusRound,
+		indent, h.QrnsHash,
 		indent, h.Hash())
 }
 
@@ -571,6 +588,7 @@ func (h *Header) ToProto() *tmproto.Header {
 		ProposerAddress:     h.ProposerAddress,
 		StandingMembersHash: h.StandingMembersHash,
 		ConsensusRound:      h.ConsensusRound.ToProto(),
+		QrnsHash:            h.QrnsHash,
 	}
 }
 
@@ -605,6 +623,7 @@ func HeaderFromProto(ph *tmproto.Header) (Header, error) {
 	h.ProposerAddress = ph.ProposerAddress
 	h.StandingMembersHash = ph.StandingMembersHash
 	h.ConsensusRound = ConsensusRoundFromProto(ph.ConsensusRound)
+	h.QrnsHash = ph.QrnsHash
 
 	return *h, h.ValidateBasic()
 }

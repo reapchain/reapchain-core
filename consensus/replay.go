@@ -76,6 +76,10 @@ func (cs *State) readReplayMessage(msg *TimedWALMessage, newStepSub types.Subscr
 			v := msg.Vote
 			cs.Logger.Info("Replay: Vote", "height", v.Height, "round", v.Round, "type", v.Type,
 				"blockID", v.BlockID, "peer", peerID)
+		case *QrnMessage:
+			qrn := msg.Qrn
+			cs.Logger.Info("Replay: Qrn", "height", qrn.Height, "timestamp", qrn.Timestamp,
+				"value", qrn.Value, "standing_member_address", qrn.StandingMemberPubKey.Address(), "peer", peerID)
 		}
 
 		cs.handleMsg(m)
@@ -314,8 +318,22 @@ func (h *Handshaker) ReplayBlocks(
 		standingMemberSet := types.NewStandingMemberSet(standingMembers)
 		standingMemberUpdates := types.TM2PB.StandingMemberSetUpdate(standingMemberSet)
 
+		// standingMemberUpdates := types.TM2PB.ConsensusRoundUpdate(standingMemberSet)
+
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
 		csParams := types.TM2PB.ConsensusParams(h.genDoc.ConsensusParams)
+
+		consensusRoundProto := h.genDoc.ConsensusRound.ToProto()
+		consensudRoundAbci := types.TM2PB.ConsensusRound(&consensusRoundProto)
+
+		qrns := make([]*types.Qrn, len(h.genDoc.Qrns))
+		for i, qrn := range h.genDoc.Qrns {
+			qrns[i] = &qrn
+		}
+
+		qrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, qrns)
+		qrnUpdates := types.TM2PB.QrnSetUpdate(qrnSet)
+
 		req := abci.RequestInitChain{
 			Time:                  h.genDoc.GenesisTime,
 			ChainId:               h.genDoc.ChainID,
@@ -324,7 +342,8 @@ func (h *Handshaker) ReplayBlocks(
 			Validators:            nextVals,
 			AppStateBytes:         h.genDoc.AppState,
 			StandingMemberUpdates: standingMemberUpdates,
-			ConsensusRound:        h.genDoc.ConsensusRound.ToProto(),
+			ConsensusRound:        consensudRoundAbci,
+			QrnUpdates:            qrnUpdates,
 		}
 		res, err := proxyApp.Consensus().InitChainSync(req)
 		if err != nil {

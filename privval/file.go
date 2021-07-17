@@ -438,7 +438,7 @@ func checkProposalsOnlyDifferByTimestamp(lastSignBytes, newSignBytes []byte) (ti
 }
 
 func (pv *FilePV) SignQrn(qrn *types.Qrn) error {
-	signBytes := qrn.GetQrnSignBytes()
+	signBytes := qrn.GetQrnBytesForSign()
 	if signBytes == nil {
 		return fmt.Errorf("error signing qrn: qrn is nil")
 	}

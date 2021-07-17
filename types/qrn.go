@@ -7,7 +7,12 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto"
 	ce "github.com/reapchain/reapchain-core/crypto/encoding"
+	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+)
+
+const (
+	nilQrnStr string = "nil-Qrn"
 )
 
 type Qrn struct {
@@ -18,7 +23,7 @@ type Qrn struct {
 	Signature            []byte        `json:"signature"`
 }
 
-func NewQrn(height int64, standingMemberPubKey crypto.PubKey, value uint64) Qrn {
+func NewQrn(height int64, standingMemberPubKey crypto.PubKey, value uint64) *Qrn {
 	qrn := Qrn{
 		Height:               height,
 		Timestamp:            time.Now(),
@@ -26,7 +31,17 @@ func NewQrn(height int64, standingMemberPubKey crypto.PubKey, value uint64) Qrn 
 		Value:                value,
 	}
 
-	return qrn
+	return &qrn
+}
+
+func NewQrnAsEmpty(height int64, standingMemberPubKey crypto.PubKey) *Qrn {
+	qrn := Qrn{
+		Height:               height,
+		Timestamp:            time.Now(),
+		StandingMemberPubKey: standingMemberPubKey,
+	}
+
+	return &qrn
 }
 
 func (qrn *Qrn) ValidateBasic() error {
@@ -50,7 +65,19 @@ func (qrn *Qrn) Copy() *Qrn {
 	return &qrnCopy
 }
 
-func (qrn *Qrn) GetQrnSignBytes() []byte {
+func (qrn *Qrn) String() string {
+	if qrn == nil {
+		return nilQrnStr
+	}
+	return fmt.Sprintf("Qrn{%X %v %X @ %s}",
+		tmbytes.Fingerprint(qrn.StandingMemberPubKey.Address()),
+		qrn.Height,
+		tmbytes.Fingerprint(qrn.Signature),
+		CanonicalTime(qrn.Timestamp),
+	)
+}
+
+func (qrn *Qrn) GetQrnBytesForSign() []byte {
 	if qrn == nil {
 		return nil
 	}
@@ -74,8 +101,33 @@ func (qrn *Qrn) GetQrnSignBytes() []byte {
 	return QrnSignBytes
 }
 
+func (qrn *Qrn) GetQrnBytes() []byte {
+	if qrn == nil {
+		return nil
+	}
+
+	pubKeyProto, err := ce.PubKeyToProto(qrn.StandingMemberPubKey)
+	if err != nil {
+		panic(err)
+	}
+
+	qrnProto := tmproto.Qrn{
+		Height:               qrn.Height,
+		Timestamp:            qrn.Timestamp,
+		StandingMemberPubKey: pubKeyProto,
+		Value:                qrn.Value,
+		Signature:            qrn.Signature,
+	}
+
+	qrnSignBytes, err := qrnProto.Marshal()
+	if err != nil {
+		panic(err)
+	}
+	return qrnSignBytes
+}
+
 func (qrn *Qrn) VerifySign() bool {
-	signBytes := qrn.GetQrnSignBytes()
+	signBytes := qrn.GetQrnBytesForSign()
 	if signBytes == nil {
 		return false
 	}

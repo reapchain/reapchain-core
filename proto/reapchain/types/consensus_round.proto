@@ -6,5 +6,5 @@ option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/types";
 // ConsensusRound
 message ConsensusRound {
   int64 consensus_start_block_height = 1;
-  int64 peorid = 2;
+  uint64 peorid = 2;
 }

@@ -5,7 +5,9 @@ option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/consens
 
 import "gogoproto/gogo.proto";
 import "reapchain/types/types.proto";
+import "reapchain/types/qrn.proto";
 import "reapchain/libs/bits/types.proto";
+
 
 // NewRoundStep is sent for every step taken in the ConsensusState.
 // For every height/round/step transition
@@ -52,6 +54,10 @@ message Vote {
   reapchain.types.Vote vote = 1;
 }
 
+message Qrn {
+  reapchain.types.Qrn qrn = 1;
+}
+
 // HasVote is sent to indicate that a particular vote has been received.
 message HasVote {
   int64                          height = 1;
@@ -88,5 +94,7 @@ message Message {
     HasVote       has_vote        = 7;
     VoteSetMaj23  vote_set_maj23  = 8;
     VoteSetBits   vote_set_bits   = 9;
+
+    Qrn           qrn             = 10;
   }
 }

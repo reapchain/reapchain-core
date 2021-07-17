@@ -15,7 +15,6 @@ message ConsensusParams {
   EvidenceParams  evidence  = 2 [(gogoproto.nullable) = false];
   ValidatorParams validator = 3 [(gogoproto.nullable) = false];
   VersionParams   version   = 4 [(gogoproto.nullable) = false];
-  StandingMemberParam standing_member_param = 5 [(gogoproto.nullable) = false];
 }
 
 // BlockParams contains limits on the block size.
@@ -58,13 +57,6 @@ message EvidenceParams {
 // ValidatorParams restrict the public key types validators can use.
 // NOTE: uses ABCI pubkey naming, not Amino names.
 message ValidatorParams {
-  option (gogoproto.populate) = true;
-  option (gogoproto.equal)    = true;
-
-  repeated string pub_key_types = 1;
-}
-
-message StandingMemberParam {
   option (gogoproto.populate) = true;
   option (gogoproto.equal)    = true;
 

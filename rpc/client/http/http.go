@@ -547,21 +547,31 @@ func (c *baseRPCClient) Validators(
 func (c *baseRPCClient) StandingMembers(
 	ctx context.Context,
 	height *int64,
-	page,
-	perPage *int,
 ) (*ctypes.ResultStandingMembers, error) {
 	result := new(ctypes.ResultStandingMembers)
 	params := make(map[string]interface{})
-	if page != nil {
-		params["page"] = page
-	}
-	if perPage != nil {
-		params["per_page"] = perPage
-	}
+
 	if height != nil {
 		params["height"] = height
 	}
 	_, err := c.caller.Call(ctx, "standing_members", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (c *baseRPCClient) Qrns(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultQrns, error) {
+	result := new(ctypes.ResultQrns)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "qrns", params, result)
 	if err != nil {
 		return nil, err
 	}

@@ -1610,6 +1610,20 @@ func (m *BlockPartMessage) String() string {
 
 //-------------------------------------
 
+type QrnMessage struct {
+	Qrn *types.Qrn
+}
+
+// ValidateBasic performs basic validation.
+func (qrnMessage *QrnMessage) ValidateBasic() error {
+	return qrnMessage.Qrn.ValidateBasic()
+}
+
+// String returns a string representation.
+func (qrnMessage *QrnMessage) String() string {
+	return fmt.Sprintf("[Qrn %v]", qrnMessage.Qrn)
+}
+
 // VoteMessage is sent when voting for a proposal (or lack thereof).
 type VoteMessage struct {
 	Vote *types.Vote

@@ -14,6 +14,7 @@ type LightBlock struct {
 	*SignedHeader     `json:"signed_header"`
 	ValidatorSet      *ValidatorSet      `json:"validator_set"`
 	StandingMemberSet *StandingMemberSet `json:"standing_member_set"`
+	QrnSet            *QrnSet            `json:"qrn_set"`
 }
 
 // ValidateBasic checks that the data is correct and consistent
@@ -31,6 +32,10 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 		return errors.New("missing standing member set")
 	}
 
+	if lb.QrnSet == nil {
+		return errors.New("missing qrn set")
+	}
+
 	if err := lb.SignedHeader.ValidateBasic(chainID); err != nil {
 		return fmt.Errorf("invalid signed header: %w", err)
 	}
@@ -40,6 +45,10 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 
 	if err := lb.StandingMemberSet.ValidateBasic(); err != nil {
 		return fmt.Errorf("invalid standing member set: %w", err)
+	}
+
+	if err := lb.QrnSet.ValidateBasic(); err != nil {
+		return fmt.Errorf("invalid qrn set: %w", err)
 	}
 
 	// make sure the validator set is consistent with the header
@@ -52,6 +61,12 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 	if standingMemberSetHash := lb.StandingMemberSet.Hash(); !bytes.Equal(lb.SignedHeader.StandingMembersHash, standingMemberSetHash) {
 		return fmt.Errorf("expected standing member hash of header to match standing member set hash (%X != %X)",
 			lb.SignedHeader.StandingMembersHash, standingMemberSetHash,
+		)
+	}
+
+	if qrnSetHash := lb.QrnSet.Hash(); !bytes.Equal(lb.SignedHeader.QrnsHash, qrnSetHash) {
+		return fmt.Errorf("expected qrn hash of header to match qrn set hash (%X != %X)",
+			lb.SignedHeader.QrnsHash, qrnSetHash,
 		)
 	}
 
@@ -124,11 +139,19 @@ func LightBlockFromProto(pb *tmproto.LightBlock) (*LightBlock, error) {
 	}
 
 	if pb.StandingMemberSet != nil {
-		sms, err := StandingMemberSetFromProto(pb.StandingMemberSet)
+		standingMemberSet, err := StandingMemberSetFromProto(pb.StandingMemberSet)
 		if err != nil {
 			return nil, err
 		}
-		lb.StandingMemberSet = sms
+		lb.StandingMemberSet = standingMemberSet
+	}
+
+	if pb.QrnSet != nil {
+		qrnSet, err := QrnSetFromProto(pb.QrnSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.QrnSet = qrnSet
 	}
 	return lb, nil
 }

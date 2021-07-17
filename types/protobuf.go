@@ -124,6 +124,28 @@ func (tm2pb) StandingMemberSetUpdate(standingMemberSet *StandingMemberSet) []abc
 	return standingMembers
 }
 
+func (tm2pb) QrnUpdate(qrn *Qrn) abci.QrnUpdate {
+	pubKeyProto, err := cryptoenc.PubKeyToProto(qrn.StandingMemberPubKey)
+	if err != nil {
+		panic(err)
+	}
+	return abci.QrnUpdate{
+		Height:               qrn.Height,
+		Timestamp:            qrn.Timestamp,
+		StandingMemberPubKey: pubKeyProto,
+		Value:                qrn.Value,
+		Signature:            qrn.Signature,
+	}
+}
+
+func (tm2pb) QrnSetUpdate(qrnSet *QrnSet) []abci.QrnUpdate {
+	qrnUpdates := make([]abci.QrnUpdate, qrnSet.Size())
+	for i, qrn := range qrnSet.Qrns {
+		qrnUpdates[i] = TM2PB.QrnUpdate(qrn)
+	}
+	return qrnUpdates
+}
+
 func (tm2pb) ConsensusParams(params *tmproto.ConsensusParams) *abci.ConsensusParams {
 	return &abci.ConsensusParams{
 		Block: &abci.BlockParams{
@@ -132,6 +154,13 @@ func (tm2pb) ConsensusParams(params *tmproto.ConsensusParams) *abci.ConsensusPar
 		},
 		Evidence:  &params.Evidence,
 		Validator: &params.Validator,
+	}
+}
+
+func (tm2pb) ConsensusRound(consensudRoundProto *tmproto.ConsensusRound) *abci.ConsensusRound {
+	return &abci.ConsensusRound{
+		ConsensusStartBlockHeight: consensudRoundProto.ConsensusStartBlockHeight,
+		Peorid:                    consensudRoundProto.Peorid,
 	}
 }
 

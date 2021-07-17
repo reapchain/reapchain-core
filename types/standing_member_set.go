@@ -110,8 +110,10 @@ func (standingMemberSet *StandingMemberSet) ToProto() (*tmproto.StandingMemberSe
 func (standingMemberSet *StandingMemberSet) Copy() *StandingMemberSet {
 	var standingMembers []*StandingMember
 
-	if standingMemberSet.StandingMembers != nil {
-		standingMembers := make([]*StandingMember, len(standingMemberSet.StandingMembers))
+	if standingMemberSet.StandingMembers == nil {
+		standingMembers = nil
+	} else {
+		standingMembers = make([]*StandingMember, len(standingMemberSet.StandingMembers))
 		for i, standingMember := range standingMemberSet.StandingMembers {
 			standingMembers[i] = standingMember.Copy()
 		}

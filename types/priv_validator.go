@@ -17,6 +17,8 @@ type PrivValidator interface {
 
 	SignVote(chainID string, vote *tmproto.Vote) error
 	SignProposal(chainID string, proposal *tmproto.Proposal) error
+
+	SignQrn(qrn *Qrn) error
 }
 
 type PrivValidatorsByAddress []PrivValidator
@@ -82,6 +84,16 @@ func (pv MockPV) SignVote(chainID string, vote *tmproto.Vote) error {
 		return err
 	}
 	vote.Signature = sig
+	return nil
+}
+
+func (pv MockPV) SignQrn(qrn *Qrn) error {
+	signBytes := qrn.GetQrnBytesForSign()
+	sig, err := pv.PrivKey.Sign(signBytes)
+	if err != nil {
+		return err
+	}
+	qrn.Signature = sig
 	return nil
 }
 

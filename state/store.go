@@ -20,7 +20,8 @@ const (
 	// LoadValidators taking too much time.
 	// https://github.com/reapchain/reapchain-core/pull/3438
 	// 100000 results in ~ 100ms to get 100 validators (see BenchmarkLoadValidators)
-	valSetCheckpointInterval = 100000
+	valSetCheckpointInterval            = 100000
+	standingMemberSetCheckpointInterval = 100000
 )
 
 //------------------------------------------------------------------------
@@ -74,6 +75,7 @@ type Store interface {
 	PruneStates(int64, int64) error
 
 	LoadStandingMembers(int64) (*types.StandingMemberSet, error)
+	LoadQrns(int64) (*types.QrnSet, error)
 }
 
 // dbStore wraps a db (github.com/tendermint/tm-db)
@@ -176,7 +178,11 @@ func (store dbStore) save(state State, key []byte) error {
 		}
 	}
 
-	if err := store.saveStandingMembersInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.StandingMemberSet); err != nil {
+	if err := store.saveQrnsInfo(nextHeight-1, state.QrnSet); err != nil {
+		return err
+	}
+
+	if err := store.saveStandingMembersInfo(nextHeight, state.LastHeightStandingMembersChanged, state.StandingMemberSet); err != nil {
 		return err
 	}
 
@@ -581,7 +587,31 @@ func (store dbStore) saveValidatorsInfo(height, lastHeightChanged int64, valSet 
 	return nil
 }
 
-func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, valSet *types.StandingMemberSet) error {
+func (store dbStore) saveQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) error {
+	qrnSetInfo := &tmstate.QrnsInfo{
+		LastHeightChanged: nextHeight,
+	}
+
+	qrnSetProto, err := qrnSet.ToProto()
+	if err != nil {
+		return err
+	}
+	qrnSetInfo.QrnSet = qrnSetProto
+
+	bz, err := qrnSetInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = store.db.Set(calcQrnsKey(nextHeight), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, standingMemberSet *types.StandingMemberSet) error {
 
 	if lastHeightChanged > height {
 		return errors.New("lastHeightChanged cannot be greater than StandingMembersInfo height")
@@ -589,14 +619,12 @@ func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, va
 	smInfo := &tmstate.StandingMembersInfo{
 		LastHeightChanged: lastHeightChanged,
 	}
-	// Only persist validator set if it was updated or checkpoint height (see
-	// valSetCheckpointInterval) is reached.
-	if height == lastHeightChanged || height%valSetCheckpointInterval == 0 {
-		pv, err := valSet.ToProto()
+	if height == lastHeightChanged || height%standingMemberSetCheckpointInterval == 0 {
+		standingMemberSetProto, err := standingMemberSet.ToProto()
 		if err != nil {
 			return err
 		}
-		smInfo.StandingMemberSet = pv
+		smInfo.StandingMemberSet = standingMemberSetProto
 	}
 
 	bz, err := smInfo.Marshal()
@@ -747,6 +775,45 @@ func (store dbStore) LoadStandingMembers(height int64) (*types.StandingMemberSet
 	return vip, nil
 }
 
+func (store dbStore) LoadQrns(height int64) (*types.QrnSet, error) {
+	smInfo, err := loadQrnsInfo(store.db, height)
+	if err != nil {
+		return nil, ErrNoValSetForHeight{height}
+	}
+	if smInfo.QrnSet == nil {
+		lastStoredHeight := lastStoredHeightFor(height, smInfo.LastHeightChanged)
+		smInfo2, err := loadQrnsInfo(store.db, lastStoredHeight)
+		if err != nil || smInfo2.QrnSet == nil {
+			return nil,
+				fmt.Errorf("couldn't find qrns at height %d (height %d was originally requested): %w",
+					lastStoredHeight,
+					height,
+					err,
+				)
+		}
+
+		vs, err := types.QrnSetFromProto(smInfo2.QrnSet)
+		if err != nil {
+			return nil, err
+		}
+
+		vi2, err := vs.ToProto()
+		if err != nil {
+			return nil, err
+		}
+
+		smInfo2.QrnSet = vi2
+		smInfo = smInfo2
+	}
+
+	vip, err := types.QrnSetFromProto(smInfo.QrnSet)
+	if err != nil {
+		return nil, err
+	}
+
+	return vip, nil
+}
+
 // CONTRACT: Returned StandingMemberInfo can be mutated.
 func loadStandingMembersInfo(db dbm.DB, height int64) (*tmstate.StandingMembersInfo, error) {
 	buf, err := db.Get(calcStandingMembersKey(height))
@@ -770,6 +837,32 @@ func loadStandingMembersInfo(db dbm.DB, height int64) (*tmstate.StandingMembersI
 	return v, nil
 }
 
+func loadQrnsInfo(db dbm.DB, height int64) (*tmstate.QrnsInfo, error) {
+	buf, err := db.Get(calcQrnsKey(height))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	v := new(tmstate.QrnsInfo)
+	err = v.Unmarshal(buf)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadQrns: Data has been corrupted or its spec has changed:
+                %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return v, nil
+}
+
 func calcStandingMembersKey(height int64) []byte {
 	return []byte(fmt.Sprintf("standingMembersKey:%v", height))
+}
+
+func calcQrnsKey(height int64) []byte {
+	return []byte(fmt.Sprintf("qrnsKey:%v", height))
 }

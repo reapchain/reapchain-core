@@ -92,7 +92,7 @@ type RoundState struct {
 	LastValidators            *types.ValidatorSet `json:"last_validators"`
 	TriggeredTimeoutPrecommit bool                `json:"triggered_timeout_precommit"`
 
-	StandingMemberSet *types.StandingMemberSet `json:"standing_members"`
+	StandingMemberSet *types.StandingMemberSet `json:"standing_member_set"`
 }
 
 // Compressed version of the RoundState for use in RPC

@@ -84,7 +84,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 		qrn := types.NewQrn(0, pubKey, qrnValue)
 		qrn.Timestamp = genDoc.GenesisTime
 
-		err = privValidator.SignQrn(&qrn)
+		err = privValidator.SignQrn(qrn)
 		if err != nil {
 			logger.Error("Can't sign qrn", "err", err)
 		}
@@ -93,7 +93,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 			logger.Error("Is invalid sign of qrn")
 		}
 
-		genDoc.Qrns = []types.Qrn{qrn}
+		genDoc.Qrns = []types.Qrn{*qrn}
 
 		if err := genDoc.SaveAs(genFile); err != nil {
 			return err

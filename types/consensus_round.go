@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 
+	abci "github.com/reapchain/reapchain-core/abci/types"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 )
 
@@ -11,11 +12,11 @@ const (
 )
 
 type ConsensusRound struct {
-	ConsensusStartBlockHeight int64 `json:"consensus_start_block_height"`
-	Peorid                    int64 `json:"peorid"`
+	ConsensusStartBlockHeight int64  `json:"consensus_start_block_height"`
+	Peorid                    uint64 `json:"peorid"`
 }
 
-func NewConsensusRound(consensusStartBlockHeight, peorid int64) ConsensusRound {
+func NewConsensusRound(consensusStartBlockHeight int64, peorid uint64) ConsensusRound {
 	consensusRound := ConsensusRound{
 		ConsensusStartBlockHeight: consensusStartBlockHeight,
 		Peorid:                    peorid,
@@ -44,10 +45,10 @@ func (consensusRoundInfo ConsensusRound) ValidateBasic() error {
 	return nil
 }
 
-func (consensusRoundInfo ConsensusRound) ToProto() tmproto.ConsensusRound {
+func (consensusRound *ConsensusRound) ToProto() tmproto.ConsensusRound {
 	return tmproto.ConsensusRound{
-		ConsensusStartBlockHeight: consensusRoundInfo.ConsensusStartBlockHeight,
-		Peorid:                    consensusRoundInfo.Peorid,
+		ConsensusStartBlockHeight: consensusRound.ConsensusStartBlockHeight,
+		Peorid:                    consensusRound.Peorid,
 	}
 }
 
@@ -56,4 +57,16 @@ func ConsensusRoundFromProto(crProto tmproto.ConsensusRound) ConsensusRound {
 		ConsensusStartBlockHeight: crProto.ConsensusStartBlockHeight,
 		Peorid:                    crProto.Peorid,
 	}
+}
+
+func UpdateConsensusRound(currentConsensusRound tmproto.ConsensusRound, nextConsensusRound *abci.ConsensusRound) tmproto.ConsensusRound {
+	res := currentConsensusRound // explicit copy
+
+	if nextConsensusRound == nil {
+		return res
+	}
+
+	res.Peorid = nextConsensusRound.Peorid
+
+	return res
 }
