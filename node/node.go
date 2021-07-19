@@ -325,6 +325,12 @@ func logNodeStartupInfo(state sm.State, pubKey crypto.PubKey, logger, consensusL
 	} else {
 		consensusLogger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
 	}
+
+	if state.SteeringMemberCandidateSet.HasAddress(addr) {
+		consensusLogger.Info("This node is a steering member candidate", "addr", addr, "pubKey", pubKey)
+	} else {
+		consensusLogger.Info("This node is not a steering member candidate", "addr", addr, "pubKey", pubKey)
+	}
 }
 
 func onlyValidatorIsUs(state sm.State, pubKey crypto.PubKey) bool {

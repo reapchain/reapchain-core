@@ -41,6 +41,18 @@ type (
 		Height int64
 	}
 
+	ErrNoStandingMemberSetForHeight struct {
+		Height int64
+	}
+
+	ErrNoSteeringMemberSetForHeight struct {
+		Height int64
+	}
+
+	ErrNoQrnSetForHeight struct {
+		Height int64
+	}
+
 	ErrNoConsensusParamsForHeight struct {
 		Height int64
 	}
@@ -94,6 +106,18 @@ func (e ErrStateMismatch) Error() string {
 
 func (e ErrNoValSetForHeight) Error() string {
 	return fmt.Sprintf("could not find validator set for height #%d", e.Height)
+}
+
+func (e ErrNoStandingMemberSetForHeight) Error() string {
+	return fmt.Sprintf("could not find standing member set for height #%d", e.Height)
+}
+
+func (e ErrNoSteeringMemberSetForHeight) Error() string {
+	return fmt.Sprintf("could not find steering member candidate set for height #%d", e.Height)
+}
+
+func (e ErrNoQrnSetForHeight) Error() string {
+	return fmt.Sprintf("could not find qrn set for height #%d", e.Height)
 }
 
 func (e ErrNoConsensusParamsForHeight) Error() string {

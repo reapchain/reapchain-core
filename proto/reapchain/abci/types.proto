@@ -68,6 +68,7 @@ message RequestInitChain {
   repeated StandingMemberUpdate standing_member_updates       = 7 [(gogoproto.nullable) = false];
   ConsensusRound consensus_round       = 8;
   repeated QrnUpdate qrn_updates       = 9 [(gogoproto.nullable) = false];
+  repeated SteeringMemberCandidateUpdate steering_member_candidate_updates       = 10 [(gogoproto.nullable) = false];
 }
 
 message RequestQuery {
@@ -188,6 +189,7 @@ message ResponseInitChain {
   repeated StandingMemberUpdate standing_member_updates       = 4 [(gogoproto.nullable) = false];
   ConsensusRound consensus_round       = 5 [(gogoproto.nullable) = false];
   repeated QrnUpdate qrn_updates       = 6 [(gogoproto.nullable) = false];
+  repeated SteeringMemberCandidateUpdate steering_member_candidate_updates       = 7 [(gogoproto.nullable) = false];
 }
 
 message ResponseQuery {
@@ -241,6 +243,8 @@ message ResponseEndBlock {
   repeated StandingMemberUpdate standing_member_updates = 4
       [(gogoproto.nullable) = false];
   ConsensusRound consensus_round_updates = 5;
+  repeated SteeringMemberCandidateUpdate steering_member_candidate_updates = 6
+      [(gogoproto.nullable) = false];
 }
 
 message ResponseCommit {
@@ -366,6 +370,11 @@ message ValidatorUpdate {
 message StandingMemberUpdate {
   reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
 }
+
+message SteeringMemberCandidateUpdate {
+  reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
+}
+
 
 message QrnUpdate {
   int64 height = 1;

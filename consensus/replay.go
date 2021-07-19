@@ -330,7 +330,6 @@ func (h *Handshaker) ReplayBlocks(
 		}
 
 		qrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, qrns)
-		fmt.Println("QrnsBitArray1", qrnSet.QrnsBitArray.IsFull())
 		qrnUpdates := types.TM2PB.QrnSetUpdate(qrnSet)
 
 		req := abci.RequestInitChain{
@@ -365,7 +364,7 @@ func (h *Handshaker) ReplayBlocks(
 					return nil, err
 				}
 				state.Validators = types.NewValidatorSet(vals)
-				state.NextValidators = types.NewValidatorSet(vals).CopyIncrementProposerPriority(1)
+				state.NextValidators = types.NewValidatorSet(vals).Copy()
 			} else if len(h.genDoc.Validators) == 0 {
 				// If validator set is not set in genesis and still empty after InitChain, exit.
 				return nil, fmt.Errorf("validator set is nil in genesis and still empty after InitChain")
@@ -380,6 +379,17 @@ func (h *Handshaker) ReplayBlocks(
 				state.StandingMemberSet = types.NewStandingMemberSet(standingMembers)
 			} else if len(h.genDoc.StandingMembers) == 0 {
 				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
+			}
+
+			if len(res.SteeringMemberCandidateUpdates) > 0 {
+				steeringMemberCandidates, err := types.PB2TM.SteeringMemberCandidateUpdates(res.SteeringMemberCandidateUpdates)
+				if err != nil {
+					return nil, err
+				}
+
+				state.SteeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
+			} else if len(h.genDoc.SteeringMemberCandidates) == 0 {
+				return nil, fmt.Errorf("steering member candidate set is nil in genesis and still empty after InitChain")
 			}
 
 			state.ConsensusRound = types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.Peorid)

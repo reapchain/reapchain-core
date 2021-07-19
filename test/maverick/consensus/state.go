@@ -1123,7 +1123,6 @@ func (cs *State) enterNewRound(height int64, round int32) {
 	validators := cs.Validators
 	if cs.Round < round {
 		validators = validators.Copy()
-		validators.IncrementProposerPriority(tmmath.SafeSubInt32(round, cs.Round))
 	}
 
 	// Setup new round

@@ -536,6 +536,19 @@ func (c *Client) StandingMembers(ctx context.Context, height *int64) (*ctypes.Re
 	}, nil
 }
 
+func (c *Client) SteeringMemberCandidates(ctx context.Context, height *int64) (*ctypes.ResultSteeringMemberCandidates, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultSteeringMemberCandidates{
+		BlockHeight:              l.Height,
+		SteeringMemberCandidates: l.SteeringMemberCandidateSet.SteeringMemberCandidates[:],
+		Count:                    l.SteeringMemberCandidateSet.Size(),
+	}, nil
+}
+
 func (c *Client) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
 	l, err := c.updateLightClientIfNeededTo(ctx, height)
 	if err != nil {

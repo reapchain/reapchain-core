@@ -48,6 +48,8 @@ var Routes = map[string]*rpc.RPCFunc{
 
 	"standing_members": rpc.NewRPCFunc(StandingMembers, "height"),
 	"qrns":             rpc.NewRPCFunc(Qrns, "height"),
+
+	"steering_member_candidates": rpc.NewRPCFunc(SteeringMemberCandidates, "height"),
 }
 
 // AddUnsafeRoutes adds unsafe routes.

@@ -561,6 +561,23 @@ func (c *baseRPCClient) StandingMembers(
 	return result, nil
 }
 
+func (c *baseRPCClient) SteeringMemberCandidates(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultSteeringMemberCandidates, error) {
+	result := new(ctypes.ResultSteeringMemberCandidates)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "steering_member_candidates", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *baseRPCClient) Qrns(
 	ctx context.Context,
 	height *int64,

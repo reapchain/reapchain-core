@@ -73,7 +73,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 			Power:   10,
 		}}
 
-		genDoc.StandingMembers = []types.GenesisStandingMember{{
+		genDoc.StandingMembers = []types.GenesisMember{{
 			Address: pubKey.Address(),
 			PubKey:  pubKey,
 		}}

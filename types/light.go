@@ -11,10 +11,11 @@ import (
 // LightBlock is a SignedHeader and a ValidatorSet.
 // It is the basis of the light client
 type LightBlock struct {
-	*SignedHeader     `json:"signed_header"`
-	ValidatorSet      *ValidatorSet      `json:"validator_set"`
-	StandingMemberSet *StandingMemberSet `json:"standing_member_set"`
-	QrnSet            *QrnSet            `json:"qrn_set"`
+	*SignedHeader              `json:"signed_header"`
+	ValidatorSet               *ValidatorSet               `json:"validator_set"`
+	StandingMemberSet          *StandingMemberSet          `json:"standing_member_set"`
+	SteeringMemberCandidateSet *SteeringMemberCandidateSet `json:"steering_member_candidate_set"`
+	QrnSet                     *QrnSet                     `json:"qrn_set"`
 }
 
 // ValidateBasic checks that the data is correct and consistent
@@ -55,6 +56,12 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 	if valSetHash := lb.ValidatorSet.Hash(); !bytes.Equal(lb.SignedHeader.ValidatorsHash, valSetHash) {
 		return fmt.Errorf("expected validator hash of header to match validator set hash (%X != %X)",
 			lb.SignedHeader.ValidatorsHash, valSetHash,
+		)
+	}
+
+	if steeringMemberCandidateSetHash := lb.SteeringMemberCandidateSet.Hash(); !bytes.Equal(lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash) {
+		return fmt.Errorf("expected sttering member candidate hash of header to match sttering member candidate set hash (%X != %X)",
+			lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash,
 		)
 	}
 

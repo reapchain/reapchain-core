@@ -63,6 +63,24 @@ func StandingMembers(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultSta
 	}, nil
 }
 
+func SteeringMemberCandidates(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultSteeringMemberCandidates, error) {
+	height, err := getHeight(latestUncommittedHeight(), heightPtr)
+	if err != nil {
+		return nil, err
+	}
+
+	standingMemberSet, err := env.StateStore.LoadSteeringMemberCandidateSet(height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultSteeringMemberCandidates{
+		BlockHeight:              height,
+		SteeringMemberCandidates: standingMemberSet.SteeringMemberCandidates[:],
+		Count:                    standingMemberSet.Size(),
+	}, nil
+}
+
 func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {

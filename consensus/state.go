@@ -266,6 +266,11 @@ func (cs *State) GetStandingMembers() (int64, []*types.StandingMember) {
 	defer cs.mtx.RUnlock()
 	return cs.state.LastBlockHeight, cs.state.StandingMemberSet.Copy().StandingMembers
 }
+func (cs *State) GetSteeringMemberCandidates() (int64, []*types.SteeringMemberCandidate) {
+	cs.mtx.RLock()
+	defer cs.mtx.RUnlock()
+	return cs.state.LastBlockHeight, cs.state.SteeringMemberCandidateSet.Copy().SteeringMemberCandidates
+}
 
 // SetPrivValidator sets the private validator account for signing votes. It
 // immediately requests pubkey and caches it.
@@ -618,6 +623,8 @@ func (cs *State) updateToState(state sm.State) {
 			cs.newStep()
 			return
 		}
+
+		cs.StandingMemberSet.SetCoordinator(state.QrnSet)
 	}
 
 	// Reset fields based on state.
@@ -686,10 +693,9 @@ func (cs *State) updateToState(state sm.State) {
 	cs.LastValidators = state.LastValidators
 	cs.TriggeredTimeoutPrecommit = false
 	cs.StandingMemberSet = state.StandingMemberSet
+	cs.SteeringMemberCandidateSet = state.SteeringMemberCandidateSet
 
 	cs.state = state
-
-	fmt.Println("stompesi-tttttt", state.StandingMemberSet.Size())
 
 	// Finally, broadcast RoundState
 	cs.newStep()
@@ -1096,6 +1102,16 @@ func (cs *State) enterPropose(height int64, round int32) {
 	// If we don't get the proposal and all block parts quick enough, enterPrevote
 	cs.scheduleTimeout(cs.config.Propose(round), height, round, cstypes.RoundStepPropose)
 
+	isFull := cs.state.QrnSet.QrnsBitArray.IsFull()
+
+	// logger.Error("isProposer", isFull)
+
+	if isFull {
+		cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
+
+		cs.Validators.Proposer = types.NewValidator(cs.StandingMemberSet.Coordinator.PubKey, 10000)
+	}
+
 	// Nothing more to do if we're not a validator
 	if cs.privValidator == nil {
 		logger.Debug("node is not a validator")
@@ -1119,16 +1135,12 @@ func (cs *State) enterPropose(height int64, round int32) {
 		return
 	}
 
-	isFull := cs.state.QrnSet.QrnsBitArray.IsFull()
-	fmt.Println("QrnsBitArray4", isFull)
-	index, ok := cs.state.QrnSet.QrnsBitArray.PickRandom()
-	fmt.Println("QrnsBitArray4", isFull, index, ok)
-
-	if isFull {
-		cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
-		cs.Validators.Proposer = types.NewValidator(cs.StandingMemberSet.Coordinator.PubKey, 10000)
-	}
 	if cs.isProposer(address) && isFull == true {
+		if cs.state.ConsensusRound.ConsensusStartBlockHeight == height {
+			logger.Error("isProposer", cs.state.StandingMemberSet.Coordinator.Address)
+			time.Sleep(time.Second * 1)
+		}
+
 		logger.Debug("propose step; our turn to propose", "proposer", address)
 		cs.decideProposal(height, round)
 	} else {
@@ -1155,6 +1167,10 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 			return
 		}
 	}
+
+	// if len(block.Txs) == 0 {
+	// 	return
+	// }
 
 	// Flush the WAL. Otherwise, we may not recompute the same proposal to sign,
 	// and the privValidator will refuse to sign anything.

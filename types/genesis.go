@@ -36,7 +36,7 @@ type GenesisValidator struct {
 }
 
 // GenesisStandingMember is an initial standingMember.
-type GenesisStandingMember struct {
+type GenesisMember struct {
 	Address Address       `json:"address"`
 	PubKey  crypto.PubKey `json:"pub_key"`
 	Name    string        `json:"name"`
@@ -44,16 +44,17 @@ type GenesisStandingMember struct {
 
 // GenesisDoc defines the initial conditions for a reapchain blockchain, in particular its validator set.
 type GenesisDoc struct {
-	GenesisTime     time.Time                `json:"genesis_time"`
-	ChainID         string                   `json:"chain_id"`
-	InitialHeight   int64                    `json:"initial_height"`
-	ConsensusParams *tmproto.ConsensusParams `json:"consensus_params,omitempty"`
-	Validators      []GenesisValidator       `json:"validators,omitempty"`
-	AppHash         tmbytes.HexBytes         `json:"app_hash"`
-	AppState        json.RawMessage          `json:"app_state,omitempty"`
-	StandingMembers []GenesisStandingMember  `json:"standing_members,omitempty"`
-	ConsensusRound  ConsensusRound           `json:"consensus_round"`
-	Qrns            []Qrn                    `json:"qrns,omitempty"`
+	GenesisTime              time.Time                `json:"genesis_time"`
+	ChainID                  string                   `json:"chain_id"`
+	InitialHeight            int64                    `json:"initial_height"`
+	ConsensusParams          *tmproto.ConsensusParams `json:"consensus_params,omitempty"`
+	Validators               []GenesisValidator       `json:"validators,omitempty"`
+	AppHash                  tmbytes.HexBytes         `json:"app_hash"`
+	AppState                 json.RawMessage          `json:"app_state,omitempty"`
+	StandingMembers          []GenesisMember          `json:"standing_members,omitempty"`
+	ConsensusRound           ConsensusRound           `json:"consensus_round"`
+	Qrns                     []Qrn                    `json:"qrns,omitempty"`
+	SteeringMemberCandidates []GenesisMember          `json:"steering_member_candidates,omitempty"`
 }
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.

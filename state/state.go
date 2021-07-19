@@ -82,6 +82,9 @@ type State struct {
 	StandingMemberSet                *types.StandingMemberSet
 	LastHeightStandingMembersChanged int64
 
+	SteeringMemberCandidateSet                *types.SteeringMemberCandidateSet
+	LastHeightSteeringMemberCandidatesChanged int64
+
 	ConsensusRound                  types.ConsensusRound
 	LastHeightConsensusRoundChanged int64
 
@@ -114,6 +117,9 @@ func (state State) Copy() State {
 
 		StandingMemberSet:                state.StandingMemberSet.Copy(),
 		LastHeightStandingMembersChanged: state.LastHeightStandingMembersChanged,
+
+		SteeringMemberCandidateSet:                state.SteeringMemberCandidateSet.Copy(),
+		LastHeightSteeringMemberCandidatesChanged: state.LastHeightSteeringMemberCandidatesChanged,
 
 		ConsensusRound:                  state.ConsensusRound,
 		LastHeightConsensusRoundChanged: state.LastHeightConsensusRoundChanged,
@@ -195,6 +201,13 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	sm.StandingMemberSet = standingMemberSetProto
 	sm.LastHeightStandingMembersChanged = state.LastHeightStandingMembersChanged
 
+	steeringMemberCandidateProto, err := state.SteeringMemberCandidateSet.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.SteeringMemberCandidateSet = steeringMemberCandidateProto
+	sm.LastHeightSteeringMemberCandidatesChanged = state.LastHeightSteeringMemberCandidatesChanged
+
 	sm.ConsensusRound = state.ConsensusRound.ToProto()
 	sm.LastHeightConsensusRoundChanged = state.LastHeightConsensusRoundChanged
 
@@ -204,7 +217,6 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	}
 	sm.QrnSet = qrnSetProto
 
-	fmt.Println("Save-stompesi", sm.QrnSet.Height)
 	return sm, nil
 }
 
@@ -263,6 +275,13 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.StandingMemberSet = standingMemberSet
 	state.LastHeightStandingMembersChanged = pb.LastHeightStandingMembersChanged
 
+	steeringMemberCandidateSet, err := types.SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidateSet)
+	if err != nil {
+		return nil, err
+	}
+	state.SteeringMemberCandidateSet = steeringMemberCandidateSet
+	state.LastHeightSteeringMemberCandidatesChanged = pb.LastHeightSteeringMemberCandidatesChanged
+
 	consensusRound, err := types.ConsensusRoundFromProto(pb.ConsensusRound)
 	if err != nil {
 		return nil, err
@@ -313,6 +332,7 @@ func (state State) MakeBlock(
 		types.HashConsensusParams(state.ConsensusParams), state.AppHash, state.LastResultsHash,
 		proposerAddress,
 		state.StandingMemberSet.Hash(),
+		state.SteeringMemberCandidateSet.Hash(),
 		state.ConsensusRound,
 		state.QrnSet.Hash(),
 	)
@@ -388,7 +408,7 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 			validators[i] = types.NewValidator(val.PubKey, val.Power)
 		}
 		validatorSet = types.NewValidatorSet(validators)
-		nextValidatorSet = types.NewValidatorSet(validators).CopyIncrementProposerPriority(1)
+		nextValidatorSet = types.NewValidatorSet(validators).Copy()
 	}
 
 	var standingMemberSet *types.StandingMemberSet
@@ -400,6 +420,17 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 			standingMembers[i] = types.NewStandingMember(standingMember.PubKey)
 		}
 		standingMemberSet = types.NewStandingMemberSet(standingMembers)
+	}
+
+	var steeringMemberCandidateSet *types.SteeringMemberCandidateSet
+	if genDoc.SteeringMemberCandidates == nil {
+		steeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(nil)
+	} else {
+		steeringMemberCandidates := make([]*types.SteeringMemberCandidate, len(genDoc.SteeringMemberCandidates))
+		for i, steeringMemberCandidate := range genDoc.SteeringMemberCandidates {
+			steeringMemberCandidates[i] = types.NewSteeringMemberCandidate(steeringMemberCandidate.PubKey)
+		}
+		steeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
 	}
 
 	var qrnSet *types.QrnSet
@@ -436,6 +467,9 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 
 		StandingMemberSet:                standingMemberSet,
 		LastHeightStandingMembersChanged: genDoc.InitialHeight,
+
+		SteeringMemberCandidateSet:                steeringMemberCandidateSet,
+		LastHeightSteeringMemberCandidatesChanged: genDoc.InitialHeight,
 
 		ConsensusRound:                  genDoc.ConsensusRound,
 		LastHeightConsensusRoundChanged: genDoc.InitialHeight,

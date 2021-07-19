@@ -87,6 +87,7 @@ message Header {
   types.ConsensusRound consensus_round = 16 [(gogoproto.nullable) = false];
   
   bytes qrns_hash = 17;
+  bytes steering_member_candidates_hash = 18;
 }
 
 // Data contains the set of transactions included in the block

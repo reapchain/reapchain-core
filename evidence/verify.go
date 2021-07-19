@@ -273,5 +273,7 @@ func isInvalidHeader(trusted, conflicting *types.Header) bool {
 		!bytes.Equal(trusted.NextValidatorsHash, conflicting.NextValidatorsHash) ||
 		!bytes.Equal(trusted.ConsensusHash, conflicting.ConsensusHash) ||
 		!bytes.Equal(trusted.AppHash, conflicting.AppHash) ||
-		!bytes.Equal(trusted.LastResultsHash, conflicting.LastResultsHash)
+		!bytes.Equal(trusted.LastResultsHash, conflicting.LastResultsHash) ||
+		!bytes.Equal(trusted.StandingMembersHash, conflicting.StandingMembersHash) ||
+		!bytes.Equal(trusted.SteeringMemberCandidatesHash, conflicting.SteeringMemberCandidatesHash)
 }

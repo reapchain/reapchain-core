@@ -20,8 +20,9 @@ const (
 	// LoadValidators taking too much time.
 	// https://github.com/reapchain/reapchain-core/pull/3438
 	// 100000 results in ~ 100ms to get 100 validators (see BenchmarkLoadValidators)
-	valSetCheckpointInterval            = 100000
-	standingMemberSetCheckpointInterval = 100000
+	valSetCheckpointInterval                     = 100000
+	standingMemberSetCheckpointInterval          = 100000
+	steeringMemberCandidateSetCheckpointInterval = 100000
 )
 
 //------------------------------------------------------------------------
@@ -35,6 +36,10 @@ func calcQrnsKey(height int64) []byte {
 
 func calcStandingMembersKey(height int64) []byte {
 	return []byte(fmt.Sprintf("standingMembersKey:%v", height))
+}
+
+func calcSteeringMemberCandidatesKey(height int64) []byte {
+	return []byte(fmt.Sprintf("steeringMemberCandidatesKey:%v", height))
 }
 
 func calcValidatorsKey(height int64) []byte {
@@ -83,6 +88,7 @@ type Store interface {
 
 	LoadConsensusRound(int64) (tmproto.ConsensusRound, error)
 	LoadStandingMemberSet(int64) (*types.StandingMemberSet, error)
+	LoadSteeringMemberCandidateSet(int64) (*types.SteeringMemberCandidateSet, error)
 	LoadQrnSet(int64) (*types.QrnSet, error)
 }
 
@@ -201,6 +207,10 @@ func (store dbStore) save(state State, key []byte) error {
 		return err
 	}
 
+	if err := store.saveSteeringMemberCandidatesInfo(nextHeight, state.LastHeightSteeringMemberCandidatesChanged, state.SteeringMemberCandidateSet); err != nil {
+		return err
+	}
+
 	// Save next validators.
 	if err := store.saveValidatorsInfo(nextHeight+1, state.LastHeightValidatorsChanged, state.NextValidators); err != nil {
 		return err
@@ -241,6 +251,10 @@ func (store dbStore) Bootstrap(state State) error {
 	}
 
 	if err := store.saveStandingMembersInfo(height, height, state.StandingMemberSet); err != nil {
+		return err
+	}
+
+	if err := store.saveSteeringMemberCandidatesInfo(height, height, state.SteeringMemberCandidateSet); err != nil {
 		return err
 	}
 
@@ -476,7 +490,6 @@ func (store dbStore) LoadValidators(height int64) (*types.ValidatorSet, error) {
 			return nil, err
 		}
 
-		vs.IncrementProposerPriority(tmmath.SafeConvertInt32(height - lastStoredHeight)) // mutate
 		vi2, err := vs.ToProto()
 		if err != nil {
 			return nil, err
@@ -582,7 +595,6 @@ func (store dbStore) saveQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) error 
 }
 
 func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, standingMemberSet *types.StandingMemberSet) error {
-
 	if lastHeightChanged > height {
 		return errors.New("lastHeightChanged cannot be greater than StandingMembersInfo height")
 	}
@@ -603,6 +615,34 @@ func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, st
 	}
 
 	err = store.db.Set(calcStandingMembersKey(height), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (store dbStore) saveSteeringMemberCandidatesInfo(height, lastHeightChanged int64, steeringMemberCandidateSet *types.SteeringMemberCandidateSet) error {
+	if lastHeightChanged > height {
+		return errors.New("lastHeightChanged cannot be greater than SteeringMemberCandidatesInfo height")
+	}
+	smInfo := &tmstate.SteeringMemberCandidateSetInfo{
+		LastHeightChanged: lastHeightChanged,
+	}
+	if height == lastHeightChanged || height%steeringMemberCandidateSetCheckpointInterval == 0 {
+		steeringMemberCandidateSetProto, err := steeringMemberCandidateSet.ToProto()
+		if err != nil {
+			return err
+		}
+		smInfo.SteeringMemberCandidateSet = steeringMemberCandidateSetProto
+	}
+
+	bz, err := smInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = store.db.Set(calcSteeringMemberCandidatesKey(height), bz)
 	if err != nil {
 		return err
 	}
@@ -730,7 +770,7 @@ func (store dbStore) saveConsensusRoundInfo(nextHeight, changeHeight int64, cons
 func (store dbStore) LoadStandingMemberSet(height int64) (*types.StandingMemberSet, error) {
 	standingMemberSetInfo, err := loadStandingMemberSetInfo(store.db, height)
 	if err != nil {
-		return nil, ErrNoValSetForHeight{height}
+		return nil, ErrNoStandingMemberSetForHeight{height}
 	}
 	if standingMemberSetInfo.StandingMemberSet == nil {
 		lastStoredHeight := lastStoredHeightFor(height, standingMemberSetInfo.LastHeightChanged)
@@ -754,10 +794,37 @@ func (store dbStore) LoadStandingMemberSet(height int64) (*types.StandingMemberS
 	return standingMemberSet, nil
 }
 
+func (store dbStore) LoadSteeringMemberCandidateSet(height int64) (*types.SteeringMemberCandidateSet, error) {
+	steeringMemberCandidateSetInfo, err := loadSteeringMemberCandidateSetInfo(store.db, height)
+	if err != nil {
+		return nil, ErrNoSteeringMemberSetForHeight{height}
+	}
+	if steeringMemberCandidateSetInfo.SteeringMemberCandidateSet == nil {
+		lastStoredHeight := lastStoredHeightFor(height, steeringMemberCandidateSetInfo.LastHeightChanged)
+		steeringMemberCandidateSetInfo2, err := loadSteeringMemberCandidateSetInfo(store.db, lastStoredHeight)
+		if err != nil || steeringMemberCandidateSetInfo2.SteeringMemberCandidateSet == nil {
+			return nil,
+				fmt.Errorf("couldn't find steering member candidates at height %d (height %d was originally requested): %w",
+					lastStoredHeight,
+					height,
+					err,
+				)
+		}
+		steeringMemberCandidateSetInfo = steeringMemberCandidateSetInfo2
+	}
+
+	steeringMemberCandidateSet, err := types.SteeringMemberCandidateSetFromProto(steeringMemberCandidateSetInfo.SteeringMemberCandidateSet)
+	if err != nil {
+		return nil, err
+	}
+
+	return steeringMemberCandidateSet, nil
+}
+
 func (store dbStore) LoadQrnSet(height int64) (*types.QrnSet, error) {
 	qrnSetInfo, err := loadQrnSetInfo(store.db, height)
 	if err != nil {
-		return nil, ErrNoValSetForHeight{height}
+		return nil, ErrNoQrnSetForHeight{height}
 	}
 
 	if qrnSetInfo.QrnSet == nil {
@@ -823,6 +890,27 @@ func loadStandingMemberSetInfo(db dbm.DB, height int64) (*tmstate.StandingMember
 	if err != nil {
 		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
 		tmos.Exit(fmt.Sprintf(`LoadStandingMemberSet: Data has been corrupted or its spec has changed: %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return v, nil
+}
+
+func loadSteeringMemberCandidateSetInfo(db dbm.DB, height int64) (*tmstate.SteeringMemberCandidateSetInfo, error) {
+	buf, err := db.Get(calcSteeringMemberCandidatesKey(height))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	v := new(tmstate.SteeringMemberCandidateSetInfo)
+	err = v.Unmarshal(buf)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadSteeringMemberCandidateSet: Data has been corrupted or its spec has changed: %v\n`, err))
 	}
 	// TODO: ensure that buf is completely read.
 

@@ -141,6 +141,13 @@ type ResultStandingMembers struct {
 	Count int `json:"count"`
 }
 
+type ResultSteeringMemberCandidates struct {
+	BlockHeight              int64                            `json:"block_height"`
+	SteeringMemberCandidates []*types.SteeringMemberCandidate `json:"steering_member_candidates"`
+	// Count of actual validators in this result
+	Count int `json:"count"`
+}
+
 type ResultQrns struct {
 	BlockHeight int64        `json:"block_height"`
 	Qrns        []*types.Qrn `json:"qrns"`

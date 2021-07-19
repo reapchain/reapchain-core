@@ -155,7 +155,6 @@ func (s *validatorSchedule) Increment(heights int64) {
 				}
 			}
 		}
-		s.Set.IncrementProposerPriority(1)
 	}
 }
 

@@ -53,8 +53,9 @@ func (tm2pb) Header(header *Header) tmproto.Header {
 		EvidenceHash:    header.EvidenceHash,
 		ProposerAddress: header.ProposerAddress,
 
-		StandingMembersHash: header.StandingMembersHash,
-		ConsensusRound:      header.ConsensusRound.ToProto(),
+		StandingMembersHash:          header.StandingMembersHash,
+		SteeringMemberCandidatesHash: header.SteeringMemberCandidatesHash,
+		ConsensusRound:               header.ConsensusRound.ToProto(),
 	}
 }
 
@@ -204,6 +205,18 @@ func (pb2tm) StandingMemberUpdates(sms []abci.StandingMemberUpdate) ([]*Standing
 			return nil, err
 		}
 		smz[i] = NewStandingMember(pubKey)
+	}
+	return smz, nil
+}
+
+func (pb2tm) SteeringMemberCandidateUpdates(sms []abci.SteeringMemberCandidateUpdate) ([]*SteeringMemberCandidate, error) {
+	smz := make([]*SteeringMemberCandidate, len(sms))
+	for i, v := range sms {
+		pubKey, err := cryptoenc.PubKeyFromProto(v.PubKey)
+		if err != nil {
+			return nil, err
+		}
+		smz[i] = NewSteeringMemberCandidate(pubKey)
 	}
 	return smz, nil
 }

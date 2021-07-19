@@ -353,6 +353,8 @@ type Header struct {
 	ConsensusRound      ConsensusRound   `json:"consensus_round"`
 
 	QrnsHash tmbytes.HexBytes `json:"qrns_hash"`
+
+	SteeringMemberCandidatesHash tmbytes.HexBytes `json:"steering_member_candidates_hash"`
 }
 
 // Populate the Header with state-derived data.
@@ -364,6 +366,7 @@ func (h *Header) Populate(
 	consensusHash, appHash, lastResultsHash []byte,
 	proposerAddress Address,
 	standingMembersHash []byte,
+	steeringMemberCandidatesHash []byte,
 	consensusRound ConsensusRound,
 	qrnsHash []byte,
 ) {
@@ -378,6 +381,7 @@ func (h *Header) Populate(
 	h.LastResultsHash = lastResultsHash
 	h.ProposerAddress = proposerAddress
 	h.StandingMembersHash = standingMembersHash
+	h.SteeringMemberCandidatesHash = steeringMemberCandidatesHash
 	h.ConsensusRound = consensusRound
 
 	h.QrnsHash = qrnsHash
@@ -448,6 +452,10 @@ func (h Header) ValidateBasic() error {
 		return fmt.Errorf("wrong StandingMembersHash: %v", err)
 	}
 
+	if err := ValidateHash(h.SteeringMemberCandidatesHash); err != nil {
+		return fmt.Errorf("wrong SteeringMemberCandidatesHash: %v", err)
+	}
+
 	if err := h.ConsensusRound.ValidateBasic(); err != nil {
 		return fmt.Errorf("wrong ConsensusRound: %w", err)
 	}
@@ -467,6 +475,10 @@ func (h Header) ValidateBasic() error {
 // a ValidatorsHash (corresponding to the validator set).
 func (h *Header) Hash() tmbytes.HexBytes {
 	if h == nil || len(h.ValidatorsHash) == 0 {
+		return nil
+	}
+
+	if h == nil || len(h.SteeringMemberCandidatesHash) == 0 {
 		return nil
 	}
 
@@ -517,6 +529,7 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		cdcEncode(h.StandingMembersHash),
 		cdcEncode(h.ConsensusRound),
 		cdcEncode(h.QrnsHash),
+		cdcEncode(h.SteeringMemberCandidatesHash),
 		crbz,
 	})
 }
@@ -544,6 +557,7 @@ func (h *Header) StringIndented(indent string) string {
 %s  StandingMembers:       %v
 %s  ConsensusRound:       %v
 %s  QrnsRound:       %v
+%s  SteeringMemberCandidates:       %v
 %s}#%v`,
 		indent, h.Version,
 		indent, h.ChainID,
@@ -562,6 +576,7 @@ func (h *Header) StringIndented(indent string) string {
 		indent, h.StandingMembersHash,
 		indent, h.ConsensusRound,
 		indent, h.QrnsHash,
+		indent, h.SteeringMemberCandidatesHash,
 		indent, h.Hash())
 }
 
@@ -572,23 +587,24 @@ func (h *Header) ToProto() *tmproto.Header {
 	}
 
 	return &tmproto.Header{
-		Version:             h.Version,
-		ChainID:             h.ChainID,
-		Height:              h.Height,
-		Time:                h.Time,
-		LastBlockId:         h.LastBlockID.ToProto(),
-		ValidatorsHash:      h.ValidatorsHash,
-		NextValidatorsHash:  h.NextValidatorsHash,
-		ConsensusHash:       h.ConsensusHash,
-		AppHash:             h.AppHash,
-		DataHash:            h.DataHash,
-		EvidenceHash:        h.EvidenceHash,
-		LastResultsHash:     h.LastResultsHash,
-		LastCommitHash:      h.LastCommitHash,
-		ProposerAddress:     h.ProposerAddress,
-		StandingMembersHash: h.StandingMembersHash,
-		ConsensusRound:      h.ConsensusRound.ToProto(),
-		QrnsHash:            h.QrnsHash,
+		Version:                      h.Version,
+		ChainID:                      h.ChainID,
+		Height:                       h.Height,
+		Time:                         h.Time,
+		LastBlockId:                  h.LastBlockID.ToProto(),
+		ValidatorsHash:               h.ValidatorsHash,
+		NextValidatorsHash:           h.NextValidatorsHash,
+		ConsensusHash:                h.ConsensusHash,
+		AppHash:                      h.AppHash,
+		DataHash:                     h.DataHash,
+		EvidenceHash:                 h.EvidenceHash,
+		LastResultsHash:              h.LastResultsHash,
+		LastCommitHash:               h.LastCommitHash,
+		ProposerAddress:              h.ProposerAddress,
+		StandingMembersHash:          h.StandingMembersHash,
+		ConsensusRound:               h.ConsensusRound.ToProto(),
+		QrnsHash:                     h.QrnsHash,
+		SteeringMemberCandidatesHash: h.SteeringMemberCandidatesHash,
 	}
 }
 
@@ -627,6 +643,7 @@ func HeaderFromProto(ph *tmproto.Header) (Header, error) {
 	h.LastCommitHash = ph.LastCommitHash
 	h.ProposerAddress = ph.ProposerAddress
 	h.StandingMembersHash = ph.StandingMembersHash
+	h.SteeringMemberCandidatesHash = ph.SteeringMemberCandidatesHash
 	h.ConsensusRound = consensusRound
 	h.QrnsHash = ph.QrnsHash
 

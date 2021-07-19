@@ -184,10 +184,22 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		blockExec.logger.Debug("updates to standing members", "updates", types.StandingMemberListString(standingMemberUpdates))
 	}
 
-	fmt.Println("Save-stompesi-2", state.QrnSet.Height)
+	abciSteeringMemberCandidateUpdates := abciResponses.EndBlock.SteeringMemberCandidateUpdates
+	err = validateSteeringMemberCandidateUpdates(abciSteeringMemberCandidateUpdates, state.ConsensusParams.Validator)
+	if err != nil {
+		return state, 0, fmt.Errorf("error in steering member candidate updates: %v", err)
+	}
+
+	steeringMemberCandidateUpdates, err := types.PB2TM.SteeringMemberCandidateUpdates(abciSteeringMemberCandidateUpdates)
+	if err != nil {
+		return state, 0, err
+	}
+	if len(steeringMemberCandidateUpdates) > 0 {
+		blockExec.logger.Debug("updates to steering member candidates", "updates", types.SteeringMemberCandidateListString(steeringMemberCandidateUpdates))
+	}
 
 	// Update the state with the block and responses.
-	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates, standingMemberUpdates)
+	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates, standingMemberUpdates, steeringMemberCandidateUpdates)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
@@ -205,7 +217,6 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	// Update the app hash and save the state.
 	state.AppHash = appHash
-	fmt.Println("Save-stompesi-3", state.QrnSet.Height)
 	if err := blockExec.store.Save(state); err != nil {
 		return state, 0, err
 	}
@@ -432,6 +443,22 @@ func validateStandingMemberUpdates(standingMemberUpdatesAbci []abci.StandingMemb
 	return nil
 }
 
+func validateSteeringMemberCandidateUpdates(steeringMemberCandidateUpdatesAbci []abci.SteeringMemberCandidateUpdate, params tmproto.ValidatorParams) error {
+	for _, valUpdate := range steeringMemberCandidateUpdatesAbci {
+		// Check if validator's pubkey matches an ABCI type in the consensus params
+		pk, err := cryptoenc.PubKeyFromProto(valUpdate.PubKey)
+		if err != nil {
+			return err
+		}
+
+		if !types.IsValidPubkeyType(params, pk.Type()) {
+			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
+				valUpdate, pk.Type())
+		}
+	}
+	return nil
+}
+
 // updateState returns a new State updated according to the header and responses.
 func updateState(
 	state State,
@@ -440,12 +467,14 @@ func updateState(
 	abciResponses *tmstate.ABCIResponses,
 	validatorUpdates []*types.Validator,
 	standingMemberUpdates []*types.StandingMember,
+	steeringMemberCandidateUpdates []*types.SteeringMemberCandidate,
 ) (State, error) {
 
 	// Copy the valset so we can apply changes from EndBlock
 	// and update s.LastValidators and s.Validators.
 	nValSet := state.NextValidators.Copy()
 	standingMemberSet := state.StandingMemberSet.Copy()
+	steeringMemberCandidateSet := state.SteeringMemberCandidateSet.Copy()
 
 	// Update the validator set with the latest abciResponses.
 	lastHeightValsChanged := state.LastHeightValidatorsChanged
@@ -462,13 +491,21 @@ func updateState(
 	if len(standingMemberUpdates) > 0 {
 		err := standingMemberSet.UpdateWithChangeSet(standingMemberUpdates)
 		if err != nil {
-			return state, fmt.Errorf("error changing validator set: %v", err)
+			return state, fmt.Errorf("error changing standing member set: %v", err)
 		}
+		//TODO: stompesi check
 		lastHeightStandingMembersChanged = header.Height + 1
 	}
 
-	// Update validator proposer priority and set state variables.
-	nValSet.IncrementProposerPriority(1)
+	lastHeightSteeringMemberCandidatesChanged := state.LastHeightSteeringMemberCandidatesChanged
+	if len(steeringMemberCandidateUpdates) > 0 {
+		err := steeringMemberCandidateSet.UpdateWithChangeSet(steeringMemberCandidateUpdates)
+		if err != nil {
+			return state, fmt.Errorf("error changing steering member candidate set: %v", err)
+		}
+		//TODO: stompesi check
+		lastHeightSteeringMemberCandidatesChanged = header.Height + 1
+	}
 
 	// Update the params with the latest abciResponses.
 	nextParams := state.ConsensusParams
@@ -506,9 +543,7 @@ func updateState(
 		nextConsensusRound.ConsensusStartBlockHeight = header.Height
 	}
 
-	fmt.Println("stompesi - height", state.QrnSet.Height)
 	state.QrnSet.Height = nextConsensusRound.ConsensusStartBlockHeight
-	fmt.Println("stompesi - height", state.QrnSet.Height)
 
 	nextVersion := state.Version
 
@@ -530,10 +565,12 @@ func updateState(
 		LastResultsHash:                  ABCIResponsesResultsHash(abciResponses),
 		AppHash:                          nil,
 		StandingMemberSet:                state.StandingMemberSet.Copy(),
+		SteeringMemberCandidateSet:       state.SteeringMemberCandidateSet.Copy(),
 		LastHeightStandingMembersChanged: lastHeightStandingMembersChanged,
 		ConsensusRound:                   nextConsensusRound,
 		LastHeightConsensusRoundChanged:  lastHeightConsensusRoundChanged,
 		QrnSet:                           state.QrnSet.Copy(),
+		LastHeightSteeringMemberCandidatesChanged: lastHeightSteeringMemberCandidatesChanged,
 	}, nil
 }
 
