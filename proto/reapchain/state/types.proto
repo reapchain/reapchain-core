@@ -40,7 +40,7 @@ message QrnsInfo {
 }
 
 message ConsensusRoundInfo {
-  reapchain.types.ConsensusRound consensus_round       = 1;
+  reapchain.types.ConsensusRound consensus_round       = 1 [(gogoproto.nullable) = false];
   int64                          last_height_changed = 2;
 }
 

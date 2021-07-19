@@ -52,6 +52,7 @@ func QrnSetFromProto(qrnSetProto *tmproto.QrnSet) (*QrnSet, error) {
 		}
 		qrns[i] = qrn
 	}
+	qrnSet.Height = qrnSetProto.Height
 	qrnSet.Qrns = qrns
 
 	return qrnSet, qrnSet.ValidateBasic()
@@ -69,6 +70,13 @@ func (qrnSet *QrnSet) ValidateBasic() error {
 	}
 
 	return nil
+}
+
+func (qrnSet *QrnSet) GetHeight() int64 {
+	if qrnSet == nil {
+		return 0
+	}
+	return qrnSet.Height
 }
 
 func (qrnSet *QrnSet) Size() int {
@@ -105,7 +113,9 @@ func (qrnSet *QrnSet) AddQrn(qrn *Qrn) error {
 		return fmt.Errorf("Not exist standing member of qrn: %v", qrn.StandingMemberPubKey.Address())
 	}
 
-	qrnSet.Qrns[standingMemberIndex] = qrn
+	qrn.StandingMemberIndex = standingMemberIndex
+	qrnSet.Qrns[standingMemberIndex] = qrn.Copy()
+
 	qrnSet.QrnsBitArray.SetIndex(int(standingMemberIndex), true)
 
 	return nil
@@ -144,6 +154,7 @@ func (qrnSet *QrnSet) ToProto() (*tmproto.QrnSet, error) {
 			qrnsProto[i] = qrnProto
 		}
 	}
+	qrnSetProto.Height = qrnSet.Height
 	qrnSetProto.Qrns = qrnsProto
 
 	return qrnSetProto, nil
@@ -225,4 +236,23 @@ func (qrnSet *QrnSet) BitArrayString() string {
 func (qrnSet *QrnSet) bitArrayString() string {
 	bAString := qrnSet.QrnsBitArray.String()
 	return fmt.Sprintf("%s", bAString)
+}
+
+type QrnSetReader interface {
+	GetHeight() int64
+	Size() int
+	BitArray() *bits.BitArray
+	GetByIndex(int32) *Qrn
+}
+
+func (qrnSet *QrnSet) UpdateWithChangeSet(qrns []*Qrn) error {
+	return qrnSet.updateWithChangeSet(qrns)
+}
+
+func (qrnSet *QrnSet) updateWithChangeSet(qrns []*Qrn) error {
+	if len(qrns) != 0 {
+		qrnSet.Qrns = qrns[:]
+	}
+
+	return nil
 }

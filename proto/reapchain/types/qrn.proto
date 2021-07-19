@@ -8,7 +8,8 @@ import "reapchain/crypto/keys.proto";
 import "google/protobuf/timestamp.proto";
 
 message QrnSet {
-  repeated Qrn qrns         = 1;
+  int64 height = 1;
+  repeated Qrn qrns         = 2;
 }
 
 message Qrn {
@@ -17,4 +18,5 @@ message Qrn {
   reapchain.crypto.PublicKey standing_member_pub_key           = 3 [(gogoproto.nullable) = false];
   uint64 value = 4;
   bytes signature         = 5;
+  int32 standing_member_index         = 6;
 }

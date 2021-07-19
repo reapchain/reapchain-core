@@ -25,6 +25,17 @@ const (
 )
 
 //------------------------------------------------------------------------
+func calcConsensusRoundKey(height int64) []byte {
+	return []byte(fmt.Sprintf("consensusRoundKey:%v", height))
+}
+
+func calcQrnsKey(height int64) []byte {
+	return []byte(fmt.Sprintf("qrnsKey:%v", height))
+}
+
+func calcStandingMembersKey(height int64) []byte {
+	return []byte(fmt.Sprintf("standingMembersKey:%v", height))
+}
 
 func calcValidatorsKey(height int64) []byte {
 	return []byte(fmt.Sprintf("validatorsKey:%v", height))
@@ -36,10 +47,6 @@ func calcConsensusParamsKey(height int64) []byte {
 
 func calcABCIResponsesKey(height int64) []byte {
 	return []byte(fmt.Sprintf("abciResponsesKey:%v", height))
-}
-
-func calcConsensusRoundKey(height int64) []byte {
-	return []byte(fmt.Sprintf("consensusRoundKey:%v", height))
 }
 
 //----------------------
@@ -74,8 +81,9 @@ type Store interface {
 	// PruneStates takes the height from which to start prning and which height stop at
 	PruneStates(int64, int64) error
 
-	LoadStandingMembers(int64) (*types.StandingMemberSet, error)
-	LoadQrns(int64) (*types.QrnSet, error)
+	LoadConsensusRound(int64) (tmproto.ConsensusRound, error)
+	LoadStandingMemberSet(int64) (*types.StandingMemberSet, error)
+	LoadQrnSet(int64) (*types.QrnSet, error)
 }
 
 // dbStore wraps a db (github.com/tendermint/tm-db)
@@ -156,6 +164,9 @@ func (store dbStore) loadState(key []byte) (state State, err error) {
 		return state, err
 	}
 
+	// fmt.Println("stompesi-load222", sm.StandingMemberSet.)
+	// fmt.Println("stompesi-load222", sm.QrnSet.Height)
+
 	return *sm, nil
 }
 
@@ -178,7 +189,11 @@ func (store dbStore) save(state State, key []byte) error {
 		}
 	}
 
-	if err := store.saveQrnsInfo(nextHeight-1, state.QrnSet); err != nil {
+	if err := store.saveConsensusRoundInfo(nextHeight, state.LastHeightConsensusRoundChanged, state.ConsensusRound.ToProto()); err != nil {
+		return err
+	}
+
+	if err := store.saveQrnsInfo(nextHeight, state.QrnSet); err != nil {
 		return err
 	}
 
@@ -217,11 +232,19 @@ func (store dbStore) Bootstrap(state State) error {
 		}
 	}
 
-	if err := store.saveValidatorsInfo(height, height, state.Validators); err != nil {
+	if err := store.saveConsensusRoundInfo(height, height, state.ConsensusRound.ToProto()); err != nil {
+		return err
+	}
+
+	if err := store.saveQrnsInfo(height, state.QrnSet); err != nil {
 		return err
 	}
 
 	if err := store.saveStandingMembersInfo(height, height, state.StandingMemberSet); err != nil {
+		return err
+	}
+
+	if err := store.saveValidatorsInfo(height, height, state.Validators); err != nil {
 		return err
 	}
 
@@ -261,9 +284,14 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 		return fmt.Errorf("consensus params at height %v not found: %w", to, err)
 	}
 
-	smInfo, err := loadStandingMembersInfo(store.db, to)
+	smInfo, err := loadStandingMemberSetInfo(store.db, to)
 	if err != nil {
 		return fmt.Errorf("validators at height %v not found: %w", to, err)
+	}
+
+	qrnsInfo, err := loadQrnSetInfo(store.db, to)
+	if err != nil {
+		return fmt.Errorf("qrns at height %v not found: %w", to, err)
 	}
 
 	keepVals := make(map[int64]bool)
@@ -272,15 +300,21 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 		keepVals[lastStoredHeightFor(to, valInfo.LastHeightChanged)] = true // keep last checkpoint too
 	}
 
+	keepParams := make(map[int64]bool)
+	if paramsInfo.ConsensusParams.Equal(&tmproto.ConsensusParams{}) {
+		keepParams[paramsInfo.LastHeightChanged] = true
+	}
+
 	keepSms := make(map[int64]bool)
 	if smInfo.StandingMemberSet == nil {
 		keepSms[smInfo.LastHeightChanged] = true
 		keepSms[lastStoredHeightFor(to, smInfo.LastHeightChanged)] = true // keep last checkpoint too
 	}
 
-	keepParams := make(map[int64]bool)
-	if paramsInfo.ConsensusParams.Equal(&tmproto.ConsensusParams{}) {
-		keepParams[paramsInfo.LastHeightChanged] = true
+	keepQrnSet := make(map[int64]bool)
+	if qrnsInfo.QrnSet == nil {
+		keepQrnSet[qrnsInfo.LastHeightChanged] = true
+		keepQrnSet[lastStoredHeightFor(to, qrnsInfo.LastHeightChanged)] = true // keep last checkpoint too
 	}
 
 	batch := store.db.NewBatch()
@@ -292,70 +326,6 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 	for h := to - 1; h >= from; h-- {
 		// For heights we keep, we must make sure they have the full validator set or consensus
 		// params, otherwise they will panic if they're retrieved directly (instead of
-		// indirectly via a LastHeightChanged pointer).
-		if keepVals[h] {
-			v, err := loadValidatorsInfo(store.db, h)
-			if err != nil || v.ValidatorSet == nil {
-				vip, err := store.LoadValidators(h)
-				if err != nil {
-					return err
-				}
-
-				pvi, err := vip.ToProto()
-				if err != nil {
-					return err
-				}
-
-				v.ValidatorSet = pvi
-				v.LastHeightChanged = h
-
-				bz, err := v.Marshal()
-				if err != nil {
-					return err
-				}
-				err = batch.Set(calcValidatorsKey(h), bz)
-				if err != nil {
-					return err
-				}
-			}
-		} else {
-			err = batch.Delete(calcValidatorsKey(h))
-			if err != nil {
-				return err
-			}
-		}
-
-		if keepSms[h] {
-			v, err := loadStandingMembersInfo(store.db, h)
-			if err != nil || v.StandingMemberSet == nil {
-				vip, err := store.LoadStandingMembers(h)
-				if err != nil {
-					return err
-				}
-
-				pvi, err := vip.ToProto()
-				if err != nil {
-					return err
-				}
-
-				v.StandingMemberSet = pvi
-				v.LastHeightChanged = h
-
-				bz, err := v.Marshal()
-				if err != nil {
-					return err
-				}
-				err = batch.Set(calcStandingMembersKey(h), bz)
-				if err != nil {
-					return err
-				}
-			}
-		} else {
-			err = batch.Delete(calcStandingMembersKey(h))
-			if err != nil {
-				return err
-			}
-		}
 
 		if keepParams[h] {
 			p, err := store.loadConsensusParamsInfo(h)
@@ -690,6 +660,26 @@ func (store dbStore) loadConsensusParamsInfo(height int64) (*tmstate.ConsensusPa
 	return paramsInfo, nil
 }
 
+func (store dbStore) loadConsensusRoundInfo(height int64) (*tmstate.ConsensusRoundInfo, error) {
+	buf, err := store.db.Get(calcConsensusRoundKey(height))
+	if err != nil {
+		return nil, err
+	}
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	paramsInfo := new(tmstate.ConsensusRoundInfo)
+	if err = paramsInfo.Unmarshal(buf); err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadConsensusRound: Data has been corrupted or its spec has changed:
+                %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return paramsInfo, nil
+}
+
 // saveConsensusParamsInfo persists the consensus params for the next block to disk.
 // It should be called from s.Save(), right before the state itself is persisted.
 // If the consensus params did not change after processing the latest block,
@@ -715,14 +705,15 @@ func (store dbStore) saveConsensusParamsInfo(nextHeight, changeHeight int64, par
 	return nil
 }
 
-func (store dbStore) saveConsensusRound(nextHeight, changeHeight int64, params tmproto.ConsensusRound) error {
+func (store dbStore) saveConsensusRoundInfo(nextHeight, changeHeight int64, consensusRoundProto tmproto.ConsensusRound) error {
 	paramsInfo := &tmstate.ConsensusRoundInfo{
 		LastHeightChanged: changeHeight,
 	}
 
 	if changeHeight == nextHeight {
-		paramsInfo.ConsensusRound = &params
+		paramsInfo.ConsensusRound = consensusRoundProto
 	}
+
 	bz, err := paramsInfo.Marshal()
 	if err != nil {
 		return err
@@ -736,15 +727,15 @@ func (store dbStore) saveConsensusRound(nextHeight, changeHeight int64, params t
 	return nil
 }
 
-func (store dbStore) LoadStandingMembers(height int64) (*types.StandingMemberSet, error) {
-	smInfo, err := loadStandingMembersInfo(store.db, height)
+func (store dbStore) LoadStandingMemberSet(height int64) (*types.StandingMemberSet, error) {
+	standingMemberSetInfo, err := loadStandingMemberSetInfo(store.db, height)
 	if err != nil {
 		return nil, ErrNoValSetForHeight{height}
 	}
-	if smInfo.StandingMemberSet == nil {
-		lastStoredHeight := lastStoredHeightFor(height, smInfo.LastHeightChanged)
-		smInfo2, err := loadStandingMembersInfo(store.db, lastStoredHeight)
-		if err != nil || smInfo2.StandingMemberSet == nil {
+	if standingMemberSetInfo.StandingMemberSet == nil {
+		lastStoredHeight := lastStoredHeightFor(height, standingMemberSetInfo.LastHeightChanged)
+		standingMemberSetInfo2, err := loadStandingMemberSetInfo(store.db, lastStoredHeight)
+		if err != nil || standingMemberSetInfo2.StandingMemberSet == nil {
 			return nil,
 				fmt.Errorf("couldn't find standing members at height %d (height %d was originally requested): %w",
 					lastStoredHeight,
@@ -752,38 +743,27 @@ func (store dbStore) LoadStandingMembers(height int64) (*types.StandingMemberSet
 					err,
 				)
 		}
-
-		vs, err := types.StandingMemberSetFromProto(smInfo2.StandingMemberSet)
-		if err != nil {
-			return nil, err
-		}
-
-		vi2, err := vs.ToProto()
-		if err != nil {
-			return nil, err
-		}
-
-		smInfo2.StandingMemberSet = vi2
-		smInfo = smInfo2
+		standingMemberSetInfo = standingMemberSetInfo2
 	}
 
-	vip, err := types.StandingMemberSetFromProto(smInfo.StandingMemberSet)
+	standingMemberSet, err := types.StandingMemberSetFromProto(standingMemberSetInfo.StandingMemberSet)
 	if err != nil {
 		return nil, err
 	}
 
-	return vip, nil
+	return standingMemberSet, nil
 }
 
-func (store dbStore) LoadQrns(height int64) (*types.QrnSet, error) {
-	smInfo, err := loadQrnsInfo(store.db, height)
+func (store dbStore) LoadQrnSet(height int64) (*types.QrnSet, error) {
+	qrnSetInfo, err := loadQrnSetInfo(store.db, height)
 	if err != nil {
 		return nil, ErrNoValSetForHeight{height}
 	}
-	if smInfo.QrnSet == nil {
-		lastStoredHeight := lastStoredHeightFor(height, smInfo.LastHeightChanged)
-		smInfo2, err := loadQrnsInfo(store.db, lastStoredHeight)
-		if err != nil || smInfo2.QrnSet == nil {
+
+	if qrnSetInfo.QrnSet == nil {
+		lastStoredHeight := lastStoredHeightFor(height, qrnSetInfo.LastHeightChanged)
+		qrnSetInfo2, err := loadQrnSetInfo(store.db, lastStoredHeight)
+		if err != nil || qrnSetInfo2.QrnSet == nil {
 			return nil,
 				fmt.Errorf("couldn't find qrns at height %d (height %d was originally requested): %w",
 					lastStoredHeight,
@@ -791,31 +771,44 @@ func (store dbStore) LoadQrns(height int64) (*types.QrnSet, error) {
 					err,
 				)
 		}
-
-		vs, err := types.QrnSetFromProto(smInfo2.QrnSet)
-		if err != nil {
-			return nil, err
-		}
-
-		vi2, err := vs.ToProto()
-		if err != nil {
-			return nil, err
-		}
-
-		smInfo2.QrnSet = vi2
-		smInfo = smInfo2
+		qrnSetInfo = qrnSetInfo2
 	}
 
-	vip, err := types.QrnSetFromProto(smInfo.QrnSet)
+	qrnSet, err := types.QrnSetFromProto(qrnSetInfo.QrnSet)
 	if err != nil {
 		return nil, err
 	}
 
-	return vip, nil
+	return qrnSet, nil
+}
+
+func (store dbStore) LoadConsensusRound(height int64) (tmproto.ConsensusRound, error) {
+	empty := tmproto.ConsensusRound{}
+
+	consensusRoundInfo, err := loadConsensusRoundInfo(store.db, height)
+	if err != nil {
+		return empty, ErrNoConsensusRoundForHeight{height}
+	}
+
+	if consensusRoundInfo.ConsensusRound.Equal(&empty) {
+		lastStoredHeight := lastStoredHeightFor(height, consensusRoundInfo.LastHeightChanged)
+		consensusRoundInfo2, err := loadConsensusRoundInfo(store.db, lastStoredHeight)
+		if err != nil {
+			return empty,
+				fmt.Errorf("couldn't find consensus round at height %d (height %d was originally requested): %w",
+					lastStoredHeight,
+					height,
+					err,
+				)
+		}
+		consensusRoundInfo = consensusRoundInfo2
+	}
+
+	return consensusRoundInfo.ConsensusRound, nil
 }
 
 // CONTRACT: Returned StandingMemberInfo can be mutated.
-func loadStandingMembersInfo(db dbm.DB, height int64) (*tmstate.StandingMembersInfo, error) {
+func loadStandingMemberSetInfo(db dbm.DB, height int64) (*tmstate.StandingMembersInfo, error) {
 	buf, err := db.Get(calcStandingMembersKey(height))
 	if err != nil {
 		return nil, err
@@ -829,15 +822,14 @@ func loadStandingMembersInfo(db dbm.DB, height int64) (*tmstate.StandingMembersI
 	err = v.Unmarshal(buf)
 	if err != nil {
 		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
-		tmos.Exit(fmt.Sprintf(`LoadStandingMembers: Data has been corrupted or its spec has changed:
-                %v\n`, err))
+		tmos.Exit(fmt.Sprintf(`LoadStandingMemberSet: Data has been corrupted or its spec has changed: %v\n`, err))
 	}
 	// TODO: ensure that buf is completely read.
 
 	return v, nil
 }
 
-func loadQrnsInfo(db dbm.DB, height int64) (*tmstate.QrnsInfo, error) {
+func loadQrnSetInfo(db dbm.DB, height int64) (*tmstate.QrnsInfo, error) {
 	buf, err := db.Get(calcQrnsKey(height))
 	if err != nil {
 		return nil, err
@@ -851,18 +843,30 @@ func loadQrnsInfo(db dbm.DB, height int64) (*tmstate.QrnsInfo, error) {
 	err = v.Unmarshal(buf)
 	if err != nil {
 		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
-		tmos.Exit(fmt.Sprintf(`LoadQrns: Data has been corrupted or its spec has changed:
-                %v\n`, err))
+		tmos.Exit(fmt.Sprintf(`LoadQrnSet: Data has been corrupted or its spec has changed: %v\n`, err))
 	}
 	// TODO: ensure that buf is completely read.
 
 	return v, nil
 }
 
-func calcStandingMembersKey(height int64) []byte {
-	return []byte(fmt.Sprintf("standingMembersKey:%v", height))
-}
+func loadConsensusRoundInfo(db dbm.DB, height int64) (*tmstate.ConsensusRoundInfo, error) {
+	buf, err := db.Get(calcConsensusRoundKey(height))
+	if err != nil {
+		return nil, err
+	}
 
-func calcQrnsKey(height int64) []byte {
-	return []byte(fmt.Sprintf("qrnsKey:%v", height))
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	consensusRound := new(tmstate.ConsensusRoundInfo)
+	err = consensusRound.Unmarshal(buf)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadQrnSet: Data has been corrupted or its spec has changed: %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return consensusRound, nil
 }

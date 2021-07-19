@@ -28,6 +28,7 @@ const (
 	DataChannel        = byte(0x21)
 	VoteChannel        = byte(0x22)
 	VoteSetBitsChannel = byte(0x23)
+	QrnChannel         = byte(0x24)
 
 	maxMsgSize = 1048576 // 1MB; NOTE/TODO: keep in sync with types.PartSet sizes.
 
@@ -168,6 +169,13 @@ func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 			RecvBufferCapacity:  1024,
 			RecvMessageCapacity: maxMsgSize,
 		},
+		{
+			ID:                  QrnChannel,
+			Priority:            7,
+			SendQueueCapacity:   100,
+			RecvBufferCapacity:  100 * 100,
+			RecvMessageCapacity: maxMsgSize,
+		},
 	}
 }
 
@@ -193,6 +201,8 @@ func (conR *Reactor) AddPeer(peer p2p.Peer) {
 	go conR.gossipDataRoutine(peer, peerState)
 	go conR.gossipVotesRoutine(peer, peerState)
 	go conR.queryMaj23Routine(peer, peerState)
+
+	go conR.gossipQrnsRoutine(peer, peerState)
 
 	// Send our state to peer.
 	// If we're fast_syncing, broadcast a RoundStepMessage later upon SwitchToConsensus().
@@ -264,6 +274,8 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			ps.ApplyNewValidBlockMessage(msg)
 		case *HasVoteMessage:
 			ps.ApplyHasVoteMessage(msg)
+		case *HasQrnMessage:
+			ps.ApplyHasQrnMessage(msg)
 		case *VoteSetMaj23Message:
 			cs := conR.conS
 			cs.mtx.Lock()
@@ -316,6 +328,27 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			conR.Metrics.BlockParts.With("peer_id", string(src.ID())).Add(1)
 			conR.conS.peerMsgQueue <- msgInfo{msg, src.ID()}
 		default:
+			conR.Logger.Error(fmt.Sprintf("Unknown message type %v", reflect.TypeOf(msg)))
+		}
+
+	case QrnChannel:
+		if conR.WaitSync() {
+			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
+			return
+		}
+		switch msg := msg.(type) {
+		case *QrnMessage:
+			cs := conR.conS
+			cs.mtx.RLock()
+			height, standingMemberSize := cs.Height, cs.RoundState.StandingMemberSet.Size()
+			cs.mtx.RUnlock()
+			ps.EnsureQrnBitArrays(height, standingMemberSize)
+			ps.SetHasQrn(msg.Qrn)
+
+			cs.peerMsgQueue <- msgInfo{msg, src.ID()}
+
+		default:
+			// don't punish (leave room for soft upgrades)
 			conR.Logger.Error(fmt.Sprintf("Unknown message type %v", reflect.TypeOf(msg)))
 		}
 
@@ -701,6 +734,34 @@ OUTER_LOOP:
 	}
 }
 
+func (conR *Reactor) gossipQrnsRoutine(peer p2p.Peer, ps *PeerState) {
+	logger := conR.Logger.With("peer", peer)
+
+OUTER_LOOP:
+	for {
+		// Manage disconnects from self or peer.
+		if !peer.IsRunning() || !conR.IsRunning() {
+			logger.Info("Stopping gossipVotesRoutine for peer")
+			return
+		}
+		rs := conR.conS.GetRoundState()
+		prs := ps.GetRoundState()
+
+		// logger.Debug("gossipVotesRoutine", "rsHeight", rs.Height, "rsRound", rs.Round,
+		// "prsHeight", prs.Height, "prsRound", prs.Round, "prsStep", prs.Step)
+
+		// If height matches, then send LastCommit, Prevotes, Precommits.
+		if rs.Height == prs.Height {
+			if ps.PickSendQrn(conR.conS.state.QrnSet) {
+				continue OUTER_LOOP
+			}
+		}
+
+		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
+		continue OUTER_LOOP
+	}
+}
+
 func (conR *Reactor) gossipVotesForHeight(
 	logger log.Logger,
 	rs *cstypes.RoundState,
@@ -1048,6 +1109,82 @@ func (ps *PeerState) SetHasProposalBlockPart(height int64, round int32, index in
 	ps.PRS.ProposalBlockParts.SetIndex(index, true)
 }
 
+func (ps *PeerState) setHasQrn(height int64, index int32) {
+	// NOTE: some may be nil BitArrays -> no side effects.
+	psQrns := ps.getQrnBitArray(height)
+	if psQrns != nil {
+		psQrns.SetIndex(int(index), true)
+	}
+}
+
+func (ps *PeerState) SetHasQrn(qrn *types.Qrn) {
+	ps.mtx.Lock()
+	defer ps.mtx.Unlock()
+
+	ps.setHasQrn(qrn.Height, qrn.StandingMemberIndex)
+}
+
+func (ps *PeerState) PickSendQrn(qrnSet types.QrnSetReader) bool {
+	if qrn, ok := ps.PickQrnToSend(qrnSet); ok {
+		fmt.Println("pick send qrn", qrn.StandingMemberIndex, qrn.Value)
+		msg := &QrnMessage{qrn}
+
+		if ps.peer.Send(QrnChannel, MustEncode(msg)) {
+			ps.SetHasQrn(qrn)
+			return true
+		}
+		return false
+	}
+	return false
+}
+
+func (ps *PeerState) PickQrnToSend(qrnSet types.QrnSetReader) (qrn *types.Qrn, ok bool) {
+	ps.mtx.Lock()
+	defer ps.mtx.Unlock()
+
+	if qrnSet.Size() == 0 {
+		return nil, false
+	}
+
+	height, size := qrnSet.GetHeight(), qrnSet.Size()
+
+	//fmt.Println("PickQrnToSend", height, size)
+
+	ps.ensureQrnBitArrays(height, size)
+
+	psQrnBitArray := ps.getQrnBitArray(height)
+	if psQrnBitArray == nil {
+		return nil, false // Not something worth sending
+	}
+	if index, ok := qrnSet.BitArray().Sub(psQrnBitArray).PickRandom(); ok {
+		fmt.Println("PickQrnToSend", "index", index)
+		return qrnSet.GetByIndex(int32(index)), true
+	}
+	return nil, false
+}
+
+func (ps *PeerState) EnsureQrnBitArrays(height int64, numStandingMembers int) {
+	ps.mtx.Lock()
+	defer ps.mtx.Unlock()
+	ps.ensureQrnBitArrays(height, numStandingMembers)
+}
+
+func (ps *PeerState) ensureQrnBitArrays(height int64, numStandingMembers int) {
+	if ps.PRS.Height == height {
+		if ps.PRS.QrnsBitArray == nil {
+			ps.PRS.QrnsBitArray = bits.NewBitArray(numStandingMembers)
+		}
+	}
+}
+
+func (ps *PeerState) getQrnBitArray(height int64) *bits.BitArray {
+	if ps.PRS.Height == height {
+		return ps.PRS.QrnsBitArray
+	}
+
+	return nil
+}
+
 // PickSendVote picks a vote and sends it to the peer.
 // Returns true if vote was sent.
 func (ps *PeerState) PickSendVote(votes types.VoteSetReader) bool {
@@ -1290,6 +1427,8 @@ func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage) {
 		// We'll update the BitArray capacity later.
 		ps.PRS.Prevotes = nil
 		ps.PRS.Precommits = nil
+
+		ps.PRS.QrnsBitArray = nil
 	}
 	if psHeight == msg.Height && psRound != msg.Round && msg.Round == psCatchupCommitRound {
 		// Peer caught up to CatchupCommitRound.
@@ -1345,6 +1484,17 @@ func (ps *PeerState) ApplyProposalPOLMessage(msg *ProposalPOLMessage) {
 	// TODO: Merge onto existing ps.PRS.ProposalPOL?
 	// We might have sent some prevotes in the meantime.
 	ps.PRS.ProposalPOL = msg.ProposalPOL
+}
+
+func (ps *PeerState) ApplyHasQrnMessage(msg *HasQrnMessage) {
+	ps.mtx.Lock()
+	defer ps.mtx.Unlock()
+
+	if ps.PRS.Height != msg.Height {
+		return
+	}
+
+	ps.setHasQrn(msg.Height, msg.Index)
 }
 
 // ApplyHasVoteMessage updates the peer state for the new vote.
@@ -1418,6 +1568,7 @@ func init() {
 	tmjson.RegisterType(&HasVoteMessage{}, "reapchain/HasVote")
 	tmjson.RegisterType(&VoteSetMaj23Message{}, "reapchain/VoteSetMaj23")
 	tmjson.RegisterType(&VoteSetBitsMessage{}, "reapchain/VoteSetBits")
+	tmjson.RegisterType(&QrnMessage{}, "reapchain/Qrn")
 }
 
 func decodeMsg(bz []byte) (msg Message, err error) {
@@ -1640,6 +1791,28 @@ func (m *VoteMessage) String() string {
 }
 
 //-------------------------------------
+
+type HasQrnMessage struct {
+	Height int64
+	Index  int32
+}
+
+// ValidateBasic performs basic validation.
+func (m *HasQrnMessage) ValidateBasic() error {
+	if m.Height < 0 {
+		return errors.New("negative Height")
+	}
+
+	if m.Index < 0 {
+		return errors.New("negative Index")
+	}
+	return nil
+}
+
+// String returns a string representation.
+func (m *HasQrnMessage) String() string {
+	return fmt.Sprintf("[HasQrn VI:%v V:{%v}]", m.Index, m.Height)
+}
 
 // HasVoteMessage is sent to indicate that a particular vote has been received.
 type HasVoteMessage struct {

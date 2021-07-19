@@ -310,6 +310,7 @@ func (h *Handshaker) ReplayBlocks(
 			validators[i] = types.NewValidator(val.PubKey, val.Power)
 		}
 		validatorSet := types.NewValidatorSet(validators)
+		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
 
 		standingMembers := make([]*types.StandingMember, len(h.genDoc.StandingMembers))
 		for i, val := range h.genDoc.StandingMembers {
@@ -318,9 +319,6 @@ func (h *Handshaker) ReplayBlocks(
 		standingMemberSet := types.NewStandingMemberSet(standingMembers)
 		standingMemberUpdates := types.TM2PB.StandingMemberSetUpdate(standingMemberSet)
 
-		// standingMemberUpdates := types.TM2PB.ConsensusRoundUpdate(standingMemberSet)
-
-		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
 		csParams := types.TM2PB.ConsensusParams(h.genDoc.ConsensusParams)
 
 		consensusRoundProto := h.genDoc.ConsensusRound.ToProto()
@@ -332,6 +330,7 @@ func (h *Handshaker) ReplayBlocks(
 		}
 
 		qrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, qrns)
+		fmt.Println("QrnsBitArray1", qrnSet.QrnsBitArray.IsFull())
 		qrnUpdates := types.TM2PB.QrnSetUpdate(qrnSet)
 
 		req := abci.RequestInitChain{
@@ -373,14 +372,12 @@ func (h *Handshaker) ReplayBlocks(
 			}
 
 			if len(res.StandingMemberUpdates) > 0 {
-				fmt.Printf("hihih")
-				vals, err := types.PB2TM.StandingMemberUpdates(res.StandingMemberUpdates)
+				standingMembers, err := types.PB2TM.StandingMemberUpdates(res.StandingMemberUpdates)
 				if err != nil {
 					return nil, err
 				}
-				fmt.Println("jbjb")
 
-				state.StandingMemberSet = types.NewStandingMemberSet(vals)
+				state.StandingMemberSet = types.NewStandingMemberSet(standingMembers)
 			} else if len(h.genDoc.StandingMembers) == 0 {
 				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
 			}

@@ -606,6 +606,11 @@ func HeaderFromProto(ph *tmproto.Header) (Header, error) {
 		return Header{}, err
 	}
 
+	consensusRound, err := ConsensusRoundFromProto(ph.ConsensusRound)
+	if err != nil {
+		return Header{}, err
+	}
+
 	h.Version = ph.Version
 	h.ChainID = ph.ChainID
 	h.Height = ph.Height
@@ -622,7 +627,7 @@ func HeaderFromProto(ph *tmproto.Header) (Header, error) {
 	h.LastCommitHash = ph.LastCommitHash
 	h.ProposerAddress = ph.ProposerAddress
 	h.StandingMembersHash = ph.StandingMembersHash
-	h.ConsensusRound = ConsensusRoundFromProto(ph.ConsensusRound)
+	h.ConsensusRound = consensusRound
 	h.QrnsHash = ph.QrnsHash
 
 	return *h, h.ValidateBasic()

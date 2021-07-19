@@ -654,6 +654,7 @@ func (cs *State) updateToState(state sm.State) {
 
 	if state.ConsensusRound.ConsensusStartBlockHeight+int64(state.ConsensusRound.Peorid) == height {
 		state.ConsensusRound.ConsensusStartBlockHeight = height
+		state.QrnSet.Height = height
 	}
 	// RoundState fields
 	cs.updateHeight(height)
@@ -687,6 +688,8 @@ func (cs *State) updateToState(state sm.State) {
 	cs.StandingMemberSet = state.StandingMemberSet
 
 	cs.state = state
+
+	fmt.Println("stompesi-tttttt", state.StandingMemberSet.Size())
 
 	// Finally, broadcast RoundState
 	cs.newStep()
@@ -869,7 +872,16 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// We could make note of this and help filter in broadcastHasVoteMessage().
 
 	case *QrnMessage:
+		fmt.Println("Add Qrn: ", msg.Qrn.Height, msg.Qrn.StandingMemberIndex, msg.Qrn.StandingMemberPubKey.Address(), msg.Qrn.Value)
+
 		added, err = cs.tryAddQrn(msg.Qrn, peerID)
+		if err != nil {
+			fmt.Println("qrn-height-update", cs.state.QrnSet.Height)
+			//if cs.state.ConsensusRound.ConsensusStartBlockHeight != cs.state.QrnSet.Height {
+			//	fmt.Println("qrn-height-update", cs.state.ConsensusRound.ConsensusStartBlockHeight)
+			//	cs.state.QrnSet.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight
+			//}
+		}
 
 	default:
 		cs.Logger.Error("unknown msg type", "type", fmt.Sprintf("%T", msg))
@@ -1107,7 +1119,16 @@ func (cs *State) enterPropose(height int64, round int32) {
 		return
 	}
 
-	if cs.isProposer(address) {
+	isFull := cs.state.QrnSet.QrnsBitArray.IsFull()
+	fmt.Println("QrnsBitArray4", isFull)
+	index, ok := cs.state.QrnSet.QrnsBitArray.PickRandom()
+	fmt.Println("QrnsBitArray4", isFull, index, ok)
+
+	if isFull {
+		cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
+		cs.Validators.Proposer = types.NewValidator(cs.StandingMemberSet.Coordinator.PubKey, 10000)
+	}
+	if cs.isProposer(address) && isFull == true {
 		logger.Debug("propose step; our turn to propose", "proposer", address)
 		cs.decideProposal(height, round)
 	} else {
@@ -1116,7 +1137,7 @@ func (cs *State) enterPropose(height int64, round int32) {
 }
 
 func (cs *State) isProposer(address []byte) bool {
-	return bytes.Equal(cs.Validators.GetProposer().Address, address)
+	return bytes.Equal(cs.StandingMemberSet.Coordinator.Address, address)
 }
 
 func (cs *State) defaultDecideProposal(height int64, round int32) {
@@ -1688,13 +1709,18 @@ func (cs *State) finalizeCommit(height int64) {
 
 	if cs.state.ConsensusRound.ConsensusStartBlockHeight-1 == height {
 		cs.state.QrnSet = types.NewQrnSet(height+1, cs.RoundState.StandingMemberSet, nil)
-		qrnValue := tmrand.Uint64()
-		qrn := types.NewQrn(height+1, cs.privValidatorPubKey, qrnValue)
-		err = cs.privValidator.SignQrn(qrn)
-		if err != nil {
-			logger.Error("Can't sign qrn", "err", err)
-		} else {
-			cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
+
+		standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
+		if standingMemberIndex != -1 {
+			qrnValue := tmrand.Uint64()
+			qrn := types.NewQrn(height+1, cs.privValidatorPubKey, qrnValue)
+			qrn.StandingMemberIndex = standingMemberIndex
+			err = cs.privValidator.SignQrn(qrn)
+			if err != nil {
+				logger.Error("Can't sign qrn", "err", err)
+			} else {
+				cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
+			}
 		}
 	}
 

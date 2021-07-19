@@ -51,7 +51,7 @@ func StandingMembers(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultSta
 		return nil, err
 	}
 
-	standingMemberSet, err := env.StateStore.LoadStandingMembers(height)
+	standingMemberSet, err := env.StateStore.LoadStandingMemberSet(height)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 		return nil, err
 	}
 
-	qrnSet, err := env.StateStore.LoadQrns(height)
+	qrnSet, err := env.StateStore.LoadQrnSet(height)
 	if err != nil {
 		return nil, err
 	}

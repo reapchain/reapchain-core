@@ -83,6 +83,22 @@ func validateBlock(state State, block *types.Block) error {
 		)
 	}
 
+	// validate standing members
+	if !bytes.Equal(block.StandingMembersHash, state.StandingMemberSet.Hash()) {
+		return fmt.Errorf("wrong Block.Header.StandingMembersHash.  Expected %X, got %v",
+			state.StandingMemberSet.Hash(),
+			block.StandingMembersHash,
+		)
+	}
+
+	// validate qrns
+	if !bytes.Equal(block.QrnsHash, state.QrnSet.Hash()) {
+		return fmt.Errorf("wrong Block.Header.QrnsHash.  Expected %X, got %v",
+			state.QrnSet.Hash(),
+			block.QrnsHash,
+		)
+	}
+
 	// Validate block LastCommit.
 	if block.Height == state.InitialHeight {
 		if len(block.LastCommit.Signatures) != 0 {

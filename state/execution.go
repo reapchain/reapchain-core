@@ -184,8 +184,10 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		blockExec.logger.Debug("updates to standing members", "updates", types.StandingMemberListString(standingMemberUpdates))
 	}
 
+	fmt.Println("Save-stompesi-2", state.QrnSet.Height)
+
 	// Update the state with the block and responses.
-	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates)
+	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates, standingMemberUpdates)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
@@ -203,6 +205,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	// Update the app hash and save the state.
 	state.AppHash = appHash
+	fmt.Println("Save-stompesi-3", state.QrnSet.Height)
 	if err := blockExec.store.Save(state); err != nil {
 		return state, 0, err
 	}
@@ -436,11 +439,13 @@ func updateState(
 	header *types.Header,
 	abciResponses *tmstate.ABCIResponses,
 	validatorUpdates []*types.Validator,
+	standingMemberUpdates []*types.StandingMember,
 ) (State, error) {
 
 	// Copy the valset so we can apply changes from EndBlock
 	// and update s.LastValidators and s.Validators.
 	nValSet := state.NextValidators.Copy()
+	standingMemberSet := state.StandingMemberSet.Copy()
 
 	// Update the validator set with the latest abciResponses.
 	lastHeightValsChanged := state.LastHeightValidatorsChanged
@@ -454,8 +459,8 @@ func updateState(
 	}
 
 	lastHeightStandingMembersChanged := state.LastHeightStandingMembersChanged
-	if len(validatorUpdates) > 0 {
-		err := nValSet.UpdateWithChangeSet(validatorUpdates)
+	if len(standingMemberUpdates) > 0 {
+		err := standingMemberSet.UpdateWithChangeSet(standingMemberUpdates)
 		if err != nil {
 			return state, fmt.Errorf("error changing validator set: %v", err)
 		}
@@ -485,11 +490,25 @@ func updateState(
 	nextConsensusRound := state.ConsensusRound
 	lastHeightConsensusRoundChanged := state.LastHeightConsensusRoundChanged
 	if abciResponses.EndBlock.ConsensusRoundUpdates != nil {
-		nextConsensusRound = types.ConsensusRoundFromProto(types.UpdateConsensusRound(state.ConsensusRound.ToProto(), abciResponses.EndBlock.ConsensusRoundUpdates))
+		consensusRoundProto := types.UpdateConsensusRound(state.ConsensusRound.ToProto(), abciResponses.EndBlock.ConsensusRoundUpdates)
+		consensusRound, err := types.ConsensusRoundFromProto(consensusRoundProto)
+		if err != nil {
+			return state, fmt.Errorf("error updating consensus round: %v", err)
+		}
+		nextConsensusRound = consensusRound
 
 		// Change results from this height but only applies to the next height.
 		lastHeightParamsChanged = header.Height + 1
 	}
+
+	fmt.Println("stompesi-height", header.Height, state.ConsensusRound.ConsensusStartBlockHeight, state.ConsensusRound.Peorid)
+	if state.ConsensusRound.ConsensusStartBlockHeight+int64(state.ConsensusRound.Peorid) == header.Height {
+		nextConsensusRound.ConsensusStartBlockHeight = header.Height
+	}
+
+	fmt.Println("stompesi - height", state.QrnSet.Height)
+	state.QrnSet.Height = nextConsensusRound.ConsensusStartBlockHeight
+	fmt.Println("stompesi - height", state.QrnSet.Height)
 
 	nextVersion := state.Version
 

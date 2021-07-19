@@ -52,11 +52,11 @@ func (consensusRound *ConsensusRound) ToProto() tmproto.ConsensusRound {
 	}
 }
 
-func ConsensusRoundFromProto(crProto tmproto.ConsensusRound) ConsensusRound {
+func ConsensusRoundFromProto(consensusRoundProto tmproto.ConsensusRound) (ConsensusRound, error) {
 	return ConsensusRound{
-		ConsensusStartBlockHeight: crProto.ConsensusStartBlockHeight,
-		Peorid:                    crProto.Peorid,
-	}
+		ConsensusStartBlockHeight: consensusRoundProto.ConsensusStartBlockHeight,
+		Peorid:                    consensusRoundProto.Peorid,
+	}, nil
 }
 
 func UpdateConsensusRound(currentConsensusRound tmproto.ConsensusRound, nextConsensusRound *abci.ConsensusRound) tmproto.ConsensusRound {

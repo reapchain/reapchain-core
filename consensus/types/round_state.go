@@ -93,6 +93,7 @@ type RoundState struct {
 	TriggeredTimeoutPrecommit bool                `json:"triggered_timeout_precommit"`
 
 	StandingMemberSet *types.StandingMemberSet `json:"standing_member_set"`
+	QrnSet            *types.QrnSet            `json:"qrn_set"`
 }
 
 // Compressed version of the RoundState for use in RPC

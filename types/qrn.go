@@ -19,6 +19,7 @@ type Qrn struct {
 	Height               int64         `json:"height"`
 	Timestamp            time.Time     `json:"timestamp"`
 	StandingMemberPubKey crypto.PubKey `json:"standing_member_pub_key"`
+	StandingMemberIndex  int32         `json:"standing_member_index"`
 	Value                uint64        `json:"value"`
 	Signature            []byte        `json:"signature"`
 }
@@ -149,6 +150,7 @@ func (qrn *Qrn) ToProto() *tmproto.Qrn {
 		Height:               qrn.Height,
 		Timestamp:            qrn.Timestamp,
 		StandingMemberPubKey: pubKey,
+		StandingMemberIndex:  qrn.StandingMemberIndex,
 		Value:                qrn.Value,
 		Signature:            qrn.Signature,
 	}
@@ -170,14 +172,9 @@ func QrnFromProto(qrnProto *tmproto.Qrn) *Qrn {
 	qrn.Height = qrnProto.Height
 	qrn.Timestamp = qrnProto.Timestamp
 	qrn.StandingMemberPubKey = pubKey
+	qrn.StandingMemberIndex = qrnProto.StandingMemberIndex
 	qrn.Value = qrnProto.Value
 	qrn.Signature = qrnProto.Signature
 
-	return &Qrn{
-		Height:               qrnProto.Height,
-		Timestamp:            qrnProto.Timestamp,
-		StandingMemberPubKey: pubKey,
-		Value:                qrnProto.Value,
-		Signature:            qrnProto.Signature,
-	}
+	return qrn
 }

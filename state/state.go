@@ -204,6 +204,7 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	}
 	sm.QrnSet = qrnSetProto
 
+	fmt.Println("Save-stompesi", sm.QrnSet.Height)
 	return sm, nil
 }
 
@@ -262,7 +263,12 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.StandingMemberSet = standingMemberSet
 	state.LastHeightStandingMembersChanged = pb.LastHeightStandingMembersChanged
 
-	state.ConsensusRound = types.ConsensusRoundFromProto(pb.ConsensusRound)
+	consensusRound, err := types.ConsensusRoundFromProto(pb.ConsensusRound)
+	if err != nil {
+		return nil, err
+	}
+
+	state.ConsensusRound = consensusRound
 	state.LastHeightConsensusRoundChanged = pb.LastHeightConsensusRoundChanged
 
 	qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
@@ -399,12 +405,14 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 	var qrnSet *types.QrnSet
 	if genDoc.Qrns == nil {
 		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, nil)
+		fmt.Println("QrnsBitArray3", qrnSet.QrnsBitArray.IsFull())
 	} else {
 		qrns := make([]*types.Qrn, len(genDoc.Qrns))
 		for i, qrn := range genDoc.Qrns {
-			qrns[i] = &qrn
+			qrns[i] = qrn.Copy()
 		}
 		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, qrns)
+		fmt.Println("QrnsBitArray4", qrnSet.QrnsBitArray.IsFull())
 	}
 
 	return State{

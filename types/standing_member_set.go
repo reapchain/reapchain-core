@@ -2,6 +2,7 @@ package types
 
 import (
 	"bytes"
+	encoding_binary "encoding/binary"
 	"errors"
 	"fmt"
 	"sort"
@@ -63,6 +64,30 @@ func (standingMemberSet *StandingMemberSet) Hash() []byte {
 		bytesArray[idx] = standingMember.Bytes()
 	}
 	return merkle.HashFromByteSlices(bytesArray)
+}
+
+func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
+	standingMemberSet.Coordinator = nil
+
+	maxValue := uint64(0)
+	qrnSetHash := qrnSet.Hash()
+
+	for _, qrn := range qrnSet.Qrns {
+		qrnHash := make([][]byte, 2)
+		qrnHash[0] = qrnSetHash
+		qrnHash[1] = qrn.GetQrnBytes()
+
+		result := merkle.HashFromByteSlices(qrnHash)
+		if uint64(maxValue) < encoding_binary.LittleEndian.Uint64(result) {
+			maxValue = encoding_binary.LittleEndian.Uint64(result)
+			_, standingMember := standingMemberSet.GetStandingMemberByIdx(qrn.StandingMemberIndex)
+			if standingMember != nil {
+				standingMemberSet.Coordinator = standingMember
+			}
+		}
+	}
+
+	fmt.Println("cordinator is ", standingMemberSet.Coordinator.Address)
 }
 
 func StandingMemberSetFromProto(standingMemberSetProto *tmproto.StandingMemberSet) (*StandingMemberSet, error) {
@@ -150,6 +175,9 @@ func (standingMemberSet *StandingMemberSet) GetStandingMemberByIdx(idx int32) (a
 }
 
 func (standingMemberSet *StandingMemberSet) GetStandingMemberByAddress(address []byte) (idx int32, standingMember *StandingMember) {
+	if standingMemberSet == nil {
+		return -1, nil
+	}
 	for idx, standingMember := range standingMemberSet.StandingMembers {
 		if bytes.Equal(standingMember.Address, address) {
 			return int32(idx), standingMember.Copy()

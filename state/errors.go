@@ -48,6 +48,10 @@ type (
 	ErrNoABCIResponsesForHeight struct {
 		Height int64
 	}
+
+	ErrNoConsensusRoundForHeight struct {
+		Height int64
+	}
 )
 
 func (e ErrUnknownBlock) Error() string {
@@ -98,4 +102,8 @@ func (e ErrNoConsensusParamsForHeight) Error() string {
 
 func (e ErrNoABCIResponsesForHeight) Error() string {
 	return fmt.Sprintf("could not find results for height #%d", e.Height)
+}
+
+func (e ErrNoConsensusRoundForHeight) Error() string {
+	return fmt.Sprintf("could not find consensus round for height #%d", e.Height)
 }
