@@ -446,6 +446,19 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		fmt.Println("QrnsBitArray4", qrnSet.QrnsBitArray.IsFull())
 	}
 
+	var vrfSet *types.VrfSet
+	if genDoc.Vrfs == nil {
+		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, nil)
+		fmt.Println("VrfsBitArray3", vrfSet.VrfsBitArray.IsFull())
+	} else {
+		vrfs := make([]*types.Vrf, len(genDoc.Vrfs))
+		for i, vrf := range genDoc.Vrfs {
+			vrfs[i] = vrf.Copy()
+		}
+		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
+		fmt.Println("VrfsBitArray4", vrfSet.VrfsBitArray.IsFull())
+	}
+
 	return State{
 		Version:       InitStateVersion,
 		ChainID:       genDoc.ChainID,

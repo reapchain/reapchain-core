@@ -147,6 +147,28 @@ func (tm2pb) QrnSetUpdate(qrnSet *QrnSet) []abci.QrnUpdate {
 	return qrnUpdates
 }
 
+func (tm2pb) VrfUpdate(vrf *Vrf) abci.VrfUpdate {
+	pubKeyProto, err := cryptoenc.PubKeyToProto(vrf.SteeringMemberCandidatePubKey)
+	if err != nil {
+		panic(err)
+	}
+	return abci.VrfUpdate{
+		Height:                        vrf.Height,
+		Timestamp:                     vrf.Timestamp,
+		SteeringMemberCandidatePubKey: pubKeyProto,
+		Value:                         vrf.Value,
+		Proof:                         vrf.Proof,
+	}
+}
+
+func (tm2pb) VrfSetUpdate(vrfSet *VrfSet) []abci.VrfUpdate {
+	vrfUpdates := make([]abci.VrfUpdate, vrfSet.Size())
+	for i, vrf := range vrfSet.Vrfs {
+		vrfUpdates[i] = TM2PB.VrfUpdate(vrf)
+	}
+	return vrfUpdates
+}
+
 func (tm2pb) ConsensusParams(params *tmproto.ConsensusParams) *abci.ConsensusParams {
 	return &abci.ConsensusParams{
 		Block: &abci.BlockParams{

@@ -32,6 +32,7 @@ func PubKeyToProto(k crypto.PubKey) (pc.PublicKey, error) {
 				Secp256K1: k,
 			},
 		}
+
 	default:
 		return kp, fmt.Errorf("toproto: key type %v is not supported", k)
 	}

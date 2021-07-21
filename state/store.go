@@ -34,6 +34,10 @@ func calcQrnsKey(height int64) []byte {
 	return []byte(fmt.Sprintf("qrnsKey:%v", height))
 }
 
+func calcVrfsKey(height int64) []byte {
+	return []byte(fmt.Sprintf("vrfsKey:%v", height))
+}
+
 func calcStandingMembersKey(height int64) []byte {
 	return []byte(fmt.Sprintf("standingMembersKey:%v", height))
 }
@@ -90,6 +94,7 @@ type Store interface {
 	LoadStandingMemberSet(int64) (*types.StandingMemberSet, error)
 	LoadSteeringMemberCandidateSet(int64) (*types.SteeringMemberCandidateSet, error)
 	LoadQrnSet(int64) (*types.QrnSet, error)
+	LoadVrfSet(int64) (*types.VrfSet, error)
 }
 
 // dbStore wraps a db (github.com/tendermint/tm-db)
@@ -849,6 +854,34 @@ func (store dbStore) LoadQrnSet(height int64) (*types.QrnSet, error) {
 	return qrnSet, nil
 }
 
+func (store dbStore) LoadVrfSet(height int64) (*types.VrfSet, error) {
+	vrfSetInfo, err := loadVrfSetInfo(store.db, height)
+	if err != nil {
+		return nil, ErrNoVrfSetForHeight{height}
+	}
+
+	if vrfSetInfo.VrfSet == nil {
+		lastStoredHeight := lastStoredHeightFor(height, vrfSetInfo.LastHeightChanged)
+		vrfSetInfo2, err := loadVrfSetInfo(store.db, lastStoredHeight)
+		if err != nil || vrfSetInfo2.VrfSet == nil {
+			return nil,
+				fmt.Errorf("couldn't find vrfs at height %d (height %d was originally requested): %w",
+					lastStoredHeight,
+					height,
+					err,
+				)
+		}
+		vrfSetInfo = vrfSetInfo2
+	}
+
+	vrfSet, err := types.VrfSetFromProto(vrfSetInfo.VrfSet)
+	if err != nil {
+		return nil, err
+	}
+
+	return vrfSet, nil
+}
+
 func (store dbStore) LoadConsensusRound(height int64) (tmproto.ConsensusRound, error) {
 	empty := tmproto.ConsensusRound{}
 
@@ -932,6 +965,27 @@ func loadQrnSetInfo(db dbm.DB, height int64) (*tmstate.QrnsInfo, error) {
 	if err != nil {
 		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
 		tmos.Exit(fmt.Sprintf(`LoadQrnSet: Data has been corrupted or its spec has changed: %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return v, nil
+}
+
+func loadVrfSetInfo(db dbm.DB, height int64) (*tmstate.VrfsInfo, error) {
+	buf, err := db.Get(calcVrfsKey(height))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	v := new(tmstate.VrfsInfo)
+	err = v.Unmarshal(buf)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadVrfSet: Data has been corrupted or its spec has changed: %v\n`, err))
 	}
 	// TODO: ensure that buf is completely read.
 

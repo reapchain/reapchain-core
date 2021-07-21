@@ -99,6 +99,24 @@ func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 	}, nil
 }
 
+func Vrfs(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultVrfs, error) {
+	height, err := getHeight(latestUncommittedHeight(), heightPtr)
+	if err != nil {
+		return nil, err
+	}
+
+	vrfSet, err := env.StateStore.LoadVrfSet(height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultVrfs{
+		BlockHeight: height,
+		Vrfs:        vrfSet.Vrfs[:],
+		Count:       vrfSet.Size(),
+	}, nil
+}
+
 // DumpConsensusState dumps consensus state.
 // UNSTABLE
 // More: https://docs.reapchain.com/master/rpc/#/Info/dump_consensus_state

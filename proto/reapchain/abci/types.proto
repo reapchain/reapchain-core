@@ -69,6 +69,7 @@ message RequestInitChain {
   ConsensusRound consensus_round       = 8;
   repeated QrnUpdate qrn_updates       = 9 [(gogoproto.nullable) = false];
   repeated SteeringMemberCandidateUpdate steering_member_candidate_updates       = 10 [(gogoproto.nullable) = false];
+  repeated VrfUpdate vrf_updates       = 11 [(gogoproto.nullable) = false];
 }
 
 message RequestQuery {
@@ -190,6 +191,7 @@ message ResponseInitChain {
   ConsensusRound consensus_round       = 5 [(gogoproto.nullable) = false];
   repeated QrnUpdate qrn_updates       = 6 [(gogoproto.nullable) = false];
   repeated SteeringMemberCandidateUpdate steering_member_candidate_updates       = 7 [(gogoproto.nullable) = false];
+  repeated VrfUpdate vrf_updates       = 8 [(gogoproto.nullable) = false];
 }
 
 message ResponseQuery {
@@ -382,6 +384,14 @@ message QrnUpdate {
   reapchain.crypto.PublicKey standing_member_pub_key = 3 [(gogoproto.nullable) = false];
   uint64 value = 4;
   bytes signature = 5;
+}
+
+message VrfUpdate {
+  int64 height = 1;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  reapchain.crypto.PublicKey steering_member_candidate_pub_key = 3 [(gogoproto.nullable) = false];
+  bytes value = 4;
+  bytes proof = 5;
 }
 
 // VoteInfo

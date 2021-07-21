@@ -6,6 +6,7 @@ option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/consens
 import "gogoproto/gogo.proto";
 import "reapchain/types/types.proto";
 import "reapchain/types/qrn.proto";
+import "reapchain/types/vrf.proto";
 import "reapchain/libs/bits/types.proto";
 
 
@@ -58,6 +59,10 @@ message Qrn {
   reapchain.types.Qrn qrn = 1;
 }
 
+message Vrf {
+  reapchain.types.Vrf vrf = 1;
+}
+
 // HasVote is sent to indicate that a particular vote has been received.
 message HasVote {
   int64                          height = 1;
@@ -96,5 +101,6 @@ message Message {
     VoteSetBits   vote_set_bits   = 9;
 
     Qrn           qrn             = 10;
+    Vrf           vrf             = 11;
   }
 }

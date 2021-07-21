@@ -15,16 +15,17 @@
 //     Check : E -> names -> vrfs -> proofs -> bool
 //         Check(P, n, vrf, (c,t,ii)) = vrf == h(n, ii)
 //                                     && c == h(n, g^t*P^c, H(n)^t*ii^c)
-package vrf
+package vrfunc
 
 import (
 	"bytes"
-	"crypto/rand"
 	"crypto/sha512"
 	"errors"
 
-	"github.com/reapchain/reapchain-core/vrf/internal/ed25519/edwards25519"
-	"github.com/reapchain/reapchain-core/vrf/internal/ed25519/extra25519"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/edwards25519"
+	"github.com/reapchain/reapchain-core/crypto/extra25519"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
 
 	"golang.org/x/crypto/ed25519"
 )
@@ -43,6 +44,13 @@ var (
 
 type PrivateKey []byte
 type PublicKey []byte
+
+func (publicKey PublicKey) Address() crypto.Address {
+	if len(publicKey) != PublicKeySize {
+		panic("pubkey is incorrect size")
+	}
+	return crypto.Address(tmhash.SumTruncated(publicKey))
+}
 
 // Public extracts the public VRF key from the underlying private-key
 // and returns a boolean indicating if the operation was successful.
@@ -93,7 +101,7 @@ func hashToCurve(m []byte) *edwards25519.ExtendedGroupElement {
 // Prove returns the vrf value and a proof such that
 // Verify(m, vrf, proof) == true. The vrf value is the
 // same as returned by Compute(m).
-func (sk PrivateKey) Prove(m []byte, randSrc bool) (vrf, proof []byte) {
+func (sk PrivateKey) Prove(m []byte) (vrf, proof []byte) {
 	x, skhr := sk.expandSecret()
 	var sH, rH [64]byte
 	var r, s, minusS, t, gB, grB, hrB, hxB, hB [32]byte
@@ -109,11 +117,6 @@ func (sk PrivateKey) Prove(m []byte, randSrc bool) (vrf, proof []byte) {
 	hash.Write(skhr[:])
 	hash.Write(sk[32:]) // public key, as in ed25519
 	hash.Write(m)
-	if randSrc {
-		b := make([]byte, len(rH))
-		rand.Read(b)
-		hash.Sum(b)
-	}
 	hash.Sum(rH[:0])
 	hash.Reset()
 	edwards25519.ScReduce(&r, &rH)

@@ -209,6 +209,14 @@ func makeQrnsFunc(c *lrpc.Client) rpcQrnsFunc {
 	}
 }
 
+type rpcVrfsFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultVrfs, error)
+
+func makeVrfsFunc(c *lrpc.Client) rpcVrfsFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultVrfs, error) {
+		return c.Vrfs(ctx.Context(), height)
+	}
+}
+
 type rpcDumpConsensusStateFunc func(ctx *rpctypes.Context) (*ctypes.ResultDumpConsensusState, error)
 
 func makeDumpConsensusStateFunc(c *lrpc.Client) rpcDumpConsensusStateFunc {

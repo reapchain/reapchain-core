@@ -10,8 +10,9 @@ import (
 	"crypto/sha512"
 	"testing"
 
-	"vrf/internal/ed25519/edwards25519"
+	// "vrf/internal/ed25519/edwards25519"
 
+	"github.com/reapchain/reapchain-core/crypto/edwards25519"
 	"golang.org/x/crypto/curve25519"
 	"golang.org/x/crypto/ed25519"
 )

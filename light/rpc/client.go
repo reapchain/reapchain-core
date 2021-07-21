@@ -562,6 +562,19 @@ func (c *Client) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, e
 	}, nil
 }
 
+func (c *Client) Vrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultVrfs{
+		BlockHeight: l.Height,
+		Vrfs:        l.VrfSet.Vrfs[:],
+		Count:       l.VrfSet.Size(),
+	}, nil
+}
+
 func (c *Client) BroadcastEvidence(ctx context.Context, ev types.Evidence) (*ctypes.ResultBroadcastEvidence, error) {
 	return c.next.BroadcastEvidence(ctx, ev)
 }

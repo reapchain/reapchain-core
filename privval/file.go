@@ -19,6 +19,7 @@ import (
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
 	"github.com/reapchain/reapchain-core/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
+	"github.com/reapchain/reapchain-core/vrfunc"
 )
 
 // TODO: type ?
@@ -449,5 +450,14 @@ func (pv *FilePV) SignQrn(qrn *types.Qrn) error {
 	}
 
 	qrn.Signature = sig
+	return nil
+}
+
+func (pv *FilePV) ProveVrf(vrf *types.Vrf) error {
+	privateKey := vrfunc.PrivateKey(pv.Key.PrivKey.Bytes())
+	value, proof := privateKey.Prove(vrf.Seed)
+	vrf.Value = value
+	vrf.Proof = proof
+
 	return nil
 }

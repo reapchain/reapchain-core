@@ -13,6 +13,7 @@ import "google/protobuf/timestamp.proto";
 import "reapchain/types/standing_member.proto";
 import "reapchain/types/steering_member_candidate.proto";
 import "reapchain/types/qrn.proto";
+import "reapchain/types/vrf.proto";
 import "reapchain/types/consensus_round.proto";
 
 // ABCIResponses retains the responses
@@ -42,6 +43,11 @@ message SteeringMemberCandidateSetInfo {
 
 message QrnsInfo {
   reapchain.types.QrnSet qrn_set       = 1;
+  int64                         last_height_changed = 2;
+}
+
+message VrfsInfo {
+  reapchain.types.VrfSet vrf_set       = 1;
   int64                         last_height_changed = 2;
 }
 
@@ -107,4 +113,7 @@ message State {
 
   reapchain.types.SteeringMemberCandidateSet steering_member_candidate_set          = 20;
   int64                         last_height_steering_member_candidates_changed = 21;
+  
+  reapchain.types.VrfSet vrf_set          = 22;
+
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/vrfunc"
 )
 
 // PrivValidator defines the functionality of a local Reapchain validator
@@ -19,6 +20,7 @@ type PrivValidator interface {
 	SignProposal(chainID string, proposal *tmproto.Proposal) error
 
 	SignQrn(qrn *Qrn) error
+	ProveVrf(vrf *Vrf) error
 }
 
 type PrivValidatorsByAddress []PrivValidator
@@ -94,6 +96,15 @@ func (pv MockPV) SignQrn(qrn *Qrn) error {
 		return err
 	}
 	qrn.Signature = sig
+	return nil
+}
+
+func (pv MockPV) ProveVrf(vrf *Vrf) error {
+	privateKey := vrfunc.PrivateKey(pv.PrivKey.Bytes())
+	value, proof := privateKey.Prove(vrf.Seed)
+	vrf.Value = value
+	vrf.Proof = proof
+
 	return nil
 }
 

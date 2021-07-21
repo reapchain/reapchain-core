@@ -4,6 +4,7 @@ package reapchain.privval;
 import "reapchain/crypto/keys.proto";
 import "reapchain/types/types.proto";
 import "reapchain/types/qrn.proto";
+import "reapchain/types/vrf.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/privval";
@@ -49,8 +50,17 @@ message SignQrnRequest {
   reapchain.types.Qrn qrn     = 1;
 }
 
+message SignVrfRequest {
+  reapchain.types.Vrf vrf     = 1;
+}
+
 message SignedQrnResponse {
   reapchain.types.Qrn qrn  = 1 [(gogoproto.nullable) = false];
+  RemoteSignerError     error = 2;
+}
+
+message SignedVrfResponse {
+  reapchain.types.Vrf vrf  = 1 [(gogoproto.nullable) = false];
   RemoteSignerError     error = 2;
 }
 
@@ -85,5 +95,7 @@ message Message {
 
     SignQrnRequest        sign_qrn_request        = 9;
     SignedQrnResponse     signed_qrn_response     = 10;
+    SignVrfRequest        sign_vrf_request        = 11;
+    SignedVrfResponse     signed_vrf_response     = 12;
   }
 }

@@ -95,6 +95,17 @@ func initFilesWithConfig(config *cfg.Config) error {
 
 		genDoc.Qrns = []types.Qrn{*qrn}
 
+		// TODO: stompesi
+		vrf := types.NewVrf(0, pubKey, []byte("1234")) //TODO: stompesi - "1234"고정으로 넣지말고 QrnHash 최갯값을 넣어야함
+		vrf.Timestamp = genDoc.GenesisTime
+
+		err = privValidator.ProveVrf(vrf)
+		if err != nil {
+			logger.Error("Can't prove vrf", "err", err)
+		}
+
+		genDoc.Vrfs = []types.Vrf{*vrf}
+
 		if err := genDoc.SaveAs(genFile); err != nil {
 			return err
 		}

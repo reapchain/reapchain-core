@@ -332,6 +332,13 @@ func (h *Handshaker) ReplayBlocks(
 		qrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, qrns)
 		qrnUpdates := types.TM2PB.QrnSetUpdate(qrnSet)
 
+		vrfs := make([]*types.Vrf, len(h.genDoc.Vrfs))
+		for i, vrf := range h.genDoc.Vrfs {
+			vrfs[i] = &vrf
+		}
+		// vrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
+		// vrfUpdates := types.TM2PB.VrfSetUpdate(vrfSet)
+
 		req := abci.RequestInitChain{
 			Time:                  h.genDoc.GenesisTime,
 			ChainId:               h.genDoc.ChainID,

@@ -10,6 +10,7 @@ import "reapchain/version/types.proto";
 import "reapchain/types/validator.proto";
 import "reapchain/types/standing_member.proto";
 import "reapchain/types/qrn.proto";
+import "reapchain/types/vrf.proto";
 import "reapchain/types/consensus_round.proto";
 
 // BlockIdFlag indicates which BlcokID the signature is for
@@ -151,6 +152,7 @@ message LightBlock {
   reapchain.types.ValidatorSet validator_set = 2;
   reapchain.types.StandingMemberSet standing_member_set = 3;
   reapchain.types.QrnSet qrn_set = 4;
+  reapchain.types.VrfSet vrf_set = 5;
 }
 
 message BlockMeta {

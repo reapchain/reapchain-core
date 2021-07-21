@@ -53,6 +53,10 @@ type (
 		Height int64
 	}
 
+	ErrNoVrfSetForHeight struct {
+		Height int64
+	}
+
 	ErrNoConsensusParamsForHeight struct {
 		Height int64
 	}
@@ -118,6 +122,10 @@ func (e ErrNoSteeringMemberSetForHeight) Error() string {
 
 func (e ErrNoQrnSetForHeight) Error() string {
 	return fmt.Sprintf("could not find qrn set for height #%d", e.Height)
+}
+
+func (e ErrNoVrfSetForHeight) Error() string {
+	return fmt.Sprintf("could not find vrf set for height #%d", e.Height)
 }
 
 func (e ErrNoConsensusParamsForHeight) Error() string {

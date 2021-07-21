@@ -155,6 +155,13 @@ type ResultQrns struct {
 	Count int `json:"count"`
 }
 
+type ResultVrfs struct {
+	BlockHeight int64        `json:"block_height"`
+	Vrfs        []*types.Vrf `json:"vrfs"`
+	// Count of actual validators in this result
+	Count int `json:"count"`
+}
+
 // ConsensusParams for given height
 type ResultConsensusParams struct {
 	BlockHeight     int64                   `json:"block_height"`
