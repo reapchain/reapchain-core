@@ -13,6 +13,8 @@ import (
 // Validate block
 
 func validateBlock(state State, block *types.Block) error {
+	// fmt.Println(string(debug.Stack()))
+
 	// Validate internal consistency.
 	if err := block.ValidateBasic(); err != nil {
 		return err
@@ -107,12 +109,12 @@ func validateBlock(state State, block *types.Block) error {
 	}
 
 	// validate qrns
-	if !bytes.Equal(block.QrnsHash, state.QrnSet.Hash()) {
-		return fmt.Errorf("wrong Block.Header.QrnsHash.  Expected %X, got %v",
-			state.QrnSet.Hash(),
-			block.QrnsHash,
-		)
-	}
+	// if !bytes.Equal(block.QrnsHash, state.QrnSet.Hash()) {
+	// 	return fmt.Errorf("wrong Block.Header.QrnsHash.  Expected %X, got %v",
+	// 		state.QrnSet.Hash(),
+	// 		block.QrnsHash,
+	// 	)
+	// }
 
 	// Validate block LastCommit.
 	if block.Height == state.InitialHeight {

@@ -659,10 +659,6 @@ func (cs *State) updateToState(state sm.State) {
 		state.ConsensusRound = types.NewConsensusRound(0, 0)
 	}
 
-	if state.ConsensusRound.ConsensusStartBlockHeight+int64(state.ConsensusRound.Peorid) == height {
-		state.ConsensusRound.ConsensusStartBlockHeight = height
-		state.QrnSet.Height = height
-	}
 	// RoundState fields
 	cs.updateHeight(height)
 	cs.updateRoundStep(0, cstypes.RoundStepNewHeight)
@@ -883,10 +879,10 @@ func (cs *State) handleMsg(mi msgInfo) {
 		added, err = cs.tryAddQrn(msg.Qrn, peerID)
 		if err != nil {
 			fmt.Println("qrn-height-update", cs.state.QrnSet.Height)
-			//if cs.state.ConsensusRound.ConsensusStartBlockHeight != cs.state.QrnSet.Height {
-			//	fmt.Println("qrn-height-update", cs.state.ConsensusRound.ConsensusStartBlockHeight)
-			//	cs.state.QrnSet.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight
-			//}
+			// if cs.state.ConsensusRound.ConsensusStartBlockHeight != cs.state.QrnSet.Height {
+			// 	fmt.Println("qrn-height-update", cs.state.ConsensusRound.ConsensusStartBlockHeight)
+			// 	cs.state.QrnSet.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight
+			// }
 		}
 
 	default:
@@ -992,7 +988,39 @@ func (cs *State) handleTxsAvailable() {
 // Enter: +2/3 prevotes any or +2/3 precommits for block or any from (height, round)
 // NOTE: cs.StartTime was already set for height.
 func (cs *State) enterNewRound(height int64, round int32) {
+
 	logger := cs.Logger.With("height", height, "round", round)
+	stompesiLogger := cs.Logger.With("stompesi-enterNewRound")
+
+	// stompesiLogger.Error("",
+	// 	"ConsensusStartBlockHeight", cs.state.ConsensusRound.ConsensusStartBlockHeight,
+	// 	"Peorid", cs.state.ConsensusRound.Peorid,
+	// 	"height", height,
+	// )
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Peorid) == height {
+		stompesiLogger.Error("1")
+		cs.state.ConsensusRound.ConsensusStartBlockHeight = height
+
+		cs.state.QrnSet = types.NewQrnSet(height, cs.RoundState.StandingMemberSet, nil)
+		stompesiLogger.Error("2")
+		standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
+
+		stompesiLogger.Error("3")
+		if standingMemberIndex != -1 {
+			qrnValue := tmrand.Uint64()
+			stompesiLogger.Error("", "qrnValue", qrnValue)
+			qrn := types.NewQrn(height, cs.privValidatorPubKey, qrnValue)
+			qrn.StandingMemberIndex = standingMemberIndex
+			err := cs.privValidator.SignQrn(qrn)
+			if err != nil {
+				logger.Error("Can't sign qrn", "err", err)
+			} else {
+				time.Sleep(time.Second * 10)
+				stompesiLogger.Error("send", "qrnValue", qrnValue)
+				cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
+			}
+		}
+	}
 
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cs.Step != cstypes.RoundStepNewHeight) {
 		logger.Debug(
@@ -1037,7 +1065,6 @@ func (cs *State) enterNewRound(height int64, round int32) {
 	if err := cs.eventBus.PublishEventNewRound(cs.NewRoundEvent()); err != nil {
 		cs.Logger.Error("failed publishing new round", "err", err)
 	}
-
 	cs.metrics.Rounds.Set(float64(round))
 
 	// Wait for txs to be available in the mempool
@@ -1136,6 +1163,11 @@ func (cs *State) enterPropose(height int64, round int32) {
 	}
 
 	if cs.isProposer(address) && isFull == true {
+		logger.Error("stompesi",
+			"sSize", cs.state.StandingMemberSet.Size(),
+			"qrnSize", cs.state.QrnSet.Size(),
+			"cs.state.ConsensusRound", cs.state.ConsensusRound,
+		)
 		if cs.state.ConsensusRound.ConsensusStartBlockHeight == height {
 			logger.Error("isProposer", cs.state.StandingMemberSet.Coordinator.Address)
 			time.Sleep(time.Second * 1)
@@ -1627,7 +1659,6 @@ func (cs *State) finalizeCommit(height int64) {
 	if err := cs.blockExec.ValidateBlock(cs.state, block); err != nil {
 		panic(fmt.Errorf("+2/3 committed an invalid block: %w", err))
 	}
-
 	logger.Info(
 		"finalizing commit of block",
 		"hash", block.Hash(),
@@ -1721,23 +1752,6 @@ func (cs *State) finalizeCommit(height int64) {
 	// Private validator might have changed it's key pair => refetch pubkey.
 	if err := cs.updatePrivValidatorPubKey(); err != nil {
 		logger.Error("failed to get private validator pubkey", "err", err)
-	}
-
-	if cs.state.ConsensusRound.ConsensusStartBlockHeight-1 == height {
-		cs.state.QrnSet = types.NewQrnSet(height+1, cs.RoundState.StandingMemberSet, nil)
-
-		standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
-		if standingMemberIndex != -1 {
-			qrnValue := tmrand.Uint64()
-			qrn := types.NewQrn(height+1, cs.privValidatorPubKey, qrnValue)
-			qrn.StandingMemberIndex = standingMemberIndex
-			err = cs.privValidator.SignQrn(qrn)
-			if err != nil {
-				logger.Error("Can't sign qrn", "err", err)
-			} else {
-				cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
-			}
-		}
 	}
 
 	// cs.StartTime is already set.
@@ -2005,6 +2019,7 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 		// nolint: gocritic
 		if voteErr, ok := err.(*types.ErrVoteConflictingVotes); ok {
 			if cs.privValidatorPubKey == nil {
+
 				return false, errPubKeyIsNotSet
 			}
 
@@ -2015,7 +2030,6 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 					"round", vote.Round,
 					"type", vote.Type,
 				)
-
 				return added, err
 			}
 
@@ -2026,7 +2040,6 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 				"vote_a", voteErr.VoteA,
 				"vote_b", voteErr.VoteB,
 			)
-
 			return added, err
 		} else if errors.Is(err, types.ErrVoteNonDeterministicSignature) {
 			cs.Logger.Debug("vote has non-deterministic signature", "err", err)
@@ -2040,7 +2053,6 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 			return added, ErrAddingVote
 		}
 	}
-
 	return added, nil
 }
 
@@ -2401,12 +2413,13 @@ func repairWalFile(src, dst string) error {
 }
 
 func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
-	if qrn.Height != cs.Height {
-		return false, fmt.Errorf("Failed to add qrn: difference height / qrnHeight: %v & consensusRoundHeight: %v", qrn.Height, cs.Height)
-	}
+
+	// if qrn.Height != cs.Height {
+	// 	return false, fmt.Errorf("Failed to add qrn: difference height / qrnHeight: %v & consensusRoundHeight: %v", qrn.Height, cs.Height)
+	// }
 
 	if err := cs.state.QrnSet.AddQrn(qrn); err != nil {
-		return false, fmt.Errorf("Failed to add qrn: %v", err)
+		return false, fmt.Errorf("Failed to add qrn: %v", err) // err="Failed to add qrn: Difference
 	}
 
 	return true, nil

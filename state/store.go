@@ -131,6 +131,7 @@ func (store dbStore) LoadFromDBOrGenesisFile(genesisFilePath string) (State, err
 // or creates a new one from the given genesisDoc.
 func (store dbStore) LoadFromDBOrGenesisDoc(genesisDoc *types.GenesisDoc) (State, error) {
 	state, err := store.Load()
+
 	if err != nil {
 		return State{}, err
 	}
@@ -143,6 +144,9 @@ func (store dbStore) LoadFromDBOrGenesisDoc(genesisDoc *types.GenesisDoc) (State
 		}
 	}
 
+	fmt.Println("stompesi-state", state.QrnSet.Qrns[0].Value)
+	fmt.Println("stompesi-state", state.QrnSet.Qrns[1].Value)
+	fmt.Println("stompesi-state", state.QrnSet.Qrns[2].Value)
 	return state, nil
 }
 
@@ -188,18 +192,19 @@ func (store dbStore) Save(state State) error {
 }
 
 func (store dbStore) save(state State, key []byte) error {
-
 	nextHeight := state.LastBlockHeight + 1
 	// If first block, save validators for the block.
 	if nextHeight == 1 {
 		nextHeight = state.InitialHeight
 		// This extra logic due to Reapchain validator set changes being delayed 1 block.
 		// It may get overwritten due to InitChain validator updates.
+
 		if err := store.saveValidatorsInfo(nextHeight, nextHeight, state.Validators); err != nil {
 			return err
 		}
 	}
 
+	// TODO: stompesi
 	if err := store.saveConsensusRoundInfo(nextHeight, state.LastHeightConsensusRoundChanged, state.ConsensusRound.ToProto()); err != nil {
 		return err
 	}
@@ -217,6 +222,7 @@ func (store dbStore) save(state State, key []byte) error {
 	}
 
 	// Save next validators.
+	fmt.Println("state.LastHeightValidatorsChanged2", state.LastHeightValidatorsChanged)
 	if err := store.saveValidatorsInfo(nextHeight+1, state.LastHeightValidatorsChanged, state.NextValidators); err != nil {
 		return err
 	}
@@ -227,6 +233,11 @@ func (store dbStore) save(state State, key []byte) error {
 		return err
 	}
 
+	fmt.Println("stompesi-save-qrn", state.LastBlockHeight)
+	fmt.Println("stompesi-save-qrn", state.QrnSet.Height)
+	fmt.Println("stompesi-save-qrn", state.QrnSet.Qrns[0].Value)
+	fmt.Println("stompesi-save-qrn", state.QrnSet.Qrns[1].Value)
+	fmt.Println("stompesi-save-qrn", state.QrnSet.Qrns[2].Value)
 	err := store.db.SetSync(key, state.Bytes())
 	if err != nil {
 		return err
@@ -846,7 +857,17 @@ func (store dbStore) LoadQrnSet(height int64) (*types.QrnSet, error) {
 		qrnSetInfo = qrnSetInfo2
 	}
 
-	qrnSet, err := types.QrnSetFromProto(qrnSetInfo.QrnSet)
+	standingMemberSet, err := store.LoadStandingMemberSet(height)
+	if err != nil {
+		return nil, err
+	}
+
+	standingMemberSetProto, err := standingMemberSet.ToProto()
+	if err != nil {
+		return nil, err
+	}
+
+	qrnSet, err := types.QrnSetFromProto(qrnSetInfo.QrnSet, standingMemberSetProto)
 	if err != nil {
 		return nil, err
 	}

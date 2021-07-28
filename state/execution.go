@@ -131,7 +131,6 @@ func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block) e
 func (blockExec *BlockExecutor) ApplyBlock(
 	state State, blockID types.BlockID, block *types.Block,
 ) (State, int64, error) {
-
 	if err := validateBlock(state, block); err != nil {
 		return state, 0, ErrInvalidBlock(err)
 	}
@@ -198,12 +197,26 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		blockExec.logger.Debug("updates to steering member candidates", "updates", types.SteeringMemberCandidateListString(steeringMemberCandidateUpdates))
 	}
 
+	// abciQrnUpdates := abciResponses.EndBlock.QrnUpdates
+	// err = validateQrnUpdates(abciQrnUpdates, state.ConsensusParams.Validator)
+	// if err != nil {
+	// 	return state, 0, fmt.Errorf("error in steering member candidate updates: %v", err)
+	// }
+	// qrnUpdates, err := types.PB2TM.QrnUpdates(abciQrnUpdates)
+	// if err != nil {
+	// 	return state, 0, err
+	// }
+	// if len(qrnUpdates) > 0 {
+	// 	blockExec.logger.Debug("updates to steering member candidates", "updates", types.SteeringMemberCandidateListString(qrnUpdates))
+	// }
+
 	// Update the state with the block and responses.
 	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates, standingMemberUpdates, steeringMemberCandidateUpdates)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
 
+	//@@@logging: committed state
 	// Lock mempool, commit app state, update mempoool.
 	appHash, retainHeight, err := blockExec.Commit(state, block, abciResponses.DeliverTxs)
 	if err != nil {
@@ -217,6 +230,11 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	// Update the app hash and save the state.
 	state.AppHash = appHash
+	blockExec.logger.Error("ApplyBlock",
+		"state.QrnSet.Height", state.QrnSet.Height,
+		"InitialHeight", state.InitialHeight,
+		"LastBlockHeight", state.LastBlockHeight)
+
 	if err := blockExec.store.Save(state); err != nil {
 		return state, 0, err
 	}
@@ -291,6 +309,8 @@ func execBlockOnProxyApp(
 	store Store,
 	initialHeight int64,
 ) (*tmstate.ABCIResponses, error) {
+	logger.Error("stompesi-execBlockOnProxyApp")
+
 	var validTxs, invalidTxs = 0, 0
 
 	txIndex := 0
@@ -357,7 +377,6 @@ func execBlockOnProxyApp(
 		logger.Error("error in proxyAppConn.EndBlock", "err", err)
 		return nil, err
 	}
-
 	logger.Info("executed block", "height", block.Height, "num_valid_txs", validTxs, "num_invalid_txs", invalidTxs)
 	return abciResponses, nil
 }
@@ -459,6 +478,22 @@ func validateSteeringMemberCandidateUpdates(steeringMemberCandidateUpdatesAbci [
 	return nil
 }
 
+// func validateQrnUpdates(qrnUpdatesAbci []abci.QrnUpdate, params tmproto.ValidatorParams) error {
+// 	for _, qrnUpdate := range qrnUpdatesAbci {
+// 		// Check if validator's pubkey matches an ABCI type in the consensus params
+// 		pk, err := cryptoenc.PubKeyFromProto(valUpdate.PubKey)
+// 		if err != nil {
+// 			return err
+// 		}
+
+// 		if !types.IsValidPubkeyType(params, pk.Type()) {
+// 			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
+// 				valUpdate, pk.Type())
+// 		}
+// 	}
+// 	return nil
+// }
+
 // updateState returns a new State updated according to the header and responses.
 func updateState(
 	state State,
@@ -469,7 +504,6 @@ func updateState(
 	standingMemberUpdates []*types.StandingMember,
 	steeringMemberCandidateUpdates []*types.SteeringMemberCandidate,
 ) (State, error) {
-
 	// Copy the valset so we can apply changes from EndBlock
 	// and update s.LastValidators and s.Validators.
 	nValSet := state.NextValidators.Copy()
@@ -536,11 +570,6 @@ func updateState(
 
 		// Change results from this height but only applies to the next height.
 		lastHeightParamsChanged = header.Height + 1
-	}
-
-	fmt.Println("stompesi-height", header.Height, state.ConsensusRound.ConsensusStartBlockHeight, state.ConsensusRound.Peorid)
-	if state.ConsensusRound.ConsensusStartBlockHeight+int64(state.ConsensusRound.Peorid) == header.Height {
-		nextConsensusRound.ConsensusStartBlockHeight = header.Height
 	}
 
 	state.QrnSet.Height = nextConsensusRound.ConsensusStartBlockHeight
@@ -643,6 +672,8 @@ func ExecCommitBlock(
 	store Store,
 	initialHeight int64,
 ) ([]byte, error) {
+	fmt.Println("stompesi-ExecCommitBlock", "initialHeight", initialHeight)
+
 	_, err := execBlockOnProxyApp(logger, appConnConsensus, block, store, initialHeight)
 	if err != nil {
 		logger.Error("failed executing block on proxy app", "height", block.Height, "err", err)

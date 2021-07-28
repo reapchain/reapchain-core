@@ -37,7 +37,7 @@ func NewQrnSet(height int64, standingMemberSet *StandingMemberSet, qrns []*Qrn) 
 	}
 }
 
-func QrnSetFromProto(qrnSetProto *tmproto.QrnSet) (*QrnSet, error) {
+func QrnSetFromProto(qrnSetProto *tmproto.QrnSet, standingMemberSetProto *tmproto.StandingMemberSet) (*QrnSet, error) {
 	if qrnSetProto == nil {
 		return nil, errors.New("nil qrn set")
 	}
@@ -53,6 +53,11 @@ func QrnSetFromProto(qrnSetProto *tmproto.QrnSet) (*QrnSet, error) {
 		qrns[i] = qrn
 	}
 	qrnSet.Height = qrnSetProto.Height
+	standingMemberSet, err := StandingMemberSetFromProto(standingMemberSetProto)
+	if err != nil {
+		return nil, err
+	}
+	qrnSet.StandingMemberSet = standingMemberSet
 	qrnSet.Qrns = qrns
 
 	return qrnSet, qrnSet.ValidateBasic()
@@ -99,19 +104,29 @@ func (qrnSet *QrnSet) AddQrn(qrn *Qrn) error {
 		return fmt.Errorf("Qrn is nil")
 	}
 
-	if qrn.Height != qrnSet.Height {
-		return fmt.Errorf("Difference height / qrnHeight: %v & qrnSetHeight: %v", qrn.Height, qrnSet.Height)
-	}
+	// if qrn.Height != qrnSet.Height {
+	// 	return fmt.Errorf("Difference height / qrnHeight: %v & qrnSetHeight: %v", qrn.Height, qrnSet.Height)
+	// }
 
 	if qrn.VerifySign() == false {
 		return fmt.Errorf("Invalid qrn sign")
 	}
 
+	// fmt.Println(qrn.StandingMemberPubKey.Address())
+	// fmt.Println(qrnSet.StandingMemberSet.Size())
+	// fmt.Println(qrnSet.Size())
+	// fmt.Println(string(debug.Stack()))
 	standingMemberIndex, _ := qrnSet.StandingMemberSet.GetStandingMemberByAddress(qrn.StandingMemberPubKey.Address())
 
 	if standingMemberIndex == -1 {
 		return fmt.Errorf("Not exist standing member of qrn: %v", qrn.StandingMemberPubKey.Address())
 	}
+
+	// fmt.Println("Prv-Qrn-Timestamp", qrnSet.Qrns[standingMemberIndex].Timestamp)
+	// fmt.Println("Cur-Qrn-Timestamp", qrn.Timestamp)
+	// if qrn.Timestamp.Before(qrnSet.Qrns[standingMemberIndex].Timestamp) {
+	// 	return fmt.Errorf("Previous qrn")
+	// }
 
 	qrn.StandingMemberIndex = standingMemberIndex
 	qrnSet.Qrns[standingMemberIndex] = qrn.Copy()

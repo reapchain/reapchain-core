@@ -269,6 +269,7 @@ func (h *Handshaker) Handshake(proxyApp proxy.AppConns) error {
 	}
 
 	// Replay blocks up to the latest in the blockstore.
+
 	_, err = h.ReplayBlocks(h.initialState, appHash, blockHeight, proxyApp)
 	if err != nil {
 		return fmt.Errorf("error on replay: %v", err)
@@ -407,6 +408,9 @@ func (h *Handshaker) ReplayBlocks(
 			}
 			// We update the last results hash with the empty hash, to conform with RFC-6962.
 			state.LastResultsHash = merkle.HashFromByteSlices(nil)
+			h.logger.Error("ReplayBlocks",
+				"InitialHeight", state.InitialHeight,
+				"LastBlockHeight", state.LastBlockHeight)
 			if err := h.stateStore.Save(state); err != nil {
 				return nil, err
 			}
@@ -463,6 +467,13 @@ func (h *Handshaker) ReplayBlocks(
 		case appBlockHeight < stateBlockHeight:
 			// the app is further behind than it should be, so replay blocks
 			// but leave the last block to go through the WAL
+			h.logger.Error("ReplayBlocks",
+				"state.QrnSet.Height", state.QrnSet.Height,
+				"state.QrnSet.Qrns[0].Value", state.QrnSet.Qrns[0].Value,
+				"state.QrnSet.Qrns[1].Value", state.QrnSet.Qrns[1].Value,
+				"state.QrnSet.Qrns[2].Value", state.QrnSet.Qrns[2].Value,
+				"state.QrnSet.Hash()", state.QrnSet.Hash(),
+			)
 			return h.replayBlocks(state, proxyApp, appBlockHeight, storeBlockHeight, true)
 
 		case appBlockHeight == stateBlockHeight:

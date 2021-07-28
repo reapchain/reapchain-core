@@ -155,7 +155,7 @@ func LightBlockFromProto(pb *tmproto.LightBlock) (*LightBlock, error) {
 	}
 
 	if pb.QrnSet != nil {
-		qrnSet, err := QrnSetFromProto(pb.QrnSet)
+		qrnSet, err := QrnSetFromProto(pb.QrnSet, pb.StandingMemberSet)
 		if err != nil {
 			return nil, err
 		}

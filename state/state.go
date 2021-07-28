@@ -89,6 +89,7 @@ type State struct {
 	LastHeightConsensusRoundChanged int64
 
 	QrnSet *types.QrnSet
+	VrfSet *types.VrfSet
 }
 
 // Copy makes a copy of the State for mutating.
@@ -290,7 +291,7 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.ConsensusRound = consensusRound
 	state.LastHeightConsensusRoundChanged = pb.LastHeightConsensusRoundChanged
 
-	qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
+	qrnSet, err := types.QrnSetFromProto(pb.QrnSet, pb.StandingMemberSet)
 	if err != nil {
 		return nil, err
 	}
@@ -312,7 +313,8 @@ func (state State) MakeBlock(
 	evidence []types.Evidence,
 	proposerAddress []byte,
 ) (*types.Block, *types.PartSet) {
-
+	// fmt.Println("@@@MakeBlock")
+	// debug.PrintStack()
 	// Build base block with block data.
 	block := types.MakeBlock(height, txs, commit, evidence)
 
@@ -435,27 +437,27 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 
 	var qrnSet *types.QrnSet
 	if genDoc.Qrns == nil {
-		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, nil)
-		fmt.Println("QrnsBitArray3", qrnSet.QrnsBitArray.IsFull())
+		qrnSet = types.NewQrnSet(genDoc.InitialHeight-1, standingMemberSet, nil)
+		fmt.Println("QrnsBitArray3", genDoc.InitialHeight)
 	} else {
 		qrns := make([]*types.Qrn, len(genDoc.Qrns))
 		for i, qrn := range genDoc.Qrns {
 			qrns[i] = qrn.Copy()
 		}
-		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, qrns)
+		qrnSet = types.NewQrnSet(genDoc.InitialHeight-1, standingMemberSet, qrns)
 		fmt.Println("QrnsBitArray4", qrnSet.QrnsBitArray.IsFull())
 	}
 
 	var vrfSet *types.VrfSet
 	if genDoc.Vrfs == nil {
-		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, nil)
+		vrfSet = types.NewVrfSet(genDoc.InitialHeight-1, steeringMemberCandidateSet, nil)
 		fmt.Println("VrfsBitArray3", vrfSet.VrfsBitArray.IsFull())
 	} else {
 		vrfs := make([]*types.Vrf, len(genDoc.Vrfs))
 		for i, vrf := range genDoc.Vrfs {
 			vrfs[i] = vrf.Copy()
 		}
-		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
+		vrfSet = types.NewVrfSet(genDoc.InitialHeight-1, steeringMemberCandidateSet, vrfs)
 		fmt.Println("VrfsBitArray4", vrfSet.VrfsBitArray.IsFull())
 	}
 
