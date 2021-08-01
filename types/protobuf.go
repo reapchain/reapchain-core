@@ -242,3 +242,19 @@ func (pb2tm) SteeringMemberCandidateUpdates(sms []abci.SteeringMemberCandidateUp
 	}
 	return smz, nil
 }
+
+func (pb2tm) QrnUpdates(Qrnupdates []abci.QrnUpdate) ([]*Qrn, error) {
+	qrns := make([]*Qrn, len(Qrnupdates))
+	for i, qrnUpdate := range Qrnupdates {
+
+		// height int64, standingMemberPubKey crypto.PubKey, value uint64
+		qrns[i] = QrnFromAbci(&qrnUpdate)
+
+		// 		Height
+		// Timestamp
+		// StandingMemberPubKey
+		// Value
+		// Signature
+	}
+	return qrns, nil
+}

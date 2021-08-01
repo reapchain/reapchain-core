@@ -59,6 +59,12 @@ message Qrn {
   reapchain.types.Qrn qrn = 1;
 }
 
+message HasQrn {
+  int64                          height = 1;
+  int32                          index  = 4;
+}
+
+
 message Vrf {
   reapchain.types.Vrf vrf = 1;
 }
@@ -101,6 +107,7 @@ message Message {
     VoteSetBits   vote_set_bits   = 9;
 
     Qrn           qrn             = 10;
-    Vrf           vrf             = 11;
+    HasQrn        has_qrn             = 11;
+    Vrf           vrf             = 12;
   }
 }

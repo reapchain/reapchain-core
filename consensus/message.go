@@ -32,5 +32,6 @@ func init() {
 	tmjson.RegisterType(&VoteSetMaj23Message{}, "reapchain/VoteSetMaj23")
 	tmjson.RegisterType(&VoteSetBitsMessage{}, "reapchain/VoteSetBits")
 	tmjson.RegisterType(&QrnMessage{}, "reapchain/Qrn")
+	tmjson.RegisterType(&HasQrnMessage{}, "reapchain/HasQrn")
 	tmjson.RegisterType(&VrfMessage{}, "reapchain/Vrf")
 }

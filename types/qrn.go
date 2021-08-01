@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	abci "github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/crypto"
 	ce "github.com/reapchain/reapchain-core/crypto/encoding"
 	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
@@ -175,6 +176,27 @@ func QrnFromProto(qrnProto *tmproto.Qrn) *Qrn {
 	qrn.StandingMemberIndex = qrnProto.StandingMemberIndex
 	qrn.Value = qrnProto.Value
 	qrn.Signature = qrnProto.Signature
+
+	return qrn
+}
+
+func QrnFromAbci(qrnUpdate *abci.QrnUpdate) *Qrn {
+	if qrnUpdate == nil {
+		return nil
+	}
+
+	pubKey, err := ce.PubKeyFromProto(qrnUpdate.StandingMemberPubKey)
+	if err != nil {
+		return nil
+	}
+
+	qrn := new(Qrn)
+	qrn.Height = qrnUpdate.Height
+	qrn.Timestamp = qrnUpdate.Timestamp
+	qrn.StandingMemberPubKey = pubKey
+	// TODO: qrn.StandingMemberIndex = qrnUpdate.StandingMemberIndex
+	qrn.Value = qrnUpdate.Value
+	qrn.Signature = qrnUpdate.Signature
 
 	return qrn
 }

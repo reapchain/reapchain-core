@@ -107,6 +107,7 @@ message State {
   reapchain.types.ConsensusRound consensus_round                     = 16 [(gogoproto.nullable) = false];
 
   reapchain.types.QrnSet qrn_set          = 17;
+  reapchain.types.QrnSet next_qrn_set          = 23;
 
   int64                         last_height_standing_members_changed = 18;
   int64                         last_height_consensus_round_changed = 19;

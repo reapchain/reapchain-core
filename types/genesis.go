@@ -55,7 +55,6 @@ type GenesisDoc struct {
 	ConsensusRound           ConsensusRound           `json:"consensus_round"`
 	Qrns                     []Qrn                    `json:"qrns,omitempty"`
 	SteeringMemberCandidates []GenesisMember          `json:"steering_member_candidates,omitempty"`
-	Vrfs                     []Vrf                    `json:"vrfs,omitempty"`
 }
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.
@@ -134,19 +133,19 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 		}
 	}
 
-	for _, vrf := range genDoc.Vrfs {
-		if vrf.Timestamp.Sub(genDoc.GenesisTime) > 0 {
-			return fmt.Errorf("Invalid vrf timestamp: vrfTimestamp = %v / genesisTimestamp = %v", vrf.Timestamp, genDoc.GenesisTime)
-		}
+	// for _, vrf := range genDoc.Vrfs {
+	// 	if vrf.Timestamp.Sub(genDoc.GenesisTime) > 0 {
+	// 		return fmt.Errorf("Invalid vrf timestamp: vrfTimestamp = %v / genesisTimestamp = %v", vrf.Timestamp, genDoc.GenesisTime)
+	// 	}
 
-		if err := vrf.ValidateBasic(); err != nil {
-			return fmt.Errorf("Qrn error: %v", err)
-		}
+	// 	if err := vrf.ValidateBasic(); err != nil {
+	// 		return fmt.Errorf("Qrn error: %v", err)
+	// 	}
 
-		if vrf.Verify() == false {
-			return fmt.Errorf("Incorrect sign of vrf")
-		}
-	}
+	// 	if vrf.Verify() == false {
+	// 		return fmt.Errorf("Incorrect sign of vrf")
+	// 	}
+	// }
 
 	if genDoc.GenesisTime.IsZero() {
 		genDoc.GenesisTime = tmtime.Now()

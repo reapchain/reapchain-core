@@ -243,7 +243,6 @@ func (h *Handshaker) NBlocks() int {
 
 // TODO: retry the handshake/replay if it fails ?
 func (h *Handshaker) Handshake(proxyApp proxy.AppConns) error {
-
 	// Handshake is done via ABCI Info on the query conn.
 	res, err := proxyApp.Query().InfoSync(proxy.RequestInfo)
 	if err != nil {
@@ -333,10 +332,10 @@ func (h *Handshaker) ReplayBlocks(
 		qrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, qrns)
 		qrnUpdates := types.TM2PB.QrnSetUpdate(qrnSet)
 
-		vrfs := make([]*types.Vrf, len(h.genDoc.Vrfs))
-		for i, vrf := range h.genDoc.Vrfs {
-			vrfs[i] = &vrf
-		}
+		// vrfs := make([]*types.Vrf, len(h.genDoc.Vrfs))
+		// for i, vrf := range h.genDoc.Vrfs {
+		// 	vrfs[i] = &vrf
+		// }
 		// vrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
 		// vrfUpdates := types.TM2PB.VrfSetUpdate(vrfSet)
 
@@ -401,6 +400,18 @@ func (h *Handshaker) ReplayBlocks(
 			}
 
 			state.ConsensusRound = types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.Peorid)
+
+			if len(res.QrnUpdates) > 0 {
+				qrns, err := types.PB2TM.QrnUpdates(res.QrnUpdates)
+				if err != nil {
+					return nil, err
+				}
+				state.QrnSet = types.NewQrnSet(h.genDoc.InitialHeight, state.StandingMemberSet, qrns)
+				state.NextQrnSet = types.NewQrnSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Peorid), state.StandingMemberSet, qrns).Copy()
+			} else if len(h.genDoc.Qrns) == 0 {
+				// If qrn set is not set in genesis and still empty after InitChain, exit.
+				return nil, fmt.Errorf("qrn set is nil in genesis and still empty after InitChain")
+			}
 
 			if res.ConsensusParams != nil {
 				state.ConsensusParams = types.UpdateConsensusParams(state.ConsensusParams, res.ConsensusParams)

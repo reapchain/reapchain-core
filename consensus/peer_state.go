@@ -32,6 +32,8 @@ type PeerState struct {
 	mtx   sync.Mutex             // NOTE: Modify below using setters, never directly.
 	PRS   cstypes.PeerRoundState `json:"round_state"` // Exposed.
 	Stats *peerStateStats        `json:"stats"`       // Exposed.
+
+	NextConsensusStartBlockHeight int64 `json:"next_consensus_start_block_height"` // Exposed.
 }
 
 // peerStateStats holds internal statistics for a peer.
@@ -161,12 +163,14 @@ func (ps *PeerState) SetHasQrn(qrn *types.Qrn) {
 
 func (ps *PeerState) PickSendQrn(qrnSet types.QrnSetReader) bool {
 	if qrn, ok := ps.PickQrnToSend(qrnSet); ok {
-		fmt.Println("pick send qrn", qrn.StandingMemberIndex, qrn.Value)
+		fmt.Println("pick send qrn", qrn.StandingMemberIndex, qrn.Value, ps.peer.ID())
 		msg := &QrnMessage{qrn}
 
 		if ps.peer.Send(QrnChannel, MustEncode(msg)) {
 			ps.SetHasQrn(qrn)
 			return true
+		} else {
+			fmt.Println("보내시 실패")
 		}
 		return false
 	}
@@ -205,15 +209,20 @@ func (ps *PeerState) EnsureQrnBitArrays(height int64, numStandingMembers int) {
 }
 
 func (ps *PeerState) ensureQrnBitArrays(height int64, numStandingMembers int) {
-	if ps.PRS.Height == height {
+	if ps.PRS.NextConsensusStartBlockHeight == height {
 		if ps.PRS.QrnsBitArray == nil {
+			ps.logger.Error("ensureQrnBitArrays",
+				"height", height,
+				"ps.PRS.NextConsensusStartBlockHeight", ps.PRS.NextConsensusStartBlockHeight,
+				"numStandingMembers", numStandingMembers,
+			)
 			ps.PRS.QrnsBitArray = bits.NewBitArray(numStandingMembers)
 		}
 	}
 }
 
 func (ps *PeerState) getQrnBitArray(height int64) *bits.BitArray {
-	if ps.PRS.Height == height {
+	if ps.PRS.NextConsensusStartBlockHeight == height {
 		return ps.PRS.QrnsBitArray
 	}
 
@@ -514,7 +523,7 @@ func (ps *PeerState) setHasVote(height int64, round int32, voteType tmproto.Sign
 }
 
 // ApplyNewRoundStepMessage updates the peer state for the new round.
-func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage) {
+func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage, nextConsensusStartBlockHeight int64) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
 
@@ -534,6 +543,12 @@ func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage) {
 	ps.PRS.Round = msg.Round
 	ps.PRS.Step = msg.Step
 	ps.PRS.StartTime = startTime
+
+	if ps.PRS.NextConsensusStartBlockHeight != nextConsensusStartBlockHeight {
+		ps.PRS.NextConsensusStartBlockHeight = nextConsensusStartBlockHeight
+		ps.PRS.QrnsBitArray = nil
+	}
+
 	if psHeight != msg.Height || psRound != msg.Round {
 		ps.PRS.Proposal = false
 		ps.PRS.ProposalBlockPartSetHeader = types.PartSetHeader{}

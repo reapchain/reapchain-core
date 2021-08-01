@@ -83,21 +83,31 @@ func MsgToProto(msg Message) (*tmcons.Message, error) {
 				},
 			},
 		}
-	case *VoteMessage:
-		vote := msg.Vote.ToProto()
-		pb = tmcons.Message{
-			Sum: &tmcons.Message_Vote{
-				Vote: &tmcons.Vote{
-					Vote: vote,
-				},
-			},
-		}
 	case *QrnMessage:
 		qrn := msg.Qrn.ToProto()
 		pb = tmcons.Message{
 			Sum: &tmcons.Message_Qrn{
 				Qrn: &tmcons.Qrn{
 					Qrn: qrn,
+				},
+			},
+		}
+
+	case *HasQrnMessage:
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_HasQrn{
+				HasQrn: &tmcons.HasQrn{
+					Height: msg.Height,
+					Index:  msg.Index,
+				},
+			},
+		}
+	case *VoteMessage:
+		vote := msg.Vote.ToProto()
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_Vote{
+				Vote: &tmcons.Vote{
+					Vote: vote,
 				},
 			},
 		}
@@ -216,15 +226,6 @@ func MsgFromProto(msg *tmcons.Message) (Message, error) {
 			Round:  msg.BlockPart.Round,
 			Part:   parts,
 		}
-	case *tmcons.Message_Vote:
-		vote, err := types.VoteFromProto(msg.Vote.Vote)
-		if err != nil {
-			return nil, fmt.Errorf("vote msg to proto error: %w", err)
-		}
-
-		pb = &VoteMessage{
-			Vote: vote,
-		}
 	case *tmcons.Message_Qrn:
 		qrn := types.QrnFromProto(msg.Qrn.Qrn)
 		if qrn == nil {
@@ -234,6 +235,21 @@ func MsgFromProto(msg *tmcons.Message) (Message, error) {
 		pb = &QrnMessage{
 			Qrn: qrn,
 		}
+	case *tmcons.Message_HasQrn:
+		pb = &HasQrnMessage{
+			Height: msg.HasQrn.Height,
+			Index:  msg.HasQrn.Index,
+		}
+	case *tmcons.Message_Vote:
+		vote, err := types.VoteFromProto(msg.Vote.Vote)
+		if err != nil {
+			return nil, fmt.Errorf("vote msg to proto error: %w", err)
+		}
+
+		pb = &VoteMessage{
+			Vote: vote,
+		}
+
 	case *tmcons.Message_HasVote:
 		pb = &HasVoteMessage{
 			Height: msg.HasVote.Height,

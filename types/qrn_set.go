@@ -12,13 +12,11 @@ import (
 )
 
 type QrnSet struct {
-	Height int64
-
+	Height            int64
 	StandingMemberSet *StandingMemberSet
-
-	mtx          tmsync.Mutex
-	Qrns         []*Qrn
-	QrnsBitArray *bits.BitArray
+	mtx               tmsync.Mutex
+	Qrns              []*Qrn
+	QrnsBitArray      *bits.BitArray
 }
 
 func NewQrnSet(height int64, standingMemberSet *StandingMemberSet, qrns []*Qrn) *QrnSet {
@@ -26,6 +24,11 @@ func NewQrnSet(height int64, standingMemberSet *StandingMemberSet, qrns []*Qrn) 
 		qrns = make([]*Qrn, standingMemberSet.Size())
 		for i, standingMember := range standingMemberSet.StandingMembers {
 			qrns[i] = NewQrnAsEmpty(height, standingMember.PubKey)
+		}
+	} else {
+		for i, standingMember := range standingMemberSet.StandingMembers {
+			standingMemberIndex, _ := standingMemberSet.GetStandingMemberByAddress(standingMember.Address)
+			qrns[i].StandingMemberIndex = standingMemberIndex
 		}
 	}
 
@@ -185,11 +188,12 @@ func (qrnSet *QrnSet) Copy() *QrnSet {
 			qrnsCopy[i] = qrn.Copy()
 		}
 	}
+
 	return &QrnSet{
 		Height:            qrnSet.Height,
-		StandingMemberSet: qrnSet.StandingMemberSet,
+		StandingMemberSet: qrnSet.StandingMemberSet.Copy(),
 		Qrns:              qrnsCopy,
-		QrnsBitArray:      qrnSet.QrnsBitArray,
+		QrnsBitArray:      qrnSet.QrnsBitArray.Copy(),
 	}
 }
 

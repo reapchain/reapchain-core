@@ -874,7 +874,7 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// We could make note of this and help filter in broadcastHasVoteMessage().
 
 	case *QrnMessage:
-		fmt.Println("Add Qrn: ", msg.Qrn.Height, msg.Qrn.StandingMemberIndex, msg.Qrn.StandingMemberPubKey.Address(), msg.Qrn.Value)
+		// fmt.Println("Add Qrn: ", msg.Qrn.Height, msg.Qrn.StandingMemberIndex, msg.Qrn.StandingMemberPubKey.Address(), msg.Qrn.Value)
 
 		added, err = cs.tryAddQrn(msg.Qrn, peerID)
 		if err != nil {
@@ -996,27 +996,42 @@ func (cs *State) enterNewRound(height int64, round int32) {
 	// 	"ConsensusStartBlockHeight", cs.state.ConsensusRound.ConsensusStartBlockHeight,
 	// 	"Peorid", cs.state.ConsensusRound.Peorid,
 	// 	"height", height,
+	// 	"cs.state.Height", cs.state.QrnSet.Height,
+	// 	"cs.state.QrnSet", cs.state.QrnSet.Size(),
+	// 	"cs.state.Hash", cs.state.QrnSet.Hash(),
+	// 	"cs.state.NextQrnSet", cs.state.NextQrnSet.Size(),
 	// )
 	if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Peorid) == height {
-		stompesiLogger.Error("1")
+
+		isFull := cs.state.QrnSet.QrnsBitArray.IsFull()
+		for isFull == false {
+			isFull = cs.state.QrnSet.QrnsBitArray.IsFull()
+			time.Sleep(time.Second * 1)
+		}
 		cs.state.ConsensusRound.ConsensusStartBlockHeight = height
 
-		cs.state.QrnSet = types.NewQrnSet(height, cs.RoundState.StandingMemberSet, nil)
-		stompesiLogger.Error("2")
-		standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
+		nextQrnSetHeight := cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Peorid)
+		cs.state.QrnSet = cs.state.NextQrnSet.Copy()
+		cs.state.NextQrnSet = types.NewQrnSet(nextQrnSetHeight, cs.RoundState.StandingMemberSet, nil)
 
-		stompesiLogger.Error("3")
+		stompesiLogger.Error("cange",
+			"cs.state.QrnSet.Height", cs.state.QrnSet.Height,
+			"cs.state.QrnSet.Hash()", cs.state.QrnSet.Hash(),
+			"cs.state.NextQrnSet.Height", cs.state.NextQrnSet.Height,
+			"cs.state.NextQrnSet.Hash()", cs.state.NextQrnSet.Hash(),
+		)
+		standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
 		if standingMemberIndex != -1 {
 			qrnValue := tmrand.Uint64()
-			stompesiLogger.Error("", "qrnValue", qrnValue)
-			qrn := types.NewQrn(height, cs.privValidatorPubKey, qrnValue)
+			// stompesiLogger.Error("", "qrnValue", qrnValue)
+			qrn := types.NewQrn(nextQrnSetHeight, cs.privValidatorPubKey, qrnValue)
 			qrn.StandingMemberIndex = standingMemberIndex
 			err := cs.privValidator.SignQrn(qrn)
 			if err != nil {
 				logger.Error("Can't sign qrn", "err", err)
 			} else {
-				time.Sleep(time.Second * 10)
-				stompesiLogger.Error("send", "qrnValue", qrnValue)
+				// time.Sleep(time.Second * 10)
+				// stompesiLogger.Error("send", "qrnValue", qrnValue)
 				cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
 			}
 		}
@@ -1131,7 +1146,7 @@ func (cs *State) enterPropose(height int64, round int32) {
 
 	isFull := cs.state.QrnSet.QrnsBitArray.IsFull()
 
-	// logger.Error("isProposer", isFull)
+	logger.Error("isProposer", "isfull", isFull)
 
 	if isFull {
 		cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
@@ -2418,7 +2433,7 @@ func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
 	// 	return false, fmt.Errorf("Failed to add qrn: difference height / qrnHeight: %v & consensusRoundHeight: %v", qrn.Height, cs.Height)
 	// }
 
-	if err := cs.state.QrnSet.AddQrn(qrn); err != nil {
+	if err := cs.state.NextQrnSet.AddQrn(qrn); err != nil {
 		return false, fmt.Errorf("Failed to add qrn: %v", err) // err="Failed to add qrn: Difference
 	}
 

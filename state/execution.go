@@ -309,8 +309,6 @@ func execBlockOnProxyApp(
 	store Store,
 	initialHeight int64,
 ) (*tmstate.ABCIResponses, error) {
-	logger.Error("stompesi-execBlockOnProxyApp")
-
 	var validTxs, invalidTxs = 0, 0
 
 	txIndex := 0
@@ -599,6 +597,7 @@ func updateState(
 		ConsensusRound:                   nextConsensusRound,
 		LastHeightConsensusRoundChanged:  lastHeightConsensusRoundChanged,
 		QrnSet:                           state.QrnSet.Copy(),
+		NextQrnSet:                       state.NextQrnSet.Copy(),
 		LastHeightSteeringMemberCandidatesChanged: lastHeightSteeringMemberCandidatesChanged,
 	}, nil
 }

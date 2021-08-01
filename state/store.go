@@ -233,11 +233,6 @@ func (store dbStore) save(state State, key []byte) error {
 		return err
 	}
 
-	fmt.Println("stompesi-save-qrn", state.LastBlockHeight)
-	fmt.Println("stompesi-save-qrn", state.QrnSet.Height)
-	fmt.Println("stompesi-save-qrn", state.QrnSet.Qrns[0].Value)
-	fmt.Println("stompesi-save-qrn", state.QrnSet.Qrns[1].Value)
-	fmt.Println("stompesi-save-qrn", state.QrnSet.Qrns[2].Value)
 	err := store.db.SetSync(key, state.Bytes())
 	if err != nil {
 		return err

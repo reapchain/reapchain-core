@@ -40,7 +40,8 @@ type PeerRoundState struct {
 	// All commit precommits peer has for this height & CatchupCommitRound
 	CatchupCommit *bits.BitArray `json:"catchup_commit"`
 
-	QrnsBitArray *bits.BitArray `json:"qrns"` // All qrns peer has for this round
+	NextConsensusStartBlockHeight int64          `json:"next_consensus_start_block_height"` // Height peer is at
+	QrnsBitArray                  *bits.BitArray `json:"qrns"`                              // All qrns peer has for this round
 
 	VrfsBitArray *bits.BitArray `json:"vrfs"` // All vrfs peer has for this round
 }

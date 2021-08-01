@@ -271,7 +271,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 				conR.Switch.StopPeerForError(src, err)
 				return
 			}
-			ps.ApplyNewRoundStepMessage(msg)
+			ps.ApplyNewRoundStepMessage(msg, conR.conS.state.ConsensusRound.ConsensusStartBlockHeight+int64(conR.conS.state.ConsensusRound.Peorid))
 		case *NewValidBlockMessage:
 			ps.ApplyNewValidBlockMessage(msg)
 		case *HasVoteMessage:
@@ -778,7 +778,7 @@ OUTER_LOOP:
 
 		// If height matches, then send LastCommit, Prevotes, Precommits.
 		if rs.Height == prs.Height {
-			if ps.PickSendQrn(conR.conS.state.QrnSet) {
+			if ps.PickSendQrn(conR.conS.state.NextQrnSet) {
 				continue OUTER_LOOP
 			}
 		}
