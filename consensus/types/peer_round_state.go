@@ -39,11 +39,6 @@ type PeerRoundState struct {
 
 	// All commit precommits peer has for this height & CatchupCommitRound
 	CatchupCommit *bits.BitArray `json:"catchup_commit"`
-
-	NextConsensusStartBlockHeight int64          `json:"next_consensus_start_block_height"` // Height peer is at
-	QrnsBitArray                  *bits.BitArray `json:"qrns"`                              // All qrns peer has for this round
-
-	VrfsBitArray *bits.BitArray `json:"vrfs"` // All vrfs peer has for this round
 }
 
 // String returns a string representation of the PeerRoundState
@@ -61,8 +56,6 @@ func (prs PeerRoundState) StringIndented(indent string) string {
 %s  Precommits %v
 %s  LastCommit %v (round %v)
 %s  Catchup    %v (round %v)
-%s  QrnsBitArray   %v
-%s  VrfsBitArray   %v
 %s}`,
 		indent, prs.Height, prs.Round, prs.Step, prs.StartTime,
 		indent, prs.ProposalBlockPartSetHeader, prs.ProposalBlockParts,
@@ -71,7 +64,5 @@ func (prs PeerRoundState) StringIndented(indent string) string {
 		indent, prs.Precommits,
 		indent, prs.LastCommit, prs.LastCommitRound,
 		indent, prs.CatchupCommit, prs.CatchupCommitRound,
-		indent, prs.QrnsBitArray,
-		indent, prs.VrfsBitArray,
 		indent)
 }

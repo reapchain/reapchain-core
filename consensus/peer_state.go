@@ -33,7 +33,9 @@ type PeerState struct {
 	PRS   cstypes.PeerRoundState `json:"round_state"` // Exposed.
 	Stats *peerStateStats        `json:"stats"`       // Exposed.
 
-	NextConsensusStartBlockHeight int64 `json:"next_consensus_start_block_height"` // Exposed.
+	NextConsensusStartBlockHeight int64          `json:"next_consensus_start_block_height"` // Height peer is at
+	QrnsBitArray                  *bits.BitArray `json:"qrns"`                              // All qrns peer has for this round
+	VrfsBitArray                  *bits.BitArray `json:"vrfs"`                              // All vrfs peer has for this round
 }
 
 // peerStateStats holds internal statistics for a peer.
@@ -144,159 +146,6 @@ func (ps *PeerState) SetHasProposalBlockPart(height int64, round int32, index in
 	}
 
 	ps.PRS.ProposalBlockParts.SetIndex(index, true)
-}
-
-func (ps *PeerState) setHasQrn(height int64, index int32) {
-	// NOTE: some may be nil BitArrays -> no side effects.
-	psQrns := ps.getQrnBitArray(height)
-	if psQrns != nil {
-		psQrns.SetIndex(int(index), true)
-	}
-}
-
-func (ps *PeerState) SetHasQrn(qrn *types.Qrn) {
-	ps.mtx.Lock()
-	defer ps.mtx.Unlock()
-
-	ps.setHasQrn(qrn.Height, qrn.StandingMemberIndex)
-}
-
-func (ps *PeerState) PickSendQrn(qrnSet types.QrnSetReader) bool {
-	if qrn, ok := ps.PickQrnToSend(qrnSet); ok {
-		fmt.Println("pick send qrn", qrn.StandingMemberIndex, qrn.Value, ps.peer.ID())
-		msg := &QrnMessage{qrn}
-
-		if ps.peer.Send(QrnChannel, MustEncode(msg)) {
-			ps.SetHasQrn(qrn)
-			return true
-		} else {
-			fmt.Println("보내시 실패")
-		}
-		return false
-	}
-	return false
-}
-
-func (ps *PeerState) PickQrnToSend(qrnSet types.QrnSetReader) (qrn *types.Qrn, ok bool) {
-	ps.mtx.Lock()
-	defer ps.mtx.Unlock()
-
-	if qrnSet.Size() == 0 {
-		return nil, false
-	}
-
-	height, size := qrnSet.GetHeight(), qrnSet.Size()
-
-	ps.ensureQrnBitArrays(height, size)
-
-	psQrnBitArray := ps.getQrnBitArray(height)
-	if psQrnBitArray == nil {
-		return nil, false // Not something worth sending
-	}
-	if index, ok := qrnSet.BitArray().Sub(psQrnBitArray).PickRandom(); ok {
-		return qrnSet.GetByIndex(int32(index)), true
-	}
-	return nil, false
-}
-
-func (ps *PeerState) EnsureQrnBitArrays(height int64, numStandingMembers int) {
-	ps.mtx.Lock()
-	defer ps.mtx.Unlock()
-	ps.ensureQrnBitArrays(height, numStandingMembers)
-}
-
-func (ps *PeerState) ensureQrnBitArrays(height int64, numStandingMembers int) {
-	if ps.PRS.NextConsensusStartBlockHeight == height {
-		if ps.PRS.QrnsBitArray == nil {
-			ps.logger.Error("ensureQrnBitArrays",
-				"height", height,
-				"ps.PRS.NextConsensusStartBlockHeight", ps.PRS.NextConsensusStartBlockHeight,
-				"numStandingMembers", numStandingMembers,
-			)
-			ps.PRS.QrnsBitArray = bits.NewBitArray(numStandingMembers)
-		}
-	}
-}
-
-func (ps *PeerState) getQrnBitArray(height int64) *bits.BitArray {
-	if ps.PRS.NextConsensusStartBlockHeight == height {
-		return ps.PRS.QrnsBitArray
-	}
-
-	return nil
-}
-
-func (ps *PeerState) setHasVrf(height int64, index int32) {
-	// NOTE: some may be nil BitArrays -> no side effects.
-	psVrfs := ps.getVrfBitArray(height)
-	if psVrfs != nil {
-		psVrfs.SetIndex(int(index), true)
-	}
-}
-
-func (ps *PeerState) SetHasVrf(vrf *types.Vrf) {
-	ps.mtx.Lock()
-	defer ps.mtx.Unlock()
-
-	ps.setHasVrf(vrf.Height, vrf.SteeringMemberCandidateIndex)
-}
-
-func (ps *PeerState) EnsureVrfBitArrays(height int64, numSteeringMemberCandidates int) {
-	ps.mtx.Lock()
-	defer ps.mtx.Unlock()
-	ps.ensureVrfBitArrays(height, numSteeringMemberCandidates)
-}
-
-func (ps *PeerState) ensureVrfBitArrays(height int64, numSteeringMemberCandidates int) {
-	if ps.PRS.NextConsensusStartBlockHeight == height {
-		if ps.PRS.VrfsBitArray == nil {
-			ps.PRS.VrfsBitArray = bits.NewBitArray(numSteeringMemberCandidates)
-		}
-	}
-}
-
-func (ps *PeerState) getVrfBitArray(height int64) *bits.BitArray {
-	if ps.PRS.Height == height {
-		return ps.PRS.VrfsBitArray
-	}
-
-	return nil
-}
-
-func (ps *PeerState) PickSendVrf(vrfSet types.VrfSetReader) bool {
-	if vrf, ok := ps.PickVrfToSend(vrfSet); ok {
-		msg := &VrfMessage{vrf}
-
-		if ps.peer.Send(VrfChannel, MustEncode(msg)) {
-			ps.SetHasVrf(vrf)
-			return true
-		}
-
-		return false
-	}
-	return false
-}
-
-func (ps *PeerState) PickVrfToSend(vrfSet types.VrfSetReader) (vrf *types.Vrf, ok bool) {
-	ps.mtx.Lock()
-	defer ps.mtx.Unlock()
-
-	if vrfSet.Size() == 0 {
-		return nil, false
-	}
-
-	height, size := vrfSet.GetHeight(), vrfSet.Size()
-
-	ps.ensureVrfBitArrays(height, size)
-
-	psVrfBitArray := ps.getVrfBitArray(height)
-	if psVrfBitArray == nil {
-		return nil, false // Not something worth sending
-	}
-	if index, ok := vrfSet.BitArray().Sub(psVrfBitArray).PickRandom(); ok {
-		return vrfSet.GetByIndex(int32(index)), true
-	}
-	return nil, false
 }
 
 ///////////////////
@@ -535,9 +384,10 @@ func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage, nextCons
 	ps.PRS.Step = msg.Step
 	ps.PRS.StartTime = startTime
 
-	if ps.PRS.NextConsensusStartBlockHeight != nextConsensusStartBlockHeight {
-		ps.PRS.NextConsensusStartBlockHeight = nextConsensusStartBlockHeight
-		ps.PRS.QrnsBitArray = nil
+	if ps.NextConsensusStartBlockHeight != nextConsensusStartBlockHeight {
+		ps.NextConsensusStartBlockHeight = nextConsensusStartBlockHeight
+		ps.QrnsBitArray = nil
+		ps.VrfsBitArray = nil
 	}
 
 	if psHeight != msg.Height || psRound != msg.Round {
@@ -549,8 +399,6 @@ func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage, nextCons
 		// We'll update the BitArray capacity later.
 		ps.PRS.Prevotes = nil
 		ps.PRS.Precommits = nil
-
-		ps.PRS.QrnsBitArray = nil
 	}
 	if psHeight == msg.Height && psRound != msg.Round && msg.Round == psCatchupCommitRound {
 		// Peer caught up to CatchupCommitRound.

@@ -403,9 +403,12 @@ func (h *Handshaker) ReplayBlocks(
 				return nil, fmt.Errorf("steering member candidate set is nil in genesis and still empty after InitChain")
 			}
 
-			state.ConsensusRound = types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.Peorid)
+			if res.ConsensusRound != nil {
+				state.ConsensusRound = types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.Peorid)
+			}
 
 			if len(res.QrnUpdates) > 0 {
+				fmt.Println("stompesi-kkkkk")
 				qrns, err := types.PB2TM.QrnUpdates(res.QrnUpdates)
 				if err != nil {
 					return nil, err

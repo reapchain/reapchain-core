@@ -654,7 +654,7 @@ func (cs *State) updateToState(state sm.State) {
 	height := state.LastBlockHeight + 1
 	if height == 1 {
 		height = state.InitialHeight
-		state.ConsensusRound = types.NewConsensusRound(1, 0)
+		// state.ConsensusRound = types.NewConsensusRound(1, 0)
 	}
 
 	// RoundState fields
@@ -711,16 +711,19 @@ func (cs *State) updateToState(state sm.State) {
 
 			seed := cs.state.QrnSet.GetMaxValue()
 
-			vrf := types.NewVrf(0, cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
+			vrf := types.NewVrf(nextConsensusStartBlockHeight, cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
 			vrf.Timestamp = time.Now()
 
 			if err := cs.privValidator.ProveVrf(vrf); err != nil {
 				cs.Logger.Error("Can't prove vrf", "err", err)
 			}
 
-			cs.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
+			if vrf.Verify() == false {
+				fmt.Errorf("Invalid vrf sign")
+			} else {
+				cs.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
+			}
 		} else if cs.RoundState.StandingMemberSet.HasAddress(address) == true {
-
 			standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
 
 			if standingMemberIndex != -1 {
@@ -924,15 +927,9 @@ func (cs *State) handleMsg(mi msgInfo) {
 		added, err = cs.tryAddQrn(msg.Qrn, peerID)
 		if err != nil {
 			fmt.Println("qrn-height-update", cs.state.QrnSet.Height)
-			// if cs.state.ConsensusRound.ConsensusStartBlockHeight != cs.state.QrnSet.Height {
-			// 	fmt.Println("qrn-height-update", cs.state.ConsensusRound.ConsensusStartBlockHeight)
-			// 	cs.state.QrnSet.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight
-			// }
 		}
 
 	case *VrfMessage:
-		// fmt.Println("Add Qrn: ", msg.Vrf.Height, msg.Vrf.SteeringMemberCandidateIndex, msg.Vrf.SteeringMemberCandidatePubKey.Address(), msg.Vrf.Value)
-
 		added, err = cs.tryAddVrf(msg.Vrf, peerID)
 		if err != nil {
 			fmt.Println("qrn-height-update", cs.state.QrnSet.Height)
@@ -2437,6 +2434,7 @@ func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
 }
 
 func (cs *State) tryAddVrf(vrf *types.Vrf, peerID p2p.ID) (bool, error) {
+	fmt.Println("VRF", vrf.Height, vrf.Seed, vrf.SteeringMemberCandidatePubKey.Address(), vrf.SteeringMemberCandidateIndex)
 	if err := cs.state.NextVrfSet.AddVrf(vrf); err != nil {
 		return false, fmt.Errorf("Failed to add vrf: %v", err)
 	}

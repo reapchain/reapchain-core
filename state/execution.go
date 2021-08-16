@@ -285,9 +285,6 @@ func (blockExec *BlockExecutor) Commit(
 	return res.Data, res.RetainHeight, err
 }
 
-//---------------------------------------------------------
-// Helper functions for executing blocks and updating state
-
 // Executes block's transactions on proxyAppConn.
 // Returns a list of transaction results and updates to the validator set
 func execBlockOnProxyApp(
@@ -297,8 +294,6 @@ func execBlockOnProxyApp(
 	store Store,
 	initialHeight int64,
 ) (*tmstate.ABCIResponses, error) {
-	logger.Error("stompesi-execBlockOnProxyApp")
-
 	var validTxs, invalidTxs = 0, 0
 
 	txIndex := 0

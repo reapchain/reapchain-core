@@ -467,6 +467,10 @@ func (h Header) ValidateBasic() error {
 		return fmt.Errorf("wrong QrnsHash: %v", err)
 	}
 
+	if err := ValidateHash(h.VrfsHash); err != nil {
+		return fmt.Errorf("wrong VrfsHash: %v", err)
+	}
+
 	return nil
 }
 
@@ -490,6 +494,10 @@ func (h *Header) Hash() tmbytes.HexBytes {
 	}
 
 	if h == nil || len(h.QrnsHash) == 0 {
+		return nil
+	}
+
+	if h == nil || len(h.VrfsHash) == 0 {
 		return nil
 	}
 
@@ -532,6 +540,7 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		cdcEncode(h.StandingMembersHash),
 		cdcEncode(h.ConsensusRound),
 		cdcEncode(h.QrnsHash),
+		cdcEncode(h.VrfsHash),
 		cdcEncode(h.SteeringMemberCandidatesHash),
 		crbz,
 	})
@@ -560,6 +569,7 @@ func (h *Header) StringIndented(indent string) string {
 %s  StandingMembers:       %v
 %s  ConsensusRound:       %v
 %s  QrnsRound:       %v
+%s  VrfsRound:       %v
 %s  SteeringMemberCandidates:       %v
 %s}#%v`,
 		indent, h.Version,
@@ -579,6 +589,7 @@ func (h *Header) StringIndented(indent string) string {
 		indent, h.StandingMembersHash,
 		indent, h.ConsensusRound,
 		indent, h.QrnsHash,
+		indent, h.VrfsHash,
 		indent, h.SteeringMemberCandidatesHash,
 		indent, h.Hash())
 }
@@ -607,6 +618,7 @@ func (h *Header) ToProto() *tmproto.Header {
 		StandingMembersHash:          h.StandingMembersHash,
 		ConsensusRound:               h.ConsensusRound.ToProto(),
 		QrnsHash:                     h.QrnsHash,
+		VrfsHash:                     h.VrfsHash,
 		SteeringMemberCandidatesHash: h.SteeringMemberCandidatesHash,
 	}
 }
@@ -649,6 +661,7 @@ func HeaderFromProto(ph *tmproto.Header) (Header, error) {
 	h.SteeringMemberCandidatesHash = ph.SteeringMemberCandidatesHash
 	h.ConsensusRound = consensusRound
 	h.QrnsHash = ph.QrnsHash
+	h.VrfsHash = ph.VrfsHash
 
 	return *h, h.ValidateBasic()
 }

@@ -23,7 +23,7 @@ type Vrf struct {
 	SteeringMemberCandidateIndex  int32         `json:"steering_member_candidate_index"`
 	Value                         []byte        `json:"value"`
 	Proof                         []byte        `json:"proof"`
-	Seed                          []byte
+	Seed                          []byte        `json:"seed"`
 }
 
 func NewVrf(height int64, steeringMemberCandidatePubKey crypto.PubKey, seed []byte) *Vrf {
@@ -154,6 +154,7 @@ func (vrf *Vrf) ToProto() *tmproto.Vrf {
 		SteeringMemberCandidateIndex:  vrf.SteeringMemberCandidateIndex,
 		Value:                         vrf.Value,
 		Proof:                         vrf.Proof,
+		Seed:                          vrf.Seed,
 	}
 
 	return &vrfProto
@@ -176,6 +177,7 @@ func VrfFromProto(vrfProto *tmproto.Vrf) *Vrf {
 	vrf.SteeringMemberCandidateIndex = vrfProto.SteeringMemberCandidateIndex
 	vrf.Value = vrfProto.Value
 	vrf.Proof = vrfProto.Proof
+	vrf.Seed = vrfProto.Seed
 
 	return vrf
 }

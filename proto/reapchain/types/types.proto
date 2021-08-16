@@ -89,6 +89,7 @@ message Header {
   
   bytes qrns_hash = 17;
   bytes steering_member_candidates_hash = 18;
+  bytes vrfs_hash = 19;
 }
 
 // Data contains the set of transactions included in the block

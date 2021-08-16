@@ -103,8 +103,6 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 		return fmt.Errorf("Invalid vrf sign")
 	}
 
-	fmt.Println("hihi")
-
 	steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(vrf.SteeringMemberCandidatePubKey.Address())
 
 	if steeringMemberCandidateIndex == -1 {

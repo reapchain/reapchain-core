@@ -78,6 +78,11 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 		)
 	}
 
+	if vrfSetHash := lb.VrfSet.Hash(); !bytes.Equal(lb.SignedHeader.VrfsHash, vrfSetHash) {
+		return fmt.Errorf("expected vrf hash of header to match vrf set hash (%X != %X)",
+			lb.SignedHeader.VrfsHash, vrfSetHash,
+		)
+	}
 	return nil
 }
 
