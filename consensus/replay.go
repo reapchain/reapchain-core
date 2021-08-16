@@ -80,6 +80,10 @@ func (cs *State) readReplayMessage(msg *TimedWALMessage, newStepSub types.Subscr
 			qrn := msg.Qrn
 			cs.Logger.Info("Replay: Qrn", "height", qrn.Height, "timestamp", qrn.Timestamp,
 				"value", qrn.Value, "standing_member_address", qrn.StandingMemberPubKey.Address(), "peer", peerID)
+		case *VrfMessage:
+			vrf := msg.Vrf
+			cs.Logger.Info("Replay: Vrf", "height", vrf.Height, "timestamp", vrf.Timestamp,
+				"value", vrf.Value, "standing_member_address", vrf.SteeringMemberCandidatePubKey.Address(), "peer", peerID)
 		}
 
 		cs.handleMsg(m)

@@ -353,6 +353,7 @@ type Header struct {
 	ConsensusRound      ConsensusRound   `json:"consensus_round"`
 
 	QrnsHash tmbytes.HexBytes `json:"qrns_hash"`
+	VrfsHash tmbytes.HexBytes `json:"vrfs_hash"`
 
 	SteeringMemberCandidatesHash tmbytes.HexBytes `json:"steering_member_candidates_hash"`
 }
@@ -369,6 +370,7 @@ func (h *Header) Populate(
 	steeringMemberCandidatesHash []byte,
 	consensusRound ConsensusRound,
 	qrnsHash []byte,
+	vrfsHash []byte,
 ) {
 	h.Version = version
 	h.ChainID = chainID
@@ -385,6 +387,7 @@ func (h *Header) Populate(
 	h.ConsensusRound = consensusRound
 
 	h.QrnsHash = qrnsHash
+	h.VrfsHash = vrfsHash
 }
 
 // ValidateBasic performs stateless validation on a Header returning an error

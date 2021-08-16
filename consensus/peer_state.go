@@ -187,8 +187,6 @@ func (ps *PeerState) PickQrnToSend(qrnSet types.QrnSetReader) (qrn *types.Qrn, o
 
 	height, size := qrnSet.GetHeight(), qrnSet.Size()
 
-	//fmt.Println("PickQrnToSend", height, size)
-
 	ps.ensureQrnBitArrays(height, size)
 
 	psQrnBitArray := ps.getQrnBitArray(height)
@@ -196,7 +194,6 @@ func (ps *PeerState) PickQrnToSend(qrnSet types.QrnSetReader) (qrn *types.Qrn, o
 		return nil, false // Not something worth sending
 	}
 	if index, ok := qrnSet.BitArray().Sub(psQrnBitArray).PickRandom(); ok {
-		fmt.Println("PickQrnToSend", "index", index)
 		return qrnSet.GetByIndex(int32(index)), true
 	}
 	return nil, false
@@ -229,15 +226,6 @@ func (ps *PeerState) getQrnBitArray(height int64) *bits.BitArray {
 	return nil
 }
 
-////////////////////////////vrf func
-func (ps *PeerState) getVrfBitArray(height int64) *bits.BitArray {
-	if ps.PRS.Height == height {
-		return ps.PRS.VrfsBitArray
-	}
-
-	return nil
-}
-
 func (ps *PeerState) setHasVrf(height int64, index int32) {
 	// NOTE: some may be nil BitArrays -> no side effects.
 	psVrfs := ps.getVrfBitArray(height)
@@ -260,24 +248,30 @@ func (ps *PeerState) EnsureVrfBitArrays(height int64, numSteeringMemberCandidate
 }
 
 func (ps *PeerState) ensureVrfBitArrays(height int64, numSteeringMemberCandidates int) {
-	if ps.PRS.Height == height {
+	if ps.PRS.NextConsensusStartBlockHeight == height {
 		if ps.PRS.VrfsBitArray == nil {
 			ps.PRS.VrfsBitArray = bits.NewBitArray(numSteeringMemberCandidates)
 		}
 	}
 }
 
-///////////////////TODO: mssong
+func (ps *PeerState) getVrfBitArray(height int64) *bits.BitArray {
+	if ps.PRS.Height == height {
+		return ps.PRS.VrfsBitArray
+	}
+
+	return nil
+}
 
 func (ps *PeerState) PickSendVrf(vrfSet types.VrfSetReader) bool {
 	if vrf, ok := ps.PickVrfToSend(vrfSet); ok {
-		fmt.Println("pick send vrf", vrf.SteeringMemberCandidateIndex, vrf.Value)
 		msg := &VrfMessage{vrf}
 
 		if ps.peer.Send(VrfChannel, MustEncode(msg)) {
 			ps.SetHasVrf(vrf)
 			return true
 		}
+
 		return false
 	}
 	return false
@@ -293,8 +287,6 @@ func (ps *PeerState) PickVrfToSend(vrfSet types.VrfSetReader) (vrf *types.Vrf, o
 
 	height, size := vrfSet.GetHeight(), vrfSet.Size()
 
-	//fmt.Println("PickVrfToSend", height, size)
-
 	ps.ensureVrfBitArrays(height, size)
 
 	psVrfBitArray := ps.getVrfBitArray(height)
@@ -302,7 +294,6 @@ func (ps *PeerState) PickVrfToSend(vrfSet types.VrfSetReader) (vrf *types.Vrf, o
 		return nil, false // Not something worth sending
 	}
 	if index, ok := vrfSet.BitArray().Sub(psVrfBitArray).PickRandom(); ok {
-		fmt.Println("PickVrfToSend", "index", index)
 		return vrfSet.GetByIndex(int32(index)), true
 	}
 	return nil, false

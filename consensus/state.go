@@ -623,8 +623,6 @@ func (cs *State) updateToState(state sm.State) {
 			cs.newStep()
 			return
 		}
-
-		cs.StandingMemberSet.SetCoordinator(state.QrnSet)
 	}
 
 	// Reset fields based on state.
@@ -656,7 +654,7 @@ func (cs *State) updateToState(state sm.State) {
 	height := state.LastBlockHeight + 1
 	if height == 1 {
 		height = state.InitialHeight
-		state.ConsensusRound = types.NewConsensusRound(0, 0)
+		state.ConsensusRound = types.NewConsensusRound(1, 0)
 	}
 
 	// RoundState fields
@@ -690,8 +688,55 @@ func (cs *State) updateToState(state sm.State) {
 	cs.TriggeredTimeoutPrecommit = false
 	cs.StandingMemberSet = state.StandingMemberSet
 	cs.SteeringMemberCandidateSet = state.SteeringMemberCandidateSet
-
 	cs.state = state
+
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Peorid) == height {
+		isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
+		for isFull == false {
+			isFull = cs.state.NextQrnSet.QrnsBitArray.IsFull()
+			time.Sleep(time.Second * 1)
+		}
+		address := cs.privValidatorPubKey.Address()
+		cs.state.ConsensusRound.ConsensusStartBlockHeight = height
+
+		nextConsensusStartBlockHeight := cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Peorid)
+
+		cs.state.VrfSet = cs.state.NextVrfSet.Copy()
+		cs.state.NextVrfSet = types.NewVrfSet(nextConsensusStartBlockHeight, cs.RoundState.SteeringMemberCandidateSet, nil)
+
+		cs.state.QrnSet = cs.state.NextQrnSet.Copy()
+		cs.state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, cs.RoundState.StandingMemberSet, nil)
+
+		if cs.RoundState.SteeringMemberCandidateSet.HasAddress(address) == true {
+
+			seed := cs.state.QrnSet.GetMaxValue()
+
+			vrf := types.NewVrf(0, cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
+			vrf.Timestamp = time.Now()
+
+			if err := cs.privValidator.ProveVrf(vrf); err != nil {
+				cs.Logger.Error("Can't prove vrf", "err", err)
+			}
+
+			cs.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
+		} else if cs.RoundState.StandingMemberSet.HasAddress(address) == true {
+
+			standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
+
+			if standingMemberIndex != -1 {
+				qrnValue := tmrand.Uint64()
+
+				qrn := types.NewQrn(nextConsensusStartBlockHeight, cs.privValidatorPubKey, qrnValue)
+				qrn.StandingMemberIndex = standingMemberIndex
+				err := cs.privValidator.SignQrn(qrn)
+				if err != nil {
+					fmt.Println("Can't sign qrn", "err", err)
+				} else {
+					cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
+				}
+			}
+		}
+	}
 
 	// Finally, broadcast RoundState
 	cs.newStep()
@@ -885,6 +930,14 @@ func (cs *State) handleMsg(mi msgInfo) {
 			// }
 		}
 
+	case *VrfMessage:
+		// fmt.Println("Add Qrn: ", msg.Vrf.Height, msg.Vrf.SteeringMemberCandidateIndex, msg.Vrf.SteeringMemberCandidatePubKey.Address(), msg.Vrf.Value)
+
+		added, err = cs.tryAddVrf(msg.Vrf, peerID)
+		if err != nil {
+			fmt.Println("qrn-height-update", cs.state.QrnSet.Height)
+		}
+
 	default:
 		cs.Logger.Error("unknown msg type", "type", fmt.Sprintf("%T", msg))
 		return
@@ -990,52 +1043,7 @@ func (cs *State) handleTxsAvailable() {
 func (cs *State) enterNewRound(height int64, round int32) {
 
 	logger := cs.Logger.With("height", height, "round", round)
-	stompesiLogger := cs.Logger.With("stompesi-enterNewRound")
-
-	// stompesiLogger.Error("",
-	// 	"ConsensusStartBlockHeight", cs.state.ConsensusRound.ConsensusStartBlockHeight,
-	// 	"Peorid", cs.state.ConsensusRound.Peorid,
-	// 	"height", height,
-	// 	"cs.state.Height", cs.state.QrnSet.Height,
-	// 	"cs.state.QrnSet", cs.state.QrnSet.Size(),
-	// 	"cs.state.Hash", cs.state.QrnSet.Hash(),
-	// 	"cs.state.NextQrnSet", cs.state.NextQrnSet.Size(),
-	// )
-	if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Peorid) == height {
-
-		isFull := cs.state.QrnSet.QrnsBitArray.IsFull()
-		for isFull == false {
-			isFull = cs.state.QrnSet.QrnsBitArray.IsFull()
-			time.Sleep(time.Second * 1)
-		}
-		cs.state.ConsensusRound.ConsensusStartBlockHeight = height
-
-		nextQrnSetHeight := cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Peorid)
-		cs.state.QrnSet = cs.state.NextQrnSet.Copy()
-		cs.state.NextQrnSet = types.NewQrnSet(nextQrnSetHeight, cs.RoundState.StandingMemberSet, nil)
-
-		stompesiLogger.Error("cange",
-			"cs.state.QrnSet.Height", cs.state.QrnSet.Height,
-			"cs.state.QrnSet.Hash()", cs.state.QrnSet.Hash(),
-			"cs.state.NextQrnSet.Height", cs.state.NextQrnSet.Height,
-			"cs.state.NextQrnSet.Hash()", cs.state.NextQrnSet.Hash(),
-		)
-		standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
-		if standingMemberIndex != -1 {
-			qrnValue := tmrand.Uint64()
-			// stompesiLogger.Error("", "qrnValue", qrnValue)
-			qrn := types.NewQrn(nextQrnSetHeight, cs.privValidatorPubKey, qrnValue)
-			qrn.StandingMemberIndex = standingMemberIndex
-			err := cs.privValidator.SignQrn(qrn)
-			if err != nil {
-				logger.Error("Can't sign qrn", "err", err)
-			} else {
-				// time.Sleep(time.Second * 10)
-				// stompesiLogger.Error("send", "qrnValue", qrnValue)
-				cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
-			}
-		}
-	}
+	// stompesiLogger := cs.Logger.With("stompesi-enterNewRound")
 
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cs.Step != cstypes.RoundStepNewHeight) {
 		logger.Debug(
@@ -1146,49 +1154,37 @@ func (cs *State) enterPropose(height int64, round int32) {
 
 	isFull := cs.state.QrnSet.QrnsBitArray.IsFull()
 
-	logger.Error("isProposer", "isfull", isFull)
-
-	if isFull {
-		cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
-
-		cs.Validators.Proposer = types.NewValidator(cs.StandingMemberSet.Coordinator.PubKey, 10000)
+	if isFull == false {
+		return
 	}
 
-	// Nothing more to do if we're not a validator
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight == height {
+		cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
+	}
+
+	_, proposer := cs.Validators.GetByAddress(cs.StandingMemberSet.Coordinator.PubKey.Address())
+	cs.Validators.Proposer = proposer
+
 	if cs.privValidator == nil {
 		logger.Debug("node is not a validator")
 		return
 	}
 
-	logger.Debug("node is a validator")
-
 	if cs.privValidatorPubKey == nil {
-		// If this node is a validator & proposer in the current round, it will
-		// miss the opportunity to create a block.
 		logger.Error("propose step; empty priv validator public key", "err", errPubKeyIsNotSet)
 		return
 	}
 
 	address := cs.privValidatorPubKey.Address()
 
-	// if not a validator, we're done
 	if !cs.Validators.HasAddress(address) {
 		logger.Debug("node is not a validator", "addr", address, "vals", cs.Validators)
 		return
 	}
 
-	if cs.isProposer(address) && isFull == true {
-		logger.Error("stompesi",
-			"sSize", cs.state.StandingMemberSet.Size(),
-			"qrnSize", cs.state.QrnSet.Size(),
-			"cs.state.ConsensusRound", cs.state.ConsensusRound,
-		)
-		if cs.state.ConsensusRound.ConsensusStartBlockHeight == height {
-			logger.Error("isProposer", cs.state.StandingMemberSet.Coordinator.Address)
-			time.Sleep(time.Second * 1)
-		}
+	if cs.isProposer(address) {
+		logger.Error("I'm a proposer", "proposer", address)
 
-		logger.Debug("propose step; our turn to propose", "proposer", address)
 		cs.decideProposal(height, round)
 	} else {
 		logger.Debug("propose step; not our turn to propose", "proposer", cs.Validators.GetProposer().Address)
@@ -1229,6 +1225,7 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 	propBlockID := types.BlockID{Hash: block.Hash(), PartSetHeader: blockParts.Header()}
 	proposal := types.NewProposal(height, round, cs.ValidRound, propBlockID)
 	p := proposal.ToProto()
+
 	if err := cs.privValidator.SignProposal(cs.state.ChainID, p); err == nil {
 		proposal.Signature = p.Signature
 
@@ -2371,7 +2368,6 @@ func (cs *State) checkDoubleSigningRisk(height int64) error {
 }
 
 //---------------------------------------------------------
-
 func CompareHRS(h1 int64, r1 int32, s1 cstypes.RoundStepType, h2 int64, r2 int32, s2 cstypes.RoundStepType) int {
 	if h1 < h2 {
 		return -1
@@ -2435,6 +2431,14 @@ func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
 
 	if err := cs.state.NextQrnSet.AddQrn(qrn); err != nil {
 		return false, fmt.Errorf("Failed to add qrn: %v", err) // err="Failed to add qrn: Difference
+	}
+
+	return true, nil
+}
+
+func (cs *State) tryAddVrf(vrf *types.Vrf, peerID p2p.ID) (bool, error) {
+	if err := cs.state.NextVrfSet.AddVrf(vrf); err != nil {
+		return false, fmt.Errorf("Failed to add vrf: %v", err)
 	}
 
 	return true, nil

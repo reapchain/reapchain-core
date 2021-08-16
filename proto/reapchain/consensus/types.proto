@@ -61,12 +61,16 @@ message Qrn {
 
 message HasQrn {
   int64                          height = 1;
-  int32                          index  = 4;
+  int32                          index  = 2;
 }
-
 
 message Vrf {
   reapchain.types.Vrf vrf = 1;
+}
+
+message HasVrf {
+  int64                          height = 1;
+  int32                          index  = 2;
 }
 
 // HasVote is sent to indicate that a particular vote has been received.
@@ -109,5 +113,6 @@ message Message {
     Qrn           qrn             = 10;
     HasQrn        has_qrn             = 11;
     Vrf           vrf             = 12;
+    HasVrf        has_vrf             = 13;
   }
 }

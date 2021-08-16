@@ -1,6 +1,7 @@
 package types
 
 import (
+	encoding_binary "encoding/binary"
 	"errors"
 	"fmt"
 
@@ -97,6 +98,24 @@ func (qrnSet *QrnSet) Size() int {
 
 func (qrnSet *QrnSet) IsNilOrEmpty() bool {
 	return qrnSet == nil || len(qrnSet.Qrns) == 0
+}
+
+func (qrnSet *QrnSet) GetMaxValue() uint64 {
+	maxValue := uint64(0)
+	qrnSetHash := qrnSet.Hash()
+
+	for _, qrn := range qrnSet.Qrns {
+		qrnHash := make([][]byte, 2)
+		qrnHash[0] = qrnSetHash
+		qrnHash[1] = qrn.GetQrnBytes()
+
+		result := merkle.HashFromByteSlices(qrnHash)
+		if uint64(maxValue) < encoding_binary.LittleEndian.Uint64(result) {
+			maxValue = encoding_binary.LittleEndian.Uint64(result)
+		}
+	}
+
+	return maxValue
 }
 
 func (qrnSet *QrnSet) AddQrn(qrn *Qrn) error {

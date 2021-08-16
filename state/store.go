@@ -222,7 +222,6 @@ func (store dbStore) save(state State, key []byte) error {
 	}
 
 	// Save next validators.
-	fmt.Println("state.LastHeightValidatorsChanged2", state.LastHeightValidatorsChanged)
 	if err := store.saveValidatorsInfo(nextHeight+1, state.LastHeightValidatorsChanged, state.NextValidators); err != nil {
 		return err
 	}

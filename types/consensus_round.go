@@ -22,8 +22,8 @@ func NewConsensusRound(consensusStartBlockHeight int64, peorid uint64) Consensus
 		Peorid:                    peorid,
 	}
 
-	if consensusRound.ConsensusStartBlockHeight < 0 {
-		consensusRound.ConsensusStartBlockHeight = 0
+	if consensusRound.ConsensusStartBlockHeight <= 0 {
+		consensusRound.ConsensusStartBlockHeight = 1
 	}
 
 	if consensusRound.Peorid == 0 {

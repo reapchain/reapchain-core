@@ -116,5 +116,6 @@ message State {
   int64                         last_height_steering_member_candidates_changed = 21;
   
   reapchain.types.VrfSet vrf_set          = 22;
+  reapchain.types.VrfSet next_vrf_set          = 24;
 
 }

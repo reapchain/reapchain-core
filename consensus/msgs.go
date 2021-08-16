@@ -102,6 +102,25 @@ func MsgToProto(msg Message) (*tmcons.Message, error) {
 				},
 			},
 		}
+	case *VrfMessage:
+		vrf := msg.Vrf.ToProto()
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_Vrf{
+				Vrf: &tmcons.Vrf{
+					Vrf: vrf,
+				},
+			},
+		}
+
+	case *HasVrfMessage:
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_HasVrf{
+				HasVrf: &tmcons.HasVrf{
+					Height: msg.Height,
+					Index:  msg.Index,
+				},
+			},
+		}
 	case *VoteMessage:
 		vote := msg.Vote.ToProto()
 		pb = tmcons.Message{
@@ -239,6 +258,20 @@ func MsgFromProto(msg *tmcons.Message) (Message, error) {
 		pb = &HasQrnMessage{
 			Height: msg.HasQrn.Height,
 			Index:  msg.HasQrn.Index,
+		}
+	case *tmcons.Message_Vrf:
+		vrf := types.VrfFromProto(msg.Vrf.Vrf)
+		if vrf == nil {
+			return nil, fmt.Errorf("vrf msg to proto error")
+		}
+
+		pb = &VrfMessage{
+			Vrf: vrf,
+		}
+	case *tmcons.Message_HasVrf:
+		pb = &HasVrfMessage{
+			Height: msg.HasVrf.Height,
+			Index:  msg.HasVrf.Index,
 		}
 	case *tmcons.Message_Vote:
 		vote, err := types.VoteFromProto(msg.Vote.Vote)

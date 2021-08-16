@@ -99,13 +99,11 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 		return fmt.Errorf("Vrf is nil")
 	}
 
-	if vrf.Height != vrfSet.Height {
-		return fmt.Errorf("Difference height / vrfHeight: %v & vrfSetHeight: %v", vrf.Height, vrfSet.Height)
-	}
-
 	if vrf.Verify() == false {
 		return fmt.Errorf("Invalid vrf sign")
 	}
+
+	fmt.Println("hihi")
 
 	steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(vrf.SteeringMemberCandidatePubKey.Address())
 

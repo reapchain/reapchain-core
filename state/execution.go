@@ -137,6 +137,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	startTime := time.Now().UnixNano()
 	abciResponses, err := execBlockOnProxyApp(
+		//@@@logging: executed block
 		blockExec.logger, blockExec.proxyApp, block, blockExec.store, state.InitialHeight,
 	)
 	endTime := time.Now().UnixNano()
@@ -196,19 +197,6 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	if len(steeringMemberCandidateUpdates) > 0 {
 		blockExec.logger.Debug("updates to steering member candidates", "updates", types.SteeringMemberCandidateListString(steeringMemberCandidateUpdates))
 	}
-
-	// abciQrnUpdates := abciResponses.EndBlock.QrnUpdates
-	// err = validateQrnUpdates(abciQrnUpdates, state.ConsensusParams.Validator)
-	// if err != nil {
-	// 	return state, 0, fmt.Errorf("error in steering member candidate updates: %v", err)
-	// }
-	// qrnUpdates, err := types.PB2TM.QrnUpdates(abciQrnUpdates)
-	// if err != nil {
-	// 	return state, 0, err
-	// }
-	// if len(qrnUpdates) > 0 {
-	// 	blockExec.logger.Debug("updates to steering member candidates", "updates", types.SteeringMemberCandidateListString(qrnUpdates))
-	// }
 
 	// Update the state with the block and responses.
 	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates, standingMemberUpdates, steeringMemberCandidateUpdates)
@@ -309,11 +297,14 @@ func execBlockOnProxyApp(
 	store Store,
 	initialHeight int64,
 ) (*tmstate.ABCIResponses, error) {
+	logger.Error("stompesi-execBlockOnProxyApp")
+
 	var validTxs, invalidTxs = 0, 0
 
 	txIndex := 0
 	abciResponses := new(tmstate.ABCIResponses)
 	dtxs := make([]*abci.ResponseDeliverTx, len(block.Txs))
+
 	abciResponses.DeliverTxs = dtxs
 
 	// Execute transactions and get hash.
@@ -476,22 +467,6 @@ func validateSteeringMemberCandidateUpdates(steeringMemberCandidateUpdatesAbci [
 	return nil
 }
 
-// func validateQrnUpdates(qrnUpdatesAbci []abci.QrnUpdate, params tmproto.ValidatorParams) error {
-// 	for _, qrnUpdate := range qrnUpdatesAbci {
-// 		// Check if validator's pubkey matches an ABCI type in the consensus params
-// 		pk, err := cryptoenc.PubKeyFromProto(valUpdate.PubKey)
-// 		if err != nil {
-// 			return err
-// 		}
-
-// 		if !types.IsValidPubkeyType(params, pk.Type()) {
-// 			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
-// 				valUpdate, pk.Type())
-// 		}
-// 	}
-// 	return nil
-// }
-
 // updateState returns a new State updated according to the header and responses.
 func updateState(
 	state State,
@@ -598,6 +573,8 @@ func updateState(
 		LastHeightConsensusRoundChanged:  lastHeightConsensusRoundChanged,
 		QrnSet:                           state.QrnSet.Copy(),
 		NextQrnSet:                       state.NextQrnSet.Copy(),
+		VrfSet:                           state.VrfSet.Copy(),
+		NextVrfSet:                       state.NextVrfSet.Copy(),
 		LastHeightSteeringMemberCandidatesChanged: lastHeightSteeringMemberCandidatesChanged,
 	}, nil
 }
@@ -671,7 +648,7 @@ func ExecCommitBlock(
 	store Store,
 	initialHeight int64,
 ) ([]byte, error) {
-	fmt.Println("stompesi-ExecCommitBlock", "initialHeight", initialHeight)
+	fmt.Println("stompesi-ApplyBlock", "initialHeight", initialHeight)
 
 	_, err := execBlockOnProxyApp(logger, appConnConsensus, block, store, initialHeight)
 	if err != nil {

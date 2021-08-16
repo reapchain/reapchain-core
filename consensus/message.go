@@ -34,4 +34,5 @@ func init() {
 	tmjson.RegisterType(&QrnMessage{}, "reapchain/Qrn")
 	tmjson.RegisterType(&HasQrnMessage{}, "reapchain/HasQrn")
 	tmjson.RegisterType(&VrfMessage{}, "reapchain/Vrf")
+	tmjson.RegisterType(&HasVrfMessage{}, "reapchain/HasVrf")
 }

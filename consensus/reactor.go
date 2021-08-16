@@ -198,6 +198,7 @@ func (conR *Reactor) AddPeer(peer p2p.Peer) {
 	if !ok {
 		panic(fmt.Sprintf("peer %v has no state", peer))
 	}
+
 	// Begin routines for this peer.
 	go conR.gossipDataRoutine(peer, peerState)
 	go conR.gossipVotesRoutine(peer, peerState)
@@ -773,10 +774,6 @@ OUTER_LOOP:
 		rs := conR.conS.GetRoundState()
 		prs := ps.GetRoundState()
 
-		// logger.Debug("gossipVotesRoutine", "rsHeight", rs.Height, "rsRound", rs.Round,
-		// "prsHeight", prs.Height, "prsRound", prs.Round, "prsStep", prs.Step)
-
-		// If height matches, then send LastCommit, Prevotes, Precommits.
 		if rs.Height == prs.Height {
 			if ps.PickSendQrn(conR.conS.state.NextQrnSet) {
 				continue OUTER_LOOP
@@ -801,12 +798,8 @@ OUTER_LOOP:
 		rs := conR.conS.GetRoundState()
 		prs := ps.GetRoundState()
 
-		// logger.Debug("gossipVotesRoutine", "rsHeight", rs.Height, "rsRound", rs.Round,
-		// "prsHeight", prs.Height, "prsRound", prs.Round, "prsStep", prs.Step)
-
-		// If height matches, then send LastCommit, Prevotes, Precommits.
 		if rs.Height == prs.Height {
-			if ps.PickSendVrf(conR.conS.state.VrfSet) {
+			if ps.PickSendVrf(conR.conS.state.NextVrfSet) {
 				continue OUTER_LOOP
 			}
 		}
