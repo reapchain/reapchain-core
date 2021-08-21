@@ -5,6 +5,7 @@ import "reapchain/crypto/keys.proto";
 import "reapchain/types/types.proto";
 import "reapchain/types/qrn.proto";
 import "reapchain/types/vrf.proto";
+import "reapchain/types/setting_steering_member.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/privval";
@@ -50,12 +51,21 @@ message SignQrnRequest {
   reapchain.types.Qrn qrn     = 1;
 }
 
+message SignSettingSteeringMemberRequest {
+  reapchain.types.SettingSteeringMember setting_steering_member     = 1;
+}
+
 message SignVrfRequest {
   reapchain.types.Vrf vrf     = 1;
 }
 
 message SignedQrnResponse {
   reapchain.types.Qrn qrn  = 1 [(gogoproto.nullable) = false];
+  RemoteSignerError     error = 2;
+}
+
+message SignedSettingSteeringMemberResponse {
+  reapchain.types.SettingSteeringMember setting_steering_member  = 1 [(gogoproto.nullable) = false];
   RemoteSignerError     error = 2;
 }
 
@@ -97,5 +107,9 @@ message Message {
     SignedQrnResponse     signed_qrn_response     = 10;
     SignVrfRequest        sign_vrf_request        = 11;
     SignedVrfResponse     signed_vrf_response     = 12;
+    
+    SignSettingSteeringMemberRequest signed_setting_steering_member_request = 13;
+    SignedSettingSteeringMemberResponse     signed_setting_steering_member_response     = 14;
+    
   }
 }

@@ -144,9 +144,6 @@ func (store dbStore) LoadFromDBOrGenesisDoc(genesisDoc *types.GenesisDoc) (State
 		}
 	}
 
-	fmt.Println("stompesi-state", state.QrnSet.Qrns[0].Value)
-	fmt.Println("stompesi-state", state.QrnSet.Qrns[1].Value)
-	fmt.Println("stompesi-state", state.QrnSet.Qrns[2].Value)
 	return state, nil
 }
 
@@ -178,9 +175,6 @@ func (store dbStore) loadState(key []byte) (state State, err error) {
 	if err != nil {
 		return state, err
 	}
-
-	// fmt.Println("stompesi-load222", sm.StandingMemberSet.)
-	// fmt.Println("stompesi-load222", sm.QrnSet.Height)
 
 	return *sm, nil
 }

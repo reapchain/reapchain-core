@@ -14,6 +14,7 @@ import "reapchain/types/standing_member.proto";
 import "reapchain/types/steering_member_candidate.proto";
 import "reapchain/types/qrn.proto";
 import "reapchain/types/vrf.proto";
+import "reapchain/types/setting_steering_member.proto";
 import "reapchain/types/consensus_round.proto";
 
 // ABCIResponses retains the responses
@@ -118,4 +119,6 @@ message State {
   reapchain.types.VrfSet vrf_set          = 22;
   reapchain.types.VrfSet next_vrf_set          = 24;
 
+  reapchain.types.SettingSteeringMember setting_steering_member          = 25;
+  bool is_set_steering_member          = 26;
 }

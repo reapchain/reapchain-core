@@ -3,6 +3,7 @@ package types
 import (
 	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/merkle"
@@ -182,6 +183,28 @@ func (vrfSet *VrfSet) GetByIndex(steeringMemberCandidateIndex int32) *Vrf {
 	vrfSet.mtx.Lock()
 	defer vrfSet.mtx.Unlock()
 	return vrfSet.Vrfs[steeringMemberCandidateIndex]
+}
+
+func (vrfSet *VrfSet) GetSteeringMemberIndexes() *SettingSteeringMember {
+	if len(vrfSet.Vrfs) != 0 {
+		sort.Sort(SortedVrfs(vrfSet.Vrfs))
+		var steeringMemberSize int
+		if len(vrfSet.Vrfs) < 15 {
+			steeringMemberSize = len(vrfSet.Vrfs)
+		} else {
+			steeringMemberSize = 15
+		}
+
+		settingSteeringMember := NewSettingSteeringMember(steeringMemberSize)
+
+		for i := 0; i < steeringMemberSize; i++ {
+			fmt.Println(vrfSet.Vrfs[i].SteeringMemberCandidateIndex, vrfSet.Vrfs[i].Value)
+			settingSteeringMember.SteeringMemberIndexes[i] = vrfSet.Vrfs[i].SteeringMemberCandidateIndex
+		}
+
+		return settingSteeringMember
+	}
+	return nil
 }
 
 func (vrfSet *VrfSet) BitArray() *bits.BitArray {

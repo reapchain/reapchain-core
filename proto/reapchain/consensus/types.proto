@@ -6,6 +6,7 @@ option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/consens
 import "gogoproto/gogo.proto";
 import "reapchain/types/types.proto";
 import "reapchain/types/qrn.proto";
+import "reapchain/types/setting_steering_member.proto";
 import "reapchain/types/vrf.proto";
 import "reapchain/libs/bits/types.proto";
 
@@ -53,6 +54,10 @@ message BlockPart {
 // Vote is sent when voting for a proposal (or lack thereof).
 message Vote {
   reapchain.types.Vote vote = 1;
+}
+
+message SettingSteeringMember {
+  reapchain.types.SettingSteeringMember setting_steering_member = 1;
 }
 
 message Qrn {
@@ -114,5 +119,7 @@ message Message {
     HasQrn        has_qrn             = 11;
     Vrf           vrf             = 12;
     HasVrf        has_vrf             = 13;
+
+    SettingSteeringMember setting_steering_member = 14;
   }
 }

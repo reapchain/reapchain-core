@@ -10,5 +10,8 @@ option (gogoproto.equal_all) = true;
 // ConsensusRound
 message ConsensusRound {
   int64 consensus_start_block_height = 1;
-  uint64 peorid = 2;
+  uint64 qrn_peorid = 2;
+  uint64 vrf_peorid = 3;
+  uint64 validator_peorid = 4;
+  uint64 peorid = 5;
 }

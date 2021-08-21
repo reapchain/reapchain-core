@@ -129,6 +129,25 @@ func (sc *SignerClient) SignQrn(qrn *types.Qrn) error {
 	return nil
 }
 
+func (sc *SignerClient) SignSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) error {
+	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignSettingSteeringMemberRequest{SettingSteeringMember: settingSteeringMember.ToProto()}))
+	if err != nil {
+		return err
+	}
+
+	resp := response.GetSignedSettingSteeringMemberResponse()
+	if resp == nil {
+		return ErrUnexpectedResponse
+	}
+	if resp.Error != nil {
+		return &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
+	}
+
+	settingSteeringMember = types.SettingSteeringMemberFromProto(&resp.SettingSteeringMember)
+
+	return nil
+}
+
 //TODO: mssong
 func (sc *SignerClient) ProveVrf(vrf *types.Vrf) error {
 	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignVrfRequest{Vrf: vrf.ToProto()}))

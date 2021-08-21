@@ -21,6 +21,7 @@ type PrivValidator interface {
 
 	SignQrn(qrn *Qrn) error
 	ProveVrf(vrf *Vrf) error
+	SignSettingSteeringMember(vrf *SettingSteeringMember) error
 }
 
 type PrivValidatorsByAddress []PrivValidator
@@ -96,6 +97,16 @@ func (pv MockPV) SignQrn(qrn *Qrn) error {
 		return err
 	}
 	qrn.Signature = sig
+	return nil
+}
+
+func (pv MockPV) SignSettingSteeringMember(settingSteeringMember *SettingSteeringMember) error {
+	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign()
+	sig, err := pv.PrivKey.Sign(signBytes)
+	if err != nil {
+		return err
+	}
+	settingSteeringMember.Signature = sig
 	return nil
 }
 

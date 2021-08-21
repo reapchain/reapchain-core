@@ -183,6 +183,9 @@ func (tm2pb) ConsensusParams(params *tmproto.ConsensusParams) *abci.ConsensusPar
 func (tm2pb) ConsensusRound(consensudRoundProto *tmproto.ConsensusRound) *abci.ConsensusRound {
 	return &abci.ConsensusRound{
 		ConsensusStartBlockHeight: consensudRoundProto.ConsensusStartBlockHeight,
+		QrnPeorid:                 consensudRoundProto.QrnPeorid,
+		VrfPeorid:                 consensudRoundProto.VrfPeorid,
+		ValidatorPeorid:           consensudRoundProto.ValidatorPeorid,
 		Peorid:                    consensudRoundProto.Peorid,
 	}
 }

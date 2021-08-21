@@ -69,6 +69,12 @@ type ValidatorSet struct {
 // validation.
 func NewValidatorSet(valz []*Validator) *ValidatorSet {
 	vals := &ValidatorSet{}
+	for _, val := range valz {
+		fmt.Println(val.Address)
+	}
+
+	fmt.Println("")
+
 	err := vals.updateWithChangeSet(valz, false)
 	if err != nil {
 		panic(fmt.Sprintf("Cannot create validator set: %v", err))
@@ -1091,4 +1097,17 @@ func safeMul(a, b int64) (int64, bool) {
 	}
 
 	return a * b, false
+}
+
+// -----------------------------------------
+func (vals *ValidatorSet) SetValidatorSet(changes []*Validator) error {
+	if len(changes) == 0 {
+		return nil
+	}
+
+	vals.Validators = changes[:]
+
+	sort.Sort(ValidatorsByVotingPower(vals.Validators))
+
+	return nil
 }

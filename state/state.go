@@ -93,6 +93,9 @@ type State struct {
 
 	VrfSet     *types.VrfSet
 	NextVrfSet *types.VrfSet
+
+	IsSetSteeringMember   bool
+	SettingSteeringMember *types.SettingSteeringMember
 }
 
 // Copy makes a copy of the State for mutating.
@@ -133,6 +136,9 @@ func (state State) Copy() State {
 
 		VrfSet:     state.VrfSet.Copy(),
 		NextVrfSet: state.NextVrfSet.Copy(),
+
+		SettingSteeringMember: state.SettingSteeringMember.Copy(),
+		IsSetSteeringMember:   state.IsSetSteeringMember,
 	}
 }
 
@@ -243,6 +249,9 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	}
 	sm.NextVrfSet = nextVrfSetProto
 
+	sm.SettingSteeringMember = state.SettingSteeringMember.ToProto()
+	sm.IsSetSteeringMember = state.IsSetSteeringMember
+
 	return sm, nil
 }
 
@@ -339,6 +348,9 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 		return nil, err
 	}
 	state.NextVrfSet = nextVrfSet
+
+	state.SettingSteeringMember = types.SettingSteeringMemberFromProto(pb.SettingSteeringMember)
+	state.IsSetSteeringMember = pb.IsSetSteeringMember
 
 	return state, nil
 }

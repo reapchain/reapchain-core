@@ -83,6 +83,17 @@ func MsgToProto(msg Message) (*tmcons.Message, error) {
 				},
 			},
 		}
+
+	case *SettingSteeringMemberMessage:
+		settingSteeringMember := msg.SettingSteeringMember.ToProto()
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_SettingSteeringMember{
+				SettingSteeringMember: &tmcons.SettingSteeringMember{
+					SettingSteeringMember: settingSteeringMember,
+				},
+			},
+		}
+
 	case *QrnMessage:
 		qrn := msg.Qrn.ToProto()
 		pb = tmcons.Message{
@@ -244,6 +255,15 @@ func MsgFromProto(msg *tmcons.Message) (Message, error) {
 			Height: msg.BlockPart.Height,
 			Round:  msg.BlockPart.Round,
 			Part:   parts,
+		}
+	case *tmcons.Message_SettingSteeringMember:
+		settingSteeringMember := types.SettingSteeringMemberFromProto(msg.SettingSteeringMember.SettingSteeringMember)
+		if settingSteeringMember == nil {
+			return nil, fmt.Errorf("settingSteeringMember msg to proto error")
+		}
+
+		pb = &SettingSteeringMemberMessage{
+			SettingSteeringMember: settingSteeringMember,
 		}
 	case *tmcons.Message_Qrn:
 		qrn := types.QrnFromProto(msg.Qrn.Qrn)

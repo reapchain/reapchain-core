@@ -17,12 +17,13 @@ import (
 )
 
 const (
-	StateChannel       = byte(0x20)
-	DataChannel        = byte(0x21)
-	VoteChannel        = byte(0x22)
-	VoteSetBitsChannel = byte(0x23)
-	QrnChannel         = byte(0x24)
-	VrfChannel         = byte(0x25)
+	StateChannel                 = byte(0x20)
+	DataChannel                  = byte(0x21)
+	VoteChannel                  = byte(0x22)
+	VoteSetBitsChannel           = byte(0x23)
+	QrnChannel                   = byte(0x24)
+	VrfChannel                   = byte(0x25)
+	SettingSteeringMemberChannel = byte(0x26)
 
 	maxMsgSize = 1048576 // 1MB; NOTE/TODO: keep in sync with types.PartSet sizes.
 
@@ -177,6 +178,13 @@ func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 			RecvBufferCapacity:  100 * 100,
 			RecvMessageCapacity: maxMsgSize,
 		},
+		{
+			ID:                  SettingSteeringMemberChannel,
+			Priority:            7,
+			SendQueueCapacity:   100,
+			RecvBufferCapacity:  100 * 100,
+			RecvMessageCapacity: maxMsgSize,
+		},
 	}
 }
 
@@ -206,6 +214,7 @@ func (conR *Reactor) AddPeer(peer p2p.Peer) {
 
 	go conR.gossipQrnsRoutine(peer, peerState)
 	go conR.gossipVrfsRoutine(peer, peerState)
+	go conR.gossipSettingSteeringMembersRoutine(peer, peerState)
 
 	// Send our state to peer.
 	// If we're fast_syncing, broadcast a RoundStepMessage later upon SwitchToConsensus().
@@ -371,6 +380,26 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			cs.mtx.RUnlock()
 			ps.EnsureVrfBitArrays(height, steeringMemberCandidate)
 			ps.SetHasVrf(msg.Vrf)
+
+			cs.peerMsgQueue <- msgInfo{msg, src.ID()}
+
+		default:
+			// don't punish (leave room for soft upgrades)
+			conR.Logger.Error(fmt.Sprintf("Unknown message type %v", reflect.TypeOf(msg)))
+		}
+
+	case SettingSteeringMemberChannel:
+		//TODO: mssong
+		if conR.WaitSync() {
+			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
+			return
+		}
+		switch msg := msg.(type) {
+		case *SettingSteeringMemberMessage:
+			cs := conR.conS
+			cs.mtx.RLock()
+			cs.mtx.RUnlock()
+			ps.SetHasSettingSteeringMember(msg.SettingSteeringMember)
 
 			cs.peerMsgQueue <- msgInfo{msg, src.ID()}
 
@@ -800,6 +829,30 @@ OUTER_LOOP:
 
 		if rs.Height == prs.Height {
 			if ps.PickSendVrf(conR.conS.state.NextVrfSet) {
+				continue OUTER_LOOP
+			}
+		}
+
+		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
+		continue OUTER_LOOP
+	}
+}
+
+func (conR *Reactor) gossipSettingSteeringMembersRoutine(peer p2p.Peer, ps *PeerState) {
+	logger := conR.Logger.With("peer", peer)
+
+OUTER_LOOP:
+	for {
+		// Manage disconnects from self or peer.
+		if !peer.IsRunning() || !conR.IsRunning() {
+			logger.Info("Stopping gossipSettingSteeringMemberRoutine for peer")
+			return
+		}
+		rs := conR.conS.GetRoundState()
+		prs := ps.GetRoundState()
+
+		if rs.Height == prs.Height {
+			if ps.SendSettingSteeringMember(conR.conS.state.SettingSteeringMember) {
 				continue OUTER_LOOP
 			}
 		}

@@ -625,9 +625,6 @@ func (cs *State) updateToState(state sm.State) {
 		}
 	}
 
-	// Reset fields based on state.
-	validators := state.Validators
-
 	switch {
 	case state.LastBlockHeight == 0: // Very first commit should be empty.
 		cs.LastCommit = (*types.VoteSet)(nil)
@@ -649,6 +646,9 @@ func (cs *State) updateToState(state sm.State) {
 			state.LastBlockHeight+1,
 		))
 	}
+
+	// Reset fields based on state.
+	validators := state.Validators
 
 	// Next desired block height
 	height := state.LastBlockHeight + 1
@@ -690,13 +690,89 @@ func (cs *State) updateToState(state sm.State) {
 	cs.SteeringMemberCandidateSet = state.SteeringMemberCandidateSet
 	cs.state = state
 
+	// TODO: stompesi
+	// if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Peorid) == height {
+	// 	isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
+	// 	for isFull == false {
+	// 		isFull = cs.state.NextQrnSet.QrnsBitArray.IsFull()
+	// 		time.Sleep(time.Second * 1)
+	// 	}
+	// 	address := cs.privValidatorPubKey.Address()
+	// 	cs.state.ConsensusRound.ConsensusStartBlockHeight = height
+
+	// 	nextConsensusStartBlockHeight := cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Peorid)
+
+	// 	cs.state.VrfSet = cs.state.NextVrfSet.Copy()
+	// 	cs.state.NextVrfSet = types.NewVrfSet(nextConsensusStartBlockHeight, cs.RoundState.SteeringMemberCandidateSet, nil)
+
+	// 	cs.state.QrnSet = cs.state.NextQrnSet.Copy()
+	// 	cs.state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, cs.RoundState.StandingMemberSet, nil)
+
+	// 	if cs.RoundState.SteeringMemberCandidateSet.HasAddress(address) == true {
+
+	// 		seed := cs.state.QrnSet.GetMaxValue()
+
+	// 		vrf := types.NewVrf(nextConsensusStartBlockHeight, cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
+	// 		vrf.Timestamp = time.Now()
+
+	// 		if err := cs.privValidator.ProveVrf(vrf); err != nil {
+	// 			cs.Logger.Error("Can't prove vrf", "err", err)
+	// 		}
+
+	// 		if vrf.Verify() == false {
+	// 			fmt.Errorf("Invalid vrf sign")
+	// 		} else {
+	// 			cs.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
+	// 		}
+	// 	} else if cs.RoundState.StandingMemberSet.HasAddress(address) == true {
+	// 		standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
+
+	// 		if standingMemberIndex != -1 {
+	// 			qrnValue := tmrand.Uint64()
+
+	// 			qrn := types.NewQrn(nextConsensusStartBlockHeight, cs.privValidatorPubKey, qrnValue)
+	// 			qrn.StandingMemberIndex = standingMemberIndex
+	// 			err := cs.privValidator.SignQrn(qrn)
+	// 			if err != nil {
+	// 				fmt.Println("Can't sign qrn", "err", err)
+	// 			} else {
+	// 				cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
+	// 			}
+	// 		}
+	// 	}
+	// }
+
 	if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Peorid) == height {
-		isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
-		for isFull == false {
-			isFull = cs.state.NextQrnSet.QrnsBitArray.IsFull()
-			time.Sleep(time.Second * 1)
-		}
 		address := cs.privValidatorPubKey.Address()
+
+		// i := 0
+		// validatorSize := len(cs.state.StandingMemberSet.StandingMembers)
+		// if cs.state.SettingSteeringMember != nil {
+		// 	validatorSize = len(cs.state.SettingSteeringMember.SteeringMemberIndexes) + len(cs.state.StandingMemberSet.StandingMembers)
+		// }
+
+		// validators := make([]*types.Validator, validatorSize)
+
+		// if cs.state.SettingSteeringMember != nil {
+		// 	for _, steeringMemberIndex := range cs.state.SettingSteeringMember.SteeringMemberIndexes {
+		// 		validators[i] = types.NewValidator(cs.state.SteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey, 10)
+		// 		i++
+		// 	}
+		// }
+
+		// for _, standingMember := range cs.state.StandingMemberSet.StandingMembers {
+		// 	validators[i] = types.NewValidator(standingMember.PubKey, 10)
+		// 	i++
+		// }
+
+		// fmt.Println("jb-hi", len(validators))
+		// cs.state.Validators.Validators = validators
+		// fmt.Println("jb-hi2", len(cs.state.Validators.Validators))
+		// cs.Votes = cstypes.NewHeightVoteSet(state.ChainID, height, cs.state.Validators)
+		// cs.Validators = cs.state.Validators
+
+		cs.state.IsSetSteeringMember = false
+
 		cs.state.ConsensusRound.ConsensusStartBlockHeight = height
 
 		nextConsensusStartBlockHeight := cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Peorid)
@@ -707,23 +783,7 @@ func (cs *State) updateToState(state sm.State) {
 		cs.state.QrnSet = cs.state.NextQrnSet.Copy()
 		cs.state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, cs.RoundState.StandingMemberSet, nil)
 
-		if cs.RoundState.SteeringMemberCandidateSet.HasAddress(address) == true {
-
-			seed := cs.state.QrnSet.GetMaxValue()
-
-			vrf := types.NewVrf(nextConsensusStartBlockHeight, cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
-			vrf.Timestamp = time.Now()
-
-			if err := cs.privValidator.ProveVrf(vrf); err != nil {
-				cs.Logger.Error("Can't prove vrf", "err", err)
-			}
-
-			if vrf.Verify() == false {
-				fmt.Errorf("Invalid vrf sign")
-			} else {
-				cs.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
-			}
-		} else if cs.RoundState.StandingMemberSet.HasAddress(address) == true {
+		if cs.RoundState.StandingMemberSet.HasAddress(address) == true {
 			standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
 
 			if standingMemberIndex != -1 {
@@ -739,8 +799,55 @@ func (cs *State) updateToState(state sm.State) {
 				}
 			}
 		}
-	}
+	} else if int64(cs.state.ConsensusRound.QrnPeorid)+1 != height && cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeorid) == height {
+		address := cs.privValidatorPubKey.Address()
+		if cs.RoundState.SteeringMemberCandidateSet.HasAddress(address) == true {
 
+			isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
+
+			if isFull == false {
+				isFull = cs.state.NextQrnSet.QrnsBitArray.IsFull()
+				time.Sleep(time.Second * 1)
+			}
+
+			seed := cs.state.NextQrnSet.GetMaxValue()
+
+			vrf := types.NewVrf(cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Peorid), cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
+			vrf.Timestamp = time.Now()
+
+			if err := cs.privValidator.ProveVrf(vrf); err != nil {
+				cs.Logger.Error("Can't prove vrf", "err", err)
+			}
+
+			fmt.Println("vrf - seed: ", seed)
+			fmt.Println("vrf - Value: ", vrf.Value)
+
+			if vrf.Verify() == false {
+				fmt.Errorf("Invalid vrf sign")
+			} else {
+				cs.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
+			}
+		}
+	} else if int64(cs.state.ConsensusRound.QrnPeorid+cs.state.ConsensusRound.QrnPeorid)+1 != height && cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeorid+cs.state.ConsensusRound.VrfPeorid) == height {
+		address := cs.privValidatorPubKey.Address()
+		if cs.isProposer(address) {
+			settingSteeringMember := cs.state.NextVrfSet.GetSteeringMemberIndexes()
+			settingSteeringMember.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Peorid)
+			settingSteeringMember.CoordinatorPubKey = cs.privValidatorPubKey
+
+			err := cs.privValidator.SignSettingSteeringMember(settingSteeringMember)
+			if err != nil {
+				fmt.Println("Can't sign settingSteeringMember", "err", err)
+			} else {
+				// fmt.Println(settingSteeringMember.Height)
+				// fmt.Println(settingSteeringMember.Timestamp)
+				// fmt.Println(settingSteeringMember.CoordinatorPubKey.Address())
+				// fmt.Println(settingSteeringMember.SteeringMemberIndexes)
+				// fmt.Println(settingSteeringMember.Signature)
+				cs.sendInternalMessage(msgInfo{&SettingSteeringMemberMessage{settingSteeringMember}, ""})
+			}
+		}
+	}
 	// Finally, broadcast RoundState
 	cs.newStep()
 
@@ -929,6 +1036,12 @@ func (cs *State) handleMsg(mi msgInfo) {
 			fmt.Println("qrn-height-update", cs.state.QrnSet.Height)
 		}
 
+	case *SettingSteeringMemberMessage:
+		// Todo:stompesi
+		err = cs.trySetSteeringMember(msg.SettingSteeringMember, peerID)
+		if err != nil {
+			fmt.Println("update-validator-set")
+		}
 	case *VrfMessage:
 		added, err = cs.tryAddVrf(msg.Vrf, peerID)
 		if err != nil {
@@ -1149,13 +1262,7 @@ func (cs *State) enterPropose(height int64, round int32) {
 	// If we don't get the proposal and all block parts quick enough, enterPrevote
 	cs.scheduleTimeout(cs.config.Propose(round), height, round, cstypes.RoundStepPropose)
 
-	isFull := cs.state.QrnSet.QrnsBitArray.IsFull()
-
-	if isFull == false {
-		return
-	}
-
-	if cs.state.ConsensusRound.ConsensusStartBlockHeight == height {
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight == height || cs.StandingMemberSet.Coordinator == nil {
 		cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
 	}
 
@@ -1397,6 +1504,7 @@ func (cs *State) enterPrevoteWait(height int64, round int32) {
 // else, unlock an existing lock and precommit nil if +2/3 of prevotes were nil,
 // else, precommit nil otherwise.
 func (cs *State) enterPrecommit(height int64, round int32) {
+	// fmt.Println("enterPrecommit", string(debug.Stack()))
 	logger := cs.Logger.With("height", height, "round", round)
 
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cstypes.RoundStepPrecommit <= cs.Step) {
@@ -1426,6 +1534,7 @@ func (cs *State) enterPrecommit(height int64, round int32) {
 			logger.Debug("precommit step; no +2/3 prevotes during enterPrecommit; precommitting nil")
 		}
 
+		fmt.Println("signAddVote1")
 		cs.signAddVote(tmproto.PrecommitType, nil, types.PartSetHeader{})
 		return
 	}
@@ -1456,6 +1565,7 @@ func (cs *State) enterPrecommit(height int64, round int32) {
 			}
 		}
 
+		fmt.Println("signAddVote2")
 		cs.signAddVote(tmproto.PrecommitType, nil, types.PartSetHeader{})
 		return
 	}
@@ -1471,6 +1581,7 @@ func (cs *State) enterPrecommit(height int64, round int32) {
 			logger.Error("failed publishing event relock", "err", err)
 		}
 
+		fmt.Println("signAddVote3")
 		cs.signAddVote(tmproto.PrecommitType, blockID.Hash, blockID.PartSetHeader)
 		return
 	}
@@ -1514,6 +1625,7 @@ func (cs *State) enterPrecommit(height int64, round int32) {
 		logger.Error("failed publishing event unlock", "err", err)
 	}
 
+	fmt.Println("signAddVote5")
 	cs.signAddVote(tmproto.PrecommitType, nil, types.PartSetHeader{})
 }
 
@@ -1716,7 +1828,9 @@ func (cs *State) finalizeCommit(height int64) {
 	fail.Fail() // XXX
 
 	// Create a copy of the state for staging and an event cache for txs.
+	fmt.Println("hi3", cs.state.SettingSteeringMember)
 	stateCopy := cs.state.Copy()
+	fmt.Println("hi4", stateCopy.SettingSteeringMember)
 
 	// Execute and commit the block, update and save the state, and update the mempool.
 	// NOTE The block.AppHash wont reflect these txs until the next block.
@@ -1981,6 +2095,7 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 
 		// Update Valid* if we can.
 		prevotes := cs.Votes.Prevotes(cs.Round)
+		fmt.Println(prevotes.Size())
 		blockID, hasTwoThirds := prevotes.TwoThirdsMajority()
 		if hasTwoThirds && !blockID.IsZero() && (cs.ValidRound < cs.Round) {
 			if cs.ProposalBlock.HashesTo(blockID.Hash) {
@@ -2245,6 +2360,7 @@ func (cs *State) signVote(
 	hash []byte,
 	header types.PartSetHeader,
 ) (*types.Vote, error) {
+
 	// Flush the WAL. Otherwise, we may not recompute the same vote to sign,
 	// and the privValidator will refuse to sign anything.
 	if err := cs.wal.FlushAndSync(); err != nil {
@@ -2433,8 +2549,33 @@ func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
 	return true, nil
 }
 
+func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeringMember, peerID p2p.ID) error {
+	// if cs.state.ConsensusRound.ConsensusStartBlockHeight > cs.Height || cs.Height > settingSteeringMember.Height {
+	// 	return nil
+	// }
+
+	currentCoordinator := cs.StandingMemberSet.Coordinator.Copy()
+
+	if currentCoordinator.PubKey.Equals(settingSteeringMember.CoordinatorPubKey) == false {
+		return fmt.Errorf("Miss match coordinator")
+	}
+
+	if settingSteeringMember.VerifySign() == false {
+		return fmt.Errorf("Invalid seeting steering member sign")
+	}
+
+	if cs.state.IsSetSteeringMember == true {
+		return fmt.Errorf("Already steering member set indexes is seted")
+	}
+
+	cs.state.SettingSteeringMember = settingSteeringMember.Copy()
+	cs.state.IsSetSteeringMember = true
+	fmt.Println("hi2 ", cs.state.SettingSteeringMember)
+	return nil
+}
+
 func (cs *State) tryAddVrf(vrf *types.Vrf, peerID p2p.ID) (bool, error) {
-	fmt.Println("VRF", vrf.Height, vrf.Seed, vrf.SteeringMemberCandidatePubKey.Address(), vrf.SteeringMemberCandidateIndex)
+	fmt.Println("VRF", vrf.Height, vrf.Value, vrf.SteeringMemberCandidatePubKey.Address(), vrf.SteeringMemberCandidateIndex)
 	if err := cs.state.NextVrfSet.AddVrf(vrf); err != nil {
 		return false, fmt.Errorf("Failed to add vrf: %v", err)
 	}

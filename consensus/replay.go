@@ -404,7 +404,7 @@ func (h *Handshaker) ReplayBlocks(
 			}
 
 			if res.ConsensusRound != nil {
-				state.ConsensusRound = types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.Peorid)
+				state.ConsensusRound = types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.QrnPeorid, res.ConsensusRound.VrfPeorid, res.ConsensusRound.ValidatorPeorid)
 			}
 
 			if len(res.QrnUpdates) > 0 {

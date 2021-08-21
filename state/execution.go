@@ -155,19 +155,28 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	fail.Fail() // XXX
 
-	// validate the validator updates and convert to reapchain types
-	abciValUpdates := abciResponses.EndBlock.ValidatorUpdates
-	err = validateValidatorUpdates(abciValUpdates, state.ConsensusParams.Validator)
-	if err != nil {
-		return state, 0, fmt.Errorf("error in validator updates: %v", err)
-	}
+	var validators []*types.Validator
 
-	validatorUpdates, err := types.PB2TM.ValidatorUpdates(abciValUpdates)
-	if err != nil {
-		return state, 0, err
-	}
-	if len(validatorUpdates) > 0 {
-		blockExec.logger.Debug("updates to validators", "updates", types.ValidatorListString(validatorUpdates))
+	if state.ConsensusRound.ConsensusStartBlockHeight+int64(state.ConsensusRound.Peorid) == state.LastBlockHeight+4 {
+		i := 0
+		validatorSize := len(state.StandingMemberSet.StandingMembers)
+		if state.SettingSteeringMember != nil {
+			validatorSize = len(state.SettingSteeringMember.SteeringMemberIndexes) + len(state.StandingMemberSet.StandingMembers)
+		}
+
+		validators = make([]*types.Validator, validatorSize)
+
+		if state.SettingSteeringMember != nil {
+			for _, steeringMemberIndex := range state.SettingSteeringMember.SteeringMemberIndexes {
+				validators[i] = types.NewValidator(state.SteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey, 10)
+				i++
+			}
+		}
+
+		for _, standingMember := range state.StandingMemberSet.StandingMembers {
+			validators[i] = types.NewValidator(standingMember.PubKey, 10)
+			i++
+		}
 	}
 
 	abciStandingMemberUpdates := abciResponses.EndBlock.StandingMemberUpdates
@@ -199,7 +208,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	}
 
 	// Update the state with the block and responses.
-	state, err = updateState(state, blockID, &block.Header, abciResponses, validatorUpdates, standingMemberUpdates, steeringMemberCandidateUpdates)
+	state, err = updateState(state, blockID, &block.Header, abciResponses, validators, standingMemberUpdates, steeringMemberCandidateUpdates)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
@@ -226,12 +235,11 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	if err := blockExec.store.Save(state); err != nil {
 		return state, 0, err
 	}
-
 	fail.Fail() // XXX
 
 	// Events are fired after everything else.
 	// NOTE: if we crash between Commit and Save, events wont be fired during replay
-	fireEvents(blockExec.logger, blockExec.eventBus, block, abciResponses, validatorUpdates)
+	fireEvents(blockExec.logger, blockExec.eventBus, block, abciResponses, validators)
 
 	return state, retainHeight, nil
 }
@@ -481,10 +489,8 @@ func updateState(
 	// Update the validator set with the latest abciResponses.
 	lastHeightValsChanged := state.LastHeightValidatorsChanged
 	if len(validatorUpdates) > 0 {
-		err := nValSet.UpdateWithChangeSet(validatorUpdates)
-		if err != nil {
-			return state, fmt.Errorf("error changing validator set: %v", err)
-		}
+		nValSet = types.NewValidatorSet(validatorUpdates)
+
 		// Change results from this height but only applies to the next next height.
 		lastHeightValsChanged = header.Height + 1 + 1
 	}
@@ -571,6 +577,8 @@ func updateState(
 		VrfSet:                           state.VrfSet.Copy(),
 		NextVrfSet:                       state.NextVrfSet.Copy(),
 		LastHeightSteeringMemberCandidatesChanged: lastHeightSteeringMemberCandidatesChanged,
+		SettingSteeringMember:                     state.SettingSteeringMember.Copy(),
+		IsSetSteeringMember:                       state.IsSetSteeringMember,
 	}, nil
 }
 
@@ -643,8 +651,6 @@ func ExecCommitBlock(
 	store Store,
 	initialHeight int64,
 ) ([]byte, error) {
-	fmt.Println("stompesi-ApplyBlock", "initialHeight", initialHeight)
-
 	_, err := execBlockOnProxyApp(logger, appConnConsensus, block, store, initialHeight)
 	if err != nil {
 		logger.Error("failed executing block on proxy app", "height", block.Height, "err", err)

@@ -111,6 +111,22 @@ func (sc *RetrySignerClient) ProveVrf(vrf *types.Vrf) error {
 	return fmt.Errorf("exhausted all attempts to sign vote: %w", err)
 }
 
+func (sc *RetrySignerClient) SignSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) error {
+	var err error
+	for i := 0; i < sc.retries || sc.retries == 0; i++ {
+		err = sc.next.SignSettingSteeringMember(settingSteeringMember)
+		if err == nil {
+			return nil
+		}
+		// If remote signer errors, we don't retry.
+		if _, ok := err.(*RemoteSignerError); ok {
+			return err
+		}
+		time.Sleep(sc.timeout)
+	}
+	return fmt.Errorf("exhausted all attempts to sign vote: %w", err)
+}
+
 func (sc *RetrySignerClient) SignProposal(chainID string, proposal *tmproto.Proposal) error {
 	var err error
 	for i := 0; i < sc.retries || sc.retries == 0; i++ {

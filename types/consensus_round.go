@@ -8,18 +8,27 @@ import (
 )
 
 const (
-	DefaultConsensusRoundPeorid = 4
+	DefaultConsensusRoundQrnPeorid       = 4
+	DefaultConsensusRoundVrfPeorid       = 4
+	DefaultConsensusRoundValidatorPeorid = 4
+	DefaultConsensusRoundPeorid          = 12
 )
 
 type ConsensusRound struct {
 	ConsensusStartBlockHeight int64  `json:"consensus_start_block_height"`
 	Peorid                    uint64 `json:"peorid"`
+	QrnPeorid                 uint64 `json:"qrn_peorid"`
+	VrfPeorid                 uint64 `json:"vrf_peorid"`
+	ValidatorPeorid           uint64 `json:"validator_peorid"`
 }
 
-func NewConsensusRound(consensusStartBlockHeight int64, peorid uint64) ConsensusRound {
+func NewConsensusRound(consensusStartBlockHeight int64, qrnPeorid, vrfPeorid, validatorPeorid uint64) ConsensusRound {
 	consensusRound := ConsensusRound{
 		ConsensusStartBlockHeight: consensusStartBlockHeight,
-		Peorid:                    peorid,
+		QrnPeorid:                 qrnPeorid,
+		VrfPeorid:                 vrfPeorid,
+		ValidatorPeorid:           validatorPeorid,
+		Peorid:                    qrnPeorid + vrfPeorid + validatorPeorid,
 	}
 
 	if consensusRound.ConsensusStartBlockHeight <= 0 {
@@ -27,6 +36,9 @@ func NewConsensusRound(consensusStartBlockHeight int64, peorid uint64) Consensus
 	}
 
 	if consensusRound.Peorid == 0 {
+		consensusRound.QrnPeorid = DefaultConsensusRoundQrnPeorid
+		consensusRound.VrfPeorid = DefaultConsensusRoundVrfPeorid
+		consensusRound.ValidatorPeorid = DefaultConsensusRoundValidatorPeorid
 		consensusRound.Peorid = DefaultConsensusRoundPeorid
 	}
 
@@ -38,16 +50,15 @@ func (consensusRoundInfo ConsensusRound) ValidateBasic() error {
 		return fmt.Errorf("wrong ConsensusStartBlockHeight (got: %d)", consensusRoundInfo.ConsensusStartBlockHeight)
 	}
 
-	if consensusRoundInfo.Peorid < 0 {
-		return fmt.Errorf("wrong consensus peorid (got: %d)", consensusRoundInfo.Peorid)
-	}
-
 	return nil
 }
 
 func (consensusRound *ConsensusRound) ToProto() tmproto.ConsensusRound {
 	return tmproto.ConsensusRound{
 		ConsensusStartBlockHeight: consensusRound.ConsensusStartBlockHeight,
+		QrnPeorid:                 consensusRound.QrnPeorid,
+		VrfPeorid:                 consensusRound.VrfPeorid,
+		ValidatorPeorid:           consensusRound.ValidatorPeorid,
 		Peorid:                    consensusRound.Peorid,
 	}
 }
@@ -55,6 +66,9 @@ func (consensusRound *ConsensusRound) ToProto() tmproto.ConsensusRound {
 func ConsensusRoundFromProto(consensusRoundProto tmproto.ConsensusRound) (ConsensusRound, error) {
 	return ConsensusRound{
 		ConsensusStartBlockHeight: consensusRoundProto.ConsensusStartBlockHeight,
+		QrnPeorid:                 consensusRoundProto.QrnPeorid,
+		VrfPeorid:                 consensusRoundProto.VrfPeorid,
+		ValidatorPeorid:           consensusRoundProto.ValidatorPeorid,
 		Peorid:                    consensusRoundProto.Peorid,
 	}, nil
 }
@@ -66,6 +80,9 @@ func UpdateConsensusRound(currentConsensusRound tmproto.ConsensusRound, nextCons
 		return res
 	}
 
+	res.QrnPeorid = nextConsensusRound.QrnPeorid
+	res.VrfPeorid = nextConsensusRound.VrfPeorid
+	res.ValidatorPeorid = nextConsensusRound.ValidatorPeorid
 	res.Peorid = nextConsensusRound.Peorid
 
 	return res
