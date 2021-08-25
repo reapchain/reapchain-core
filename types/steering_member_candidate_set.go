@@ -2,7 +2,6 @@ package types
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"sort"
 
@@ -27,10 +26,10 @@ func NewSteeringMemberCandidateSet(steeringMemberCandidates []*SteeringMemberCan
 }
 
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) ValidateBasic() error {
-	if steeringMemberCandidateSet.IsNilOrEmpty() {
-		return errors.New("steering member candidate set is nil or empty")
-		// return nil
-	}
+	// if steeringMemberCandidateSet.IsNilOrEmpty() {
+	// 	return errors.New("steering member candidate set is nil or empty")
+	// 	// return nil
+	// }
 
 	for idx, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
 		if err := steeringMemberCandidate.ValidateBasic(); err != nil {

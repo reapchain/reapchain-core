@@ -832,19 +832,21 @@ func (cs *State) updateToState(state sm.State) {
 		address := cs.privValidatorPubKey.Address()
 		if cs.isProposer(address) {
 			settingSteeringMember := cs.state.NextVrfSet.GetSteeringMemberIndexes()
-			settingSteeringMember.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Peorid)
-			settingSteeringMember.CoordinatorPubKey = cs.privValidatorPubKey
+			if settingSteeringMember != nil {
+				settingSteeringMember.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Peorid)
+				settingSteeringMember.CoordinatorPubKey = cs.privValidatorPubKey
 
-			err := cs.privValidator.SignSettingSteeringMember(settingSteeringMember)
-			if err != nil {
-				fmt.Println("Can't sign settingSteeringMember", "err", err)
-			} else {
-				// fmt.Println(settingSteeringMember.Height)
-				// fmt.Println(settingSteeringMember.Timestamp)
-				// fmt.Println(settingSteeringMember.CoordinatorPubKey.Address())
-				// fmt.Println(settingSteeringMember.SteeringMemberIndexes)
-				// fmt.Println(settingSteeringMember.Signature)
-				cs.sendInternalMessage(msgInfo{&SettingSteeringMemberMessage{settingSteeringMember}, ""})
+				err := cs.privValidator.SignSettingSteeringMember(settingSteeringMember)
+				if err != nil {
+					fmt.Println("Can't sign settingSteeringMember", "err", err)
+				} else {
+					// fmt.Println(settingSteeringMember.Height)
+					// fmt.Println(settingSteeringMember.Timestamp)
+					// fmt.Println(settingSteeringMember.CoordinatorPubKey.Address())
+					// fmt.Println(settingSteeringMember.SteeringMemberIndexes)
+					// fmt.Println(settingSteeringMember.Signature)
+					cs.sendInternalMessage(msgInfo{&SettingSteeringMemberMessage{settingSteeringMember}, ""})
+				}
 			}
 		}
 	}

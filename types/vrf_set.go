@@ -60,9 +60,9 @@ func VrfSetFromProto(vrfSetProto *tmproto.VrfSet) (*VrfSet, error) {
 }
 
 func (vrfSet *VrfSet) ValidateBasic() error {
-	if vrfSet == nil || len(vrfSet.Vrfs) == 0 {
-		return errors.New("vrf set is nil or empty")
-	}
+	// if vrfSet == nil || len(vrfSet.Vrfs) == 0 {
+	// 	return errors.New("vrf set is nil or empty")
+	// }
 
 	for idx, vrf := range vrfSet.Vrfs {
 		if err := vrf.ValidateBasic(); err != nil {

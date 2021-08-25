@@ -400,7 +400,8 @@ func (h *Handshaker) ReplayBlocks(
 
 				state.SteeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
 			} else if len(h.genDoc.SteeringMemberCandidates) == 0 {
-				return nil, fmt.Errorf("steering member candidate set is nil in genesis and still empty after InitChain")
+				state.SteeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(nil)
+				// return nil, fmt.Errorf("steering member candidate set is nil in genesis and still empty after InitChain")
 			}
 
 			if res.ConsensusRound != nil {
