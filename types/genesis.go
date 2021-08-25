@@ -54,7 +54,8 @@ type GenesisDoc struct {
 	StandingMembers          []GenesisMember          `json:"standing_members,omitempty"`
 	ConsensusRound           ConsensusRound           `json:"consensus_round"`
 	Qrns                     []Qrn                    `json:"qrns,omitempty"`
-	SteeringMemberCandidates []GenesisMember          `json:"steering_member_candidates,omitempty"`
+	SteeringMemberCandidates []GenesisMember          `json:"steering_member_candidates"`
+	Vrfs                     []Vrf                    `json:"vrfs"`
 }
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.

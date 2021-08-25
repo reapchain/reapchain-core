@@ -98,6 +98,11 @@ func initFilesWithConfig(config *cfg.Config) error {
 		if err := genDoc.SaveAs(genFile); err != nil {
 			return err
 		}
+
+		genDoc.SteeringMemberCandidates = []types.GenesisMember{}
+
+		genDoc.Vrfs = []types.Vrf{}
+
 		logger.Info("Generated genesis file", "path", genFile)
 	}
 
