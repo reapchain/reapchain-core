@@ -2,7 +2,6 @@ package types
 
 import "bytes"
 
-// 정렬하기 위한 구조체
 type SortedStandingMembers []*StandingMember
 
 func (sms SortedStandingMembers) Len() int { return len(sms) }

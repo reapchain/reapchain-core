@@ -114,7 +114,6 @@ func (bcR *BlockchainReactor) OnStart() error {
 
 // SwitchToFastSync is called by the state sync reactor when switching to fast sync.
 func (bcR *BlockchainReactor) SwitchToFastSync(state sm.State) error {
-	bcR.Logger.Error("stompesi-SwitchToFastSync")
 	bcR.fastSync = true
 	bcR.initialState = state
 
@@ -396,12 +395,6 @@ FOR_LOOP:
 				// TODO: same thing for app - but we would need a way to
 				// get the hash without persisting the state
 				var err error
-				bcR.Logger.Error("stompesi-poolRoutine", "first.Height", first.Height)
-				bcR.Logger.Error("stompesi-poolRoutine", "state.LastBlockHeight", state.LastBlockHeight)
-				bcR.Logger.Error("stompesi-poolRoutine", "state.QrnSet.Height", state.QrnSet.Height)
-				bcR.Logger.Error("stompesi-poolRoutine", "state.QrnSet.Qrns[0].Value", state.QrnSet.Qrns[0].Value)
-				bcR.Logger.Error("stompesi-poolRoutine", "state.QrnSet.Qrns[1].Value", state.QrnSet.Qrns[1].Value)
-				bcR.Logger.Error("stompesi-poolRoutine", "state.QrnSet.Qrns[2].Value", state.QrnSet.Qrns[2].Value)
 
 				state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
 				if err != nil {

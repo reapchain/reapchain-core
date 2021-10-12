@@ -1155,7 +1155,6 @@ func (cs *State) handleTxsAvailable() {
 func (cs *State) enterNewRound(height int64, round int32) {
 
 	logger := cs.Logger.With("height", height, "round", round)
-	// stompesiLogger := cs.Logger.With("stompesi-enterNewRound")
 
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cs.Step != cstypes.RoundStepNewHeight) {
 		logger.Debug(
@@ -1567,7 +1566,6 @@ func (cs *State) enterPrecommit(height int64, round int32) {
 			}
 		}
 
-		fmt.Println("signAddVote2")
 		cs.signAddVote(tmproto.PrecommitType, nil, types.PartSetHeader{})
 		return
 	}
@@ -1830,9 +1828,7 @@ func (cs *State) finalizeCommit(height int64) {
 	fail.Fail() // XXX
 
 	// Create a copy of the state for staging and an event cache for txs.
-	fmt.Println("hi3", cs.state.SettingSteeringMember)
 	stateCopy := cs.state.Copy()
-	fmt.Println("hi4", stateCopy.SettingSteeringMember)
 
 	// Execute and commit the block, update and save the state, and update the mempool.
 	// NOTE The block.AppHash wont reflect these txs until the next block.
@@ -2572,7 +2568,6 @@ func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeri
 
 	cs.state.SettingSteeringMember = settingSteeringMember.Copy()
 	cs.state.IsSetSteeringMember = true
-	fmt.Println("hi2 ", cs.state.SettingSteeringMember)
 	return nil
 }
 

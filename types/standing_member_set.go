@@ -86,8 +86,6 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 			}
 		}
 	}
-
-	fmt.Println("cordinator is ", standingMemberSet.Coordinator.Address)
 }
 
 func StandingMemberSetFromProto(standingMemberSetProto *tmproto.StandingMemberSet) (*StandingMemberSet, error) {

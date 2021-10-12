@@ -325,10 +325,8 @@ func (sw *Switch) StopPeerForError(peer Peer, reason interface{}) {
 	if !peer.IsRunning() {
 		return
 	}
-
 	sw.Logger.Error("Stopping peer for error", "peer", peer, "err", reason)
 	sw.stopAndRemovePeer(peer, reason)
-
 	if peer.IsPersistent() {
 		var addr *NetAddress
 		if peer.IsOutbound() { // socket address for outbound peers

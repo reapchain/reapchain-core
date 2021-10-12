@@ -267,6 +267,7 @@ func (r *Reactor) Receive(chID byte, src Peer, msgBytes []byte) {
 
 			// Send addrs and disconnect
 			r.SendAddrs(src, r.book.GetSelectionWithBias(biasToSelectNewPeers))
+
 			go func() {
 				// In a go-routine so it doesn't block .Receive.
 				src.FlushStop()

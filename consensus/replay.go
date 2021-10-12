@@ -409,7 +409,6 @@ func (h *Handshaker) ReplayBlocks(
 			}
 
 			if len(res.QrnUpdates) > 0 {
-				fmt.Println("stompesi-kkkkk")
 				qrns, err := types.PB2TM.QrnUpdates(res.QrnUpdates)
 				if err != nil {
 					return nil, err
@@ -488,9 +487,6 @@ func (h *Handshaker) ReplayBlocks(
 			// but leave the last block to go through the WAL
 			h.logger.Error("ReplayBlocks",
 				"state.QrnSet.Height", state.QrnSet.Height,
-				"state.QrnSet.Qrns[0].Value", state.QrnSet.Qrns[0].Value,
-				"state.QrnSet.Qrns[1].Value", state.QrnSet.Qrns[1].Value,
-				"state.QrnSet.Qrns[2].Value", state.QrnSet.Qrns[2].Value,
 				"state.QrnSet.Hash()", state.QrnSet.Hash(),
 			)
 			return h.replayBlocks(state, proxyApp, appBlockHeight, storeBlockHeight, true)

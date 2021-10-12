@@ -502,24 +502,10 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		}
 		qrnSet = types.NewQrnSet(genDoc.InitialHeight-1, standingMemberSet, qrns)
 		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight-1, standingMemberSet, qrns)
-		fmt.Println("QrnsBitArray4", qrnSet.QrnsBitArray.IsFull())
 	}
 
 	vrfSet := types.NewVrfSet(genDoc.InitialHeight-1, steeringMemberCandidateSet, nil)
 	nextVrfSet := types.NewVrfSet(genDoc.InitialHeight-1+int64(genDoc.ConsensusRound.Peorid), steeringMemberCandidateSet, nil)
-
-	// var vrfSet *types.VrfSet
-	// if genDoc.Vrfs == nil {
-	// 	vrfSet = types.NewVrfSet(genDoc.InitialHeight-1, steeringMemberCandidateSet, nil)
-	// 	fmt.Println("VrfsBitArray3", vrfSet.VrfsBitArray.IsFull())
-	// } else {
-	// 	vrfs := make([]*types.Vrf, len(genDoc.Vrfs))
-	// 	for i, vrf := range genDoc.Vrfs {
-	// 		vrfs[i] = vrf.Copy()
-	// 	}
-	// 	vrfSet = types.NewVrfSet(genDoc.InitialHeight-1, steeringMemberCandidateSet, vrfs)
-	// 	fmt.Println("VrfsBitArray4", vrfSet.VrfsBitArray.IsFull())
-	// }
 
 	return State{
 		Version:       InitStateVersion,
@@ -552,7 +538,6 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		QrnSet:     qrnSet,
 		NextQrnSet: nextQrnSet,
 
-		// TODO: stompesi
 		VrfSet:     vrfSet,
 		NextVrfSet: nextVrfSet,
 	}, nil

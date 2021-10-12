@@ -70,7 +70,6 @@ func makePathname() string {
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Println(p)
 	sep := string(filepath.Separator)
 	return strings.ReplaceAll(p, sep, "_")
 }

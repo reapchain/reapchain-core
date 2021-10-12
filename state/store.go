@@ -198,7 +198,6 @@ func (store dbStore) save(state State, key []byte) error {
 		}
 	}
 
-	// TODO: stompesi
 	if err := store.saveConsensusRoundInfo(nextHeight, state.LastHeightConsensusRoundChanged, state.ConsensusRound.ToProto()); err != nil {
 		return err
 	}

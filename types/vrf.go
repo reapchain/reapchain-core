@@ -130,8 +130,6 @@ func (vrf *Vrf) GetVrfBytes() []byte {
 }
 
 func (vrf *Vrf) Verify() bool {
-
-	//TODO: mssong
 	publicKey := vrfunc.PublicKey(vrf.SteeringMemberCandidatePubKey.Bytes())
 
 	return publicKey.Verify(vrf.Seed, vrf.Value, vrf.Proof)

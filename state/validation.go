@@ -13,7 +13,6 @@ import (
 // Validate block
 
 func validateBlock(state State, block *types.Block) error {
-	// fmt.Println(string(debug.Stack()))
 
 	// Validate internal consistency.
 	if err := block.ValidateBasic(); err != nil {

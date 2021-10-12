@@ -198,7 +198,6 @@ func (vrfSet *VrfSet) GetSteeringMemberIndexes() *SettingSteeringMember {
 		settingSteeringMember := NewSettingSteeringMember(steeringMemberSize)
 
 		for i := 0; i < steeringMemberSize; i++ {
-			fmt.Println(vrfSet.Vrfs[i].SteeringMemberCandidateIndex, vrfSet.Vrfs[i].Value)
 			settingSteeringMember.SteeringMemberIndexes[i] = vrfSet.Vrfs[i].SteeringMemberCandidateIndex
 		}
 

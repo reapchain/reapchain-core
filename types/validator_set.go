@@ -69,11 +69,6 @@ type ValidatorSet struct {
 // validation.
 func NewValidatorSet(valz []*Validator) *ValidatorSet {
 	vals := &ValidatorSet{}
-	for _, val := range valz {
-		fmt.Println(val.Address)
-	}
-
-	fmt.Println("")
 
 	err := vals.updateWithChangeSet(valz, false)
 	if err != nil {

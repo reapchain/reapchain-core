@@ -2,7 +2,6 @@ package types
 
 import "bytes"
 
-// 정렬하기 위한 구조체
 type SortedSteeringMemberCandidates []*SteeringMemberCandidate
 
 func (sms SortedSteeringMemberCandidates) Len() int { return len(sms) }
