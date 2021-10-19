@@ -654,7 +654,6 @@ func (cs *State) updateToState(state sm.State) {
 	height := state.LastBlockHeight + 1
 	if height == 1 {
 		height = state.InitialHeight
-		// state.ConsensusRound = types.NewConsensusRound(1, 0)
 	}
 
 	// RoundState fields

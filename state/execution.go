@@ -160,6 +160,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	if state.ConsensusRound.ConsensusStartBlockHeight+int64(state.ConsensusRound.Peorid) == state.LastBlockHeight+4 {
 		i := 0
 		validatorSize := len(state.StandingMemberSet.StandingMembers)
+
 		if state.SettingSteeringMember != nil {
 			validatorSize = len(state.SettingSteeringMember.SteeringMemberIndexes) + len(state.StandingMemberSet.StandingMembers)
 		}
@@ -192,6 +193,8 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	if len(standingMemberUpdates) > 0 {
 		blockExec.logger.Debug("updates to standing members", "updates", types.StandingMemberListString(standingMemberUpdates))
 	}
+
+	blockExec.logger.Error("ReplayBlocks", "abciResponses.EndBlock.SteeringMemberCandidateUpdates", abciResponses.EndBlock.SteeringMemberCandidateUpdates)
 
 	abciSteeringMemberCandidateUpdates := abciResponses.EndBlock.SteeringMemberCandidateUpdates
 	err = validateSteeringMemberCandidateUpdates(abciSteeringMemberCandidateUpdates, state.ConsensusParams.Validator)

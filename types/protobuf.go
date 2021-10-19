@@ -117,12 +117,30 @@ func (tm2pb) StandingMemberUpdate(standingMember *StandingMember) abci.StandingM
 	}
 }
 
+func (tm2pb) SteeringMemberCandidateUpdate(steeringMemberCandidate *SteeringMemberCandidate) abci.SteeringMemberCandidateUpdate {
+	pubKeyProto, err := cryptoenc.PubKeyToProto(steeringMemberCandidate.PubKey)
+	if err != nil {
+		panic(err)
+	}
+	return abci.SteeringMemberCandidateUpdate{
+		PubKey: pubKeyProto,
+	}
+}
+
 func (tm2pb) StandingMemberSetUpdate(standingMemberSet *StandingMemberSet) []abci.StandingMemberUpdate {
 	standingMembers := make([]abci.StandingMemberUpdate, standingMemberSet.Size())
 	for i, sm := range standingMemberSet.StandingMembers {
 		standingMembers[i] = TM2PB.StandingMemberUpdate(sm)
 	}
 	return standingMembers
+}
+
+func (tm2pb) SteeringMemberCandidateSetUpdate(steeringMemberCandidateSet *SteeringMemberCandidateSet) []abci.SteeringMemberCandidateUpdate {
+	steeringMemberCandidates := make([]abci.SteeringMemberCandidateUpdate, steeringMemberCandidateSet.Size())
+	for i, sm := range steeringMemberCandidateSet.SteeringMemberCandidates {
+		steeringMemberCandidates[i] = TM2PB.SteeringMemberCandidateUpdate(sm)
+	}
+	return steeringMemberCandidates
 }
 
 func (tm2pb) QrnUpdate(qrn *Qrn) abci.QrnUpdate {

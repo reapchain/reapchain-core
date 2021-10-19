@@ -78,7 +78,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 			PubKey:  pubKey,
 		}}
 
-		genDoc.ConsensusRound = types.NewConsensusRound(1, 0, 0, 0)
+		genDoc.ConsensusRound = types.NewConsensusRound(1, 4, 4, 4)
 
 		qrnValue := tmrand.Uint64()
 		qrn := types.NewQrn(0, pubKey, qrnValue)
