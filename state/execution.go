@@ -347,6 +347,7 @@ func execBlockOnProxyApp(
 		return nil, errors.New("nil header")
 	}
 
+	// Send block information
 	abciResponses.BeginBlock, err = proxyAppConn.BeginBlockSync(abci.RequestBeginBlock{
 		Hash:                block.Hash(),
 		Header:              *pbh,
