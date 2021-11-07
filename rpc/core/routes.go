@@ -48,6 +48,7 @@ var Routes = map[string]*rpc.RPCFunc{
 
 	"standing_members": rpc.NewRPCFunc(StandingMembers, "height"),
 	"qrns":             rpc.NewRPCFunc(Qrns, "height"),
+	"vrfs":             rpc.NewRPCFunc(Vrfs, "height"),
 
 	"steering_member_candidates": rpc.NewRPCFunc(SteeringMemberCandidates, "height"),
 }

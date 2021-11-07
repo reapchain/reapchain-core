@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	abci "github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/crypto"
 	ce "github.com/reapchain/reapchain-core/crypto/encoding"
 	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
@@ -176,6 +177,26 @@ func VrfFromProto(vrfProto *tmproto.Vrf) *Vrf {
 	vrf.Value = vrfProto.Value
 	vrf.Proof = vrfProto.Proof
 	vrf.Seed = vrfProto.Seed
+
+	return vrf
+}
+
+func VrfFromAbci(vrfUpdate *abci.VrfUpdate) *Vrf {
+	if vrfUpdate == nil {
+		return nil
+	}
+
+	pubKey, err := ce.PubKeyFromProto(vrfUpdate.SteeringMemberCandidatePubKey)
+	if err != nil {
+		return nil
+	}
+
+	vrf := new(Vrf)
+	vrf.Height = vrfUpdate.Height
+	vrf.Timestamp = vrfUpdate.Timestamp
+	vrf.SteeringMemberCandidatePubKey = pubKey
+	vrf.Value = vrfUpdate.Value
+	vrf.Proof = vrfUpdate.Proof
 
 	return vrf
 }

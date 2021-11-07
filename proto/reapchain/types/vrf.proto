@@ -6,10 +6,12 @@ option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/types";
 import "gogoproto/gogo.proto";
 import "reapchain/crypto/keys.proto";
 import "google/protobuf/timestamp.proto";
+import "reapchain/types/steering_member_candidate.proto";
 
 message VrfSet {
   int64 height = 1;
   repeated Vrf vrfs         = 2;
+  reapchain.types.SteeringMemberCandidateSet steering_member_candidate_set  = 3;
 }
 
 message Vrf {

@@ -364,7 +364,7 @@ func (ps *PeerState) setHasVote(height int64, round int32, voteType tmproto.Sign
 }
 
 // ApplyNewRoundStepMessage updates the peer state for the new round.
-func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage, nextConsensusStartBlockHeight int64) {
+func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage, consensusStartBlockHeight int64) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
 
@@ -385,8 +385,9 @@ func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage, nextCons
 	ps.PRS.Step = msg.Step
 	ps.PRS.StartTime = startTime
 
-	if ps.NextConsensusStartBlockHeight != nextConsensusStartBlockHeight {
-		ps.NextConsensusStartBlockHeight = nextConsensusStartBlockHeight
+	if ps.NextConsensusStartBlockHeight != consensusStartBlockHeight {
+		fmt.Println("ApplyNewRoundStepMessage", ps.NextConsensusStartBlockHeight, consensusStartBlockHeight)
+		ps.NextConsensusStartBlockHeight = consensusStartBlockHeight
 		ps.QrnsBitArray = nil
 		ps.VrfsBitArray = nil
 		ps.DidSendSettingSteeringMembers = false
@@ -478,6 +479,17 @@ func (ps *PeerState) ApplyHasVrfMessage(msg *HasVrfMessage) {
 	}
 
 	ps.setHasVrf(msg.Height, msg.Index)
+}
+
+func (ps *PeerState) ApplyHasSettingSteeringMemberMessage(msg *HasSettingSteeringMemberMessage) {
+	ps.mtx.Lock()
+	defer ps.mtx.Unlock()
+
+	if ps.PRS.Height != msg.Height {
+		return
+	}
+
+	ps.SetHasSettingSteeringMember(msg.Height)
 }
 
 // ApplyHasVoteMessage updates the peer state for the new vote.

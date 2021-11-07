@@ -264,18 +264,18 @@ func (pb2tm) SteeringMemberCandidateUpdates(sms []abci.SteeringMemberCandidateUp
 	return smz, nil
 }
 
-func (pb2tm) QrnUpdates(Qrnupdates []abci.QrnUpdate) ([]*Qrn, error) {
-	qrns := make([]*Qrn, len(Qrnupdates))
-	for i, qrnUpdate := range Qrnupdates {
-
-		// height int64, standingMemberPubKey crypto.PubKey, value uint64
+func (pb2tm) QrnUpdates(qrnUpdates []abci.QrnUpdate) ([]*Qrn, error) {
+	qrns := make([]*Qrn, len(qrnUpdates))
+	for i, qrnUpdate := range qrnUpdates {
 		qrns[i] = QrnFromAbci(&qrnUpdate)
-
-		// 		Height
-		// Timestamp
-		// StandingMemberPubKey
-		// Value
-		// Signature
 	}
 	return qrns, nil
+}
+
+func (pb2tm) VrfUpdates(vrfUpdates []abci.VrfUpdate) ([]*Vrf, error) {
+	vrfs := make([]*Vrf, len(vrfUpdates))
+	for i, vrfUpdate := range vrfUpdates {
+		vrfs[i] = VrfFromAbci(&vrfUpdate)
+	}
+	return vrfs, nil
 }

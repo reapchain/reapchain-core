@@ -31,9 +31,14 @@ func init() {
 	tmjson.RegisterType(&HasVoteMessage{}, "reapchain/HasVote")
 	tmjson.RegisterType(&VoteSetMaj23Message{}, "reapchain/VoteSetMaj23")
 	tmjson.RegisterType(&VoteSetBitsMessage{}, "reapchain/VoteSetBits")
+
 	tmjson.RegisterType(&QrnMessage{}, "reapchain/Qrn")
 	tmjson.RegisterType(&HasQrnMessage{}, "reapchain/HasQrn")
+
 	tmjson.RegisterType(&VrfMessage{}, "reapchain/Vrf")
 	tmjson.RegisterType(&HasVrfMessage{}, "reapchain/HasVrf")
+
 	tmjson.RegisterType(&SettingSteeringMemberMessage{}, "reapchain/SettingSteeringMember")
+	tmjson.RegisterType(&HasSettingSteeringMemberMessage{}, "reapchain/HasSettingSteeringMemberMessage")
+
 }

@@ -85,7 +85,7 @@ type State struct {
 	SteeringMemberCandidateSet                *types.SteeringMemberCandidateSet
 	LastHeightSteeringMemberCandidatesChanged int64
 
-	ConsensusRound                  types.ConsensusRound
+	ConsensusRound                  tmproto.ConsensusRound
 	LastHeightConsensusRoundChanged int64
 
 	QrnSet     *types.QrnSet
@@ -222,7 +222,7 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	sm.SteeringMemberCandidateSet = steeringMemberCandidateProto
 	sm.LastHeightSteeringMemberCandidatesChanged = state.LastHeightSteeringMemberCandidatesChanged
 
-	sm.ConsensusRound = state.ConsensusRound.ToProto()
+	sm.ConsensusRound = state.ConsensusRound
 	sm.LastHeightConsensusRoundChanged = state.LastHeightConsensusRoundChanged
 
 	qrnSetProto, err := state.QrnSet.ToProto()
@@ -317,21 +317,16 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.SteeringMemberCandidateSet = steeringMemberCandidateSet
 	state.LastHeightSteeringMemberCandidatesChanged = pb.LastHeightSteeringMemberCandidatesChanged
 
-	consensusRound, err := types.ConsensusRoundFromProto(pb.ConsensusRound)
-	if err != nil {
-		return nil, err
-	}
-
-	state.ConsensusRound = consensusRound
+	state.ConsensusRound = pb.ConsensusRound
 	state.LastHeightConsensusRoundChanged = pb.LastHeightConsensusRoundChanged
 
-	qrnSet, err := types.QrnSetFromProto(pb.QrnSet, pb.StandingMemberSet)
+	qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
 	if err != nil {
 		return nil, err
 	}
 	state.QrnSet = qrnSet
 
-	nextQrnSet, err := types.QrnSetFromProto(pb.NextQrnSet, pb.StandingMemberSet)
+	nextQrnSet, err := types.QrnSetFromProto(pb.NextQrnSet)
 	if err != nil {
 		return nil, err
 	}
@@ -381,6 +376,8 @@ func (state State) MakeBlock(
 		timestamp = MedianTime(commit, state.LastValidators)
 	}
 
+	consensusRound, _ := types.ConsensusRoundFromProto(state.ConsensusRound)
+
 	// Fill rest of header with state data.
 	block.Header.Populate(
 		state.Version.Consensus, state.ChainID,
@@ -390,7 +387,7 @@ func (state State) MakeBlock(
 		proposerAddress,
 		state.StandingMemberSet.Hash(),
 		state.SteeringMemberCandidateSet.Hash(),
-		state.ConsensusRound,
+		consensusRound,
 		state.QrnSet.Hash(),
 		state.VrfSet.Hash(),
 	)
@@ -493,19 +490,29 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 
 	var qrnSet, nextQrnSet *types.QrnSet
 	if genDoc.Qrns == nil {
-		qrnSet = types.NewQrnSet(genDoc.InitialHeight-1, standingMemberSet, nil)
-		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight-1+int64(genDoc.ConsensusRound.Peorid), standingMemberSet, nil)
+		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, nil)
+		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Peorid), standingMemberSet, nil)
 	} else {
 		qrns := make([]*types.Qrn, len(genDoc.Qrns))
 		for i, qrn := range genDoc.Qrns {
 			qrns[i] = qrn.Copy()
 		}
-		qrnSet = types.NewQrnSet(genDoc.InitialHeight-1, standingMemberSet, qrns)
-		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight-1, standingMemberSet, qrns)
+		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, qrns)
+		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Peorid), standingMemberSet, qrns)
 	}
 
-	vrfSet := types.NewVrfSet(genDoc.InitialHeight-1, steeringMemberCandidateSet, nil)
-	nextVrfSet := types.NewVrfSet(genDoc.InitialHeight-1+int64(genDoc.ConsensusRound.Peorid), steeringMemberCandidateSet, nil)
+	var vrfSet, nextVrfSet *types.VrfSet
+	if genDoc.Vrfs == nil {
+		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, nil)
+		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Peorid), steeringMemberCandidateSet, nil)
+	} else {
+		vrfs := make([]*types.Vrf, len(genDoc.Vrfs))
+		for i, vrf := range genDoc.Vrfs {
+			vrfs[i] = vrf.Copy()
+		}
+		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
+		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Peorid), steeringMemberCandidateSet, vrfs)
+	}
 
 	return State{
 		Version:       InitStateVersion,
@@ -532,13 +539,13 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		SteeringMemberCandidateSet:                steeringMemberCandidateSet,
 		LastHeightSteeringMemberCandidatesChanged: genDoc.InitialHeight,
 
-		ConsensusRound:                  genDoc.ConsensusRound,
+		ConsensusRound:                  genDoc.ConsensusRound.ToProto(),
 		LastHeightConsensusRoundChanged: genDoc.InitialHeight,
 
 		QrnSet:     qrnSet,
-		NextQrnSet: nextQrnSet,
+		NextQrnSet: nextQrnSet.Copy(),
 
 		VrfSet:     vrfSet,
-		NextVrfSet: nextVrfSet,
+		NextVrfSet: nextVrfSet.Copy(),
 	}, nil
 }

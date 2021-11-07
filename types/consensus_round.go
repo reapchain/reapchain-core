@@ -73,6 +73,36 @@ func ConsensusRoundFromProto(consensusRoundProto tmproto.ConsensusRound) (Consen
 	}, nil
 }
 
+func ValidateConsensusRound(consensusRound tmproto.ConsensusRound, height int64) error {
+	if consensusRound.ConsensusStartBlockHeight >= height {
+		return fmt.Errorf("QrnPeorid must be greater than height. Got %d, height %d",
+			consensusRound.QrnPeorid, height)
+	}
+
+	if consensusRound.QrnPeorid <= 0 {
+		return fmt.Errorf("QrnPeorid must be greater than 0. Got %d",
+			consensusRound.QrnPeorid)
+	}
+
+	if consensusRound.VrfPeorid <= 0 {
+		return fmt.Errorf("VrfPeorid must be greater than 0. Got %d",
+			consensusRound.VrfPeorid)
+	}
+
+	if consensusRound.ValidatorPeorid <= 0 {
+		return fmt.Errorf("ValidatorPeorid must be greater than 0. Got %d",
+			consensusRound.ValidatorPeorid)
+	}
+
+	checkPeorid := consensusRound.QrnPeorid + consensusRound.VrfPeorid + consensusRound.ValidatorPeorid
+	if checkPeorid != consensusRound.Peorid {
+		return fmt.Errorf("Peorid must be same QrnPeorid + VrfPeorid + ValidatorPeorid. Expected: %d, Got %d",
+			consensusRound.Peorid, checkPeorid)
+	}
+
+	return nil
+}
+
 func UpdateConsensusRound(currentConsensusRound tmproto.ConsensusRound, nextConsensusRound *abci.ConsensusRound) tmproto.ConsensusRound {
 	res := currentConsensusRound // explicit copy
 

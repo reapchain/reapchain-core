@@ -6,31 +6,30 @@ import (
 	"github.com/reapchain/reapchain-core/types"
 )
 
-func (ps *PeerState) SetHasSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) {
+func (ps *PeerState) SetHasSettingSteeringMember(height int64) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
 
-	if ps.NextConsensusStartBlockHeight == settingSteeringMember.Height {
+	if ps.NextConsensusStartBlockHeight == height {
 		ps.DidSendSettingSteeringMembers = true
 	}
 }
 
-func (ps *PeerState) SendSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) bool {
+func (ps *PeerState) PickSendSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) bool {
+
 	if settingSteeringMember == nil {
 		return false
 	}
 
 	if ps.NextConsensusStartBlockHeight == settingSteeringMember.Height {
 		if ps.DidSendSettingSteeringMembers == false {
-			msg := &SettingSteeringMemberMessage{settingSteeringMember}
-
+			msg := &SettingSteeringMemberMessage{settingSteeringMember.Copy()}
 			if ps.peer.Send(SettingSteeringMemberChannel, MustEncode(msg)) {
-				ps.SetHasSettingSteeringMember(settingSteeringMember)
+				ps.SetHasSettingSteeringMember(settingSteeringMember.Height)
 				return true
 			} else {
-				fmt.Println("Faile to send")
+				fmt.Println("SendSettingSteeringMember: Faile to send")
 			}
-
 		}
 	}
 

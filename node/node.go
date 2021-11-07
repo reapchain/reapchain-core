@@ -412,6 +412,13 @@ func createConsensusReactor(config *cfg.Config,
 	waitSync bool,
 	eventBus *types.EventBus,
 	consensusLogger log.Logger) (*cs.Reactor, *cs.State) {
+
+	// fmt.Println("createConsensusReactor", state.NextValidators.Size())
+	// fmt.Println("createConsensusReactor", state.VrfSet.SteeringMemberCandidateSet.Size())
+	// fmt.Println("createConsensusReactor", state.VrfSet.Size())
+	// fmt.Println("createConsensusReactor", state.NextVrfSet.SteeringMemberCandidateSet.Size())
+	// fmt.Println("createConsensusReactor", state.NextVrfSet.Size())
+
 	consensusState := cs.NewState(
 		config.Consensus,
 		state.Copy(),
@@ -662,6 +669,14 @@ func NewNode(config *cfg.Config,
 		return nil, err
 	}
 
+	// fmt.Println("NewNode", state.NextValidators.Size())
+
+	// fmt.Println("NewNode", state.VrfSet.SteeringMemberCandidateSet.Size())
+	// fmt.Println("NewNode", state.VrfSet.Size())
+
+	// fmt.Println("NewNode", state.NextVrfSet.SteeringMemberCandidateSet.Size())
+	// fmt.Println("NewNode", state.NextVrfSet.Size())
+
 	// Create the proxyApp and establish connections to the ABCI app (consensus, mempool, query).
 	proxyApp, err := createAndStartProxyAppConns(clientCreator, logger)
 	if err != nil {
@@ -720,6 +735,14 @@ func NewNode(config *cfg.Config,
 			return nil, fmt.Errorf("cannot load state: %w", err)
 		}
 	}
+
+	// fmt.Println("NewNode2", state.NextValidators.Size())
+
+	// fmt.Println("NewNode2", state.VrfSet.SteeringMemberCandidateSet.Size())
+	// fmt.Println("NewNode2", state.VrfSet.Size())
+
+	// fmt.Println("NewNode2", state.NextVrfSet.SteeringMemberCandidateSet.Size())
+	// fmt.Println("NewNode2", state.NextVrfSet.Size())
 
 	// Determine whether we should do fast sync. This must happen after the handshake, since the
 	// app may modify the validator set, specifying ourself as the only validator.
@@ -1336,6 +1359,8 @@ func LoadStateFromDBOrGenesisDocProvider(
 	}
 	stateStore := sm.NewStore(stateDB)
 	state, err := stateStore.LoadFromDBOrGenesisDoc(genDoc)
+
+	fmt.Println("LoadStateFromDBOrGenesisDocProvider: state", state.NextVrfSet.SteeringMemberCandidateSet.Size())
 	if err != nil {
 		return sm.State{}, nil, err
 	}

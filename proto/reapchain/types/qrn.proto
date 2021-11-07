@@ -6,10 +6,12 @@ option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/types";
 import "gogoproto/gogo.proto";
 import "reapchain/crypto/keys.proto";
 import "google/protobuf/timestamp.proto";
+import "reapchain/types/standing_member.proto";
 
 message QrnSet {
   int64 height = 1;
   repeated Qrn qrns         = 2;
+  reapchain.types.StandingMemberSet standing_member_set  = 3;
 }
 
 message Qrn {

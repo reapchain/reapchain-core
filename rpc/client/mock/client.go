@@ -185,3 +185,7 @@ func (c Client) StandingMembers(ctx context.Context, height *int64) (*ctypes.Res
 func (c Client) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
 	return core.Qrns(&rpctypes.Context{}, height)
 }
+
+func (c Client) Vrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	return core.Vrfs(&rpctypes.Context{}, height)
+}

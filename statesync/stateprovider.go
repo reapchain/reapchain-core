@@ -167,9 +167,26 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 	state.LastValidators = lastLightBlock.ValidatorSet
 	state.Validators = currentLightBlock.ValidatorSet
 	state.NextValidators = nextLightBlock.ValidatorSet
+
+	state.VrfSet = currentLightBlock.VrfSet
+	state.NextVrfSet = nextLightBlock.VrfSet
+
+	state.QrnSet = currentLightBlock.QrnSet
+	state.NextQrnSet = nextLightBlock.QrnSet
+
+	state.StandingMemberSet = currentLightBlock.StandingMemberSet
+	state.SteeringMemberCandidateSet = currentLightBlock.SteeringMemberCandidateSet
+
+	state.StandingMemberSet = currentLightBlock.StandingMemberSet
+
+	state.SteeringMemberCandidateSet = currentLightBlock.SteeringMemberCandidateSet
+
+	state.ConsensusRound = lastLightBlock.ConsensusRound.ToProto()
+
 	state.LastHeightValidatorsChanged = nextLightBlock.Height
 	state.LastHeightStandingMembersChanged = nextLightBlock.Height
 	state.LastHeightConsensusRoundChanged = nextLightBlock.Height
+	state.LastHeightSteeringMemberCandidatesChanged = nextLightBlock.Height
 
 	// We'll also need to fetch consensus params via RPC, using light client verification.
 	primaryURL, ok := s.providers[s.lc.Primary()]
@@ -188,8 +205,6 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 	}
 	state.ConsensusParams = result.ConsensusParams
 	state.LastHeightConsensusParamsChanged = currentLightBlock.Height
-
-	state.ConsensusRound = lastLightBlock.ConsensusRound
 
 	return state, nil
 }

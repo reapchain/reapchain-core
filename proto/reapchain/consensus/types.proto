@@ -78,6 +78,11 @@ message HasVrf {
   int32                          index  = 2;
 }
 
+message HasSettingSteeringMember {
+  int64                          height = 1;
+}
+
+
 // HasVote is sent to indicate that a particular vote has been received.
 message HasVote {
   int64                          height = 1;
@@ -121,5 +126,6 @@ message Message {
     HasVrf        has_vrf             = 13;
 
     SettingSteeringMember setting_steering_member = 14;
+    HasSettingSteeringMember has_setting_steering_member = 15;
   }
 }

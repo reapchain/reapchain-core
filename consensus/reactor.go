@@ -290,6 +290,8 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			ps.ApplyHasQrnMessage(msg)
 		case *HasVrfMessage:
 			ps.ApplyHasVrfMessage(msg)
+		case *HasSettingSteeringMemberMessage:
+			ps.ApplyHasSettingSteeringMemberMessage(msg)
 		case *VoteSetMaj23Message:
 			cs := conR.conS
 			cs.mtx.Lock()
@@ -389,7 +391,6 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 		}
 
 	case SettingSteeringMemberChannel:
-		//TODO: mssong
 		if conR.WaitSync() {
 			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
 			return
@@ -399,7 +400,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			cs := conR.conS
 			cs.mtx.RLock()
 			cs.mtx.RUnlock()
-			ps.SetHasSettingSteeringMember(msg.SettingSteeringMember)
+			ps.SetHasSettingSteeringMember(msg.SettingSteeringMember.Height)
 
 			cs.peerMsgQueue <- msgInfo{msg, src.ID()}
 
@@ -805,12 +806,12 @@ OUTER_LOOP:
 
 		if rs.Height == prs.Height {
 			if ps.PickSendQrn(conR.conS.state.NextQrnSet) {
+				time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 				continue OUTER_LOOP
 			}
 		}
 
 		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
-		continue OUTER_LOOP
 	}
 }
 
@@ -829,12 +830,12 @@ OUTER_LOOP:
 
 		if rs.Height == prs.Height {
 			if ps.PickSendVrf(conR.conS.state.NextVrfSet) {
+				time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 				continue OUTER_LOOP
 			}
 		}
 
 		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
-		continue OUTER_LOOP
 	}
 }
 
@@ -852,13 +853,13 @@ OUTER_LOOP:
 		prs := ps.GetRoundState()
 
 		if rs.Height == prs.Height {
-			if ps.SendSettingSteeringMember(conR.conS.state.SettingSteeringMember) {
+			if ps.PickSendSettingSteeringMember(conR.conS.state.SettingSteeringMember) {
+				time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 				continue OUTER_LOOP
 			}
 		}
 
 		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
-		continue OUTER_LOOP
 	}
 }
 

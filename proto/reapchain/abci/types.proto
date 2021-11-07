@@ -69,6 +69,7 @@ message RequestInitChain {
   ConsensusRound consensus_round       = 8;
   repeated QrnUpdate qrn_updates       = 9 [(gogoproto.nullable) = false];
   repeated SteeringMemberCandidateUpdate steering_member_candidate_updates       = 10 [(gogoproto.nullable) = false];
+  repeated VrfUpdate vrf_updates       = 11 [(gogoproto.nullable) = false];
 }
 
 message RequestQuery {
@@ -190,6 +191,7 @@ message ResponseInitChain {
   ConsensusRound consensus_round       = 5;
   repeated QrnUpdate qrn_updates       = 6 [(gogoproto.nullable) = false];
   repeated SteeringMemberCandidateUpdate steering_member_candidate_updates       = 7 [(gogoproto.nullable) = false];
+  repeated VrfUpdate vrf_updates       = 8 [(gogoproto.nullable) = false];
 }
 
 message ResponseQuery {
@@ -244,6 +246,10 @@ message ResponseEndBlock {
       [(gogoproto.nullable) = false];
   ConsensusRound consensus_round_updates = 5;
   repeated SteeringMemberCandidateUpdate steering_member_candidate_updates = 6
+      [(gogoproto.nullable) = false];
+  repeated QrnUpdate qrn_updates = 7
+      [(gogoproto.nullable) = false];
+  repeated VrfUpdate vrf_updates = 8
       [(gogoproto.nullable) = false];
 }
 

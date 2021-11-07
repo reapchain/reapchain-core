@@ -181,6 +181,10 @@ func (c *Local) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, er
 	return core.Qrns(c.ctx, height)
 }
 
+func (c *Local) Vrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	return core.Vrfs(c.ctx, height)
+}
+
 func (c *Local) Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.ResultTx, error) {
 	return core.Tx(c.ctx, hash, prove)
 }

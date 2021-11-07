@@ -4,6 +4,7 @@ import (
 	encoding_binary "encoding/binary"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/merkle"
@@ -21,16 +22,19 @@ type QrnSet struct {
 }
 
 func NewQrnSet(height int64, standingMemberSet *StandingMemberSet, qrns []*Qrn) *QrnSet {
-	if qrns == nil {
+	// fmt.Println("NewQrnSet", height)
+	// debug.PrintStack()
+
+	if qrns == nil || len(qrns) == 0 {
 		qrns = make([]*Qrn, standingMemberSet.Size())
 		for i, standingMember := range standingMemberSet.StandingMembers {
 			qrns[i] = NewQrnAsEmpty(height, standingMember.PubKey)
 		}
-	} else {
-		for i, standingMember := range standingMemberSet.StandingMembers {
-			standingMemberIndex, _ := standingMemberSet.GetStandingMemberByAddress(standingMember.Address)
-			qrns[i].StandingMemberIndex = standingMemberIndex
-		}
+	}
+
+	for i, standingMember := range standingMemberSet.StandingMembers {
+		standingMemberIndex, _ := standingMemberSet.GetStandingMemberByAddress(standingMember.Address)
+		qrns[i].StandingMemberIndex = standingMemberIndex
 	}
 
 	return &QrnSet{
@@ -41,7 +45,7 @@ func NewQrnSet(height int64, standingMemberSet *StandingMemberSet, qrns []*Qrn) 
 	}
 }
 
-func QrnSetFromProto(qrnSetProto *tmproto.QrnSet, standingMemberSetProto *tmproto.StandingMemberSet) (*QrnSet, error) {
+func QrnSetFromProto(qrnSetProto *tmproto.QrnSet) (*QrnSet, error) {
 	if qrnSetProto == nil {
 		return nil, errors.New("nil qrn set")
 	}
@@ -57,11 +61,12 @@ func QrnSetFromProto(qrnSetProto *tmproto.QrnSet, standingMemberSetProto *tmprot
 		qrns[i] = qrn
 	}
 	qrnSet.Height = qrnSetProto.Height
-	standingMemberSet, err := StandingMemberSetFromProto(standingMemberSetProto)
+	standingMemberSet, err := StandingMemberSetFromProto(qrnSetProto.StandingMemberSet)
 	if err != nil {
 		return nil, err
 	}
 	qrnSet.StandingMemberSet = standingMemberSet
+	qrnSet.QrnsBitArray = bits.NewBitArray(standingMemberSet.Size())
 	qrnSet.Qrns = qrns
 
 	return qrnSet, qrnSet.ValidateBasic()
@@ -129,17 +134,26 @@ func (qrnSet *QrnSet) AddQrn(qrn *Qrn) error {
 	if qrn.VerifySign() == false {
 		return fmt.Errorf("Invalid qrn sign")
 	}
+
+	// fmt.Println("AddQrn", qrnSet.Height, qrn.Height)
+	if qrnSet.Height != qrn.Height {
+		return fmt.Errorf("Invalid qrn height")
+	}
+
 	standingMemberIndex, _ := qrnSet.StandingMemberSet.GetStandingMemberByAddress(qrn.StandingMemberPubKey.Address())
 
 	if standingMemberIndex == -1 {
 		return fmt.Errorf("Not exist standing member of qrn: %v", qrn.StandingMemberPubKey.Address())
 	}
 
-	qrn.StandingMemberIndex = standingMemberIndex
-	qrnSet.Qrns[standingMemberIndex] = qrn.Copy()
+	if qrnSet.QrnsBitArray.GetIndex(int(standingMemberIndex)) == false {
+		qrn.StandingMemberIndex = standingMemberIndex
 
-	qrnSet.QrnsBitArray.SetIndex(int(standingMemberIndex), true)
+		qrnSet.Qrns[standingMemberIndex] = qrn.Copy()
+		qrnSet.QrnsBitArray.SetIndex(int(standingMemberIndex), true)
 
+		fmt.Println("Add qrn", standingMemberIndex)
+	}
 	return nil
 }
 
@@ -177,6 +191,8 @@ func (qrnSet *QrnSet) ToProto() (*tmproto.QrnSet, error) {
 		}
 	}
 	qrnSetProto.Height = qrnSet.Height
+	standingMemberSet, _ := qrnSet.StandingMemberSet.ToProto()
+	qrnSetProto.StandingMemberSet = standingMemberSet
 	qrnSetProto.Qrns = qrnsProto
 
 	return qrnSetProto, nil
@@ -278,4 +294,13 @@ func (qrnSet *QrnSet) updateWithChangeSet(qrns []*Qrn) error {
 	}
 
 	return nil
+}
+
+func QrnListString(qrns []*Qrn) string {
+	chunks := make([]string, len(qrns))
+	for i, qrn := range qrns {
+		chunks[i] = fmt.Sprintf("%s", qrn.StandingMemberPubKey.Address())
+	}
+
+	return strings.Join(chunks, ",")
 }

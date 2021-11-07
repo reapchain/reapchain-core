@@ -343,12 +343,12 @@ func (h *Handshaker) ReplayBlocks(
 		qrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, qrns)
 		qrnUpdates := types.TM2PB.QrnSetUpdate(qrnSet)
 
-		// vrfs := make([]*types.Vrf, len(h.genDoc.Vrfs))
-		// for i, vrf := range h.genDoc.Vrfs {
-		// 	vrfs[i] = &vrf
-		// }
-		// vrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
-		// vrfUpdates := types.TM2PB.VrfSetUpdate(vrfSet)
+		vrfs := make([]*types.Vrf, len(h.genDoc.Vrfs))
+		for i, vrf := range h.genDoc.Vrfs {
+			vrfs[i] = &vrf
+		}
+		vrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
+		vrfUpdates := types.TM2PB.VrfSetUpdate(vrfSet)
 
 		h.logger.Error("request", "steeringMemberCandidateUpdates", steeringMemberCandidateUpdates)
 
@@ -363,6 +363,7 @@ func (h *Handshaker) ReplayBlocks(
 			SteeringMemberCandidateUpdates: steeringMemberCandidateUpdates,
 			ConsensusRound:                 consensudRoundAbci,
 			QrnUpdates:                     qrnUpdates,
+			VrfUpdates:                     vrfUpdates,
 		}
 		res, err := proxyApp.Consensus().InitChainSync(req)
 		if err != nil {
@@ -412,21 +413,14 @@ func (h *Handshaker) ReplayBlocks(
 				}
 
 				state.SteeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
-
-				// stompesi
-				fmt.Println("stompesi")
-				fmt.Println(steeringMemberCandidates[0].Address)
-				fmt.Println(state.SteeringMemberCandidateSet.Size())
-
 			} else if len(h.genDoc.SteeringMemberCandidates) == 0 {
 				state.SteeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(nil)
 				// return nil, fmt.Errorf("steering member candidate set is nil in genesis and still empty after InitChain")
 			}
 
 			if res.ConsensusRound != nil {
-				state.ConsensusRound = types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.QrnPeorid, res.ConsensusRound.VrfPeorid, res.ConsensusRound.ValidatorPeorid)
-			} else {
-				state.ConsensusRound = types.NewConsensusRound(1, 4, 4, 4)
+				consensusRound := types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.QrnPeorid, res.ConsensusRound.VrfPeorid, res.ConsensusRound.ValidatorPeorid)
+				state.ConsensusRound = consensusRound.ToProto()
 			}
 
 			if len(res.QrnUpdates) > 0 {
@@ -439,6 +433,18 @@ func (h *Handshaker) ReplayBlocks(
 			} else if len(h.genDoc.Qrns) == 0 {
 				// If qrn set is not set in genesis and still empty after InitChain, exit.
 				return nil, fmt.Errorf("qrn set is nil in genesis and still empty after InitChain")
+			}
+
+			if len(res.VrfUpdates) > 0 {
+				vrfs, err := types.PB2TM.VrfUpdates(res.VrfUpdates)
+				if err != nil {
+					return nil, err
+				}
+				state.VrfSet = types.NewVrfSet(h.genDoc.InitialHeight, state.SteeringMemberCandidateSet, vrfs)
+				state.NextVrfSet = types.NewVrfSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Peorid), state.SteeringMemberCandidateSet, vrfs).Copy()
+			} else if len(h.genDoc.Vrfs) == 0 {
+				state.VrfSet = types.NewVrfSet(h.genDoc.InitialHeight, state.SteeringMemberCandidateSet, nil)
+				state.NextVrfSet = types.NewVrfSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Peorid), state.SteeringMemberCandidateSet, nil).Copy()
 			}
 
 			if res.ConsensusParams != nil {

@@ -595,6 +595,23 @@ func (c *baseRPCClient) Qrns(
 	return result, nil
 }
 
+func (c *baseRPCClient) Vrfs(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultVrfs, error) {
+	result := new(ctypes.ResultVrfs)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "vrfs", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *baseRPCClient) BroadcastEvidence(
 	ctx context.Context,
 	ev types.Evidence,

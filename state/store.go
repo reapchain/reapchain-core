@@ -187,6 +187,7 @@ func (store dbStore) Save(state State) error {
 
 func (store dbStore) save(state State, key []byte) error {
 	nextHeight := state.LastBlockHeight + 1
+	fmt.Println("stompesi-save", nextHeight)
 	// If first block, save validators for the block.
 	if nextHeight == 1 {
 		nextHeight = state.InitialHeight
@@ -196,13 +197,25 @@ func (store dbStore) save(state State, key []byte) error {
 		if err := store.saveValidatorsInfo(nextHeight, nextHeight, state.Validators); err != nil {
 			return err
 		}
+
+		if err := store.saveQrnsInfo(nextHeight, state.QrnSet); err != nil {
+			return err
+		}
+
+		if err := store.saveVrfsInfo(nextHeight, state.VrfSet); err != nil {
+			return err
+		}
 	}
 
-	if err := store.saveConsensusRoundInfo(nextHeight, state.LastHeightConsensusRoundChanged, state.ConsensusRound.ToProto()); err != nil {
+	if err := store.saveConsensusRoundInfo(nextHeight, state.LastHeightConsensusRoundChanged, state.ConsensusRound); err != nil {
 		return err
 	}
 
 	if err := store.saveQrnsInfo(nextHeight, state.QrnSet); err != nil {
+		return err
+	}
+
+	if err := store.saveVrfsInfo(nextHeight, state.VrfSet); err != nil {
 		return err
 	}
 
@@ -245,11 +258,15 @@ func (store dbStore) Bootstrap(state State) error {
 		}
 	}
 
-	if err := store.saveConsensusRoundInfo(height, height, state.ConsensusRound.ToProto()); err != nil {
+	if err := store.saveConsensusRoundInfo(height, height, state.ConsensusRound); err != nil {
 		return err
 	}
 
 	if err := store.saveQrnsInfo(height, state.QrnSet); err != nil {
+		return err
+	}
+
+	if err := store.saveVrfsInfo(height, state.VrfSet); err != nil {
 		return err
 	}
 
@@ -343,7 +360,6 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 	for h := to - 1; h >= from; h-- {
 		// For heights we keep, we must make sure they have the full validator set or consensus
 		// params, otherwise they will panic if they're retrieved directly (instead of
-
 		if keepParams[h] {
 			p, err := store.loadConsensusParamsInfo(h)
 			if err != nil {
@@ -590,6 +606,30 @@ func (store dbStore) saveQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) error 
 	}
 
 	err = store.db.Set(calcQrnsKey(nextHeight), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (store dbStore) saveVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) error {
+	vrfSetInfo := &tmstate.VrfsInfo{
+		LastHeightChanged: nextHeight,
+	}
+
+	vrfSetProto, err := vrfSet.ToProto()
+	if err != nil {
+		return err
+	}
+	vrfSetInfo.VrfSet = vrfSetProto
+
+	bz, err := vrfSetInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = store.db.Set(calcVrfsKey(nextHeight), bz)
 	if err != nil {
 		return err
 	}
@@ -844,17 +884,17 @@ func (store dbStore) LoadQrnSet(height int64) (*types.QrnSet, error) {
 		qrnSetInfo = qrnSetInfo2
 	}
 
-	standingMemberSet, err := store.LoadStandingMemberSet(height)
-	if err != nil {
-		return nil, err
-	}
+	// standingMemberSet, err := store.LoadStandingMemberSet(height)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	standingMemberSetProto, err := standingMemberSet.ToProto()
-	if err != nil {
-		return nil, err
-	}
+	// standingMemberSetProto, err := standingMemberSet.ToProto()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	qrnSet, err := types.QrnSetFromProto(qrnSetInfo.QrnSet, standingMemberSetProto)
+	qrnSet, err := types.QrnSetFromProto(qrnSetInfo.QrnSet)
 	if err != nil {
 		return nil, err
 	}

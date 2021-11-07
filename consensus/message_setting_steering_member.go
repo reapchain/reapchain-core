@@ -23,7 +23,6 @@ func (settingSteeringMemberMessage *SettingSteeringMemberMessage) String() strin
 
 type HasSettingSteeringMemberMessage struct {
 	Height int64
-	Index  int32
 }
 
 // ValidateBasic performs basic validation.
@@ -32,13 +31,10 @@ func (m *HasSettingSteeringMemberMessage) ValidateBasic() error {
 		return errors.New("negative Height")
 	}
 
-	if m.Index < 0 {
-		return errors.New("negative Index")
-	}
 	return nil
 }
 
 // String returns a string representation.
 func (m *HasSettingSteeringMemberMessage) String() string {
-	return fmt.Sprintf("[HasSettingSteeringMember VI:%v V:{%v}]", m.Index, m.Height)
+	return fmt.Sprintf("[HasSettingSteeringMember V:{%v}]", m.Height)
 }

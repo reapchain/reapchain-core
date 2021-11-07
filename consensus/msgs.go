@@ -132,6 +132,16 @@ func MsgToProto(msg Message) (*tmcons.Message, error) {
 				},
 			},
 		}
+
+	case *HasSettingSteeringMemberMessage:
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_HasSettingSteeringMember{
+				HasSettingSteeringMember: &tmcons.HasSettingSteeringMember{
+					Height: msg.Height,
+				},
+			},
+		}
+
 	case *VoteMessage:
 		vote := msg.Vote.ToProto()
 		pb = tmcons.Message{
@@ -292,6 +302,10 @@ func MsgFromProto(msg *tmcons.Message) (Message, error) {
 		pb = &HasVrfMessage{
 			Height: msg.HasVrf.Height,
 			Index:  msg.HasVrf.Index,
+		}
+	case *tmcons.Message_HasSettingSteeringMember:
+		pb = &HasSettingSteeringMemberMessage{
+			Height: msg.HasSettingSteeringMember.Height,
 		}
 	case *tmcons.Message_Vote:
 		vote, err := types.VoteFromProto(msg.Vote.Vote)

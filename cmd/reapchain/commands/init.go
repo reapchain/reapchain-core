@@ -81,7 +81,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 		genDoc.ConsensusRound = types.NewConsensusRound(1, 4, 4, 4)
 
 		qrnValue := tmrand.Uint64()
-		qrn := types.NewQrn(0, pubKey, qrnValue)
+		qrn := types.NewQrn(1, pubKey, qrnValue)
 		qrn.Timestamp = genDoc.GenesisTime
 
 		err = privValidator.SignQrn(qrn)
