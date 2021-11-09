@@ -7,6 +7,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 
 	bcproto "github.com/reapchain/reapchain-core/proto/reapchain/blockchain"
+	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"
 )
 
@@ -14,9 +15,7 @@ const (
 	// NOTE: keep up to date with bcproto.BlockResponse
 	BlockResponseMessagePrefixSize   = 4
 	BlockResponseMessageFieldKeySize = 1
-	MaxMsgSize                       = types.MaxBlockSizeBytes +
-		BlockResponseMessagePrefixSize +
-		BlockResponseMessageFieldKeySize
+	MaxMsgSize                       = types.MaxBlockSizeBytes + BlockResponseMessagePrefixSize + BlockResponseMessageFieldKeySize
 )
 
 // EncodeMsg encodes a Protobuf message
@@ -26,6 +25,12 @@ func EncodeMsg(pb proto.Message) ([]byte, error) {
 	switch pb := pb.(type) {
 	case *bcproto.BlockRequest:
 		msg.Sum = &bcproto.Message_BlockRequest{BlockRequest: pb}
+	case *bcproto.StateRequest:
+		msg.Sum = &bcproto.Message_StateRequest{StateRequest: pb}
+	case *bcproto.StateResponse:
+		msg.Sum = &bcproto.Message_StateResponse{StateResponse: pb}
+	case *bcproto.NoStateResponse:
+		msg.Sum = &bcproto.Message_NoStateResponse{NoStateResponse: pb}
 	case *bcproto.BlockResponse:
 		msg.Sum = &bcproto.Message_BlockResponse{BlockResponse: pb}
 	case *bcproto.NoBlockResponse:
@@ -62,6 +67,14 @@ func DecodeMsg(bz []byte) (proto.Message, error) {
 		return msg.BlockResponse, nil
 	case *bcproto.Message_NoBlockResponse:
 		return msg.NoBlockResponse, nil
+
+	case *bcproto.Message_StateRequest:
+		return msg.StateRequest, nil
+	case *bcproto.Message_StateResponse:
+		return msg.StateResponse, nil
+	case *bcproto.Message_NoStateResponse:
+		return msg.NoStateResponse, nil
+
 	case *bcproto.Message_StatusRequest:
 		return msg.StatusRequest, nil
 	case *bcproto.Message_StatusResponse:
@@ -91,6 +104,21 @@ func ValidateMsg(pb proto.Message) error {
 		if msg.Height < 0 {
 			return errors.New("negative Height")
 		}
+
+	case *bcproto.StateRequest:
+		if msg.Height < 0 {
+			return errors.New("negative Height")
+		}
+	case *bcproto.StateResponse:
+		_, err := sm.SyncStateFromProto(msg.State)
+		if err != nil {
+			return err
+		}
+	case *bcproto.NoStateResponse:
+		if msg.Height < 0 {
+			return errors.New("negative Height")
+		}
+
 	case *bcproto.StatusResponse:
 		if msg.Base < 0 {
 			return errors.New("negative Base")

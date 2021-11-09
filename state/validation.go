@@ -78,11 +78,6 @@ func validateBlock(state State, block *types.Block) error {
 		)
 	}
 
-	// Expected 887C935AC25A7B46398E35C0A8E2C89C24ED0E311FAAA237E8E498C3130949E7,
-	// Got A26EA9353B433428BDB7879230B61FE40278975C6D6B299BE80ACF6E82BCD28F
-
-	// "validators_hash": "887C935AC25A7B46398E35C0A8E2C89C24ED0E311FAAA237E8E498C3130949E7",
-	// "next_validators_hash": "A26EA9353B433428BDB7879230B61FE40278975C6D6B299BE80ACF6E82BCD28F",
 	if !bytes.Equal(block.NextValidatorsHash, state.NextValidators.Hash()) {
 		return fmt.Errorf("wrong Block.Header.NextValidatorsHash.  Expected %X, got %v",
 			state.NextValidators.Hash(),

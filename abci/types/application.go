@@ -1,6 +1,8 @@
 package types
 
 import (
+	fmt "fmt"
+
 	context "golang.org/x/net/context"
 )
 
@@ -155,6 +157,7 @@ func (app *GRPCApplication) BeginBlock(ctx context.Context, req *RequestBeginBlo
 }
 
 func (app *GRPCApplication) EndBlock(ctx context.Context, req *RequestEndBlock) (*ResponseEndBlock, error) {
+	fmt.Println("stompesi-EndBlock")
 	res := app.app.EndBlock(*req)
 	return &res, nil
 }

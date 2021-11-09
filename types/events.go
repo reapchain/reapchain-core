@@ -16,11 +16,12 @@ const (
 	// after a block has been committed.
 	// These are also used by the tx indexer for async indexing.
 	// All of this data can be fetched through the rpc.
-	EventNewBlock            = "NewBlock"
-	EventNewBlockHeader      = "NewBlockHeader"
-	EventNewEvidence         = "NewEvidence"
-	EventTx                  = "Tx"
-	EventValidatorSetUpdates = "ValidatorSetUpdates"
+	EventNewBlock                 = "NewBlock"
+	EventNewBlockHeader           = "NewBlockHeader"
+	EventNewEvidence              = "NewEvidence"
+	EventTx                       = "Tx"
+	EventValidatorSetUpdates      = "ValidatorSetUpdates"
+	EventStandingMemberSetUpdates = "StandingMemberSetUpdates"
 
 	// Internal consensus events.
 	// These are used for testing the consensus state machine.
@@ -125,6 +126,10 @@ type EventDataValidatorSetUpdates struct {
 	ValidatorUpdates []*Validator `json:"validator_updates"`
 }
 
+type EventDataStandingMemberSetUpdates struct {
+	StandingMemberUpdates []*StandingMember `json:"validator_updates"`
+}
+
 // PUBSUB
 
 const (
@@ -176,6 +181,7 @@ type BlockEventPublisher interface {
 	PublishEventNewEvidence(evidence EventDataNewEvidence) error
 	PublishEventTx(EventDataTx) error
 	PublishEventValidatorSetUpdates(EventDataValidatorSetUpdates) error
+	PublishEventStandingMemberSetUpdates(EventDataStandingMemberSetUpdates) error
 }
 
 type TxEventPublisher interface {

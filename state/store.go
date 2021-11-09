@@ -38,6 +38,10 @@ func calcVrfsKey(height int64) []byte {
 	return []byte(fmt.Sprintf("vrfsKey:%v", height))
 }
 
+func calcSettingSteeringMemberKey(height int64) []byte {
+	return []byte(fmt.Sprintf("SettingSteeringMemberKey:%v", height))
+}
+
 func calcStandingMembersKey(height int64) []byte {
 	return []byte(fmt.Sprintf("standingMembersKey:%v", height))
 }
@@ -95,6 +99,7 @@ type Store interface {
 	LoadSteeringMemberCandidateSet(int64) (*types.SteeringMemberCandidateSet, error)
 	LoadQrnSet(int64) (*types.QrnSet, error)
 	LoadVrfSet(int64) (*types.VrfSet, error)
+	LoadSettingSteeringMember(height int64) (*types.SettingSteeringMember, error)
 }
 
 // dbStore wraps a db (github.com/tendermint/tm-db)
@@ -219,6 +224,10 @@ func (store dbStore) save(state State, key []byte) error {
 		return err
 	}
 
+	if err := store.saveSettingSteeringMemberInfo(nextHeight, state.SettingSteeringMember); err != nil {
+		return err
+	}
+
 	if err := store.saveStandingMembersInfo(nextHeight, state.LastHeightStandingMembersChanged, state.StandingMemberSet); err != nil {
 		return err
 	}
@@ -267,6 +276,10 @@ func (store dbStore) Bootstrap(state State) error {
 	}
 
 	if err := store.saveVrfsInfo(height, state.VrfSet); err != nil {
+		return err
+	}
+
+	if err := store.saveSettingSteeringMemberInfo(height, state.SettingSteeringMember); err != nil {
 		return err
 	}
 
@@ -326,6 +339,17 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 	qrnsInfo, err := loadQrnSetInfo(store.db, to)
 	if err != nil {
 		return fmt.Errorf("qrns at height %v not found: %w", to, err)
+	}
+
+	SettingSteeringMemberInfo, err := loadSettingSteeringMemberInfo(store.db, to)
+	if err != nil {
+		return fmt.Errorf("qrns at height %v not found: %w", to, err)
+	}
+
+	keepSettingSteeringMember := make(map[int64]bool)
+	if SettingSteeringMemberInfo.SettingSteeringMember == nil {
+		keepSettingSteeringMember[SettingSteeringMemberInfo.LastHeightChanged] = true
+		keepSettingSteeringMember[lastStoredHeightFor(to, SettingSteeringMemberInfo.LastHeightChanged)] = true // keep last checkpoint too
 	}
 
 	keepVals := make(map[int64]bool)
@@ -637,6 +661,28 @@ func (store dbStore) saveVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) error 
 	return nil
 }
 
+func (store dbStore) saveSettingSteeringMemberInfo(nextHeight int64, settingSteeringMember *types.SettingSteeringMember) error {
+	SettingSteeringMemberInfo := &tmstate.SettingSteeringMemberInfo{
+		LastHeightChanged: nextHeight,
+	}
+
+	settingSteeringMemberProto := settingSteeringMember.ToProto()
+
+	SettingSteeringMemberInfo.SettingSteeringMember = settingSteeringMemberProto
+
+	bz, err := SettingSteeringMemberInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = store.db.Set(calcSettingSteeringMemberKey(nextHeight), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, standingMemberSet *types.StandingMemberSet) error {
 	if lastHeightChanged > height {
 		return errors.New("lastHeightChanged cannot be greater than StandingMembersInfo height")
@@ -884,22 +930,37 @@ func (store dbStore) LoadQrnSet(height int64) (*types.QrnSet, error) {
 		qrnSetInfo = qrnSetInfo2
 	}
 
-	// standingMemberSet, err := store.LoadStandingMemberSet(height)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// standingMemberSetProto, err := standingMemberSet.ToProto()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	qrnSet, err := types.QrnSetFromProto(qrnSetInfo.QrnSet)
 	if err != nil {
 		return nil, err
 	}
 
 	return qrnSet, nil
+}
+
+func (store dbStore) LoadSettingSteeringMember(height int64) (*types.SettingSteeringMember, error) {
+	SettingSteeringMemberInfo, err := loadSettingSteeringMemberInfo(store.db, height)
+	if err != nil {
+		return nil, ErrNoSettingSteeringMemberForHeight{height}
+	}
+
+	if SettingSteeringMemberInfo.SettingSteeringMember == nil {
+		lastStoredHeight := lastStoredHeightFor(height, SettingSteeringMemberInfo.LastHeightChanged)
+		SettingSteeringMemberInfo2, err := loadSettingSteeringMemberInfo(store.db, lastStoredHeight)
+		if err != nil || SettingSteeringMemberInfo2.SettingSteeringMember == nil {
+			return nil,
+				fmt.Errorf("couldn't find qrns at height %d (height %d was originally requested): %w",
+					lastStoredHeight,
+					height,
+					err,
+				)
+		}
+		SettingSteeringMemberInfo = SettingSteeringMemberInfo2
+	}
+
+	settingSteeringMember := types.SettingSteeringMemberFromProto(SettingSteeringMemberInfo.SettingSteeringMember)
+
+	return settingSteeringMember, nil
 }
 
 func (store dbStore) LoadVrfSet(height int64) (*types.VrfSet, error) {
@@ -1019,6 +1080,31 @@ func loadQrnSetInfo(db dbm.DB, height int64) (*tmstate.QrnsInfo, error) {
 	return v, nil
 }
 
+func loadSettingSteeringMemberInfo(db dbm.DB, height int64) (*tmstate.SettingSteeringMemberInfo, error) {
+	buf, err := db.Get(calcSettingSteeringMemberKey(height))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	fmt.Println("loadSettingSteeringMemberInfo")
+	fmt.Println(height)
+	fmt.Println(buf)
+
+	v := new(tmstate.SettingSteeringMemberInfo)
+	err = v.Unmarshal(buf)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadSettingSteeringMemberInfo: Data has been corrupted or its spec has changed: %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return v, nil
+}
+
 func loadVrfSetInfo(db dbm.DB, height int64) (*tmstate.VrfsInfo, error) {
 	buf, err := db.Get(calcVrfsKey(height))
 	if err != nil {
@@ -1054,7 +1140,7 @@ func loadConsensusRoundInfo(db dbm.DB, height int64) (*tmstate.ConsensusRoundInf
 	err = consensusRound.Unmarshal(buf)
 	if err != nil {
 		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
-		tmos.Exit(fmt.Sprintf(`LoadQrnSet: Data has been corrupted or its spec has changed: %v\n`, err))
+		tmos.Exit(fmt.Sprintf(`LoadConsensusRoundInfo: Data has been corrupted or its spec has changed: %v\n`, err))
 	}
 	// TODO: ensure that buf is completely read.
 

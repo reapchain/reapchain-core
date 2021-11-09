@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	nilSettingSteeringMemberStr string = "nil-SettingSteeringMember"
+	nilSettingSteeringMembertr string = "nil-SettingSteeringMember"
 )
 
 type SettingSteeringMember struct {
@@ -72,11 +72,11 @@ func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberByte
 		SteeringMemberIndexes: settingSteeringMember.SteeringMemberIndexes,
 	}
 
-	SettingSteeringMemberSignBytes, err := settingSteeringMemberProto.Marshal()
+	SettingSteeringMemberignBytes, err := settingSteeringMemberProto.Marshal()
 	if err != nil {
 		panic(err)
 	}
-	return SettingSteeringMemberSignBytes
+	return SettingSteeringMemberignBytes
 }
 
 func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberBytes() []byte {
@@ -97,11 +97,11 @@ func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberByte
 		Signature:             settingSteeringMember.Signature,
 	}
 
-	settingSteeringMemberSignBytes, err := settingSteeringMemberProto.Marshal()
+	SettingSteeringMemberignBytes, err := settingSteeringMemberProto.Marshal()
 	if err != nil {
 		panic(err)
 	}
-	return settingSteeringMemberSignBytes
+	return SettingSteeringMemberignBytes
 }
 
 func (settingSteeringMember *SettingSteeringMember) GetBytesForSign() []byte {
@@ -121,11 +121,11 @@ func (settingSteeringMember *SettingSteeringMember) GetBytesForSign() []byte {
 		SteeringMemberIndexes: settingSteeringMember.SteeringMemberIndexes,
 	}
 
-	SettingSteeringMemberSignBytes, err := settingSteeringMemberProto.Marshal()
+	SettingSteeringMemberignBytes, err := settingSteeringMemberProto.Marshal()
 	if err != nil {
 		panic(err)
 	}
-	return SettingSteeringMemberSignBytes
+	return SettingSteeringMemberignBytes
 }
 
 func (settingSteeringMember *SettingSteeringMember) VerifySign() bool {

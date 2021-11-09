@@ -562,6 +562,22 @@ func (c *Client) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, e
 	}, nil
 }
 
+// TODO: stompesi
+func (c *Client) SettingSteeringMember(ctx context.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultSettingSteeringMember{
+		BlockHeight:           l.Height,
+		Height:                l.SettingSteeringMember.Height,
+		SteeringMemberIndexes: l.SettingSteeringMember.SteeringMemberIndexes,
+		Timestamp:             l.SettingSteeringMember.Timestamp,
+		Address:               l.SettingSteeringMember.CoordinatorPubKey.Address(),
+	}, nil
+}
+
 func (c *Client) Vrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
 	l, err := c.updateLightClientIfNeededTo(ctx, height)
 	if err != nil {

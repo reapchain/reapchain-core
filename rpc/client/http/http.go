@@ -595,6 +595,23 @@ func (c *baseRPCClient) Qrns(
 	return result, nil
 }
 
+func (c *baseRPCClient) SettingSteeringMember(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultSettingSteeringMember, error) {
+	result := new(ctypes.ResultSettingSteeringMember)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "setting_steering_member", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *baseRPCClient) Vrfs(
 	ctx context.Context,
 	height *int64,

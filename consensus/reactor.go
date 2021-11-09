@@ -214,7 +214,7 @@ func (conR *Reactor) AddPeer(peer p2p.Peer) {
 
 	go conR.gossipQrnsRoutine(peer, peerState)
 	go conR.gossipVrfsRoutine(peer, peerState)
-	go conR.gossipSettingSteeringMembersRoutine(peer, peerState)
+	go conR.gossipSettingSteeringMemberRoutine(peer, peerState)
 
 	// Send our state to peer.
 	// If we're fast_syncing, broadcast a RoundStepMessage later upon SwitchToConsensus().
@@ -839,7 +839,7 @@ OUTER_LOOP:
 	}
 }
 
-func (conR *Reactor) gossipSettingSteeringMembersRoutine(peer p2p.Peer, ps *PeerState) {
+func (conR *Reactor) gossipSettingSteeringMemberRoutine(peer p2p.Peer, ps *PeerState) {
 	logger := conR.Logger.With("peer", peer)
 
 OUTER_LOOP:

@@ -350,6 +350,31 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	return state, nil
 }
 
+func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
+	if pb == nil {
+		return nil, errors.New("nil State")
+	}
+
+	state := new(State)
+	state.LastBlockHeight = pb.LastBlockHeight
+
+	qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
+	if err != nil {
+		return nil, err
+	}
+	state.QrnSet = qrnSet
+
+	vrfSet, err := types.VrfSetFromProto(pb.VrfSet)
+	if err != nil {
+		return nil, err
+	}
+	state.VrfSet = vrfSet
+
+	state.SettingSteeringMember = types.SettingSteeringMemberFromProto(pb.SettingSteeringMember)
+
+	return state, nil
+}
+
 //------------------------------------------------------------------------
 // Create a block from the latest state
 

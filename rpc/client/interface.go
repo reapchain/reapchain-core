@@ -74,6 +74,8 @@ type SignClient interface {
 	StandingMembers(ctx context.Context, height *int64) (*ctypes.ResultStandingMembers, error)
 	Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error)
 
+	SettingSteeringMember(ctx context.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error)
+
 	// TxSearch defines a method to search for a paginated set of transactions by
 	// DeliverTx event search criteria.
 	TxSearch(

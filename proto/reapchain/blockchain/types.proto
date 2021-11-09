@@ -4,6 +4,7 @@ package reapchain.blockchain;
 option go_package = "github.com/reapchain/reapchain-core/proto/reapchain/blockchain";
 
 import "reapchain/types/block.proto";
+import "reapchain/state/types.proto";
 
 // BlockRequest requests a block for a specific height
 message BlockRequest {
@@ -30,6 +31,18 @@ message StatusResponse {
   int64 base   = 2;
 }
 
+message StateRequest {
+  int64 height = 1;
+}
+
+message StateResponse {
+  reapchain.state.State state = 1;
+}
+
+message NoStateResponse {
+  int64 height = 1;
+}
+
 message Message {
   oneof sum {
     BlockRequest    block_request     = 1;
@@ -37,5 +50,8 @@ message Message {
     BlockResponse   block_response    = 3;
     StatusRequest   status_request    = 4;
     StatusResponse  status_response   = 5;
+    StateRequest    state_request    = 6;
+    StateResponse   state_response   = 7;
+    NoStateResponse no_state_response = 8;
   }
 }

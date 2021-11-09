@@ -131,7 +131,6 @@ func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block) e
 func (blockExec *BlockExecutor) ApplyBlock(
 	state State, blockID types.BlockID, block *types.Block,
 ) (State, int64, error) {
-
 	if err := validateBlock(state, block); err != nil {
 		return state, 0, ErrInvalidBlock(err)
 	}
@@ -150,6 +149,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	fail.Fail() // XXX
 
 	// Save the results before we commit.
+	// abciResponses.EndBlock.QrnUpdates
 	if err := blockExec.store.SaveABCIResponses(block.Height, abciResponses); err != nil {
 		return state, 0, err
 	}
@@ -168,7 +168,11 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	if err != nil {
 		return state, 0, err
 	}
+
+	//standingMemberUpdates = state.StandingMemberSet.StandingMembers
+
 	if len(standingMemberUpdates) > 0 {
+		fmt.Println("stompesi - standingMemberUpdates")
 		blockExec.logger.Debug("updates to standing members", "updates", types.StandingMemberListString(standingMemberUpdates))
 	}
 
@@ -197,6 +201,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		return state, 0, err
 	}
 	if len(qrnUpdates) > 0 {
+		fmt.Println("updates to qrns", "updates", types.QrnListString(qrnUpdates))
 		blockExec.logger.Debug("updates to qrns", "updates", types.QrnListString(qrnUpdates))
 	}
 
@@ -233,7 +238,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	// Events are fired after everything else.
 	// NOTE: if we crash between Commit and Save, events wont be fired during replay
-	fireEvents(blockExec.logger, blockExec.eventBus, block, abciResponses, validators)
+	fireEvents(blockExec.logger, blockExec.eventBus, block, abciResponses, validators, standingMemberUpdates)
 
 	return state, retainHeight, nil
 }
@@ -360,6 +365,8 @@ func execBlockOnProxyApp(
 
 	// End block.
 	abciResponses.EndBlock, err = proxyAppConn.EndBlockSync(abci.RequestEndBlock{Height: block.Height})
+
+	fmt.Printf("execBlockOnProxyApp %v", abciResponses.EndBlock)
 	if err != nil {
 		logger.Error("error in proxyAppConn.EndBlock", "err", err)
 		return nil, err
@@ -556,13 +563,6 @@ func updateState(
 		lastHeightParamsChanged = header.Height + 1
 	}
 
-	// fmt.Println("stompesi ---------------------------------")
-	// fmt.Println(header.Height)
-	// fmt.Println(nextConsensusRound.ConsensusStartBlockHeight)
-	// fmt.Println(nextConsensusRound.Peorid)
-	// fmt.Println(nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.Peorid) + 1)
-	// fmt.Println("stompesi ---------------------------------")
-
 	if nextConsensusRound.ConsensusStartBlockHeight+int64(nextConsensusRound.Peorid)-1 == header.Height {
 		i := 0
 		validatorSize := len(standingMemberSet.StandingMembers)
@@ -661,6 +661,7 @@ func fireEvents(
 	block *types.Block,
 	abciResponses *tmstate.ABCIResponses,
 	validatorUpdates []*types.Validator,
+	standingMemberUpdates []*types.StandingMember,
 ) {
 	if err := eventBus.PublishEventNewBlock(types.EventDataNewBlock{
 		Block:            block,
@@ -704,6 +705,13 @@ func fireEvents(
 	if len(validatorUpdates) > 0 {
 		if err := eventBus.PublishEventValidatorSetUpdates(
 			types.EventDataValidatorSetUpdates{ValidatorUpdates: validatorUpdates}); err != nil {
+			logger.Error("failed publishing event", "err", err)
+		}
+	}
+
+	if len(standingMemberUpdates) > 0 {
+		if err := eventBus.PublishEventStandingMemberSetUpdates(
+			types.EventDataStandingMemberSetUpdates{StandingMemberUpdates: standingMemberUpdates}); err != nil {
 			logger.Error("failed publishing event", "err", err)
 		}
 	}

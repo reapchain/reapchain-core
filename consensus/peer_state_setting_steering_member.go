@@ -11,7 +11,7 @@ func (ps *PeerState) SetHasSettingSteeringMember(height int64) {
 	defer ps.mtx.Unlock()
 
 	if ps.NextConsensusStartBlockHeight == height {
-		ps.DidSendSettingSteeringMembers = true
+		ps.DidSendSettingSteeringMember = true
 	}
 }
 
@@ -22,7 +22,7 @@ func (ps *PeerState) PickSendSettingSteeringMember(settingSteeringMember *types.
 	}
 
 	if ps.NextConsensusStartBlockHeight == settingSteeringMember.Height {
-		if ps.DidSendSettingSteeringMembers == false {
+		if ps.DidSendSettingSteeringMember == false {
 			msg := &SettingSteeringMemberMessage{settingSteeringMember.Copy()}
 			if ps.peer.Send(SettingSteeringMemberChannel, MustEncode(msg)) {
 				ps.SetHasSettingSteeringMember(settingSteeringMember.Height)

@@ -209,6 +209,14 @@ func makeQrnsFunc(c *lrpc.Client) rpcQrnsFunc {
 	}
 }
 
+type rpcSettingSteeringMemberFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error)
+
+func makeSettingSteeringMemberFunc(c *lrpc.Client) rpcSettingSteeringMemberFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
+		return c.SettingSteeringMember(ctx.Context(), height)
+	}
+}
+
 type rpcVrfsFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultVrfs, error)
 
 func makeVrfsFunc(c *lrpc.Client) rpcVrfsFunc {

@@ -17,6 +17,7 @@ type LightBlock struct {
 	SteeringMemberCandidateSet *SteeringMemberCandidateSet `json:"steering_member_candidate_set"`
 	QrnSet                     *QrnSet                     `json:"qrn_set"`
 	VrfSet                     *VrfSet                     `json:"vrf_set"`
+	SettingSteeringMember      *SettingSteeringMember      `json:"setting_steering_member"`
 }
 
 // ValidateBasic checks that the data is correct and consistent

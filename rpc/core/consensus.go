@@ -99,6 +99,26 @@ func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 	}, nil
 }
 
+func SettingSteeringMember(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultSettingSteeringMember, error) {
+	height, err := getHeight(latestUncommittedHeight(), heightPtr)
+	if err != nil {
+		return nil, err
+	}
+
+	settingSteeringMember, err := env.StateStore.LoadSettingSteeringMember(height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultSettingSteeringMember{
+		BlockHeight:           height,
+		Height:                settingSteeringMember.Height,
+		SteeringMemberIndexes: settingSteeringMember.SteeringMemberIndexes,
+		Timestamp:             settingSteeringMember.Timestamp,
+		Address:               settingSteeringMember.CoordinatorPubKey.Address(),
+	}, nil
+}
+
 func Vrfs(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultVrfs, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {

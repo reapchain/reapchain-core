@@ -52,6 +52,11 @@ message VrfsInfo {
   int64                         last_height_changed = 2;
 }
 
+message SettingSteeringMemberInfo {
+  reapchain.types.SettingSteeringMember setting_steering_member       = 1;
+  int64                         last_height_changed = 2;
+}
+
 message ConsensusRoundInfo {
   reapchain.types.ConsensusRound consensus_round       = 1 [(gogoproto.nullable) = false];
   int64                          last_height_changed = 2;

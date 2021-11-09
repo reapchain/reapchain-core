@@ -227,6 +227,10 @@ func (b *EventBus) PublishEventValidatorSetUpdates(data EventDataValidatorSetUpd
 	return b.Publish(EventValidatorSetUpdates, data)
 }
 
+func (b *EventBus) PublishEventStandingMemberSetUpdates(data EventDataStandingMemberSetUpdates) error {
+	return b.Publish(EventStandingMemberSetUpdates, data)
+}
+
 //-----------------------------------------------------------------------------
 type NopEventBus struct{}
 
@@ -304,5 +308,9 @@ func (NopEventBus) PublishEventLock(data EventDataRoundState) error {
 }
 
 func (NopEventBus) PublishEventValidatorSetUpdates(data EventDataValidatorSetUpdates) error {
+	return nil
+}
+
+func (NopEventBus) PublishEventStandingMemberSetUpdates(data EventDataStandingMemberSetUpdates) error {
 	return nil
 }
