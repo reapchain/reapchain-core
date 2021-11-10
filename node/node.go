@@ -1282,11 +1282,9 @@ func makeNodeInfo(
 	}
 
 	var bcChannel byte
-	var stateChannel byte
 	switch config.FastSync.Version {
 	case "v0":
 		bcChannel = bcv0.BlockchainChannel
-		stateChannel = bcv0.StateChannel
 	case "v1":
 		bcChannel = bcv1.BlockchainChannel
 	case "v2":
@@ -1305,7 +1303,7 @@ func makeNodeInfo(
 		Network:       genDoc.ChainID,
 		Version:       version.TMCoreSemVer,
 		Channels: []byte{
-			bcChannel, stateChannel,
+			bcChannel,
 			cs.StateChannel, cs.DataChannel, cs.VoteChannel, cs.VoteSetBitsChannel, cs.QrnChannel,
 			mempl.MempoolChannel,
 			evidence.EvidenceChannel,

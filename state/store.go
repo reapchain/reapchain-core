@@ -944,20 +944,6 @@ func (store dbStore) LoadSettingSteeringMember(height int64) (*types.SettingStee
 		return nil, ErrNoSettingSteeringMemberForHeight{height}
 	}
 
-	if SettingSteeringMemberInfo.SettingSteeringMember == nil {
-		lastStoredHeight := lastStoredHeightFor(height, SettingSteeringMemberInfo.LastHeightChanged)
-		SettingSteeringMemberInfo2, err := loadSettingSteeringMemberInfo(store.db, lastStoredHeight)
-		if err != nil || SettingSteeringMemberInfo2.SettingSteeringMember == nil {
-			return nil,
-				fmt.Errorf("couldn't find qrns at height %d (height %d was originally requested): %w",
-					lastStoredHeight,
-					height,
-					err,
-				)
-		}
-		SettingSteeringMemberInfo = SettingSteeringMemberInfo2
-	}
-
 	settingSteeringMember := types.SettingSteeringMemberFromProto(SettingSteeringMemberInfo.SettingSteeringMember)
 
 	return settingSteeringMember, nil
@@ -1089,10 +1075,6 @@ func loadSettingSteeringMemberInfo(db dbm.DB, height int64) (*tmstate.SettingSte
 	if len(buf) == 0 {
 		return nil, errors.New("value retrieved from db is empty")
 	}
-
-	fmt.Println("loadSettingSteeringMemberInfo")
-	fmt.Println(height)
-	fmt.Println(buf)
 
 	v := new(tmstate.SettingSteeringMemberInfo)
 	err = v.Unmarshal(buf)
