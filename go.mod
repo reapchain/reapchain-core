@@ -3,7 +3,7 @@ module github.com/reapchain/reapchain-core
 go 1.16
 
 require (
-	github.com/BurntSushi/toml v0.3.1
+	github.com/BurntSushi/toml v0.4.1
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20210713215043-76165a18546d
 	github.com/Workiva/go-datastructures v1.0.53
 	github.com/btcsuite/btcd v0.22.0-beta
