@@ -9,7 +9,7 @@ require (
 	github.com/btcsuite/btcd v0.22.0-beta
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/confio/ics23/go v0.6.6
-	github.com/cosmos/iavl v0.16.0
+	github.com/cosmos/iavl v0.17.3
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-kit/kit v0.11.0
 	github.com/go-logfmt/logfmt v0.5.0
@@ -31,6 +31,6 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tm-db v0.6.4
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
-	golang.org/x/net v0.0.0-20210716203947-853a461950ff
-	google.golang.org/grpc v1.39.0
+	golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f
+	google.golang.org/grpc v1.42.0
 )
