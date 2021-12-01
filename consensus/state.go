@@ -1031,16 +1031,29 @@ func (cs *State) enterNewRound(height int64, round int32) {
 	// but we fire an event, so update the round step first
 	cs.updateRoundStep(round, cstypes.RoundStepNewRound)
 	cs.Validators = validators
+
+	fmt.Println("stompesi-hihi")
+	logger.Error("check reader - stompesi")
+
 	if round == 0 {
 		// We've already reset these upon new height,
 		// and meanwhile we might have received a proposal
 		// for round 0.
+		cs.StandingMemberSet.CurrentCoordinatorRanking = 0
+
 	} else {
-		logger.Debug("resetting proposal info")
+		logger.Error("check reader - stompesi")
+		cs.StandingMemberSet.CurrentCoordinatorRanking = cs.StandingMemberSet.CurrentCoordinatorRanking + 1
+		logger.Error("stompesi-", cs.StandingMemberSet.Coordinator.PubKey.Address())
+
 		cs.Proposal = nil
 		cs.ProposalBlock = nil
 		cs.ProposalBlockParts = nil
 	}
+
+	cs.StandingMemberSet.SetCoordinator(cs.QrnSet)
+	_, proposer := cs.Validators.GetByAddress(cs.StandingMemberSet.Coordinator.PubKey.Address())
+	cs.Validators.Proposer = proposer
 
 	cs.Votes.SetRound(tmmath.SafeAddInt32(round, 1)) // also track next round (round+1) to allow round-skipping
 	cs.TriggeredTimeoutPrecommit = false
@@ -1115,9 +1128,6 @@ func (cs *State) enterPropose(height int64, round int32) {
 	if cs.state.ConsensusRound.ConsensusStartBlockHeight == height || cs.StandingMemberSet.Coordinator == nil {
 		cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
 	}
-
-	_, proposer := cs.Validators.GetByAddress(cs.StandingMemberSet.Coordinator.PubKey.Address())
-	cs.Validators.Proposer = proposer
 
 	if cs.privValidator == nil {
 		logger.Debug("node is not a validator")

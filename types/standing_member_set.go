@@ -12,8 +12,9 @@ import (
 )
 
 type StandingMemberSet struct {
-	StandingMembers []*StandingMember `json:"standing_members"`
-	Coordinator     *StandingMember   `json:"coordinator"`
+	StandingMembers           []*StandingMember `json:"standing_members"`
+	Coordinator               *StandingMember   `json:"coordinator"`
+	CurrentCoordinatorRanking int64             `json:"current_coordinator_ranking"`
 }
 
 func NewStandingMemberSet(standingMembers []*StandingMember) *StandingMemberSet {
@@ -23,6 +24,7 @@ func NewStandingMemberSet(standingMembers []*StandingMember) *StandingMemberSet 
 	if err != nil {
 		panic(fmt.Sprintf("Cannot create standing member set: %v", err))
 	}
+	standingMemberSet.CurrentCoordinatorRanking = 0
 
 	return standingMemberSet
 }
@@ -66,26 +68,63 @@ func (standingMemberSet *StandingMemberSet) Hash() []byte {
 	return merkle.HashFromByteSlices(bytesArray)
 }
 
+type QrnHash struct {
+	Address   Address `json:"address"`
+	HashValue uint64  `json:"hash_value"`
+}
+
+type QrnHashsByValue []*QrnHash
+
+func (qrnHash QrnHashsByValue) Len() int { return len(qrnHash) }
+
+func (qrnHash QrnHashsByValue) Less(i, j int) bool {
+	return qrnHash[i].HashValue < qrnHash[j].HashValue
+}
+
+func (qrnHash QrnHashsByValue) Swap(i, j int) {
+	qrnHash[i], qrnHash[j] = qrnHash[j], qrnHash[i]
+}
+
 func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 	standingMemberSet.Coordinator = nil
 
-	maxValue := uint64(0)
+	qrnHashs := make([]*QrnHash, qrnSet.Size())
 	qrnSetHash := qrnSet.Hash()
 
-	for _, qrn := range qrnSet.Qrns {
+	for i, qrn := range qrnSet.Qrns {
 		qrnHash := make([][]byte, 2)
 		qrnHash[0] = qrnSetHash
 		qrnHash[1] = qrn.GetQrnBytes()
 
-		result := merkle.HashFromByteSlices(qrnHash)
-		if uint64(maxValue) < encoding_binary.LittleEndian.Uint64(result) {
-			maxValue = encoding_binary.LittleEndian.Uint64(result)
-			_, standingMember := standingMemberSet.GetStandingMemberByIdx(qrn.StandingMemberIndex)
-			if standingMember != nil {
-				standingMemberSet.Coordinator = standingMember
-			}
+		fmt.Println(qrn)
+
+		// qrnHashs[i].Address = qrn.StandingMemberPubKey.Address()
+		address, _ := standingMemberSet.GetStandingMemberByIdx(qrn.StandingMemberIndex)
+		qrnHashs[i] = &QrnHash{
+			Address:   address,
+			HashValue: encoding_binary.LittleEndian.Uint64(merkle.HashFromByteSlices(qrnHash)),
 		}
+		// qrnHashs[i].
 	}
+
+	sort.Sort(QrnHashsByValue(qrnHashs))
+
+	_, standingMember := standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
+	standingMemberSet.Coordinator = standingMember
+
+	/*
+
+		if uint64(maxValue) < encoding_binary.LittleEndian.Uint64(result) {
+				maxValue = encoding_binary.LittleEndian.Uint64(result)
+				_, standingMember := standingMemberSet.GetStandingMemberByIdx(qrn.StandingMemberIndex)
+				if standingMember != nil {
+					standingMemberSet.Coordinator = standingMember
+				}
+			}
+
+	*/
+
+	// CurrentCoordinatorRanking
 }
 
 func StandingMemberSetFromProto(standingMemberSetProto *tmproto.StandingMemberSet) (*StandingMemberSet, error) {
