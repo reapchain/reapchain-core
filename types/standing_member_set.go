@@ -24,8 +24,6 @@ func NewStandingMemberSet(standingMembers []*StandingMember) *StandingMemberSet 
 	if err != nil {
 		panic(fmt.Sprintf("Cannot create standing member set: %v", err))
 	}
-	standingMemberSet.CurrentCoordinatorRanking = 0
-
 	return standingMemberSet
 }
 
@@ -91,40 +89,47 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 	qrnHashs := make([]*QrnHash, qrnSet.Size())
 	qrnSetHash := qrnSet.Hash()
 
+	fmt.Println("qrnSetHash", qrnSetHash)
+
+	fmt.Println("-------------------")
+
 	for i, qrn := range qrnSet.Qrns {
+		fmt.Println("i", i)
+		fmt.Println("qrn.Height", qrn.Height)
+		fmt.Println("qrn.Signature", qrn.Signature)
+		fmt.Println("qrn.StandingMemberIndex", qrn.StandingMemberIndex)
+		fmt.Println("qrn.StandingMemberPubKey", qrn.StandingMemberPubKey)
+		fmt.Println("qrn.Timestamp", qrn.Timestamp)
+		fmt.Println("qrn.Value", qrn.Value)
+
 		qrnHash := make([][]byte, 2)
 		qrnHash[0] = qrnSetHash
 		qrnHash[1] = qrn.GetQrnBytes()
 
-		fmt.Println(qrn)
-
-		// qrnHashs[i].Address = qrn.StandingMemberPubKey.Address()
 		address, _ := standingMemberSet.GetStandingMemberByIdx(qrn.StandingMemberIndex)
 		qrnHashs[i] = &QrnHash{
 			Address:   address,
-			HashValue: encoding_binary.LittleEndian.Uint64(merkle.HashFromByteSlices(qrnHash)),
+			HashValue: 0,
 		}
-		// qrnHashs[i].
+
+		if qrn.Signature != nil {
+			qrnHashs[i].HashValue = encoding_binary.LittleEndian.Uint64(merkle.HashFromByteSlices(qrnHash))
+		}
+
+		fmt.Println("i", i)
+		fmt.Println("qrnHashs[i].Address", qrnHashs[i].Address)
+		fmt.Println("qrnHash[1]", qrnHash[1])
+		fmt.Println("qrnHashs[i].HashValue", qrnHashs[i].HashValue)
 	}
+	fmt.Println("-------------------")
 
 	sort.Sort(QrnHashsByValue(qrnHashs))
 
 	_, standingMember := standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
 	standingMemberSet.Coordinator = standingMember
 
-	/*
-
-		if uint64(maxValue) < encoding_binary.LittleEndian.Uint64(result) {
-				maxValue = encoding_binary.LittleEndian.Uint64(result)
-				_, standingMember := standingMemberSet.GetStandingMemberByIdx(qrn.StandingMemberIndex)
-				if standingMember != nil {
-					standingMemberSet.Coordinator = standingMember
-				}
-			}
-
-	*/
-
-	// CurrentCoordinatorRanking
+	fmt.Println("standingMemberSet.CurrentCoordinatorRanking", standingMemberSet.CurrentCoordinatorRanking)
+	fmt.Println("standingMemberSet.Coordinator.Address", standingMemberSet.Coordinator.Address)
 }
 
 func StandingMemberSetFromProto(standingMemberSetProto *tmproto.StandingMemberSet) (*StandingMemberSet, error) {
@@ -182,8 +187,9 @@ func (standingMemberSet *StandingMemberSet) Copy() *StandingMemberSet {
 	}
 
 	return &StandingMemberSet{
-		Coordinator:     standingMemberSet.Coordinator,
-		StandingMembers: standingMembers,
+		Coordinator:               standingMemberSet.Coordinator,
+		StandingMembers:           standingMembers,
+		CurrentCoordinatorRanking: standingMemberSet.CurrentCoordinatorRanking,
 	}
 }
 

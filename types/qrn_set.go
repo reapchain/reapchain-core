@@ -170,7 +170,7 @@ func (qrnSet *QrnSet) GetQrn(standingMemberPubKey crypto.PubKey) (qrn *Qrn) {
 func (qrnSet *QrnSet) Hash() []byte {
 	qrnBytesArray := make([][]byte, len(qrnSet.Qrns))
 	for i, qrn := range qrnSet.Qrns {
-		if qrn != nil {
+		if qrn != nil && qrn.Signature != nil {
 			qrnBytesArray[i] = qrn.GetQrnBytes()
 		}
 	}

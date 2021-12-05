@@ -604,6 +604,7 @@ func updateState(
 
 		// Change results from this height but only applies to the next next height.
 		lastHeightValsChanged = header.Height + 1 + 1
+		standingMemberSet.CurrentCoordinatorRanking = 0
 	}
 
 	// if len(qrnUpdates) > 0 {

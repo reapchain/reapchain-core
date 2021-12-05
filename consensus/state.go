@@ -1032,19 +1032,16 @@ func (cs *State) enterNewRound(height int64, round int32) {
 	cs.updateRoundStep(round, cstypes.RoundStepNewRound)
 	cs.Validators = validators
 
-	fmt.Println("stompesi-hihi")
-	logger.Error("check reader - stompesi")
-
 	if round == 0 {
 		// We've already reset these upon new height,
 		// and meanwhile we might have received a proposal
 		// for round 0.
-		cs.StandingMemberSet.CurrentCoordinatorRanking = 0
-
 	} else {
-		logger.Error("check reader - stompesi")
-		cs.StandingMemberSet.CurrentCoordinatorRanking = cs.StandingMemberSet.CurrentCoordinatorRanking + 1
-		logger.Error("stompesi-", cs.StandingMemberSet.Coordinator.PubKey.Address())
+		cs.StandingMemberSet.CurrentCoordinatorRanking++
+
+		if cs.StandingMemberSet.CurrentCoordinatorRanking == int64(cs.StandingMemberSet.Size()) {
+			cs.StandingMemberSet.CurrentCoordinatorRanking = 0
+		}
 
 		cs.Proposal = nil
 		cs.ProposalBlock = nil
@@ -1149,8 +1146,6 @@ func (cs *State) enterPropose(height int64, round int32) {
 	if cs.isProposer(address) {
 		logger.Error("I'm a proposer", "proposer", address)
 		cs.decideProposal(height, round)
-	} else {
-		logger.Error("propose step; not our turn to propose", "proposer", cs.Validators.GetProposer().Address)
 	}
 }
 
