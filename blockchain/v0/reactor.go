@@ -231,7 +231,7 @@ func (bcR *BlockchainReactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) 
 	}
 
 	if err = bc.ValidateMsg(msg); err != nil {
-		bcR.Logger.Error("Peer sent us invalid msg", "peer", src, "msg", msg, "err", err)
+		bcR.Logger.Error("Peer sent us invalid msg3", "peer", src, "msg", msg, "err", err)
 		bcR.Switch.StopPeerForError(src, err)
 		return
 	}
@@ -257,7 +257,7 @@ func (bcR *BlockchainReactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) 
 
 	case *bcproto.StateResponse:
 		state, err := sm.SyncStateFromProto(msg.State)
-		// fmt.Println("bcproto.StateResponse", state.LastBlockHeight)
+		fmt.Println("stompesi-state", state.LastBlockHeight)
 
 		if err != nil {
 			bcR.Logger.Error("State content is invalid", "err", err)
@@ -461,15 +461,21 @@ FOR_LOOP:
 				}
 				continue FOR_LOOP
 			} else {
-				// TODO: validate
-				state.QrnSet = firstState.QrnSet
-				state.NextQrnSet = secondState.QrnSet
-				state.VrfSet = firstState.VrfSet
-				state.NextVrfSet = secondState.VrfSet
-				state.SettingSteeringMember = firstState.SettingSteeringMember
-
 				bcR.blockPool.PopRequest()
 				bcR.statePool.PopRequest()
+
+				// TODO: validate
+
+				fmt.Println("first.Height", first.Height)
+
+				state.QrnSet = firstState.QrnSet
+				state.VrfSet = firstState.VrfSet
+				state.SettingSteeringMember = firstState.SettingSteeringMember
+				state.NextQrnSet = firstState.NextQrnSet
+				state.NextVrfSet = firstState.NextVrfSet
+
+				fmt.Println("state.NextQrnSet", state.NextQrnSet)
+				fmt.Println("state.NextVrfSet", state.NextVrfSet)
 
 				// TODO: batch saves so we dont persist to disk every block
 				bcR.store.SaveBlock(first, firstParts, second.LastCommit)
@@ -540,11 +546,25 @@ func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 			return false
 		}
 
+		nextVrfSet, err := bcR.stateStore.LoadNextVrfSet(msg.Height)
+		if err != nil {
+			fmt.Println("respondStateToPeer2 - ", msg.Height)
+			return false
+		}
+
+		nextQrnSet, err := bcR.stateStore.LoadNextQrnSet(msg.Height)
+		if err != nil {
+			fmt.Println("respondStateToPeer2 - ", msg.Height)
+			return false
+		}
+
 		state := &sm.State{
 			LastBlockHeight:       msg.Height,
 			SettingSteeringMember: settingSteeringMember,
 			VrfSet:                vrfSet,
 			QrnSet:                qrnSet,
+			NextVrfSet:            nextVrfSet,
+			NextQrnSet:            nextQrnSet,
 		}
 
 		stateProto, err := state.ToProto()

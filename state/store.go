@@ -34,8 +34,16 @@ func calcQrnsKey(height int64) []byte {
 	return []byte(fmt.Sprintf("qrnsKey:%v", height))
 }
 
+func calcNextQrnsKey(height int64) []byte {
+	return []byte(fmt.Sprintf("nextQrnsKey:%v", height))
+}
+
 func calcVrfsKey(height int64) []byte {
 	return []byte(fmt.Sprintf("vrfsKey:%v", height))
+}
+
+func calcNextVrfsKey(height int64) []byte {
+	return []byte(fmt.Sprintf("nextVrfsKey:%v", height))
 }
 
 func calcSettingSteeringMemberKey(height int64) []byte {
@@ -99,6 +107,9 @@ type Store interface {
 	LoadSteeringMemberCandidateSet(int64) (*types.SteeringMemberCandidateSet, error)
 	LoadQrnSet(int64) (*types.QrnSet, error)
 	LoadVrfSet(int64) (*types.VrfSet, error)
+
+	LoadNextQrnSet(int64) (*types.QrnSet, error)
+	LoadNextVrfSet(int64) (*types.VrfSet, error)
 	LoadSettingSteeringMember(height int64) (*types.SettingSteeringMember, error)
 }
 
@@ -207,7 +218,15 @@ func (store dbStore) save(state State, key []byte) error {
 			return err
 		}
 
+		if err := store.saveNextQrnsInfo(nextHeight, state.NextQrnSet); err != nil {
+			return err
+		}
+
 		if err := store.saveVrfsInfo(nextHeight, state.VrfSet); err != nil {
+			return err
+		}
+
+		if err := store.saveNextVrfsInfo(nextHeight, state.NextVrfSet); err != nil {
 			return err
 		}
 	}
@@ -220,7 +239,15 @@ func (store dbStore) save(state State, key []byte) error {
 		return err
 	}
 
+	if err := store.saveNextQrnsInfo(nextHeight, state.NextQrnSet); err != nil {
+		return err
+	}
+
 	if err := store.saveVrfsInfo(nextHeight, state.VrfSet); err != nil {
+		return err
+	}
+
+	if err := store.saveNextVrfsInfo(nextHeight, state.NextVrfSet); err != nil {
 		return err
 	}
 
@@ -637,6 +664,30 @@ func (store dbStore) saveQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) error 
 	return nil
 }
 
+func (store dbStore) saveNextQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) error {
+	qrnSetInfo := &tmstate.QrnsInfo{
+		LastHeightChanged: nextHeight,
+	}
+
+	qrnSetProto, err := qrnSet.ToProto()
+	if err != nil {
+		return err
+	}
+	qrnSetInfo.QrnSet = qrnSetProto
+
+	bz, err := qrnSetInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = store.db.Set(calcNextQrnsKey(nextHeight), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (store dbStore) saveVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) error {
 	vrfSetInfo := &tmstate.VrfsInfo{
 		LastHeightChanged: nextHeight,
@@ -654,6 +705,30 @@ func (store dbStore) saveVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) error 
 	}
 
 	err = store.db.Set(calcVrfsKey(nextHeight), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (store dbStore) saveNextVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) error {
+	vrfSetInfo := &tmstate.VrfsInfo{
+		LastHeightChanged: nextHeight,
+	}
+
+	vrfSetProto, err := vrfSet.ToProto()
+	if err != nil {
+		return err
+	}
+	vrfSetInfo.VrfSet = vrfSetProto
+
+	bz, err := vrfSetInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = store.db.Set(calcNextVrfsKey(nextHeight), bz)
 	if err != nil {
 		return err
 	}
@@ -938,6 +1013,34 @@ func (store dbStore) LoadQrnSet(height int64) (*types.QrnSet, error) {
 	return qrnSet, nil
 }
 
+func (store dbStore) LoadNextQrnSet(height int64) (*types.QrnSet, error) {
+	qrnSetInfo, err := loadNextQrnSetInfo(store.db, height)
+	if err != nil {
+		return nil, ErrNoQrnSetForHeight{height}
+	}
+
+	if qrnSetInfo.QrnSet == nil {
+		lastStoredHeight := lastStoredHeightFor(height, qrnSetInfo.LastHeightChanged)
+		qrnSetInfo2, err := loadNextQrnSetInfo(store.db, lastStoredHeight)
+		if err != nil || qrnSetInfo2.QrnSet == nil {
+			return nil,
+				fmt.Errorf("couldn't find qrns at height %d (height %d was originally requested): %w",
+					lastStoredHeight,
+					height,
+					err,
+				)
+		}
+		qrnSetInfo = qrnSetInfo2
+	}
+
+	qrnSet, err := types.QrnSetFromProto(qrnSetInfo.QrnSet)
+	if err != nil {
+		return nil, err
+	}
+
+	return qrnSet, nil
+}
+
 func (store dbStore) LoadSettingSteeringMember(height int64) (*types.SettingSteeringMember, error) {
 	SettingSteeringMemberInfo, err := loadSettingSteeringMemberInfo(store.db, height)
 	if err != nil {
@@ -958,6 +1061,34 @@ func (store dbStore) LoadVrfSet(height int64) (*types.VrfSet, error) {
 	if vrfSetInfo.VrfSet == nil {
 		lastStoredHeight := lastStoredHeightFor(height, vrfSetInfo.LastHeightChanged)
 		vrfSetInfo2, err := loadVrfSetInfo(store.db, lastStoredHeight)
+		if err != nil || vrfSetInfo2.VrfSet == nil {
+			return nil,
+				fmt.Errorf("couldn't find vrfs at height %d (height %d was originally requested): %w",
+					lastStoredHeight,
+					height,
+					err,
+				)
+		}
+		vrfSetInfo = vrfSetInfo2
+	}
+
+	vrfSet, err := types.VrfSetFromProto(vrfSetInfo.VrfSet)
+	if err != nil {
+		return nil, err
+	}
+
+	return vrfSet, nil
+}
+
+func (store dbStore) LoadNextVrfSet(height int64) (*types.VrfSet, error) {
+	vrfSetInfo, err := loadNextVrfSetInfo(store.db, height)
+	if err != nil {
+		return nil, ErrNoVrfSetForHeight{height}
+	}
+
+	if vrfSetInfo.VrfSet == nil {
+		lastStoredHeight := lastStoredHeightFor(height, vrfSetInfo.LastHeightChanged)
+		vrfSetInfo2, err := loadNextVrfSetInfo(store.db, lastStoredHeight)
 		if err != nil || vrfSetInfo2.VrfSet == nil {
 			return nil,
 				fmt.Errorf("couldn't find vrfs at height %d (height %d was originally requested): %w",
@@ -1066,6 +1197,27 @@ func loadQrnSetInfo(db dbm.DB, height int64) (*tmstate.QrnsInfo, error) {
 	return v, nil
 }
 
+func loadNextQrnSetInfo(db dbm.DB, height int64) (*tmstate.QrnsInfo, error) {
+	buf, err := db.Get(calcNextQrnsKey(height))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	v := new(tmstate.QrnsInfo)
+	err = v.Unmarshal(buf)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadQrnSet: Data has been corrupted or its spec has changed: %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return v, nil
+}
+
 func loadSettingSteeringMemberInfo(db dbm.DB, height int64) (*tmstate.SettingSteeringMemberInfo, error) {
 	buf, err := db.Get(calcSettingSteeringMemberKey(height))
 	if err != nil {
@@ -1089,6 +1241,27 @@ func loadSettingSteeringMemberInfo(db dbm.DB, height int64) (*tmstate.SettingSte
 
 func loadVrfSetInfo(db dbm.DB, height int64) (*tmstate.VrfsInfo, error) {
 	buf, err := db.Get(calcVrfsKey(height))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	v := new(tmstate.VrfsInfo)
+	err = v.Unmarshal(buf)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadVrfSet: Data has been corrupted or its spec has changed: %v\n`, err))
+	}
+	// TODO: ensure that buf is completely read.
+
+	return v, nil
+}
+
+func loadNextVrfSetInfo(db dbm.DB, height int64) (*tmstate.VrfsInfo, error) {
+	buf, err := db.Get(calcNextVrfsKey(height))
 	if err != nil {
 		return nil, err
 	}

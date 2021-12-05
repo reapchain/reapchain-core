@@ -169,10 +169,10 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 	state.NextValidators = nextLightBlock.ValidatorSet
 
 	state.VrfSet = currentLightBlock.VrfSet
-	state.NextVrfSet = nextLightBlock.VrfSet
+	state.NextVrfSet = currentLightBlock.NextVrfSet
 
 	state.QrnSet = currentLightBlock.QrnSet
-	state.NextQrnSet = nextLightBlock.QrnSet
+	state.NextQrnSet = currentLightBlock.QrnSet
 
 	state.StandingMemberSet = currentLightBlock.StandingMemberSet
 	state.SteeringMemberCandidateSet = currentLightBlock.SteeringMemberCandidateSet

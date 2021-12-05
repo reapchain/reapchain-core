@@ -370,6 +370,35 @@ func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	}
 	state.VrfSet = vrfSet
 
+	if pb.NextQrnSet != nil {
+		nextQrnSet, err := types.QrnSetFromProto(pb.NextQrnSet)
+		if err != nil {
+			return nil, err
+		}
+		state.NextQrnSet = nextQrnSet
+	}
+
+	if pb.NextVrfSet != nil {
+		nextVrfSet, err := types.VrfSetFromProto(pb.NextVrfSet)
+		if err != nil {
+			return nil, err
+		}
+		state.NextVrfSet = nextVrfSet
+	}
+
+	/*
+		nextQrnSet, err := types.QrnSetFromProto(pb.NextQrnSet)
+		if err != nil {
+			return nil, err
+		}
+		state.NextQrnSet = nextQrnSet
+
+		nextVrfSet, err := types.VrfSetFromProto(pb.NextVrfSet)
+		if err != nil {
+			return nil, err
+		}
+		state.NextVrfSet = nextVrfSet
+	*/
 	state.SettingSteeringMember = types.SettingSteeringMemberFromProto(pb.SettingSteeringMember)
 
 	return state, nil

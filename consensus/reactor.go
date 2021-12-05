@@ -256,7 +256,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 	}
 
 	if err = msg.ValidateBasic(); err != nil {
-		conR.Logger.Error("Peer sent us invalid msg", "peer", src, "msg", msg, "err", err)
+		conR.Logger.Error("Peer sent us invalid msg2", "peer", src, "msg", msg, "err", err)
 		conR.Switch.StopPeerForError(src, err)
 		return
 	}
@@ -277,7 +277,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			initialHeight := conR.conS.state.InitialHeight
 			conR.conS.mtx.Unlock()
 			if err = msg.ValidateHeight(initialHeight); err != nil {
-				conR.Logger.Error("Peer sent us invalid msg", "peer", src, "msg", msg, "err", err)
+				conR.Logger.Error("Peer sent us invalid msg1", "peer", src, "msg", msg, "err", err)
 				conR.Switch.StopPeerForError(src, err)
 				return
 			}

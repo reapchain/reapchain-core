@@ -186,10 +186,18 @@ func (c Client) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, er
 	return core.Qrns(&rpctypes.Context{}, height)
 }
 
+func (c Client) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	return core.NextQrns(&rpctypes.Context{}, height)
+}
+
 func (c Client) SettingSteeringMember(ctx context.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
 	return core.SettingSteeringMember(&rpctypes.Context{}, height)
 }
 
 func (c Client) Vrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
 	return core.Vrfs(&rpctypes.Context{}, height)
+}
+
+func (c Client) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	return core.NextVrfs(&rpctypes.Context{}, height)
 }

@@ -607,6 +607,16 @@ func updateState(
 		standingMemberSet.CurrentCoordinatorRanking = 0
 	}
 
+	/*
+		if state.NextQrnSet == nil {
+			state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
+		}
+
+		if state.NextVrfSet == nil {
+			state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
+		}
+	*/
+
 	// if len(qrnUpdates) > 0 {
 	// 	state.QrnSet = types.NewQrnSet(state.QrnSet.Height, state.StandingMemberSet, qrnUpdates)
 	// }

@@ -181,12 +181,20 @@ func (c *Local) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, er
 	return core.Qrns(c.ctx, height)
 }
 
+func (c *Local) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	return core.NextQrns(c.ctx, height)
+}
+
 func (c *Local) SettingSteeringMember(ctx context.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
 	return core.SettingSteeringMember(c.ctx, height)
 }
 
 func (c *Local) Vrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
 	return core.Vrfs(c.ctx, height)
+}
+
+func (c *Local) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	return core.NextVrfs(c.ctx, height)
 }
 
 func (c *Local) Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.ResultTx, error) {

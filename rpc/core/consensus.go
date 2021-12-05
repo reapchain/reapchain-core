@@ -99,6 +99,24 @@ func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 	}, nil
 }
 
+func NextQrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
+	height, err := getHeight(latestUncommittedHeight(), heightPtr)
+	if err != nil {
+		return nil, err
+	}
+
+	qrnSet, err := env.StateStore.LoadNextQrnSet(height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultQrns{
+		BlockHeight: height,
+		Qrns:        qrnSet.Qrns[:],
+		Count:       qrnSet.Size(),
+	}, nil
+}
+
 func SettingSteeringMember(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultSettingSteeringMember, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {
@@ -126,6 +144,24 @@ func Vrfs(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultVrfs, error) {
 	}
 
 	vrfSet, err := env.StateStore.LoadVrfSet(height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultVrfs{
+		BlockHeight: height,
+		Vrfs:        vrfSet.Vrfs[:],
+		Count:       vrfSet.Size(),
+	}, nil
+}
+
+func NextVrfs(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultVrfs, error) {
+	height, err := getHeight(latestUncommittedHeight(), heightPtr)
+	if err != nil {
+		return nil, err
+	}
+
+	vrfSet, err := env.StateStore.LoadNextVrfSet(height)
 	if err != nil {
 		return nil, err
 	}

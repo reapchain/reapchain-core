@@ -17,7 +17,11 @@ type LightBlock struct {
 	SteeringMemberCandidateSet *SteeringMemberCandidateSet `json:"steering_member_candidate_set"`
 	QrnSet                     *QrnSet                     `json:"qrn_set"`
 	VrfSet                     *VrfSet                     `json:"vrf_set"`
-	SettingSteeringMember      *SettingSteeringMember      `json:"setting_steering_member"`
+
+	NextQrnSet *QrnSet `json:"next_qrn_set"`
+	NextVrfSet *VrfSet `json:"next_vrf_set"`
+
+	SettingSteeringMember *SettingSteeringMember `json:"setting_steering_member"`
 }
 
 // ValidateBasic checks that the data is correct and consistent
@@ -166,6 +170,30 @@ func LightBlockFromProto(pb *tmproto.LightBlock) (*LightBlock, error) {
 			return nil, err
 		}
 		lb.QrnSet = qrnSet
+	}
+
+	if pb.NextQrnSet != nil {
+		nextQrnSet, err := QrnSetFromProto(pb.NextQrnSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.NextQrnSet = nextQrnSet
+	}
+
+	if pb.VrfSet != nil {
+		vrfSet, err := VrfSetFromProto(pb.VrfSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.VrfSet = vrfSet
+	}
+
+	if pb.NextVrfSet != nil {
+		nextVrfSet, err := VrfSetFromProto(pb.NextVrfSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.NextVrfSet = nextVrfSet
 	}
 	return lb, nil
 }
