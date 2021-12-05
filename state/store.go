@@ -762,8 +762,10 @@ func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, st
 	if lastHeightChanged > height {
 		return errors.New("lastHeightChanged cannot be greater than StandingMembersInfo height")
 	}
+
 	smInfo := &tmstate.StandingMembersInfo{
-		LastHeightChanged: lastHeightChanged,
+		LastHeightChanged:         lastHeightChanged,
+		CurrentCoordinatorRanking: standingMemberSet.CurrentCoordinatorRanking,
 	}
 	if height == lastHeightChanged || height%standingMemberSetCheckpointInterval == 0 {
 		standingMemberSetProto, err := standingMemberSet.ToProto()
@@ -772,6 +774,8 @@ func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, st
 		}
 		smInfo.StandingMemberSet = standingMemberSetProto
 	}
+
+	fmt.Println("save smInfo - ", height, smInfo.CurrentCoordinatorRanking)
 
 	bz, err := smInfo.Marshal()
 	if err != nil {
@@ -933,11 +937,15 @@ func (store dbStore) saveConsensusRoundInfo(nextHeight, changeHeight int64, cons
 
 func (store dbStore) LoadStandingMemberSet(height int64) (*types.StandingMemberSet, error) {
 	standingMemberSetInfo, err := loadStandingMemberSetInfo(store.db, height)
+	currentCoordinatorRanking := standingMemberSetInfo.CurrentCoordinatorRanking
+
 	if err != nil {
 		return nil, ErrNoStandingMemberSetForHeight{height}
 	}
+
 	if standingMemberSetInfo.StandingMemberSet == nil {
 		lastStoredHeight := lastStoredHeightFor(height, standingMemberSetInfo.LastHeightChanged)
+
 		standingMemberSetInfo2, err := loadStandingMemberSetInfo(store.db, lastStoredHeight)
 		if err != nil || standingMemberSetInfo2.StandingMemberSet == nil {
 			return nil,
@@ -954,6 +962,7 @@ func (store dbStore) LoadStandingMemberSet(height int64) (*types.StandingMemberS
 	if err != nil {
 		return nil, err
 	}
+	standingMemberSet.CurrentCoordinatorRanking = currentCoordinatorRanking
 
 	return standingMemberSet, nil
 }

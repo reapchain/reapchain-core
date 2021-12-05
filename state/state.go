@@ -358,6 +358,20 @@ func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state := new(State)
 	state.LastBlockHeight = pb.LastBlockHeight
 
+	standingMemberSet, err := types.StandingMemberSetFromProto(pb.StandingMemberSet)
+	if err != nil {
+		return nil, err
+	}
+	state.StandingMemberSet = standingMemberSet
+
+	fmt.Println("SyncStateFromProto - 19191919", state.StandingMemberSet.CurrentCoordinatorRanking)
+
+	steeringMemberCandidate, err := types.SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidateSet)
+	if err != nil {
+		return nil, err
+	}
+	state.SteeringMemberCandidateSet = steeringMemberCandidate
+
 	qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
 	if err != nil {
 		return nil, err

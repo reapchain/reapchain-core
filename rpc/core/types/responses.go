@@ -135,8 +135,9 @@ type ResultValidators struct {
 
 // StandingMembers for a height.
 type ResultStandingMembers struct {
-	BlockHeight     int64                   `json:"block_height"`
-	StandingMembers []*types.StandingMember `json:"standing_members"`
+	BlockHeight               int64                   `json:"block_height"`
+	StandingMembers           []*types.StandingMember `json:"standing_members"`
+	CurrentCoordinatorRanking int64                   `json:"current_coordinator_ranking"`
 	// Count of actual validators in this result
 	Count int `json:"count"`
 }

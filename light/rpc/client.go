@@ -530,9 +530,10 @@ func (c *Client) StandingMembers(ctx context.Context, height *int64) (*ctypes.Re
 	}
 
 	return &ctypes.ResultStandingMembers{
-		BlockHeight:     l.Height,
-		StandingMembers: l.StandingMemberSet.StandingMembers[:],
-		Count:           l.StandingMemberSet.Size(),
+		BlockHeight:               l.Height,
+		StandingMembers:           l.StandingMemberSet.StandingMembers[:],
+		CurrentCoordinatorRanking: l.StandingMemberSet.CurrentCoordinatorRanking,
+		Count:                     l.StandingMemberSet.Size(),
 	}, nil
 }
 

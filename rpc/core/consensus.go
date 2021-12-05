@@ -57,9 +57,10 @@ func StandingMembers(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultSta
 	}
 
 	return &ctypes.ResultStandingMembers{
-		BlockHeight:     height,
-		StandingMembers: standingMemberSet.StandingMembers[:],
-		Count:           standingMemberSet.Size(),
+		BlockHeight:               height,
+		StandingMembers:           standingMemberSet.StandingMembers[:],
+		CurrentCoordinatorRanking: standingMemberSet.CurrentCoordinatorRanking,
+		Count:                     standingMemberSet.Size(),
 	}, nil
 }
 

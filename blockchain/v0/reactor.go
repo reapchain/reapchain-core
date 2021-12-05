@@ -474,8 +474,10 @@ FOR_LOOP:
 				state.NextQrnSet = firstState.NextQrnSet
 				state.NextVrfSet = firstState.NextVrfSet
 
-				fmt.Println("state.NextQrnSet", state.NextQrnSet)
-				fmt.Println("state.NextVrfSet", state.NextVrfSet)
+				state.StandingMemberSet = firstState.StandingMemberSet.Copy()
+				state.SteeringMemberCandidateSet = firstState.SteeringMemberCandidateSet.Copy()
+
+				fmt.Println("stompesi-firstState.StandingMemberSet", firstState.StandingMemberSet.CurrentCoordinatorRanking)
 
 				// TODO: batch saves so we dont persist to disk every block
 				bcR.store.SaveBlock(first, firstParts, second.LastCommit)
@@ -533,6 +535,7 @@ func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 	}
 
 	if qrnSet != nil {
+		bcR.stateStore.Load()
 
 		vrfSet, err := bcR.stateStore.LoadVrfSet(msg.Height)
 		if err != nil {
@@ -558,13 +561,27 @@ func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 			return false
 		}
 
+		standingMemberSet, err := bcR.stateStore.LoadStandingMemberSet(msg.Height)
+		if err != nil {
+			fmt.Println("respondStateToPeer2 - ", msg.Height)
+			return false
+		}
+
+		steeringMemberCandidateSet, err := bcR.stateStore.LoadSteeringMemberCandidateSet(msg.Height)
+		if err != nil {
+			fmt.Println("respondStateToPeer2 - ", msg.Height)
+			return false
+		}
+
 		state := &sm.State{
-			LastBlockHeight:       msg.Height,
-			SettingSteeringMember: settingSteeringMember,
-			VrfSet:                vrfSet,
-			QrnSet:                qrnSet,
-			NextVrfSet:            nextVrfSet,
-			NextQrnSet:            nextQrnSet,
+			LastBlockHeight:            msg.Height,
+			SettingSteeringMember:      settingSteeringMember,
+			VrfSet:                     vrfSet,
+			QrnSet:                     qrnSet,
+			NextVrfSet:                 nextVrfSet,
+			NextQrnSet:                 nextQrnSet,
+			StandingMemberSet:          standingMemberSet,
+			SteeringMemberCandidateSet: steeringMemberCandidateSet,
 		}
 
 		stateProto, err := state.ToProto()
@@ -582,6 +599,8 @@ func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 		}
 
 		fmt.Println("respondStateToPeer1 - 성공", msg.Height)
+		fmt.Println("state - ", state.StandingMemberSet.CurrentCoordinatorRanking)
+		fmt.Println("stateProto - ", stateProto.StandingMemberSet.CurrentCoordinatorRanking)
 
 		return src.TrySend(BlockchainChannel, msgBytes)
 	}

@@ -89,18 +89,18 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 	qrnHashs := make([]*QrnHash, qrnSet.Size())
 	qrnSetHash := qrnSet.Hash()
 
-	fmt.Println("qrnSetHash", qrnSetHash)
+	// fmt.Println("qrnSetHash", qrnSetHash)
 
-	fmt.Println("-------------------")
+	// fmt.Println("-------------------")
 
 	for i, qrn := range qrnSet.Qrns {
-		fmt.Println("i", i)
-		fmt.Println("qrn.Height", qrn.Height)
-		fmt.Println("qrn.Signature", qrn.Signature)
-		fmt.Println("qrn.StandingMemberIndex", qrn.StandingMemberIndex)
-		fmt.Println("qrn.StandingMemberPubKey", qrn.StandingMemberPubKey)
-		fmt.Println("qrn.Timestamp", qrn.Timestamp)
-		fmt.Println("qrn.Value", qrn.Value)
+		// fmt.Println("i", i)
+		// fmt.Println("qrn.Height", qrn.Height)
+		// fmt.Println("qrn.Signature", qrn.Signature)
+		// fmt.Println("qrn.StandingMemberIndex", qrn.StandingMemberIndex)
+		// fmt.Println("qrn.StandingMemberPubKey", qrn.StandingMemberPubKey)
+		// fmt.Println("qrn.Timestamp", qrn.Timestamp)
+		// fmt.Println("qrn.Value", qrn.Value)
 
 		qrnHash := make([][]byte, 2)
 		qrnHash[0] = qrnSetHash
@@ -116,10 +116,10 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 			qrnHashs[i].HashValue = encoding_binary.LittleEndian.Uint64(merkle.HashFromByteSlices(qrnHash))
 		}
 
-		fmt.Println("i", i)
-		fmt.Println("qrnHashs[i].Address", qrnHashs[i].Address)
-		fmt.Println("qrnHash[1]", qrnHash[1])
-		fmt.Println("qrnHashs[i].HashValue", qrnHashs[i].HashValue)
+		// fmt.Println("i", i)
+		// fmt.Println("qrnHashs[i].Address", qrnHashs[i].Address)
+		// fmt.Println("qrnHash[1]", qrnHash[1])
+		// fmt.Println("qrnHashs[i].HashValue", qrnHashs[i].HashValue)
 	}
 	fmt.Println("-------------------")
 
@@ -149,6 +149,7 @@ func StandingMemberSetFromProto(standingMemberSetProto *tmproto.StandingMemberSe
 	}
 
 	standingMemberSet.StandingMembers = standingMembers
+	standingMemberSet.CurrentCoordinatorRanking = standingMemberSetProto.CurrentCoordinatorRanking
 
 	return standingMemberSet, standingMemberSet.ValidateBasic()
 }
@@ -170,6 +171,7 @@ func (standingMemberSet *StandingMemberSet) ToProto() (*tmproto.StandingMemberSe
 	}
 
 	standingMemberSetProto.StandingMembers = standingMembersProto
+	standingMemberSetProto.CurrentCoordinatorRanking = standingMemberSet.CurrentCoordinatorRanking
 
 	return standingMemberSetProto, nil
 }
