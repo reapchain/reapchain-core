@@ -1741,7 +1741,7 @@ func (cs *State) finalizeCommit(height int64) {
 				if standingMemberIndex != -1 {
 					qrnValue := tmrand.Uint64()
 
-					qrn := types.NewQrn(cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Peorid), cs.privValidatorPubKey, qrnValue)
+					qrn := types.NewQrn(cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Period), cs.privValidatorPubKey, qrnValue)
 					qrn.StandingMemberIndex = standingMemberIndex
 					err := cs.privValidator.SignQrn(qrn)
 					if err != nil {
@@ -1752,12 +1752,12 @@ func (cs *State) finalizeCommit(height int64) {
 				}
 			}
 		}
-	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeorid) == height {
+	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod) == height {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
 			if cs.RoundState.SteeringMemberCandidateSet.HasAddress(address) == true {
 				fmt.Println("stompesi - im steering member candidate - VrfMessage")
-				fmt.Println(cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.QrnPeorid))
+				fmt.Println(cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.QrnPeriod))
 
 				isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
 
@@ -1768,7 +1768,7 @@ func (cs *State) finalizeCommit(height int64) {
 
 				seed := cs.state.NextQrnSet.GetMaxValue()
 
-				vrf := types.NewVrf(cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Peorid), cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
+				vrf := types.NewVrf(cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Period), cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
 				vrf.Timestamp = time.Now()
 
 				if err := cs.privValidator.ProveVrf(vrf); err != nil {
@@ -1782,14 +1782,14 @@ func (cs *State) finalizeCommit(height int64) {
 				}
 			}
 		}
-	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeorid+cs.state.ConsensusRound.VrfPeorid) == height {
+	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod+cs.state.ConsensusRound.VrfPeriod) == height {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
 			if cs.isProposer(address) {
 				settingSteeringMember := cs.state.NextVrfSet.GetSteeringMemberIndexes()
 
 				if settingSteeringMember != nil {
-					settingSteeringMember.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Peorid)
+					settingSteeringMember.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Period)
 					settingSteeringMember.CoordinatorPubKey = cs.privValidatorPubKey
 
 					err := cs.privValidator.SignSettingSteeringMember(settingSteeringMember)
@@ -1804,7 +1804,7 @@ func (cs *State) finalizeCommit(height int64) {
 						fmt.Println("Send settingSteeringMember")
 						fmt.Println("Send settingSteeringMember")
 						fmt.Println(cs.state.ConsensusRound.ConsensusStartBlockHeight)
-						fmt.Println(cs.state.ConsensusRound.QrnPeorid + cs.state.ConsensusRound.VrfPeorid)
+						fmt.Println(cs.state.ConsensusRound.QrnPeriod + cs.state.ConsensusRound.VrfPeriod)
 
 						fmt.Println(len(settingSteeringMember.SteeringMemberIndexes))
 						fmt.Println(settingSteeringMember.SteeringMemberIndexes)

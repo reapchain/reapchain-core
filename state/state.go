@@ -559,27 +559,27 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 	var qrnSet, nextQrnSet *types.QrnSet
 	if genDoc.Qrns == nil {
 		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, nil)
-		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Peorid), standingMemberSet, nil)
+		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), standingMemberSet, nil)
 	} else {
 		qrns := make([]*types.Qrn, len(genDoc.Qrns))
 		for i, qrn := range genDoc.Qrns {
 			qrns[i] = qrn.Copy()
 		}
 		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, qrns)
-		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Peorid), standingMemberSet, qrns)
+		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), standingMemberSet, qrns)
 	}
 
 	var vrfSet, nextVrfSet *types.VrfSet
 	if genDoc.Vrfs == nil {
 		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, nil)
-		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Peorid), steeringMemberCandidateSet, nil)
+		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), steeringMemberCandidateSet, nil)
 	} else {
 		vrfs := make([]*types.Vrf, len(genDoc.Vrfs))
 		for i, vrf := range genDoc.Vrfs {
 			vrfs[i] = vrf.Copy()
 		}
 		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
-		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Peorid), steeringMemberCandidateSet, vrfs)
+		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), steeringMemberCandidateSet, vrfs)
 	}
 
 	return State{

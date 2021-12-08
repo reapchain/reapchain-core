@@ -419,7 +419,7 @@ func (h *Handshaker) ReplayBlocks(
 			}
 
 			if res.ConsensusRound != nil {
-				consensusRound := types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.QrnPeorid, res.ConsensusRound.VrfPeorid, res.ConsensusRound.ValidatorPeorid)
+				consensusRound := types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.QrnPeriod, res.ConsensusRound.VrfPeriod, res.ConsensusRound.ValidatorPeriod)
 				state.ConsensusRound = consensusRound.ToProto()
 			}
 
@@ -429,7 +429,7 @@ func (h *Handshaker) ReplayBlocks(
 					return nil, err
 				}
 				state.QrnSet = types.NewQrnSet(h.genDoc.InitialHeight, state.StandingMemberSet, qrns)
-				state.NextQrnSet = types.NewQrnSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Peorid), state.StandingMemberSet, qrns).Copy()
+				state.NextQrnSet = types.NewQrnSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.StandingMemberSet, qrns).Copy()
 			} else if len(h.genDoc.Qrns) == 0 {
 				// If qrn set is not set in genesis and still empty after InitChain, exit.
 				return nil, fmt.Errorf("qrn set is nil in genesis and still empty after InitChain")
@@ -441,10 +441,10 @@ func (h *Handshaker) ReplayBlocks(
 					return nil, err
 				}
 				state.VrfSet = types.NewVrfSet(h.genDoc.InitialHeight, state.SteeringMemberCandidateSet, vrfs)
-				state.NextVrfSet = types.NewVrfSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Peorid), state.SteeringMemberCandidateSet, vrfs).Copy()
+				state.NextVrfSet = types.NewVrfSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.SteeringMemberCandidateSet, vrfs).Copy()
 			} else if len(h.genDoc.Vrfs) == 0 {
 				state.VrfSet = types.NewVrfSet(h.genDoc.InitialHeight, state.SteeringMemberCandidateSet, nil)
-				state.NextVrfSet = types.NewVrfSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Peorid), state.SteeringMemberCandidateSet, nil).Copy()
+				state.NextVrfSet = types.NewVrfSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.SteeringMemberCandidateSet, nil).Copy()
 			}
 
 			if res.ConsensusParams != nil {

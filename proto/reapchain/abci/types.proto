@@ -309,10 +309,10 @@ message ConsensusParams {
 
 message ConsensusRound {
   int64 consensus_start_block_height = 1;
-  uint64 qrn_peorid = 2;
-  uint64 vrf_peorid = 3;
-  uint64 validator_peorid = 4;
-  uint64 peorid = 5;
+  uint64 qrn_period = 2;
+  uint64 vrf_period = 3;
+  uint64 validator_period = 4;
+  uint64 period = 5;
 }
 
 // BlockParams contains limits on the block size.

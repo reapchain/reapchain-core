@@ -2655,10 +2655,10 @@ func (m *ConsensusParams) GetVersion() *types1.VersionParams {
 
 type ConsensusRound struct {
 	ConsensusStartBlockHeight int64  `protobuf:"varint,1,opt,name=consensus_start_block_height,json=consensusStartBlockHeight,proto3" json:"consensus_start_block_height,omitempty"`
-	QrnPeorid                 uint64 `protobuf:"varint,2,opt,name=qrn_peorid,json=qrnPeorid,proto3" json:"qrn_peorid,omitempty"`
-	VrfPeorid                 uint64 `protobuf:"varint,3,opt,name=vrf_peorid,json=vrfPeorid,proto3" json:"vrf_peorid,omitempty"`
-	ValidatorPeorid           uint64 `protobuf:"varint,4,opt,name=validator_peorid,json=validatorPeorid,proto3" json:"validator_peorid,omitempty"`
-	Peorid                    uint64 `protobuf:"varint,5,opt,name=peorid,proto3" json:"peorid,omitempty"`
+	QrnPeriod                 uint64 `protobuf:"varint,2,opt,name=qrn_period,json=qrnPeriod,proto3" json:"qrn_period,omitempty"`
+	VrfPeriod                 uint64 `protobuf:"varint,3,opt,name=vrf_period,json=vrfPeriod,proto3" json:"vrf_period,omitempty"`
+	ValidatorPeriod           uint64 `protobuf:"varint,4,opt,name=validator_period,json=validatorPeriod,proto3" json:"validator_period,omitempty"`
+	Period                    uint64 `protobuf:"varint,5,opt,name=period,proto3" json:"period,omitempty"`
 }
 
 func (m *ConsensusRound) Reset()         { *m = ConsensusRound{} }
@@ -2701,30 +2701,30 @@ func (m *ConsensusRound) GetConsensusStartBlockHeight() int64 {
 	return 0
 }
 
-func (m *ConsensusRound) GetQrnPeorid() uint64 {
+func (m *ConsensusRound) GetQrnPeriod() uint64 {
 	if m != nil {
-		return m.QrnPeorid
+		return m.QrnPeriod
 	}
 	return 0
 }
 
-func (m *ConsensusRound) GetVrfPeorid() uint64 {
+func (m *ConsensusRound) GetVrfPeriod() uint64 {
 	if m != nil {
-		return m.VrfPeorid
+		return m.VrfPeriod
 	}
 	return 0
 }
 
-func (m *ConsensusRound) GetValidatorPeorid() uint64 {
+func (m *ConsensusRound) GetValidatorPeriod() uint64 {
 	if m != nil {
-		return m.ValidatorPeorid
+		return m.ValidatorPeriod
 	}
 	return 0
 }
 
-func (m *ConsensusRound) GetPeorid() uint64 {
+func (m *ConsensusRound) GetPeriod() uint64 {
 	if m != nil {
-		return m.Peorid
+		return m.Period
 	}
 	return 0
 }
@@ -3826,8 +3826,8 @@ var fileDescriptor_184a00a839b23dab = []byte{
 	0x98, 0x68, 0x9e, 0x18, 0xb9, 0x3e, 0x21, 0x2d, 0x6c, 0x3b, 0x17, 0x0f, 0x44, 0xd0, 0x4b, 0x41,
 	0xd4, 0x93, 0x99, 0x30, 0x5c, 0x5c, 0x9a, 0x8d, 0x73, 0x59, 0x9f, 0x5d, 0xfe, 0x53, 0x12, 0x4a,
 	0x51, 0xa3, 0x86, 0x5e, 0x83, 0xb5, 0xc0, 0x2a, 0xba, 0x9e, 0xe6, 0x8c, 0x85, 0x44, 0x2c, 0x51,
-	0x77, 0x55, 0xf0, 0x1c, 0x10, 0x96, 0x70, 0x70, 0x74, 0x0d, 0x88, 0x29, 0x51, 0x6d, 0x6c, 0x39,
-	0xbc, 0xee, 0x90, 0x51, 0xa4, 0x87, 0x8e, 0xb9, 0x4f, 0x09, 0x64, 0x98, 0xd8, 0x16, 0x3e, 0xcc,
+	0x77, 0x55, 0xf0, 0x1c, 0x10, 0x96, 0x70, 0x70, 0x74, 0x0d, 0x88, 0x29, 0x51, 0x6d, 0xec, 0x18,
+	0x56, 0x97, 0xd7, 0x50, 0xa4, 0x87, 0x8e, 0xb9, 0x4f, 0x09, 0x64, 0x98, 0xd8, 0x16, 0x3e, 0xcc,
 	0xe2, 0x30, 0xe9, 0xc4, 0x39, 0xe2, 0xc3, 0x37, 0x20, 0x70, 0x57, 0x3e, 0x53, 0x86, 0x32, 0xad,
 	0x08, 0x3a, 0x67, 0xbd, 0x0c, 0x39, 0xce, 0x90, 0x65, 0x69, 0x37, 0xd6, 0x93, 0x1b, 0xb0, 0x14,
 	0xfa, 0x43, 0xe8, 0x09, 0x90, 0x86, 0xda, 0x29, 0xaf, 0x28, 0xb0, 0xd9, 0x17, 0x86, 0xda, 0x29,
@@ -3882,7 +3882,7 @@ var fileDescriptor_184a00a839b23dab = []byte{
 	0xd7, 0x93, 0x9f, 0x7c, 0xb5, 0x9e, 0xf8, 0xfc, 0xab, 0xf5, 0xc4, 0x5f, 0xbe, 0x5a, 0x4f, 0xbc,
 	0xbd, 0xd9, 0x33, 0xbc, 0xfe, 0xa8, 0xb3, 0xa9, 0x5b, 0xc3, 0xad, 0xe0, 0x0d, 0xae, 0x68, 0x3d,
 	0xa7, 0x5b, 0x0e, 0x0e, 0x3d, 0x0b, 0xee, 0xe4, 0xa8, 0x37, 0xfa, 0xc1, 0xff, 0x02, 0x00, 0x00,
-	0xff, 0xff, 0xf6, 0xb8, 0xbd, 0x33, 0x35, 0x2c, 0x00, 0x00,
+	0xff, 0xff, 0xc0, 0xf0, 0x8b, 0x5a, 0x35, 0x2c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -6829,23 +6829,23 @@ func (m *ConsensusRound) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Peorid != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.Peorid))
+	if m.Period != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.Period))
 		i--
 		dAtA[i] = 0x28
 	}
-	if m.ValidatorPeorid != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.ValidatorPeorid))
+	if m.ValidatorPeriod != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.ValidatorPeriod))
 		i--
 		dAtA[i] = 0x20
 	}
-	if m.VrfPeorid != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.VrfPeorid))
+	if m.VrfPeriod != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.VrfPeriod))
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.QrnPeorid != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.QrnPeorid))
+	if m.QrnPeriod != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.QrnPeriod))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -8634,17 +8634,17 @@ func (m *ConsensusRound) Size() (n int) {
 	if m.ConsensusStartBlockHeight != 0 {
 		n += 1 + sovTypes(uint64(m.ConsensusStartBlockHeight))
 	}
-	if m.QrnPeorid != 0 {
-		n += 1 + sovTypes(uint64(m.QrnPeorid))
+	if m.QrnPeriod != 0 {
+		n += 1 + sovTypes(uint64(m.QrnPeriod))
 	}
-	if m.VrfPeorid != 0 {
-		n += 1 + sovTypes(uint64(m.VrfPeorid))
+	if m.VrfPeriod != 0 {
+		n += 1 + sovTypes(uint64(m.VrfPeriod))
 	}
-	if m.ValidatorPeorid != 0 {
-		n += 1 + sovTypes(uint64(m.ValidatorPeorid))
+	if m.ValidatorPeriod != 0 {
+		n += 1 + sovTypes(uint64(m.ValidatorPeriod))
 	}
-	if m.Peorid != 0 {
-		n += 1 + sovTypes(uint64(m.Peorid))
+	if m.Period != 0 {
+		n += 1 + sovTypes(uint64(m.Period))
 	}
 	return n
 }
@@ -14819,9 +14819,9 @@ func (m *ConsensusRound) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field QrnPeorid", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field QrnPeriod", wireType)
 			}
-			m.QrnPeorid = 0
+			m.QrnPeriod = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTypes
@@ -14831,16 +14831,16 @@ func (m *ConsensusRound) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.QrnPeorid |= uint64(b&0x7F) << shift
+				m.QrnPeriod |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 3:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VrfPeorid", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field VrfPeriod", wireType)
 			}
-			m.VrfPeorid = 0
+			m.VrfPeriod = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTypes
@@ -14850,16 +14850,16 @@ func (m *ConsensusRound) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.VrfPeorid |= uint64(b&0x7F) << shift
+				m.VrfPeriod |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 4:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ValidatorPeorid", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ValidatorPeriod", wireType)
 			}
-			m.ValidatorPeorid = 0
+			m.ValidatorPeriod = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTypes
@@ -14869,16 +14869,16 @@ func (m *ConsensusRound) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ValidatorPeorid |= uint64(b&0x7F) << shift
+				m.ValidatorPeriod |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 5:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Peorid", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Period", wireType)
 			}
-			m.Peorid = 0
+			m.Period = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTypes
@@ -14888,7 +14888,7 @@ func (m *ConsensusRound) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Peorid |= uint64(b&0x7F) << shift
+				m.Period |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

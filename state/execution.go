@@ -563,7 +563,7 @@ func updateState(
 		lastHeightParamsChanged = header.Height + 1
 	}
 
-	if nextConsensusRound.ConsensusStartBlockHeight+int64(nextConsensusRound.Peorid)-1 == header.Height {
+	if nextConsensusRound.ConsensusStartBlockHeight+int64(nextConsensusRound.Period)-1 == header.Height {
 		i := 0
 		validatorSize := len(standingMemberSet.StandingMembers)
 		if state.SettingSteeringMember != nil {
@@ -592,7 +592,7 @@ func updateState(
 
 		nextConsensusRound.ConsensusStartBlockHeight = header.Height + 1
 
-		nextConsensusStartBlockHeight := nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.Peorid)
+		nextConsensusStartBlockHeight := nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.Period)
 
 		state.QrnSet = state.NextQrnSet.Copy()
 		state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)

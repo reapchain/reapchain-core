@@ -8,38 +8,38 @@ import (
 )
 
 const (
-	DefaultConsensusRoundQrnPeorid       = 4
-	DefaultConsensusRoundVrfPeorid       = 4
-	DefaultConsensusRoundValidatorPeorid = 4
-	DefaultConsensusRoundPeorid          = 12
+	DefaultConsensusRoundQrnPeriod       = 4
+	DefaultConsensusRoundVrfPeriod       = 4
+	DefaultConsensusRoundValidatorPeriod = 4
+	DefaultConsensusRoundPeriod          = 12
 )
 
 type ConsensusRound struct {
 	ConsensusStartBlockHeight int64  `json:"consensus_start_block_height"`
-	Peorid                    uint64 `json:"peorid"`
-	QrnPeorid                 uint64 `json:"qrn_peorid"`
-	VrfPeorid                 uint64 `json:"vrf_peorid"`
-	ValidatorPeorid           uint64 `json:"validator_peorid"`
+	Period                    uint64 `json:"period"`
+	QrnPeriod                 uint64 `json:"qrn_period"`
+	VrfPeriod                 uint64 `json:"vrf_period"`
+	ValidatorPeriod           uint64 `json:"validator_period"`
 }
 
-func NewConsensusRound(consensusStartBlockHeight int64, qrnPeorid, vrfPeorid, validatorPeorid uint64) ConsensusRound {
+func NewConsensusRound(consensusStartBlockHeight int64, qrnPeriod, vrfPeriod, validatorPeriod uint64) ConsensusRound {
 	consensusRound := ConsensusRound{
 		ConsensusStartBlockHeight: consensusStartBlockHeight,
-		QrnPeorid:                 qrnPeorid,
-		VrfPeorid:                 vrfPeorid,
-		ValidatorPeorid:           validatorPeorid,
-		Peorid:                    qrnPeorid + vrfPeorid + validatorPeorid,
+		QrnPeriod:                 qrnPeriod,
+		VrfPeriod:                 vrfPeriod,
+		ValidatorPeriod:           validatorPeriod,
+		Period:                    qrnPeriod + vrfPeriod + validatorPeriod,
 	}
 
 	if consensusRound.ConsensusStartBlockHeight <= 0 {
 		consensusRound.ConsensusStartBlockHeight = 1
 	}
 
-	if consensusRound.Peorid == 0 {
-		consensusRound.QrnPeorid = DefaultConsensusRoundQrnPeorid
-		consensusRound.VrfPeorid = DefaultConsensusRoundVrfPeorid
-		consensusRound.ValidatorPeorid = DefaultConsensusRoundValidatorPeorid
-		consensusRound.Peorid = DefaultConsensusRoundPeorid
+	if consensusRound.Period == 0 {
+		consensusRound.QrnPeriod = DefaultConsensusRoundQrnPeriod
+		consensusRound.VrfPeriod = DefaultConsensusRoundVrfPeriod
+		consensusRound.ValidatorPeriod = DefaultConsensusRoundValidatorPeriod
+		consensusRound.Period = DefaultConsensusRoundPeriod
 	}
 
 	return consensusRound
@@ -56,48 +56,48 @@ func (consensusRoundInfo ConsensusRound) ValidateBasic() error {
 func (consensusRound *ConsensusRound) ToProto() tmproto.ConsensusRound {
 	return tmproto.ConsensusRound{
 		ConsensusStartBlockHeight: consensusRound.ConsensusStartBlockHeight,
-		QrnPeorid:                 consensusRound.QrnPeorid,
-		VrfPeorid:                 consensusRound.VrfPeorid,
-		ValidatorPeorid:           consensusRound.ValidatorPeorid,
-		Peorid:                    consensusRound.Peorid,
+		QrnPeriod:                 consensusRound.QrnPeriod,
+		VrfPeriod:                 consensusRound.VrfPeriod,
+		ValidatorPeriod:           consensusRound.ValidatorPeriod,
+		Period:                    consensusRound.Period,
 	}
 }
 
 func ConsensusRoundFromProto(consensusRoundProto tmproto.ConsensusRound) (ConsensusRound, error) {
 	return ConsensusRound{
 		ConsensusStartBlockHeight: consensusRoundProto.ConsensusStartBlockHeight,
-		QrnPeorid:                 consensusRoundProto.QrnPeorid,
-		VrfPeorid:                 consensusRoundProto.VrfPeorid,
-		ValidatorPeorid:           consensusRoundProto.ValidatorPeorid,
-		Peorid:                    consensusRoundProto.Peorid,
+		QrnPeriod:                 consensusRoundProto.QrnPeriod,
+		VrfPeriod:                 consensusRoundProto.VrfPeriod,
+		ValidatorPeriod:           consensusRoundProto.ValidatorPeriod,
+		Period:                    consensusRoundProto.Period,
 	}, nil
 }
 
 func ValidateConsensusRound(consensusRound tmproto.ConsensusRound, height int64) error {
 	if consensusRound.ConsensusStartBlockHeight >= height {
-		return fmt.Errorf("QrnPeorid must be greater than height. Got %d, height %d",
-			consensusRound.QrnPeorid, height)
+		return fmt.Errorf("QrnPeriod must be greater than height. Got %d, height %d",
+			consensusRound.QrnPeriod, height)
 	}
 
-	if consensusRound.QrnPeorid <= 0 {
-		return fmt.Errorf("QrnPeorid must be greater than 0. Got %d",
-			consensusRound.QrnPeorid)
+	if consensusRound.QrnPeriod <= 0 {
+		return fmt.Errorf("QrnPeriod must be greater than 0. Got %d",
+			consensusRound.QrnPeriod)
 	}
 
-	if consensusRound.VrfPeorid <= 0 {
-		return fmt.Errorf("VrfPeorid must be greater than 0. Got %d",
-			consensusRound.VrfPeorid)
+	if consensusRound.VrfPeriod <= 0 {
+		return fmt.Errorf("VrfPeriod must be greater than 0. Got %d",
+			consensusRound.VrfPeriod)
 	}
 
-	if consensusRound.ValidatorPeorid <= 0 {
-		return fmt.Errorf("ValidatorPeorid must be greater than 0. Got %d",
-			consensusRound.ValidatorPeorid)
+	if consensusRound.ValidatorPeriod <= 0 {
+		return fmt.Errorf("ValidatorPeriod must be greater than 0. Got %d",
+			consensusRound.ValidatorPeriod)
 	}
 
-	checkPeorid := consensusRound.QrnPeorid + consensusRound.VrfPeorid + consensusRound.ValidatorPeorid
-	if checkPeorid != consensusRound.Peorid {
-		return fmt.Errorf("Peorid must be same QrnPeorid + VrfPeorid + ValidatorPeorid. Expected: %d, Got %d",
-			consensusRound.Peorid, checkPeorid)
+	checkPeriod := consensusRound.QrnPeriod + consensusRound.VrfPeriod + consensusRound.ValidatorPeriod
+	if checkPeriod != consensusRound.Period {
+		return fmt.Errorf("Period must be same QrnPeriod + VrfPeriod + ValidatorPeriod. Expected: %d, Got %d",
+			consensusRound.Period, checkPeriod)
 	}
 
 	return nil
@@ -110,10 +110,10 @@ func UpdateConsensusRound(currentConsensusRound tmproto.ConsensusRound, nextCons
 		return res
 	}
 
-	res.QrnPeorid = nextConsensusRound.QrnPeorid
-	res.VrfPeorid = nextConsensusRound.VrfPeorid
-	res.ValidatorPeorid = nextConsensusRound.ValidatorPeorid
-	res.Peorid = nextConsensusRound.Peorid
+	res.QrnPeriod = nextConsensusRound.QrnPeriod
+	res.VrfPeriod = nextConsensusRound.VrfPeriod
+	res.ValidatorPeriod = nextConsensusRound.ValidatorPeriod
+	res.Period = nextConsensusRound.Period
 
 	return res
 }

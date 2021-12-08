@@ -281,7 +281,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 				conR.Switch.StopPeerForError(src, err)
 				return
 			}
-			ps.ApplyNewRoundStepMessage(msg, conR.conS.state.ConsensusRound.ConsensusStartBlockHeight+int64(conR.conS.state.ConsensusRound.Peorid))
+			ps.ApplyNewRoundStepMessage(msg, conR.conS.state.ConsensusRound.ConsensusStartBlockHeight+int64(conR.conS.state.ConsensusRound.Period))
 		case *NewValidBlockMessage:
 			ps.ApplyNewValidBlockMessage(msg)
 		case *HasVoteMessage:
