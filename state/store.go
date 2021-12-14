@@ -203,7 +203,6 @@ func (store dbStore) Save(state State) error {
 
 func (store dbStore) save(state State, key []byte) error {
 	nextHeight := state.LastBlockHeight + 1
-	fmt.Println("stompesi-save", nextHeight)
 	// If first block, save validators for the block.
 	if nextHeight == 1 {
 		nextHeight = state.InitialHeight
@@ -774,8 +773,6 @@ func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, st
 		}
 		smInfo.StandingMemberSet = standingMemberSetProto
 	}
-
-	fmt.Println("save smInfo - ", height, smInfo.CurrentCoordinatorRanking)
 
 	bz, err := smInfo.Marshal()
 	if err != nil {

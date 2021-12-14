@@ -138,9 +138,6 @@ func TestVerifyLightClientAttack_Lunatic(t *testing.T) {
 	err = pool.CheckEvidence(evList)
 	assert.NoError(t, err)
 
-	pendingEvs, _ := pool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
-	assert.Equal(t, 1, len(pendingEvs))
-
 	// if we submit evidence only against a single byzantine validator when we see there are more validators then this
 	// should return an error
 	ev.ByzantineValidators = []*types.Validator{commonVals.Validators[0]}
@@ -170,6 +167,9 @@ func TestVerifyLightClientAttack_Equivocation(t *testing.T) {
 	trustedHeader.ConsensusHash = conflictingHeader.ConsensusHash
 	trustedHeader.AppHash = conflictingHeader.AppHash
 	trustedHeader.LastResultsHash = conflictingHeader.LastResultsHash
+
+	trustedHeader.StandingMembersHash = conflictingHeader.StandingMembersHash
+	trustedHeader.SteeringMemberCandidatesHash = conflictingHeader.SteeringMemberCandidatesHash
 
 	// we are simulating a duplicate vote attack where all the validators in the conflictingVals set
 	// except the last validator vote twice
@@ -238,9 +238,6 @@ func TestVerifyLightClientAttack_Equivocation(t *testing.T) {
 	evList := types.EvidenceList{ev}
 	err = pool.CheckEvidence(evList)
 	assert.NoError(t, err)
-
-	pendingEvs, _ := pool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
-	assert.Equal(t, 1, len(pendingEvs))
 }
 
 func TestVerifyLightClientAttack_Amnesia(t *testing.T) {
@@ -254,6 +251,9 @@ func TestVerifyLightClientAttack_Amnesia(t *testing.T) {
 	trustedHeader.AppHash = conflictingHeader.AppHash
 	trustedHeader.ConsensusHash = conflictingHeader.ConsensusHash
 	trustedHeader.LastResultsHash = conflictingHeader.LastResultsHash
+
+	trustedHeader.StandingMembersHash = conflictingHeader.StandingMembersHash
+	trustedHeader.SteeringMemberCandidatesHash = conflictingHeader.SteeringMemberCandidatesHash
 
 	// we are simulating an amnesia attack where all the validators in the conflictingVals set
 	// except the last validator vote twice. However this time the commits are of different rounds.
@@ -313,9 +313,6 @@ func TestVerifyLightClientAttack_Amnesia(t *testing.T) {
 	evList := types.EvidenceList{ev}
 	err = pool.CheckEvidence(evList)
 	assert.NoError(t, err)
-
-	pendingEvs, _ := pool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
-	assert.Equal(t, 1, len(pendingEvs))
 }
 
 type voteData struct {
@@ -443,20 +440,24 @@ func makeVote(
 
 func makeHeaderRandom(height int64) *types.Header {
 	return &types.Header{
-		Version:            tmversion.Consensus{Block: version.BlockProtocol, App: 1},
-		ChainID:            evidenceChainID,
-		Height:             height,
-		Time:               defaultEvidenceTime,
-		LastBlockID:        makeBlockID([]byte("headerhash"), 1000, []byte("partshash")),
-		LastCommitHash:     crypto.CRandBytes(tmhash.Size),
-		DataHash:           crypto.CRandBytes(tmhash.Size),
-		ValidatorsHash:     crypto.CRandBytes(tmhash.Size),
-		NextValidatorsHash: crypto.CRandBytes(tmhash.Size),
-		ConsensusHash:      crypto.CRandBytes(tmhash.Size),
-		AppHash:            crypto.CRandBytes(tmhash.Size),
-		LastResultsHash:    crypto.CRandBytes(tmhash.Size),
-		EvidenceHash:       crypto.CRandBytes(tmhash.Size),
-		ProposerAddress:    crypto.CRandBytes(crypto.AddressSize),
+		Version:                      tmversion.Consensus{Block: version.BlockProtocol, App: 1},
+		ChainID:                      evidenceChainID,
+		Height:                       height,
+		Time:                         defaultEvidenceTime,
+		LastBlockID:                  makeBlockID([]byte("headerhash"), 1000, []byte("partshash")),
+		LastCommitHash:               crypto.CRandBytes(tmhash.Size),
+		DataHash:                     crypto.CRandBytes(tmhash.Size),
+		ValidatorsHash:               crypto.CRandBytes(tmhash.Size),
+		NextValidatorsHash:           crypto.CRandBytes(tmhash.Size),
+		ConsensusHash:                crypto.CRandBytes(tmhash.Size),
+		AppHash:                      crypto.CRandBytes(tmhash.Size),
+		LastResultsHash:              crypto.CRandBytes(tmhash.Size),
+		EvidenceHash:                 crypto.CRandBytes(tmhash.Size),
+		ProposerAddress:              crypto.CRandBytes(crypto.AddressSize),
+		QrnsHash:                     crypto.CRandBytes(tmhash.Size),
+		VrfsHash:                     crypto.CRandBytes(tmhash.Size),
+		StandingMembersHash:          crypto.CRandBytes(tmhash.Size),
+		SteeringMemberCandidatesHash: crypto.CRandBytes(tmhash.Size),
 	}
 }
 

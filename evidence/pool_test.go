@@ -358,9 +358,11 @@ func TestRecoverPendingEvidence(t *testing.T) {
 
 }
 
-func initializeStateFromValidatorSet(valSet *types.ValidatorSet, height int64) sm.Store {
+func initializeStateFromValidatorSet(valSet *types.ValidatorSet, standingMemberSet *types.StandingMemberSet, steeringMemberCandidateSet *types.SteeringMemberCandidateSet, height int64) sm.Store {
 	stateDB := dbm.NewMemDB()
 	stateStore := sm.NewStore(stateDB)
+	qrnSet := types.NewQrnSet(1, standingMemberSet, nil)
+
 	state := sm.State{
 		ChainID:                     evidenceChainID,
 		InitialHeight:               1,
@@ -369,6 +371,10 @@ func initializeStateFromValidatorSet(valSet *types.ValidatorSet, height int64) s
 		Validators:                  valSet,
 		NextValidators:              valSet.Copy(),
 		LastValidators:              valSet,
+		QrnSet:                      qrnSet,
+		NextQrnSet:                  qrnSet.Copy(),
+		StandingMemberSet:           standingMemberSet,
+		SteeringMemberCandidateSet:  steeringMemberCandidateSet,
 		LastHeightValidatorsChanged: 1,
 		ConsensusParams: tmproto.ConsensusParams{
 			Block: tmproto.BlockParams{
@@ -395,9 +401,10 @@ func initializeStateFromValidatorSet(valSet *types.ValidatorSet, height int64) s
 }
 
 func initializeValidatorState(privVal types.PrivValidator, height int64) sm.Store {
-
 	pubKey, _ := privVal.GetPubKey()
 	validator := &types.Validator{Address: pubKey.Address(), VotingPower: 10, PubKey: pubKey}
+	standingMember := &types.StandingMember{Address: validator.Address, PubKey: pubKey}
+	steeringMemberCandidate := &types.SteeringMemberCandidate{Address: validator.Address, PubKey: pubKey}
 
 	// create validator set and state
 	valSet := &types.ValidatorSet{
@@ -405,7 +412,15 @@ func initializeValidatorState(privVal types.PrivValidator, height int64) sm.Stor
 		Proposer:   validator,
 	}
 
-	return initializeStateFromValidatorSet(valSet, height)
+	standingMemberSet := &types.StandingMemberSet{
+		StandingMembers: []*types.StandingMember{standingMember},
+	}
+
+	steeringMemberCandidateSet := &types.SteeringMemberCandidateSet{
+		SteeringMemberCandidates: []*types.SteeringMemberCandidate{steeringMemberCandidate},
+	}
+
+	return initializeStateFromValidatorSet(valSet, standingMemberSet, steeringMemberCandidateSet, height)
 }
 
 // initializeBlockStore creates a block storage and populates it w/ a dummy

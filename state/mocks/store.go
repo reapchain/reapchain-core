@@ -8,6 +8,7 @@ import (
 
 	tendermintstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
 
+	"github.com/reapchain/reapchain-core/proto/reapchain/types"
 	tenderminttypes "github.com/reapchain/reapchain-core/types"
 )
 
@@ -83,6 +84,26 @@ func (_m *Store) LoadConsensusParams(_a0 int64) (types.ConsensusParams, error) {
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Get(0).(types.ConsensusParams)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+func (_m *Store) LoadConsensusRound(_a0 int64) (types.ConsensusRound, error) {
+	ret := _m.Called(_a0)
+
+	var r0 types.ConsensusRound
+	if rf, ok := ret.Get(0).(func(int64) types.ConsensusRound); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Get(0).(types.ConsensusRound)
 	}
 
 	var r1 error
@@ -200,4 +221,158 @@ func (_m *Store) SaveABCIResponses(_a0 int64, _a1 *tendermintstate.ABCIResponses
 	}
 
 	return r0
+}
+
+func (_m *Store) LoadNextQrnSet(_a0 int64) (*tenderminttypes.QrnSet, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *tenderminttypes.QrnSet
+	if rf, ok := ret.Get(0).(func(int64) *tenderminttypes.QrnSet); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*tenderminttypes.QrnSet)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+func (_m *Store) LoadNextVrfSet(_a0 int64) (*tenderminttypes.VrfSet, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *tenderminttypes.VrfSet
+	if rf, ok := ret.Get(0).(func(int64) *tenderminttypes.VrfSet); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*tenderminttypes.VrfSet)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+func (_m *Store) LoadQrnSet(_a0 int64) (*tenderminttypes.QrnSet, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *tenderminttypes.QrnSet
+	if rf, ok := ret.Get(0).(func(int64) *tenderminttypes.QrnSet); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*tenderminttypes.QrnSet)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+func (_m *Store) LoadVrfSet(_a0 int64) (*tenderminttypes.VrfSet, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *tenderminttypes.VrfSet
+	if rf, ok := ret.Get(0).(func(int64) *tenderminttypes.VrfSet); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*tenderminttypes.VrfSet)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+func (_m *Store) LoadSettingSteeringMember(_a0 int64) (*tenderminttypes.SettingSteeringMember, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *tenderminttypes.SettingSteeringMember
+	if rf, ok := ret.Get(0).(func(int64) *tenderminttypes.SettingSteeringMember); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*tenderminttypes.SettingSteeringMember)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+func (_m *Store) LoadStandingMemberSet(_a0 int64) (*tenderminttypes.StandingMemberSet, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *tenderminttypes.StandingMemberSet
+	if rf, ok := ret.Get(0).(func(int64) *tenderminttypes.StandingMemberSet); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*tenderminttypes.StandingMemberSet)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+func (_m *Store) LoadSteeringMemberCandidateSet(_a0 int64) (*tenderminttypes.SteeringMemberCandidateSet, error) {
+	ret := _m.Called(_a0)
+
+	var r0 *tenderminttypes.SteeringMemberCandidateSet
+	if rf, ok := ret.Get(0).(func(int64) *tenderminttypes.SteeringMemberCandidateSet); ok {
+		r0 = rf(_a0)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*tenderminttypes.SteeringMemberCandidateSet)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
