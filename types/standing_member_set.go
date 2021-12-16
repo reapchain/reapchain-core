@@ -89,19 +89,7 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 	qrnHashs := make([]*QrnHash, qrnSet.Size())
 	qrnSetHash := qrnSet.Hash()
 
-	// fmt.Println("qrnSetHash", qrnSetHash)
-
-	// fmt.Println("-------------------")
-
 	for i, qrn := range qrnSet.Qrns {
-		// fmt.Println("i", i)
-		// fmt.Println("qrn.Height", qrn.Height)
-		// fmt.Println("qrn.Signature", qrn.Signature)
-		// fmt.Println("qrn.StandingMemberIndex", qrn.StandingMemberIndex)
-		// fmt.Println("qrn.StandingMemberPubKey", qrn.StandingMemberPubKey)
-		// fmt.Println("qrn.Timestamp", qrn.Timestamp)
-		// fmt.Println("qrn.Value", qrn.Value)
-
 		qrnHash := make([][]byte, 2)
 		qrnHash[0] = qrnSetHash
 		qrnHash[1] = qrn.GetQrnBytes()
@@ -115,21 +103,12 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 		if qrn.Signature != nil {
 			qrnHashs[i].HashValue = encoding_binary.LittleEndian.Uint64(merkle.HashFromByteSlices(qrnHash))
 		}
-
-		// fmt.Println("i", i)
-		// fmt.Println("qrnHashs[i].Address", qrnHashs[i].Address)
-		// fmt.Println("qrnHash[1]", qrnHash[1])
-		// fmt.Println("qrnHashs[i].HashValue", qrnHashs[i].HashValue)
 	}
-	fmt.Println("-------------------")
 
 	sort.Sort(QrnHashsByValue(qrnHashs))
 
 	_, standingMember := standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
 	standingMemberSet.Coordinator = standingMember
-
-	fmt.Println("standingMemberSet.CurrentCoordinatorRanking", standingMemberSet.CurrentCoordinatorRanking)
-	fmt.Println("standingMemberSet.Coordinator.Address", standingMemberSet.Coordinator.Address)
 }
 
 func StandingMemberSetFromProto(standingMemberSetProto *tmproto.StandingMemberSet) (*StandingMemberSet, error) {

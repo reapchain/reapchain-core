@@ -375,7 +375,6 @@ func (n *upnpNAT) AddPortMapping(
 	// log.Println(message, response)
 	// JAE:
 	// body, err := ioutil.ReadAll(response.Body)
-	// fmt.Println(string(body), err)
 	mappedExternalPort = externalPort
 	_ = response
 	return mappedExternalPort, err

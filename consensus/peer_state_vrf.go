@@ -1,8 +1,6 @@
 package consensus
 
 import (
-	"fmt"
-
 	"github.com/reapchain/reapchain-core/libs/bits"
 	"github.com/reapchain/reapchain-core/types"
 )
@@ -10,7 +8,6 @@ import (
 func (ps *PeerState) setHasVrf(height int64, index int32) {
 	psVrfs := ps.getVrfBitArray(height)
 	if psVrfs != nil {
-		// fmt.Println("setHasVrf", index)
 		psVrfs.SetIndex(int(index), true)
 	}
 }
@@ -29,8 +26,6 @@ func (ps *PeerState) PickSendVrf(vrfSet types.VrfSetReader) bool {
 		if ps.peer.Send(VrfChannel, MustEncode(msg)) {
 			ps.SetHasVrf(vrf)
 			return true
-		} else {
-			fmt.Println("PickSendVrf: Faile to send")
 		}
 
 		return false
@@ -47,8 +42,6 @@ func (ps *PeerState) PickVrfToSend(vrfSet types.VrfSetReader) (vrf *types.Vrf, o
 	}
 
 	height, size := vrfSet.GetHeight(), vrfSet.Size()
-
-	// fmt.Println("PickVrfToSend", height, size)
 
 	ps.ensureVrfBitArrays(height, size)
 
@@ -81,7 +74,6 @@ func (ps *PeerState) ensureVrfBitArrays(height int64, numSteeringMemberCandidate
 
 func (ps *PeerState) getVrfBitArray(height int64) *bits.BitArray {
 	if ps.NextConsensusStartBlockHeight == height {
-		// fmt.Println("getVrfBitArray", ps.NextConsensusStartBlockHeight, height)
 		return ps.VrfsBitArray
 	}
 

@@ -258,7 +258,6 @@ func (cli *grpcClient) BeginBlockAsync(params types.RequestBeginBlock) *ReqRes {
 }
 
 func (cli *grpcClient) EndBlockAsync(params types.RequestEndBlock) *ReqRes {
-	fmt.Println("stompesi - EndBlockAsync")
 	req := types.ToRequestEndBlock(params)
 	res, err := cli.client.EndBlock(context.Background(), req.GetEndBlock(), grpc.WaitForReady(true))
 	if err != nil {

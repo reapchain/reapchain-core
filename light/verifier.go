@@ -121,8 +121,6 @@ func VerifyAdjacent(
 		)
 		return err
 	}
-	//TODO: stompesi check
-
 	// Ensure that +2/3 of new validators signed correctly.
 	if err := untrustedVals.VerifyCommitLight(trustedHeader.ChainID, untrustedHeader.Commit.BlockID,
 		untrustedHeader.Height, untrustedHeader.Commit); err != nil {

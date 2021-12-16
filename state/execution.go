@@ -172,7 +172,6 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	//standingMemberUpdates = state.StandingMemberSet.StandingMembers
 
 	if len(standingMemberUpdates) > 0 {
-		fmt.Println("stompesi - standingMemberUpdates")
 		blockExec.logger.Debug("updates to standing members", "updates", types.StandingMemberListString(standingMemberUpdates))
 	}
 
@@ -201,7 +200,6 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		return state, 0, err
 	}
 	if len(qrnUpdates) > 0 {
-		fmt.Println("updates to qrns", "updates", types.QrnListString(qrnUpdates))
 		blockExec.logger.Debug("updates to qrns", "updates", types.QrnListString(qrnUpdates))
 	}
 
@@ -226,10 +224,9 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	// Update the app hash and save the state.
 	state.AppHash = appHash
 
-	blockExec.logger.Error("ApplyBlock",
-		"state.QrnSet.Height", state.QrnSet.Height,
-		"InitialHeight", state.InitialHeight,
-		"LastBlockHeight", state.LastBlockHeight)
+	// dt := time.Now()
+	// fmt.Println("ApplyBlock - time is: ", dt.String())
+	// fmt.Println("")
 
 	if err := blockExec.store.Save(state); err != nil {
 		return state, 0, err
@@ -366,7 +363,6 @@ func execBlockOnProxyApp(
 	// End block.
 	abciResponses.EndBlock, err = proxyAppConn.EndBlockSync(abci.RequestEndBlock{Height: block.Height})
 
-	fmt.Printf("execBlockOnProxyApp %v", abciResponses.EndBlock)
 	if err != nil {
 		logger.Error("error in proxyAppConn.EndBlock", "err", err)
 		return nil, err
@@ -567,11 +563,7 @@ func updateState(
 		i := 0
 		validatorSize := len(standingMemberSet.StandingMembers)
 		if state.SettingSteeringMember != nil {
-			fmt.Println("stompesi---------------SteeringMemberIndexes")
-			fmt.Println(len(state.SettingSteeringMember.SteeringMemberIndexes))
 			validatorSize = validatorSize + len(state.SettingSteeringMember.SteeringMemberIndexes)
-		} else {
-			fmt.Println("stompesi---------------SteeringMemberIndexes-empty")
 		}
 
 		validators := make([]*types.Validator, validatorSize)

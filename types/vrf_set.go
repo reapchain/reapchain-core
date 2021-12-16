@@ -116,7 +116,6 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 		return fmt.Errorf("Invalid vrf sign")
 	}
 
-	// fmt.Println("AddVrf", vrfSet.Height, vrf.Height)
 	if vrfSet.Height != vrf.Height {
 		return fmt.Errorf("Invalid vrf height")
 	}
@@ -132,8 +131,6 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 
 		vrfSet.Vrfs[steeringMemberCandidateIndex] = vrf.Copy()
 		vrfSet.VrfsBitArray.SetIndex(int(steeringMemberCandidateIndex), true)
-
-		fmt.Println("Add Vrf: ", steeringMemberCandidateIndex)
 	}
 
 	return nil

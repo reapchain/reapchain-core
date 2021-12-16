@@ -563,7 +563,6 @@ func (c *Client) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, e
 	}, nil
 }
 
-// TODO: stompesi
 func (c *Client) SettingSteeringMember(ctx context.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
 	l, err := c.updateLightClientIfNeededTo(ctx, height)
 	if err != nil {

@@ -157,13 +157,6 @@ func NewState(
 	options ...StateOption,
 ) *State {
 
-	// fmt.Println("NewState", state.NextValidators.Size())
-
-	// fmt.Println("NewState", state.VrfSet.SteeringMemberCandidateSet.Size())
-	// fmt.Println("NewState", state.VrfSet.Size())
-
-	// fmt.Println("NewState", state.NextVrfSet.SteeringMemberCandidateSet.Size())
-	// fmt.Println("NewState", state.NextVrfSet.Size())
 	cs := &State{
 		config:           config,
 		blockExec:        blockExec,
@@ -476,6 +469,9 @@ func (cs *State) OpenWAL(walFile string) (WAL, error) {
 
 // AddVote inputs a vote.
 func (cs *State) AddVote(vote *types.Vote, peerID p2p.ID) (added bool, err error) {
+	// dt := time.Now()
+	// fmt.Println("AddVote - time is: ", dt.String())
+
 	if peerID == "" {
 		cs.internalMsgQueue <- msgInfo{&VoteMessage{vote}, ""}
 	} else {
@@ -488,6 +484,8 @@ func (cs *State) AddVote(vote *types.Vote, peerID p2p.ID) (added bool, err error
 
 // SetProposal inputs a proposal.
 func (cs *State) SetProposal(proposal *types.Proposal, peerID p2p.ID) error {
+	// dt := time.Now()
+	// fmt.Println("SetProposal - time is: ", dt.String())
 
 	if peerID == "" {
 		cs.internalMsgQueue <- msgInfo{&ProposalMessage{proposal}, ""}
@@ -501,6 +499,8 @@ func (cs *State) SetProposal(proposal *types.Proposal, peerID p2p.ID) error {
 
 // AddProposalBlockPart inputs a part of the proposal block.
 func (cs *State) AddProposalBlockPart(height int64, round int32, part *types.Part, peerID p2p.ID) error {
+	// dt := time.Now()
+	// fmt.Println("AddProposalBlockPart - time is: ", dt.String())
 
 	if peerID == "" {
 		cs.internalMsgQueue <- msgInfo{&BlockPartMessage{height, round, part}, ""}
@@ -519,6 +519,8 @@ func (cs *State) SetProposalAndBlock(
 	parts *types.PartSet,
 	peerID p2p.ID,
 ) error {
+	// dt := time.Now()
+	// fmt.Println("SetProposalAndBlock - time is: ", dt.String())
 
 	if err := cs.SetProposal(proposal, peerID); err != nil {
 		return err
@@ -880,8 +882,6 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// We could make note of this and help filter in broadcastHasVoteMessage().
 
 	case *QrnMessage:
-		// fmt.Println("Add Qrn: ", msg.Qrn.Height, msg.Qrn.StandingMemberIndex, msg.Qrn.StandingMemberPubKey.Address(), msg.Qrn.Value)
-
 		added, err = cs.tryAddQrn(msg.Qrn, peerID)
 		if err != nil {
 			fmt.Println("qrn-height-update", cs.state.QrnSet.Height)
@@ -1104,7 +1104,8 @@ func (cs *State) enterPropose(height int64, round int32) {
 		return
 	}
 
-	logger.Debug("entering propose step", "current", fmt.Sprintf("%v/%v/%v", cs.Height, cs.Round, cs.Step))
+	// dt := time.Now()
+	// fmt.Println("Entering propose step - time is: ", dt.String())
 
 	defer func() {
 		// Done enterPropose:
@@ -1154,6 +1155,9 @@ func (cs *State) isProposer(address []byte) bool {
 }
 
 func (cs *State) defaultDecideProposal(height int64, round int32) {
+	// dt := time.Now()
+	// fmt.Println("Default decide proposal - time is: ", dt.String())
+
 	var block *types.Block
 	var blockParts *types.PartSet
 
@@ -1204,6 +1208,9 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 // Returns true if the proposal block is complete &&
 // (if POLRound was proposed, we have +2/3 prevotes from there).
 func (cs *State) isProposalComplete() bool {
+	// dt := time.Now()
+	// fmt.Println("Is proposal complete - time is: ", dt.String())
+
 	if cs.Proposal == nil || cs.ProposalBlock == nil {
 		return false
 	}
@@ -1225,6 +1232,9 @@ func (cs *State) isProposalComplete() bool {
 // NOTE: keep it side-effect free for clarity.
 // CONTRACT: cs.privValidator is not nil.
 func (cs *State) createProposalBlock() (block *types.Block, blockParts *types.PartSet) {
+	// dt := time.Now()
+	// fmt.Println("Create proposal block - time is: ", dt.String())
+
 	if cs.privValidator == nil {
 		panic("entered createProposalBlock with privValidator being nil")
 	}
@@ -1262,6 +1272,9 @@ func (cs *State) createProposalBlock() (block *types.Block, blockParts *types.Pa
 // Prevote for LockedBlock if we're locked, or ProposalBlock if valid.
 // Otherwise vote nil.
 func (cs *State) enterPrevote(height int64, round int32) {
+	// dt := time.Now()
+	// fmt.Println("Enter prevote - time is: ", dt.String())
+
 	logger := cs.Logger.With("height", height, "round", round)
 
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cstypes.RoundStepPrevote <= cs.Step) {
@@ -1288,6 +1301,9 @@ func (cs *State) enterPrevote(height int64, round int32) {
 }
 
 func (cs *State) defaultDoPrevote(height int64, round int32) {
+	// dt := time.Now()
+	// fmt.Println("Default oo prevote - time is: ", dt.String())
+
 	logger := cs.Logger.With("height", height, "round", round)
 
 	// If a block is locked, prevote that.
@@ -1358,7 +1374,6 @@ func (cs *State) enterPrevoteWait(height int64, round int32) {
 // else, unlock an existing lock and precommit nil if +2/3 of prevotes were nil,
 // else, precommit nil otherwise.
 func (cs *State) enterPrecommit(height int64, round int32) {
-	// fmt.Println("enterPrecommit", string(debug.Stack()))
 	logger := cs.Logger.With("height", height, "round", round)
 
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cstypes.RoundStepPrecommit <= cs.Step) {
@@ -1523,7 +1538,8 @@ func (cs *State) enterCommit(height int64, commitRound int32) {
 		return
 	}
 
-	logger.Debug("entering commit step", "current", fmt.Sprintf("%v/%v/%v", cs.Height, cs.Round, cs.Step))
+	// dt := time.Now()
+	// fmt.Println("Entering commit step - time is: ", dt.String())
 
 	defer func() {
 		// Done enterCommit:
@@ -1687,9 +1703,6 @@ func (cs *State) finalizeCommit(height int64) {
 		retainHeight int64
 	)
 
-	// fmt.Println("cs.state.NextVrfSet.SteeringMemberCandidateSet.Size", cs.state.NextVrfSet.SteeringMemberCandidateSet.Size())
-	// fmt.Println("cs.state.NextVrfSet.Size", cs.state.NextVrfSet.Size())
-	// fmt.Println("cs.state.NextValidators.Size", cs.state.NextValidators.Size())
 	stateCopy, retainHeight, err = cs.blockExec.ApplyBlock(
 		stateCopy,
 		types.BlockID{
@@ -1734,10 +1747,6 @@ func (cs *State) finalizeCommit(height int64) {
 			if cs.RoundState.StandingMemberSet.HasAddress(address) == true {
 
 				standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
-				fmt.Println("stompesi - im standing member candidate - QrnMessage")
-				fmt.Println(cs.state.ConsensusRound.ConsensusStartBlockHeight) // 1
-				fmt.Println(standingMemberIndex)                               // 2
-
 				if standingMemberIndex != -1 {
 					qrnValue := tmrand.Uint64()
 
@@ -1756,9 +1765,6 @@ func (cs *State) finalizeCommit(height int64) {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
 			if cs.RoundState.SteeringMemberCandidateSet.HasAddress(address) == true {
-				fmt.Println("stompesi - im steering member candidate - VrfMessage")
-				fmt.Println(cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.QrnPeriod))
-
 				isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
 
 				if isFull == false {
@@ -1796,19 +1802,6 @@ func (cs *State) finalizeCommit(height int64) {
 					if err != nil {
 						fmt.Println("Can't sign settingSteeringMember", "err", err)
 					} else {
-
-						fmt.Println("Send settingSteeringMember")
-						fmt.Println("Send settingSteeringMember")
-						fmt.Println("Send settingSteeringMember")
-						fmt.Println("Send settingSteeringMember")
-						fmt.Println("Send settingSteeringMember")
-						fmt.Println("Send settingSteeringMember")
-						fmt.Println(cs.state.ConsensusRound.ConsensusStartBlockHeight)
-						fmt.Println(cs.state.ConsensusRound.QrnPeriod + cs.state.ConsensusRound.VrfPeriod)
-
-						fmt.Println(len(settingSteeringMember.SteeringMemberIndexes))
-						fmt.Println(settingSteeringMember.SteeringMemberIndexes)
-
 						cs.sendInternalMessage(msgInfo{&SettingSteeringMemberMessage{settingSteeringMember}, ""})
 					}
 				}
@@ -1933,6 +1926,8 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 //-----------------------------------------------------------------------------
 
 func (cs *State) defaultSetProposal(proposal *types.Proposal) error {
+	// dt := time.Now()
+	// fmt.Println("Set Proposal - time is: ", dt.String())
 	// Already have one
 	// TODO: possibly catch double proposals
 	if cs.Proposal != nil {
@@ -1955,8 +1950,6 @@ func (cs *State) defaultSetProposal(proposal *types.Proposal) error {
 	if !cs.Validators.GetProposer().PubKey.VerifySignature(
 		types.ProposalSignBytes(cs.state.ChainID, p), proposal.Signature,
 	) {
-		// Todo:stompesi - 잘못된 코디네이터 추가
-		// cs.evpool.ReportInvalidCoordinator()
 		return ErrInvalidProposalSignature
 	}
 
@@ -1977,6 +1970,8 @@ func (cs *State) defaultSetProposal(proposal *types.Proposal) error {
 // Asynchronously triggers either enterPrevote (before we timeout of propose) or tryFinalizeCommit,
 // once we have the full block.
 func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (added bool, err error) {
+	// dt := time.Now()
+	// fmt.Println("Add proposal blockart - time is: ", dt.String())
 	height, round, part := msg.Height, msg.Round, msg.Part
 
 	// Blocks might be reused, so round mismatch is OK
@@ -2027,8 +2022,11 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 
 		cs.ProposalBlock = block
 
+		// dt := time.Now()
+		// fmt.Println("Received complete proposal block - time is: ", dt.String())
+
 		// NOTE: it's possible to receive complete proposal blocks for future rounds without having the proposal
-		cs.Logger.Info("received complete proposal block", "height", cs.ProposalBlock.Height, "hash", cs.ProposalBlock.Hash())
+		cs.Logger.Info("Received complete proposal block", "height", cs.ProposalBlock.Height, "hash", cs.ProposalBlock.Hash())
 
 		if err := cs.eventBus.PublishEventCompleteProposal(cs.CompleteProposalEvent()); err != nil {
 			cs.Logger.Error("failed publishing event complete proposal", "err", err)

@@ -217,7 +217,6 @@ func (pool *BlockPool) AddBlock(peerID p2p.ID, block *types.Block, blockSize int
 			peer.decrPending(blockSize)
 		}
 	} else {
-		fmt.Println("invalid peer", "peer", peerID, "blockHeight", block.Height)
 		pool.sendError(errors.New("invalid peer"), peerID)
 	}
 }

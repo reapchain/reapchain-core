@@ -364,8 +364,6 @@ func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	}
 	state.StandingMemberSet = standingMemberSet
 
-	fmt.Println("SyncStateFromProto - 19191919", state.StandingMemberSet.CurrentCoordinatorRanking)
-
 	steeringMemberCandidate, err := types.SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidateSet)
 	if err != nil {
 		return nil, err

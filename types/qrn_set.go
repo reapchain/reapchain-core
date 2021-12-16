@@ -22,9 +22,6 @@ type QrnSet struct {
 }
 
 func NewQrnSet(height int64, standingMemberSet *StandingMemberSet, qrns []*Qrn) *QrnSet {
-	// fmt.Println("NewQrnSet", height)
-	// debug.PrintStack()
-
 	if qrns == nil || len(qrns) == 0 {
 		qrns = make([]*Qrn, standingMemberSet.Size())
 		for i, standingMember := range standingMemberSet.StandingMembers {
@@ -135,7 +132,6 @@ func (qrnSet *QrnSet) AddQrn(qrn *Qrn) error {
 		return fmt.Errorf("Invalid qrn sign")
 	}
 
-	// fmt.Println("AddQrn", qrnSet.Height, qrn.Height)
 	if qrnSet.Height != qrn.Height {
 		return fmt.Errorf("Invalid qrn height")
 	}
@@ -151,8 +147,6 @@ func (qrnSet *QrnSet) AddQrn(qrn *Qrn) error {
 
 		qrnSet.Qrns[standingMemberIndex] = qrn.Copy()
 		qrnSet.QrnsBitArray.SetIndex(int(standingMemberIndex), true)
-
-		fmt.Println("Add qrn", standingMemberIndex)
 	}
 	return nil
 }

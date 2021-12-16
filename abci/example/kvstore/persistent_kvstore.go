@@ -121,7 +121,6 @@ func (app *PersistentKVStoreApplication) InitChain(req types.RequestInitChain) t
 
 // Track the block hash and header information
 func (app *PersistentKVStoreApplication) BeginBlock(req types.RequestBeginBlock) types.ResponseBeginBlock {
-	fmt.Println("stompesi-BeginBlock")
 	// reset valset changes
 	app.ValUpdates = make([]types.ValidatorUpdate, 0)
 
@@ -148,7 +147,6 @@ func (app *PersistentKVStoreApplication) BeginBlock(req types.RequestBeginBlock)
 
 // Update the validator set
 func (app *PersistentKVStoreApplication) EndBlock(req types.RequestEndBlock) types.ResponseEndBlock {
-	fmt.Println("stompesi-EndBlock")
 	return types.ResponseEndBlock{ValidatorUpdates: app.ValUpdates}
 }
 

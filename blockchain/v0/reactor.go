@@ -190,9 +190,6 @@ func (bcR *BlockchainReactor) RemovePeer(peer p2p.Peer, reason interface{}) {
 // if we have it. Otherwise, we'll respond saying we don't have it.
 func (bcR *BlockchainReactor) respondToPeer(msg *bcproto.BlockRequest,
 	src p2p.Peer) (queued bool) {
-
-	fmt.Println("respondToPeer - ", msg.Height)
-
 	block := bcR.store.LoadBlock(msg.Height)
 	if block != nil {
 		bl, err := block.ToProto()
@@ -244,7 +241,6 @@ func (bcR *BlockchainReactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) 
 
 	case *bcproto.BlockResponse:
 		bi, err := types.BlockFromProto(msg.Block)
-		// fmt.Println("bcproto.BlockResponse", bi.LastCommit.Height)
 
 		if err != nil {
 			bcR.Logger.Error("Block content is invalid", "err", err)
@@ -257,7 +253,6 @@ func (bcR *BlockchainReactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) 
 
 	case *bcproto.StateResponse:
 		state, err := sm.SyncStateFromProto(msg.State)
-		fmt.Println("stompesi-state", state.LastBlockHeight)
 
 		if err != nil {
 			bcR.Logger.Error("State content is invalid", "err", err)
@@ -317,7 +312,6 @@ func (bcR *BlockchainReactor) poolRoutine(stateSynced bool) {
 			select {
 			case <-bcR.Quit():
 				return
-			// stompesi
 			case <-bcR.blockPool.Quit():
 				return
 			case request := <-bcR.requestsCh:
@@ -443,7 +437,6 @@ FOR_LOOP:
 			// currently necessary.
 			err := state.Validators.VerifyCommitLight(chainID, firstID, first.Height, second.LastCommit)
 			if err != nil {
-				fmt.Println("stompesi-step3")
 				bcR.Logger.Error("Error in validation", "err", err)
 				peerID := bcR.blockPool.RedoRequest(first.Height)
 				peer := bcR.Switch.Peers().Get(peerID)
@@ -465,9 +458,6 @@ FOR_LOOP:
 				bcR.statePool.PopRequest()
 
 				// TODO: validate
-
-				fmt.Println("first.Height", first.Height)
-
 				state.QrnSet = firstState.QrnSet
 				state.VrfSet = firstState.VrfSet
 				state.SettingSteeringMember = firstState.SettingSteeringMember
@@ -477,20 +467,12 @@ FOR_LOOP:
 				state.StandingMemberSet = firstState.StandingMemberSet.Copy()
 				state.SteeringMemberCandidateSet = firstState.SteeringMemberCandidateSet.Copy()
 
-				fmt.Println("stompesi-firstState.StandingMemberSet", firstState.StandingMemberSet.CurrentCoordinatorRanking)
-
 				// TODO: batch saves so we dont persist to disk every block
 				bcR.store.SaveBlock(first, firstParts, second.LastCommit)
 
 				// TODO: same thing for app - but we would need a way to
 				// get the hash without persisting the state
 				var err error
-
-				if state.SettingSteeringMember != nil {
-					fmt.Println("poolRoutine-SteeringMemberIndexes", state.SettingSteeringMember.SteeringMemberIndexes)
-				} else {
-					fmt.Println("poolRoutine-SteeringMemberIndexes-nil")
-				}
 
 				state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
 				if err != nil {
@@ -527,10 +509,8 @@ func (bcR *BlockchainReactor) BroadcastStatusRequest() error {
 
 func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 	src p2p.Peer) (queued bool) {
-	fmt.Println("respondStateToPeer - ", msg.Height)
 	qrnSet, err := bcR.stateStore.LoadQrnSet(msg.Height)
 	if err != nil {
-		fmt.Println("respondStateToPeer1 - qnr load 실패", msg.Height)
 		return false
 	}
 
@@ -539,37 +519,31 @@ func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 
 		vrfSet, err := bcR.stateStore.LoadVrfSet(msg.Height)
 		if err != nil {
-			fmt.Println("respondStateToPeer2 - ", msg.Height)
 			return false
 		}
 
 		settingSteeringMember, err := bcR.stateStore.LoadSettingSteeringMember(msg.Height)
 		if err != nil {
-			fmt.Println("respondStateToPeer3 - ", msg.Height)
 			return false
 		}
 
 		nextVrfSet, err := bcR.stateStore.LoadNextVrfSet(msg.Height)
 		if err != nil {
-			fmt.Println("respondStateToPeer2 - ", msg.Height)
 			return false
 		}
 
 		nextQrnSet, err := bcR.stateStore.LoadNextQrnSet(msg.Height)
 		if err != nil {
-			fmt.Println("respondStateToPeer2 - ", msg.Height)
 			return false
 		}
 
 		standingMemberSet, err := bcR.stateStore.LoadStandingMemberSet(msg.Height)
 		if err != nil {
-			fmt.Println("respondStateToPeer2 - ", msg.Height)
 			return false
 		}
 
 		steeringMemberCandidateSet, err := bcR.stateStore.LoadSteeringMemberCandidateSet(msg.Height)
 		if err != nil {
-			fmt.Println("respondStateToPeer2 - ", msg.Height)
 			return false
 		}
 
@@ -586,33 +560,23 @@ func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 
 		stateProto, err := state.ToProto()
 		if err != nil {
-			fmt.Println("respondStateToPeer4 - ", msg.Height)
 			return false
 		}
 
 		msgBytes, err := bc.EncodeMsg(&bcproto.StateResponse{State: stateProto})
 
 		if err != nil {
-			fmt.Println("respondStateToPeer5 - ", msg.Height)
 			bcR.Logger.Error("could not marshal msg", "err", err)
 			return false
 		}
-
-		fmt.Println("respondStateToPeer1 - 성공", msg.Height)
-		fmt.Println("state - ", state.StandingMemberSet.CurrentCoordinatorRanking)
-		fmt.Println("stateProto - ", stateProto.StandingMemberSet.CurrentCoordinatorRanking)
-
 		return src.TrySend(BlockchainChannel, msgBytes)
 	}
-	fmt.Println("respondStateToPeer1 - qnr 없음", msg.Height)
 
 	msgBytes, err := bc.EncodeMsg(&bcproto.NoStateResponse{Height: msg.Height})
 	if err != nil {
-		fmt.Println("respondStateToPeer6 - ", msg.Height)
 		bcR.Logger.Error("could not convert msg to protobuf", "err", err)
 		return false
 	}
 
-	fmt.Println("respondStateToPeer1 - 없어", msg.Height)
 	return src.TrySend(BlockchainChannel, msgBytes)
 }

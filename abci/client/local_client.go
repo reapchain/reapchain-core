@@ -1,8 +1,6 @@
 package abcicli
 
 import (
-	"fmt"
-
 	types "github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/libs/service"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
@@ -281,7 +279,6 @@ func (app *localClient) EndBlockSync(req types.RequestEndBlock) (*types.Response
 	app.mtx.Lock()
 	defer app.mtx.Unlock()
 
-	fmt.Println("stompesi - EndBlockSync")
 	res := app.Application.EndBlock(req)
 	return &res, nil
 }

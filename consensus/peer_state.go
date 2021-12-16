@@ -386,7 +386,6 @@ func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage, consensu
 	ps.PRS.StartTime = startTime
 
 	if ps.NextConsensusStartBlockHeight != consensusStartBlockHeight {
-		fmt.Println("ApplyNewRoundStepMessage", ps.NextConsensusStartBlockHeight, consensusStartBlockHeight)
 		ps.NextConsensusStartBlockHeight = consensusStartBlockHeight
 		ps.QrnsBitArray = nil
 		ps.VrfsBitArray = nil

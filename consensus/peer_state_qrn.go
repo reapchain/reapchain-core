@@ -1,8 +1,6 @@
 package consensus
 
 import (
-	"fmt"
-
 	"github.com/reapchain/reapchain-core/libs/bits"
 	"github.com/reapchain/reapchain-core/types"
 )
@@ -28,8 +26,6 @@ func (ps *PeerState) PickSendQrn(qrnSet types.QrnSetReader) bool {
 		if ps.peer.Send(QrnChannel, MustEncode(msg)) {
 			ps.SetHasQrn(qrn)
 			return true
-		} else {
-			fmt.Println("PickSendQrn: Faile to send")
 		}
 		return false
 	}
@@ -56,8 +52,6 @@ func (ps *PeerState) PickQrnToSend(qrnSet types.QrnSetReader) (qrn *types.Qrn, o
 
 	if index, ok := qrnSet.BitArray().Sub(psQrnBitArray).PickRandom(); ok {
 		qrn := qrnSet.GetByIndex(int32(index))
-
-		// fmt.Println("PickQrnToSend", height, size, qrnSet.BitArray().String())
 		return qrn, true
 	}
 	return nil, false
@@ -79,7 +73,6 @@ func (ps *PeerState) ensureQrnBitArrays(height int64, numStandingMembers int) {
 
 func (ps *PeerState) getQrnBitArray(height int64) *bits.BitArray {
 	if ps.NextConsensusStartBlockHeight == height {
-		// fmt.Println("getQrnBitArray", ps.NextConsensusStartBlockHeight, height)
 		return ps.QrnsBitArray
 	}
 
