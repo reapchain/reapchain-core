@@ -8,8 +8,10 @@ import (
 	"time"
 
 	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/config"
 	"github.com/reapchain/reapchain-core/libs/log"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/light"
 	"github.com/reapchain/reapchain-core/p2p"
 	ssproto "github.com/reapchain/reapchain-core/proto/reapchain/statesync"
 	"github.com/reapchain/reapchain-core/proxy"
@@ -18,12 +20,12 @@ import (
 )
 
 const (
-	// chunkFetchers is the number of concurrent chunk fetchers to run.
-	chunkFetchers = 4
 	// chunkTimeout is the timeout while waiting for the next chunk from the chunk queue.
 	chunkTimeout = 2 * time.Minute
-	// requestTimeout is the timeout before rerequesting a chunk, possibly from a different peer.
-	chunkRequestTimeout = 10 * time.Second
+
+	// minimumDiscoveryTime is the lowest allowable time for a
+	// SyncAny discovery time.
+	minimumDiscoveryTime = 5 * time.Second
 )
 
 var (
@@ -55,21 +57,32 @@ type syncer struct {
 	connQuery     proxy.AppConnQuery
 	snapshots     *snapshotPool
 	tempDir       string
+	chunkFetchers int32
+	retryTimeout  time.Duration
 
 	mtx    tmsync.RWMutex
 	chunks *chunkQueue
 }
 
 // newSyncer creates a new syncer.
-func newSyncer(logger log.Logger, conn proxy.AppConnSnapshot, connQuery proxy.AppConnQuery,
-	stateProvider StateProvider, tempDir string) *syncer {
+func newSyncer(
+	cfg config.StateSyncConfig,
+	logger log.Logger,
+	conn proxy.AppConnSnapshot,
+	connQuery proxy.AppConnQuery,
+	stateProvider StateProvider,
+	tempDir string,
+) *syncer {
+
 	return &syncer{
 		logger:        logger,
 		stateProvider: stateProvider,
 		conn:          conn,
 		connQuery:     connQuery,
-		snapshots:     newSnapshotPool(stateProvider),
+		snapshots:     newSnapshotPool(),
 		tempDir:       tempDir,
+		chunkFetchers: cfg.ChunkFetchers,
+		retryTimeout:  cfg.ChunkRequestTimeout,
 	}
 }
 
@@ -125,7 +138,11 @@ func (s *syncer) RemovePeer(peer p2p.Peer) {
 // SyncAny tries to sync any of the snapshots in the snapshot pool, waiting to discover further
 // snapshots if none were found and discoveryTime > 0. It returns the latest state and block commit
 // which the caller must use to bootstrap the node.
-func (s *syncer) SyncAny(discoveryTime time.Duration) (sm.State, *types.Commit, error) {
+func (s *syncer) SyncAny(discoveryTime time.Duration, retryHook func()) (sm.State, *types.Commit, error) {
+	if discoveryTime != 0 && discoveryTime < minimumDiscoveryTime {
+		discoveryTime = 5 * minimumDiscoveryTime
+	}
+
 	if discoveryTime > 0 {
 		s.logger.Info(fmt.Sprintf("Discovering snapshots for %v", discoveryTime))
 		time.Sleep(discoveryTime)
@@ -148,6 +165,8 @@ func (s *syncer) SyncAny(discoveryTime time.Duration) (sm.State, *types.Commit, 
 			if discoveryTime == 0 {
 				return sm.State{}, nil, errNoSnapshots
 			}
+
+			retryHook()
 			s.logger.Info(fmt.Sprintf("Discovering snapshots for %v", discoveryTime))
 			time.Sleep(discoveryTime)
 			continue
@@ -195,6 +214,9 @@ func (s *syncer) SyncAny(discoveryTime time.Duration) (sm.State, *types.Commit, 
 				s.snapshots.RejectPeer(peer.ID())
 				s.logger.Info("Snapshot sender rejected", "peer", peer.ID())
 			}
+		case errors.Is(err, context.DeadlineExceeded):
+			s.logger.Info("Timed out validating snapshot, rejecting", "height", snapshot.Height, "err", err)
+			s.snapshots.Reject(snapshot)
 
 		default:
 			return sm.State{}, nil, fmt.Errorf("snapshot restoration failed: %w", err)
@@ -226,17 +248,30 @@ func (s *syncer) Sync(snapshot *snapshot, chunks *chunkQueue) (sm.State, *types.
 		s.mtx.Unlock()
 	}()
 
+	hctx, cancel := context.WithTimeout(context.TODO(), 30*time.Second)
+	defer cancel()
+
+	appHash, err := s.stateProvider.AppHash(hctx, snapshot.Height)
+	if err != nil {
+		s.logger.Info("failed to fetch and verify app hash", "err", err)
+		if err == light.ErrNoWitnesses {
+			return sm.State{}, nil, err
+		}
+		return sm.State{}, nil, errRejectSnapshot
+	}
+	snapshot.trustedAppHash = appHash
+
 	// Offer snapshot to ABCI app.
-	err := s.offerSnapshot(snapshot)
+	err = s.offerSnapshot(snapshot)
 	if err != nil {
 		return sm.State{}, nil, err
 	}
 
 	// Spawn chunk fetchers. They will terminate when the chunk queue is closed or context cancelled.
-	ctx, cancel := context.WithCancel(context.Background())
+	fetchCtx, cancel := context.WithCancel(context.TODO())
 	defer cancel()
-	for i := int32(0); i < chunkFetchers; i++ {
-		go s.fetchChunks(ctx, snapshot, chunks)
+	for i := int32(0); i < s.chunkFetchers; i++ {
+		go s.fetchChunks(fetchCtx, snapshot, chunks)
 	}
 
 	pctx, pcancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -245,11 +280,19 @@ func (s *syncer) Sync(snapshot *snapshot, chunks *chunkQueue) (sm.State, *types.
 	// Optimistically build new state, so we don't discover any light client failures at the end.
 	state, err := s.stateProvider.State(pctx, snapshot.Height)
 	if err != nil {
-		return sm.State{}, nil, fmt.Errorf("failed to build new state: %w", err)
+		s.logger.Info("failed to fetch and verify tendermint state", "err", err)
+		if err == light.ErrNoWitnesses {
+			return sm.State{}, nil, err
+		}
+		return sm.State{}, nil, errRejectSnapshot
 	}
 	commit, err := s.stateProvider.Commit(pctx, snapshot.Height)
 	if err != nil {
-		return sm.State{}, nil, fmt.Errorf("failed to fetch commit: %w", err)
+		s.logger.Info("failed to fetch and verify commit", "err", err)
+		if err == light.ErrNoWitnesses {
+			return sm.State{}, nil, err
+		}
+		return sm.State{}, nil, errRejectSnapshot
 	}
 
 	// Restore snapshot
@@ -368,33 +411,43 @@ func (s *syncer) applyChunks(chunks *chunkQueue) error {
 // fetchChunks requests chunks from peers, receiving allocations from the chunk queue. Chunks
 // will be received from the reactor via syncer.AddChunks() to chunkQueue.Add().
 func (s *syncer) fetchChunks(ctx context.Context, snapshot *snapshot, chunks *chunkQueue) {
+	var (
+		next  = true
+		index uint32
+		err   error
+	)
+
 	for {
-		index, err := chunks.Allocate()
-		if err == errDone {
-			// Keep checking until the context is cancelled (restore is done), in case any
-			// chunks need to be refetched.
-			select {
-			case <-ctx.Done():
-				return
-			default:
+		if next {
+			index, err = chunks.Allocate()
+			if errors.Is(err, errDone) {
+				// Keep checking until the context is canceled (restore is done), in case any
+				// chunks need to be refetched.
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
+				time.Sleep(2 * time.Second)
+				continue
 			}
-			time.Sleep(2 * time.Second)
-			continue
-		}
-		if err != nil {
-			s.logger.Error("Failed to allocate chunk from queue", "err", err)
-			return
+			if err != nil {
+				s.logger.Error("Failed to allocate chunk from queue", "err", err)
+				return
+			}
 		}
 		s.logger.Info("Fetching snapshot chunk", "height", snapshot.Height,
 			"format", snapshot.Format, "chunk", index, "total", chunks.Size())
 
-		ticker := time.NewTicker(chunkRequestTimeout)
+		ticker := time.NewTicker(s.retryTimeout)
+
 		defer ticker.Stop()
 		s.requestChunk(snapshot, index)
 		select {
 		case <-chunks.WaitFor(index):
+			next = true
 		case <-ticker.C:
-			s.requestChunk(snapshot, index)
+			next = false
 		case <-ctx.Done():
 			return
 		}

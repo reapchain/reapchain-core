@@ -1,12 +1,14 @@
 package core
 
 import (
+	"encoding/base64"
 	"fmt"
 	"time"
 
 	cfg "github.com/reapchain/reapchain-core/config"
 	"github.com/reapchain/reapchain-core/consensus"
 	"github.com/reapchain/reapchain-core/crypto"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
 	"github.com/reapchain/reapchain-core/libs/log"
 	mempl "github.com/reapchain/reapchain-core/mempool"
 	"github.com/reapchain/reapchain-core/p2p"
@@ -25,6 +27,10 @@ const (
 	// SubscribeTimeout is the maximum time we wait to subscribe for an event.
 	// must be less than the server's write timeout (see rpcserver.DefaultConfig)
 	SubscribeTimeout = 5 * time.Second
+
+	// genesisChunkSize is the maximum size, in bytes, of each
+	// chunk in the genesis structure for the chunked API
+	genesisChunkSize = 16 * 1024 * 1024 // 16
 )
 
 var (
@@ -93,6 +99,9 @@ type Environment struct {
 	Logger log.Logger
 
 	Config cfg.RPCConfig
+
+	// cache of chunked genesis data.
+	genChunks []string
 }
 
 //----------------------------------------------
@@ -130,6 +139,35 @@ func validatePerPage(perPagePtr *int) int {
 		return maxPerPage
 	}
 	return perPage
+}
+
+// InitGenesisChunks configures the environment and should be called on service
+// startup.
+func InitGenesisChunks() error {
+	if env.genChunks != nil {
+		return nil
+	}
+
+	if env.GenDoc == nil {
+		return nil
+	}
+
+	data, err := tmjson.Marshal(env.GenDoc)
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < len(data); i += genesisChunkSize {
+		end := i + genesisChunkSize
+
+		if end > len(data) {
+			end = len(data)
+		}
+
+		env.genChunks = append(env.genChunks, base64.StdEncoding.EncodeToString(data[i:end]))
+	}
+
+	return nil
 }
 
 func validateSkipCount(page, perPage int) int {

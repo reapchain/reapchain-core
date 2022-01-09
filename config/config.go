@@ -716,13 +716,15 @@ func (cfg *MempoolConfig) ValidateBasic() error {
 
 // StateSyncConfig defines the configuration for the Reapchain state sync service
 type StateSyncConfig struct {
-	Enable        bool          `mapstructure:"enable"`
-	TempDir       string        `mapstructure:"temp_dir"`
-	RPCServers    []string      `mapstructure:"rpc_servers"`
-	TrustPeriod   time.Duration `mapstructure:"trust_period"`
-	TrustHeight   int64         `mapstructure:"trust_height"`
-	TrustHash     string        `mapstructure:"trust_hash"`
-	DiscoveryTime time.Duration `mapstructure:"discovery_time"`
+	Enable              bool          `mapstructure:"enable"`
+	TempDir             string        `mapstructure:"temp_dir"`
+	RPCServers          []string      `mapstructure:"rpc_servers"`
+	TrustPeriod         time.Duration `mapstructure:"trust_period"`
+	TrustHeight         int64         `mapstructure:"trust_height"`
+	TrustHash           string        `mapstructure:"trust_hash"`
+	DiscoveryTime       time.Duration `mapstructure:"discovery_time"`
+	ChunkRequestTimeout time.Duration `mapstructure:"chunk_request_timeout"`
+	ChunkFetchers       int32         `mapstructure:"chunk_fetchers"`
 }
 
 func (cfg *StateSyncConfig) TrustHashBytes() []byte {
@@ -737,8 +739,10 @@ func (cfg *StateSyncConfig) TrustHashBytes() []byte {
 // DefaultStateSyncConfig returns a default configuration for the state sync service
 func DefaultStateSyncConfig() *StateSyncConfig {
 	return &StateSyncConfig{
-		TrustPeriod:   168 * time.Hour,
-		DiscoveryTime: 15 * time.Second,
+		TrustPeriod:         168 * time.Hour,
+		DiscoveryTime:       15 * time.Second,
+		ChunkRequestTimeout: 10 * time.Second,
+		ChunkFetchers:       4,
 	}
 }
 
@@ -761,6 +765,11 @@ func (cfg *StateSyncConfig) ValidateBasic() error {
 				return errors.New("found empty rpc_servers entry")
 			}
 		}
+
+		if cfg.DiscoveryTime != 0 && cfg.DiscoveryTime < 5*time.Second {
+			return errors.New("discovery time must be 0s or greater than five seconds")
+		}
+
 		if cfg.TrustPeriod <= 0 {
 			return errors.New("trusted_period is required")
 		}
@@ -773,6 +782,14 @@ func (cfg *StateSyncConfig) ValidateBasic() error {
 		_, err := hex.DecodeString(cfg.TrustHash)
 		if err != nil {
 			return fmt.Errorf("invalid trusted_hash: %w", err)
+		}
+
+		if cfg.ChunkRequestTimeout < 5*time.Second {
+			return errors.New("chunk_request_timeout must be at least 5 seconds")
+		}
+
+		if cfg.ChunkFetchers <= 0 {
+			return errors.New("chunk_fetchers is required")
 		}
 	}
 	return nil
@@ -994,7 +1011,12 @@ type TxIndexConfig struct {
 	//   1) "null"
 	//   2) "kv" (default) - the simplest possible indexer,
 	//      backed by key-value storage (defaults to levelDB; see DBBackend).
+	//   3) "psql" - the indexer services backed by PostgreSQL.
 	Indexer string `mapstructure:"indexer"`
+
+	// The PostgreSQL connection configuration, the connection format:
+	// postgresql://<user>:<password>@<host>:<port>/<db>?<opts>
+	PsqlConn string `mapstructure:"psql-conn"`
 }
 
 // DefaultTxIndexConfig returns a default configuration for the transaction indexer.

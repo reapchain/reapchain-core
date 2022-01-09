@@ -41,7 +41,7 @@ func (c *Client) detectDivergence(ctx context.Context, primaryTrace []*types.Lig
 	defer c.providerMutex.Unlock()
 
 	if len(c.witnesses) == 0 {
-		return errNoWitnesses{}
+		return ErrNoWitnesses
 	}
 
 	// launch one goroutine per witness to retrieve the light block of the target height
@@ -74,14 +74,20 @@ func (c *Client) detectDivergence(ctx context.Context, primaryTrace []*types.Lig
 			witnessesToRemove = append(witnessesToRemove, e.WitnessIndex)
 
 		case errBadWitness:
-			c.logger.Info("Witness returned an error during header comparison", "witness", c.witnesses[e.WitnessIndex],
-				"err", err)
-			// if witness sent us an invalid header, then remove it. If it didn't respond or couldn't find the block, then we
-			// ignore it and move on to the next witness
-			if _, ok := e.Reason.(provider.ErrBadLightBlock); ok {
-				c.logger.Info("Witness sent us invalid header / vals -> removing it", "witness", c.witnesses[e.WitnessIndex])
-				witnessesToRemove = append(witnessesToRemove, e.WitnessIndex)
+			// these are all melevolent errors and should result in removing the
+			// witness
+			c.logger.Info("witness returned an error during header comparison, removing...",
+				"witness", c.witnesses[e.WitnessIndex], "err", err)
+			witnessesToRemove = append(witnessesToRemove, e.WitnessIndex)
+		default:
+			// Benign errors which can be ignored unless there was a context
+			// canceled
+			if errors.Is(e, context.Canceled) || errors.Is(e, context.DeadlineExceeded) {
+				return e
 			}
+
+			c.logger.Info("error in light block request to witness", "err", err)
+
 		}
 	}
 
@@ -116,9 +122,9 @@ func (c *Client) compareNewHeaderWithWitness(ctx context.Context, errc chan erro
 	case nil:
 		break
 
-	// the witness hasn't been helpful in comparing headers, we mark the response and continue
-	// comparing with the rest of the witnesses
-	case provider.ErrNoResponse, provider.ErrLightBlockNotFound:
+		// the witness hasn't been helpful in comparing headers, we mark the response and continue
+		// comparing with the rest of the witnesses
+	case provider.ErrNoResponse, provider.ErrLightBlockNotFound, context.DeadlineExceeded, context.Canceled:
 		errc <- err
 		return
 
@@ -155,7 +161,12 @@ func (c *Client) compareNewHeaderWithWitness(ctx context.Context, errc chan erro
 		time.Sleep(2*c.maxClockDrift + c.maxBlockLag)
 		isTargetHeight, lightBlock, err = c.getTargetBlockOrLatest(ctx, h.Height, witness)
 		if err != nil {
-			errc <- errBadWitness{Reason: err, WitnessIndex: witnessIndex}
+			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+				errc <- err
+			} else {
+				errc <- errBadWitness{Reason: err, WitnessIndex: witnessIndex}
+			}
+
 			return
 		}
 		if isTargetHeight {

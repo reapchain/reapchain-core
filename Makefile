@@ -2,7 +2,14 @@ PACKAGES=$(shell go list ./...)
 OUTPUT?=build/reapchain
 
 BUILD_TAGS?=reapchain
-VERSION := $(shell git describe --always)
+
+# If building a release, please checkout the version tag to get the correct version setting
+ifneq ($(shell git symbolic-ref -q --short HEAD),)
+VERSION := unreleased-$(shell git symbolic-ref -q --short HEAD)-$(shell git rev-parse HEAD)
+else
+VERSION := $(shell git describe)
+endif
+
 LD_FLAGS = -X github.com/reapchain/reapchain-core/version.TMCoreSemVer=$(VERSION)
 BUILD_FLAGS = -mod=readonly -ldflags "$(LD_FLAGS)"
 HTTPS_GIT := https://github.com/reapchain/reapchain-core.git

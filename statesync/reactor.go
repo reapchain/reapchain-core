@@ -6,6 +6,7 @@ import (
 	"time"
 
 	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/config"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	"github.com/reapchain/reapchain-core/p2p"
 	ssproto "github.com/reapchain/reapchain-core/proto/reapchain/statesync"
@@ -28,6 +29,7 @@ const (
 type Reactor struct {
 	p2p.BaseReactor
 
+	cfg       config.StateSyncConfig
 	conn      proxy.AppConnSnapshot
 	connQuery proxy.AppConnQuery
 	tempDir   string
@@ -39,8 +41,15 @@ type Reactor struct {
 }
 
 // NewReactor creates a new state sync reactor.
-func NewReactor(conn proxy.AppConnSnapshot, connQuery proxy.AppConnQuery, tempDir string) *Reactor {
+func NewReactor(
+	cfg config.StateSyncConfig,
+	conn proxy.AppConnSnapshot,
+	connQuery proxy.AppConnQuery,
+	tempDir string,
+) *Reactor {
+
 	r := &Reactor{
+		cfg:       cfg,
 		conn:      conn,
 		connQuery: connQuery,
 	}
@@ -59,8 +68,8 @@ func (r *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 		},
 		{
 			ID:                  ChunkChannel,
-			Priority:            1,
-			SendQueueCapacity:   4,
+			Priority:            3,
+			SendQueueCapacity:   10,
 			RecvMessageCapacity: chunkMsgSize,
 		},
 	}
@@ -144,6 +153,7 @@ func (r *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 				Hash:     msg.Hash,
 				Metadata: msg.Metadata,
 			})
+			// TODO: We may want to consider punishing the peer for certain errors
 			if err != nil {
 				r.Logger.Error("Failed to add snapshot", "height", msg.Height, "format", msg.Format,
 					"peer", src.ID(), "err", err)
@@ -252,14 +262,20 @@ func (r *Reactor) Sync(stateProvider StateProvider, discoveryTime time.Duration)
 		r.mtx.Unlock()
 		return sm.State{}, nil, errors.New("a state sync is already in progress")
 	}
-	r.syncer = newSyncer(r.Logger, r.conn, r.connQuery, stateProvider, r.tempDir)
+	r.syncer = newSyncer(r.cfg, r.Logger, r.conn, r.connQuery, stateProvider, r.tempDir)
+
 	r.mtx.Unlock()
 
-	// Request snapshots from all currently connected peers
-	r.Logger.Debug("Requesting snapshots from known peers")
-	r.Switch.Broadcast(SnapshotChannel, mustEncodeMsg(&ssproto.SnapshotsRequest{}))
+	hook := func() {
+		r.Logger.Debug("Requesting snapshots from known peers")
+		// Request snapshots from all currently connected peers
+		r.Switch.Broadcast(SnapshotChannel, mustEncodeMsg(&ssproto.SnapshotsRequest{}))
+	}
 
-	state, commit, err := r.syncer.SyncAny(discoveryTime)
+	hook()
+
+	state, commit, err := r.syncer.SyncAny(discoveryTime, hook)
+
 	r.mtx.Lock()
 	r.syncer = nil
 	r.mtx.Unlock()
