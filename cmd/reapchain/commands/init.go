@@ -14,11 +14,20 @@ import (
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
+var (
+	memberType string
+)
+
 // InitFilesCmd initialises a fresh Reapchain Core instance.
 var InitFilesCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize Reapchain",
 	RunE:  initFiles,
+}
+
+func init() {
+	// p *string, name string, value string, usage string
+	InitFilesCmd.Flags().StringVarP(&memberType, "member-type", "m", "standing_member", "Select member type (standing_member / steering_member_candidate)")
 }
 
 func initFiles(cmd *cobra.Command, args []string) error {
@@ -73,33 +82,41 @@ func initFilesWithConfig(config *cfg.Config) error {
 			Power:   10,
 		}}
 
-		genDoc.StandingMembers = []types.GenesisMember{{
-			Address: pubKey.Address(),
-			PubKey:  pubKey,
-		}}
-
 		genDoc.ConsensusRound = types.NewConsensusRound(1, 4, 4, 4)
 
-		qrnValue := tmrand.Uint64()
-		qrn := types.NewQrn(1, pubKey, qrnValue)
-		qrn.Timestamp = genDoc.GenesisTime
+		if memberType == "standing_member" {
+			genDoc.StandingMembers = []types.GenesisMember{{
+				Address: pubKey.Address(),
+				PubKey:  pubKey,
+			}}
+			genDoc.SteeringMemberCandidates = []types.GenesisMember{}
 
-		err = privValidator.SignQrn(qrn)
-		if err != nil {
-			logger.Error("Can't sign qrn", "err", err)
+			qrnValue := tmrand.Uint64()
+			qrn := types.NewQrn(1, pubKey, qrnValue)
+			qrn.Timestamp = genDoc.GenesisTime
+
+			err = privValidator.SignQrn(qrn)
+			if err != nil {
+				logger.Error("Can't sign qrn", "err", err)
+			}
+
+			if qrn.VerifySign() == false {
+				logger.Error("Is invalid sign of qrn")
+			}
+
+			genDoc.Qrns = []types.Qrn{*qrn}
+		} else {
+			genDoc.StandingMembers = []types.GenesisMember{}
+			genDoc.SteeringMemberCandidates = []types.GenesisMember{{
+				Address: pubKey.Address(),
+				PubKey:  pubKey,
+			}}
+			genDoc.Qrns = []types.Qrn{}
 		}
-
-		if qrn.VerifySign() == false {
-			logger.Error("Is invalid sign of qrn")
-		}
-
-		genDoc.Qrns = []types.Qrn{*qrn}
 
 		if err := genDoc.SaveAs(genFile); err != nil {
 			return err
 		}
-
-		genDoc.SteeringMemberCandidates = []types.GenesisMember{}
 
 		genDoc.Vrfs = []types.Vrf{}
 

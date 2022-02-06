@@ -74,8 +74,7 @@ var (
 )
 
 func init() {
-	LightCmd.Flags().StringVar(&listenAddr, "laddr", "tcp://localhost:8888",
-		"serve the proxy on the given address")
+	LightCmd.Flags().StringVar(&listenAddr, "laddr", "tcp://localhost:8888", "serve the proxy on the given address")
 	LightCmd.Flags().StringVarP(&primaryAddr, "primary", "p", "",
 		"connect to a Reapchain node at this address")
 	LightCmd.Flags().StringVarP(&witnessAddrsJoined, "witnesses", "w", "",
