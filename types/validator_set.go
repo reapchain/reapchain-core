@@ -327,6 +327,10 @@ func (vals *ValidatorSet) GetProposer() (proposer *Validator) {
 	if len(vals.Validators) == 0 {
 		return nil
 	}
+	fmt.Println("Stompesi - Proposer - ", vals.Proposer.Address)
+	fmt.Println("Stompesi - Validators - ", vals.Validators)
+	fmt.Println("")
+
 	if vals.Proposer == nil {
 		vals.Proposer = vals.findProposer()
 	}
@@ -1099,17 +1103,4 @@ func safeMul(a, b int64) (int64, bool) {
 	}
 
 	return a * b, false
-}
-
-// -----------------------------------------
-func (vals *ValidatorSet) SetValidatorSet(changes []*Validator) error {
-	if len(changes) == 0 {
-		return nil
-	}
-
-	vals.Validators = changes[:]
-
-	sort.Sort(ValidatorsByVotingPower(vals.Validators))
-
-	return nil
 }

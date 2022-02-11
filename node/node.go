@@ -343,21 +343,27 @@ func logNodeStartupInfo(state sm.State, pubKey crypto.PubKey, logger, consensusL
 	addr := pubKey.Address()
 	// Log whether this node is a validator or an observer
 	if state.Validators.HasAddress(addr) {
-		consensusLogger.Info("This node is a validator", "addr", addr, "pubKey", pubKey)
+		// logger.Info("This node is a validator", "addr", addr, "pubKey", pubKey)
+		logger.Error("Stompesi - This node is a validator", "addr", addr, "pubKey", pubKey)
 	} else {
-		consensusLogger.Info("This node is not a validator", "addr", addr, "pubKey", pubKey)
+		// logger.Info("This node is not a validator", "addr", addr, "pubKey", pubKey)
+		logger.Error("Stompesi - This node is not a validator", "addr", addr, "pubKey", pubKey)
 	}
 
 	if state.StandingMemberSet.HasAddress(addr) {
-		consensusLogger.Info("This node is a standing member", "addr", addr, "pubKey", pubKey)
+		// logger.Info("This node is a standing member", "addr", addr, "pubKey", pubKey)
+		logger.Error("Stompesi - This node is a standing member", "addr", addr, "pubKey", pubKey)
 	} else {
-		consensusLogger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
+		// logger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
+		logger.Error("Stompesi - This node is not a standing member", "addr", addr, "pubKey", pubKey)
 	}
 
 	if state.SteeringMemberCandidateSet.HasAddress(addr) {
-		consensusLogger.Info("This node is a steering member candidate", "addr", addr, "pubKey", pubKey)
+		// logger.Info("This node is a steering member candidate", "addr", addr, "pubKey", pubKey)
+		logger.Error("Stompesi - This node is a steering member candidate", "addr", addr, "pubKey", pubKey)
 	} else {
-		consensusLogger.Info("This node is not a steering member candidate", "addr", addr, "pubKey", pubKey)
+		// logger.Info("This node is not a steering member candidate", "addr", addr, "pubKey", pubKey)
+		logger.Error("Stompesi - This node is not a steering member candidate", "addr", addr, "pubKey", pubKey)
 	}
 }
 
@@ -1321,10 +1327,16 @@ func makeNodeInfo(
 		Version:       version.TMCoreSemVer,
 		Channels: []byte{
 			bcChannel,
-			cs.StateChannel, cs.DataChannel, cs.VoteChannel, cs.VoteSetBitsChannel, cs.QrnChannel,
+			cs.StateChannel,
+			cs.DataChannel,
+			cs.VoteChannel,
+			cs.VoteSetBitsChannel,
+			cs.QrnChannel,
+			cs.SettingSteeringMemberChannel,
 			mempl.MempoolChannel,
 			evidence.EvidenceChannel,
-			statesync.SnapshotChannel, statesync.ChunkChannel,
+			statesync.SnapshotChannel,
+			statesync.ChunkChannel,
 		},
 		Moniker: config.Moniker,
 		Other: p2p.DefaultNodeInfoOther{

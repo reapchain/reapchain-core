@@ -615,6 +615,10 @@ func updateState(
 
 	nextVersion := state.Version
 
+	standingMemberSet.SetCoordinator(state.QrnSet)
+	_, proposer := nValSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
+	nValSet.Proposer = proposer
+
 	// NOTE: the AppHash has not been populated.
 	// It will be filled on state.Save.
 	return State{

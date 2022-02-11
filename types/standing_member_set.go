@@ -109,6 +109,7 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 
 	_, standingMember := standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
 	standingMemberSet.Coordinator = standingMember
+	fmt.Println("Stompesi - standingMemberSet.Coordinator: ", standingMemberSet.Coordinator.Address)
 }
 
 func StandingMemberSetFromProto(standingMemberSetProto *tmproto.StandingMemberSet) (*StandingMemberSet, error) {
@@ -209,23 +210,3 @@ func (standingMemberSet *StandingMemberSet) GetStandingMemberByAddress(address [
 	}
 	return -1, nil
 }
-
-// func (standingMemberSet *StandingMemberSet) GetCoordinator() (coordinator *StandingMember) {
-// 	if len(standingMemberSet.StandingMembers) == 0 {
-// 		return nil
-// 	}
-// 	if standingMemberSet.Coordinator == nil {
-// 		standingMemberSet.Coordinator = standingMemberSet.findCoordinator()
-// 	}
-// 	return standingMemberSet.Coordinator.Copy()
-// }
-
-// func (standingMemberSet *StandingMemberSet) findCoordinator() *StandingMember {
-// 	var coordinator *StandingMember
-// 	for _, standingMember := range standingMemberSet.StandingMembers {
-// 		if coordinator == nil || !bytes.Equal(standingMember.Address, coordinator.Address) {
-// 			coordinator = coordinator.CompareCoordinatorPriority(standingMember)
-// 		}
-// 	}
-// 	return coordinator
-// }

@@ -341,6 +341,9 @@ func (h *Handshaker) ReplayBlocks(
 		}
 
 		qrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, qrns)
+		standingMemberSet.SetCoordinator(qrnSet)
+		_, proposer := validatorSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
+		validatorSet.Proposer = proposer
 		qrnUpdates := types.TM2PB.QrnSetUpdate(qrnSet)
 
 		vrfs := make([]*types.Vrf, len(h.genDoc.Vrfs))
@@ -350,7 +353,7 @@ func (h *Handshaker) ReplayBlocks(
 		vrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
 		vrfUpdates := types.TM2PB.VrfSetUpdate(vrfSet)
 
-		h.logger.Error("request", "steeringMemberCandidateUpdates", steeringMemberCandidateUpdates)
+		// h.logger.Error("Stompesi - replayBlocks - request", "steeringMemberCandidateUpdates", steeringMemberCandidateUpdates)
 
 		req := abci.RequestInitChain{
 			Time:                           h.genDoc.GenesisTime,
@@ -370,7 +373,7 @@ func (h *Handshaker) ReplayBlocks(
 			return nil, err
 		}
 
-		h.logger.Error("response", "res.SteeringMemberCandidateUpdates", res.SteeringMemberCandidateUpdates)
+		// h.logger.Error("Stompesi - replayBlocks - response", "res.SteeringMemberCandidateUpdates", res.SteeringMemberCandidateUpdates)
 
 		appHash = res.AppHash
 
@@ -430,6 +433,10 @@ func (h *Handshaker) ReplayBlocks(
 				}
 				state.QrnSet = types.NewQrnSet(h.genDoc.InitialHeight, state.StandingMemberSet, qrns)
 				state.NextQrnSet = types.NewQrnSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.StandingMemberSet, qrns).Copy()
+
+				state.StandingMemberSet.SetCoordinator(state.QrnSet)
+				_, proposer := state.Validators.GetByAddress(state.StandingMemberSet.Coordinator.PubKey.Address())
+				state.Validators.Proposer = proposer
 			} else if len(h.genDoc.Qrns) == 0 {
 				// If qrn set is not set in genesis and still empty after InitChain, exit.
 				return nil, fmt.Errorf("qrn set is nil in genesis and still empty after InitChain")
@@ -453,9 +460,7 @@ func (h *Handshaker) ReplayBlocks(
 			}
 			// We update the last results hash with the empty hash, to conform with RFC-6962.
 			state.LastResultsHash = merkle.HashFromByteSlices(nil)
-			h.logger.Error("ReplayBlocks",
-				"InitialHeight", state.InitialHeight,
-				"LastBlockHeight", state.LastBlockHeight)
+			// h.logger.Error("Stompesi - replayBlocks", "InitialHeight", state.InitialHeight, "LastBlockHeight", state.LastBlockHeight)
 			if err := h.stateStore.Save(state); err != nil {
 				return nil, err
 			}
@@ -512,10 +517,7 @@ func (h *Handshaker) ReplayBlocks(
 		case appBlockHeight < stateBlockHeight:
 			// the app is further behind than it should be, so replay blocks
 			// but leave the last block to go through the WAL
-			h.logger.Error("ReplayBlocks",
-				"state.QrnSet.Height", state.QrnSet.Height,
-				"state.QrnSet.Hash()", state.QrnSet.Hash(),
-			)
+			// h.logger.Error("Stompesi - replayBlocks", "state.QrnSet.Height", state.QrnSet.Height, "state.QrnSet.Hash()", state.QrnSet.Hash() )
 			return h.replayBlocks(state, proxyApp, appBlockHeight, storeBlockHeight, true)
 
 		case appBlockHeight == stateBlockHeight:

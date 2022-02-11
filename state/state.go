@@ -580,6 +580,10 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), steeringMemberCandidateSet, vrfs)
 	}
 
+	standingMemberSet.SetCoordinator(qrnSet)
+	_, proposer := validatorSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
+	validatorSet.Proposer = proposer
+
 	return State{
 		Version:       InitStateVersion,
 		ChainID:       genDoc.ChainID,

@@ -1,8 +1,6 @@
 package consensus
 
 import (
-	"fmt"
-
 	"github.com/reapchain/reapchain-core/types"
 )
 
@@ -16,7 +14,6 @@ func (ps *PeerState) SetHasSettingSteeringMember(height int64) {
 }
 
 func (ps *PeerState) PickSendSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) bool {
-
 	if settingSteeringMember == nil {
 		return false
 	}
@@ -24,11 +21,12 @@ func (ps *PeerState) PickSendSettingSteeringMember(settingSteeringMember *types.
 	if ps.NextConsensusStartBlockHeight == settingSteeringMember.Height {
 		if ps.DidSendSettingSteeringMember == false {
 			msg := &SettingSteeringMemberMessage{settingSteeringMember.Copy()}
+			ps.logger.Debug("Stompesi - PickSendSettingSteeringMember", "SendSettingSteeringMember", msg)
 			if ps.peer.Send(SettingSteeringMemberChannel, MustEncode(msg)) {
 				ps.SetHasSettingSteeringMember(settingSteeringMember.Height)
 				return true
 			} else {
-				fmt.Println("SendSettingSteeringMember: Faile to send")
+				ps.logger.Debug("SendSettingSteeringMember: Faile to send")
 			}
 		}
 	}
