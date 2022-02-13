@@ -160,6 +160,7 @@ func (vrf *Vrf) ToProto() *tmproto.Vrf {
 }
 
 func VrfFromProto(vrfProto *tmproto.Vrf) *Vrf {
+	fmt.Println("Stompesi - VrfFromProto", vrfProto)
 	if vrfProto == nil {
 		return nil
 	}
@@ -169,6 +170,7 @@ func VrfFromProto(vrfProto *tmproto.Vrf) *Vrf {
 		return nil
 	}
 
+	fmt.Println("Stompesi - VrfFromProto", vrfProto)
 	vrf := new(Vrf)
 	vrf.Height = vrfProto.Height
 	vrf.Timestamp = vrfProto.Timestamp

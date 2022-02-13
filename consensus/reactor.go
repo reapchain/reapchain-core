@@ -369,7 +369,6 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 		}
 
 	case VrfChannel:
-		//TODO: mssong
 		if conR.WaitSync() {
 			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
 			return

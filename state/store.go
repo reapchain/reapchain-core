@@ -3,6 +3,7 @@ package state
 import (
 	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/gogo/protobuf/proto"
 	dbm "github.com/tendermint/tm-db"
@@ -644,6 +645,8 @@ func (store dbStore) saveQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) error 
 		LastHeightChanged: nextHeight,
 	}
 
+	sort.Sort(types.SortedQrns(qrnSet.Qrns))
+
 	qrnSetProto, err := qrnSet.ToProto()
 	if err != nil {
 		return err
@@ -668,6 +671,8 @@ func (store dbStore) saveNextQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) er
 		LastHeightChanged: nextHeight,
 	}
 
+	sort.Sort(types.SortedQrns(qrnSet.Qrns))
+
 	qrnSetProto, err := qrnSet.ToProto()
 	if err != nil {
 		return err
@@ -683,7 +688,7 @@ func (store dbStore) saveNextQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) er
 	if err != nil {
 		return err
 	}
-
+	// VrfChannel
 	return nil
 }
 
@@ -692,6 +697,7 @@ func (store dbStore) saveVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) error 
 		LastHeightChanged: nextHeight,
 	}
 
+	sort.Sort(types.SortedVrfs(vrfSet.Vrfs))
 	vrfSetProto, err := vrfSet.ToProto()
 	if err != nil {
 		return err
@@ -715,6 +721,8 @@ func (store dbStore) saveNextVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) er
 	vrfSetInfo := &tmstate.VrfsInfo{
 		LastHeightChanged: nextHeight,
 	}
+
+	sort.Sort(types.SortedVrfs(vrfSet.Vrfs))
 
 	vrfSetProto, err := vrfSet.ToProto()
 	if err != nil {

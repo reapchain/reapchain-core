@@ -1332,6 +1332,7 @@ func makeNodeInfo(
 			cs.VoteChannel,
 			cs.VoteSetBitsChannel,
 			cs.QrnChannel,
+			cs.VrfChannel,
 			cs.SettingSteeringMemberChannel,
 			mempl.MempoolChannel,
 			evidence.EvidenceChannel,
