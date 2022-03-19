@@ -21,7 +21,6 @@ func (ps *PeerState) PickSendSettingSteeringMember(settingSteeringMember *types.
 	if ps.NextConsensusStartBlockHeight == settingSteeringMember.Height {
 		if ps.DidSendSettingSteeringMember == false {
 			msg := &SettingSteeringMemberMessage{settingSteeringMember.Copy()}
-			ps.logger.Debug("Stompesi - PickSendSettingSteeringMember", "SendSettingSteeringMember", msg)
 			if ps.peer.Send(SettingSteeringMemberChannel, MustEncode(msg)) {
 				ps.SetHasSettingSteeringMember(settingSteeringMember.Height)
 				return true

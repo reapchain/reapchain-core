@@ -109,7 +109,6 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 
 	_, standingMember := standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
 	standingMemberSet.Coordinator = standingMember
-	fmt.Println("Stompesi - standingMemberSet.Coordinator: ", standingMemberSet.Coordinator.Address)
 }
 
 func StandingMemberSetFromProto(standingMemberSetProto *tmproto.StandingMemberSet) (*StandingMemberSet, error) {

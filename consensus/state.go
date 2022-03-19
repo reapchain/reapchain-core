@@ -1655,12 +1655,6 @@ func (cs *State) finalizeCommit(height int64) {
 		"num_txs", len(block.Txs),
 	)
 
-	logger.Error(
-		"Stompesi - finalizing commit of block",
-		"hash", block.Hash(),
-		"root", block.AppHash,
-		"num_txs", len(block.Txs),
-	)
 	logger.Debug(fmt.Sprintf("%v", block))
 
 	fail.Fail() // XXX
@@ -1956,8 +1950,6 @@ func (cs *State) defaultSetProposal(proposal *types.Proposal) error {
 
 	p := proposal.ToProto()
 	// Verify signature
-	cs.Logger.Error("Stompesi -", "proposerAddress", cs.Validators.GetProposer().Address)
-
 	if !cs.Validators.GetProposer().PubKey.VerifySignature(
 		types.ProposalSignBytes(cs.state.ChainID, p), proposal.Signature,
 	) {

@@ -353,8 +353,6 @@ func (h *Handshaker) ReplayBlocks(
 		vrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
 		vrfUpdates := types.TM2PB.VrfSetUpdate(vrfSet)
 
-		// h.logger.Error("Stompesi - replayBlocks - request", "steeringMemberCandidateUpdates", steeringMemberCandidateUpdates)
-
 		req := abci.RequestInitChain{
 			Time:                           h.genDoc.GenesisTime,
 			ChainId:                        h.genDoc.ChainID,
@@ -372,8 +370,6 @@ func (h *Handshaker) ReplayBlocks(
 		if err != nil {
 			return nil, err
 		}
-
-		// h.logger.Error("Stompesi - replayBlocks - response", "res.SteeringMemberCandidateUpdates", res.SteeringMemberCandidateUpdates)
 
 		appHash = res.AppHash
 
@@ -460,7 +456,6 @@ func (h *Handshaker) ReplayBlocks(
 			}
 			// We update the last results hash with the empty hash, to conform with RFC-6962.
 			state.LastResultsHash = merkle.HashFromByteSlices(nil)
-			// h.logger.Error("Stompesi - replayBlocks", "InitialHeight", state.InitialHeight, "LastBlockHeight", state.LastBlockHeight)
 			if err := h.stateStore.Save(state); err != nil {
 				return nil, err
 			}
@@ -517,7 +512,6 @@ func (h *Handshaker) ReplayBlocks(
 		case appBlockHeight < stateBlockHeight:
 			// the app is further behind than it should be, so replay blocks
 			// but leave the last block to go through the WAL
-			// h.logger.Error("Stompesi - replayBlocks", "state.QrnSet.Height", state.QrnSet.Height, "state.QrnSet.Hash()", state.QrnSet.Hash() )
 			return h.replayBlocks(state, proxyApp, appBlockHeight, storeBlockHeight, true)
 
 		case appBlockHeight == stateBlockHeight:

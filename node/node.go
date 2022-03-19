@@ -343,27 +343,21 @@ func logNodeStartupInfo(state sm.State, pubKey crypto.PubKey, logger, consensusL
 	addr := pubKey.Address()
 	// Log whether this node is a validator or an observer
 	if state.Validators.HasAddress(addr) {
-		// logger.Info("This node is a validator", "addr", addr, "pubKey", pubKey)
-		logger.Error("Stompesi - This node is a validator", "addr", addr, "pubKey", pubKey)
+		logger.Info("This node is a validator", "addr", addr, "pubKey", pubKey)
 	} else {
-		// logger.Info("This node is not a validator", "addr", addr, "pubKey", pubKey)
-		logger.Error("Stompesi - This node is not a validator", "addr", addr, "pubKey", pubKey)
+		logger.Info("This node is not a validator", "addr", addr, "pubKey", pubKey)
 	}
 
 	if state.StandingMemberSet.HasAddress(addr) {
-		// logger.Info("This node is a standing member", "addr", addr, "pubKey", pubKey)
-		logger.Error("Stompesi - This node is a standing member", "addr", addr, "pubKey", pubKey)
+		logger.Info("This node is a standing member", "addr", addr, "pubKey", pubKey)
 	} else {
-		// logger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
-		logger.Error("Stompesi - This node is not a standing member", "addr", addr, "pubKey", pubKey)
+		logger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
 	}
 
 	if state.SteeringMemberCandidateSet.HasAddress(addr) {
-		// logger.Info("This node is a steering member candidate", "addr", addr, "pubKey", pubKey)
-		logger.Error("Stompesi - This node is a steering member candidate", "addr", addr, "pubKey", pubKey)
+		logger.Info("This node is a steering member candidate", "addr", addr, "pubKey", pubKey)
 	} else {
-		// logger.Info("This node is not a steering member candidate", "addr", addr, "pubKey", pubKey)
-		logger.Error("Stompesi - This node is not a steering member candidate", "addr", addr, "pubKey", pubKey)
+		logger.Info("This node is not a steering member candidate", "addr", addr, "pubKey", pubKey)
 	}
 }
 

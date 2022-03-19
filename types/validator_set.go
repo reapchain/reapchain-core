@@ -327,9 +327,6 @@ func (vals *ValidatorSet) GetProposer() (proposer *Validator) {
 	if len(vals.Validators) == 0 {
 		return nil
 	}
-	fmt.Println("Stompesi - Proposer - ", vals.Proposer.Address)
-	fmt.Println("Stompesi - Validators - ", vals.Validators)
-	fmt.Println("")
 
 	if vals.Proposer == nil {
 		vals.Proposer = vals.findProposer()
