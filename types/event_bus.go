@@ -223,8 +223,8 @@ func (b *EventBus) PublishEventLock(data EventDataRoundState) error {
 	return b.Publish(EventLock, data)
 }
 
-func (b *EventBus) PublishEventValidatorSetUpdates(data EventDataValidatorSetUpdates) error {
-	return b.Publish(EventValidatorSetUpdates, data)
+func (b *EventBus) PublishEventSteeringMemberCandidateSetUpdates(data EventDataSteeringMemberCandidateSetUpdates) error {
+	return b.Publish(EventSteeringMemberCandidateSetUpdates, data)
 }
 
 func (b *EventBus) PublishEventStandingMemberSetUpdates(data EventDataStandingMemberSetUpdates) error {
@@ -307,7 +307,7 @@ func (NopEventBus) PublishEventLock(data EventDataRoundState) error {
 	return nil
 }
 
-func (NopEventBus) PublishEventValidatorSetUpdates(data EventDataValidatorSetUpdates) error {
+func (NopEventBus) PublishEventSteeringMemberCandidateSetUpdates(data EventDataSteeringMemberCandidateSetUpdates) error {
 	return nil
 }
 

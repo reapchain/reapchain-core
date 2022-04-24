@@ -473,6 +473,7 @@ func randGenesisDoc(chainID string, numValidators int, randPower bool, minPower 
 		validators[i] = types.GenesisValidator{
 			PubKey: val.PubKey,
 			Power:  val.VotingPower,
+			Type:  val.Type,
 		}
 		privValidators[i] = privVal
 	}

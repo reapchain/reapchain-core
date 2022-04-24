@@ -251,6 +251,10 @@ func (pv *FilePV) GetPubKey() (crypto.PubKey, error) {
 	return pv.Key.PubKey, nil
 }
 
+func (pv *FilePV) GetType() (string, error) {
+	return "standing", nil
+}
+
 // SignVote signs a canonical representation of the vote, along with the
 // chainID. Implements PrivValidator.
 func (pv *FilePV) SignVote(chainID string, vote *tmproto.Vote) error {

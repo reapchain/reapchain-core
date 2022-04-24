@@ -90,6 +90,26 @@ func (sc *SignerClient) GetPubKey() (crypto.PubKey, error) {
 	return pk, nil
 }
 
+// GetPubKey retrieves a validator type from a remote signer
+// returns an error if client is not able to provide the type
+func (sc *SignerClient) GetType() (string, error) {
+	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.TypeRequest{ChainId: sc.chainID}))
+	if err != nil {
+		return "", fmt.Errorf("send: %w", err)
+	}
+
+	resp := response.GetTypeResponse()
+	if resp == nil {
+		return "", ErrUnexpectedResponse
+	}
+	if resp.Error != nil {
+		return "", &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
+	}
+
+	return resp.Type, nil
+}
+
+
 // SignVote requests a remote signer to sign a vote
 func (sc *SignerClient) SignVote(chainID string, vote *tmproto.Vote) error {
 	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignVoteRequest{Vote: vote, ChainId: chainID}))

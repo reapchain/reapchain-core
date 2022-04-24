@@ -398,6 +398,8 @@ func brokenHandler(privVal types.PrivValidator, request privvalproto.Message,
 	// This is broken and will answer most requests with a pubkey response
 	case *privvalproto.Message_PubKeyRequest:
 		res = mustWrapMsg(&privvalproto.PubKeyResponse{PubKey: cryptoproto.PublicKey{}, Error: nil})
+	case *privvalproto.Message_TypeRequest:
+		res = mustWrapMsg(&privvalproto.TypeResponse{Type: "", Error: nil})
 	case *privvalproto.Message_SignVoteRequest:
 		res = mustWrapMsg(&privvalproto.PubKeyResponse{PubKey: cryptoproto.PublicKey{}, Error: nil})
 	case *privvalproto.Message_SignProposalRequest:

@@ -1285,8 +1285,6 @@ func (ps *PeerState) ApplyNewRoundStepMessage(msg *tmcon.NewRoundStepMessage) {
 		// We'll update the BitArray capacity later.
 		ps.PRS.Prevotes = nil
 		ps.PRS.Precommits = nil
-
-		ps.PRS.QrnsBitArray = nil
 	}
 	if psHeight == msg.Height && psRound != msg.Round && msg.Round == psCatchupCommitRound {
 		// Peer caught up to CatchupCommitRound.

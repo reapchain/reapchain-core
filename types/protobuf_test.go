@@ -31,9 +31,9 @@ func TestABCIValidators(t *testing.T) {
 	pkEd := ed25519.GenPrivKey().PubKey()
 
 	// correct validator
-	tmValExpected := NewValidator(pkEd, 10)
+	tmValExpected := NewValidator(pkEd, 10, "standing")
 
-	tmVal := NewValidator(pkEd, 10)
+	tmVal := NewValidator(pkEd, 10, "standing")
 
 	abciVal := TM2PB.ValidatorUpdate(tmVal)
 	tmVals, err := PB2TM.ValidatorUpdates([]abci.ValidatorUpdate{abciVal})
@@ -72,17 +72,17 @@ func (pubKeyEddie) Type() string                                { return "pubKey
 func TestABCIValidatorFromPubKeyAndPower(t *testing.T) {
 	pubkey := ed25519.GenPrivKey().PubKey()
 
-	abciVal := TM2PB.NewValidatorUpdate(pubkey, 10)
+	abciVal := TM2PB.NewValidatorUpdate(pubkey, 10, "standing")
 	assert.Equal(t, int64(10), abciVal.Power)
 
-	assert.Panics(t, func() { TM2PB.NewValidatorUpdate(nil, 10) })
-	assert.Panics(t, func() { TM2PB.NewValidatorUpdate(pubKeyEddie{}, 10) })
+	assert.Panics(t, func() { TM2PB.NewValidatorUpdate(nil, 10, "standing") })
+	assert.Panics(t, func() { TM2PB.NewValidatorUpdate(pubKeyEddie{}, 10, "standing") })
 }
 
 func TestABCIValidatorWithoutPubKey(t *testing.T) {
 	pkEd := ed25519.GenPrivKey().PubKey()
 
-	abciVal := TM2PB.Validator(NewValidator(pkEd, 10))
+	abciVal := TM2PB.Validator(NewValidator(pkEd, 10, "standing"))
 
 	// pubkey must be nil
 	tmValExpected := abci.Validator{

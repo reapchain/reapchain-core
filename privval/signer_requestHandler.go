@@ -47,6 +47,22 @@ func DefaultValidationRequestHandler(
 			res = mustWrapMsg(&privvalproto.PubKeyResponse{PubKey: pk, Error: nil})
 		}
 
+	case *privvalproto.Message_TypeRequest:
+		if r.TypeRequest.GetChainId() != chainID {
+			res = mustWrapMsg(&privvalproto.TypeResponse{
+				Type: "", Error: &privvalproto.RemoteSignerError{
+					Code: 0, Description: "unable to provide type"}})
+			return res, fmt.Errorf("want chainID: %s, got chainID: %s", r.TypeRequest.GetChainId(), chainID)
+		}
+
+		validatorType, err := privVal.GetType()
+		if err != nil {
+			return res, err
+		}
+
+		res = mustWrapMsg(&privvalproto.TypeResponse{Type: validatorType, Error: nil})
+
+	
 	case *privvalproto.Message_SignVoteRequest:
 		if r.SignVoteRequest.ChainId != chainID {
 			res = mustWrapMsg(&privvalproto.SignedVoteResponse{

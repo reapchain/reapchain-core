@@ -63,6 +63,26 @@ func (sc *RetrySignerClient) GetPubKey() (crypto.PubKey, error) {
 	return nil, fmt.Errorf("exhausted all attempts to get pubkey: %w", err)
 }
 
+func (sc *RetrySignerClient) GetType() (string, error) {
+	var (
+		validatorType  string
+		err error
+	)
+	for i := 0; i < sc.retries || sc.retries == 0; i++ {
+		validatorType, err = sc.next.GetType()
+		if err == nil {
+			return validatorType, nil
+		}
+		// If remote signer errors, we don't retry.
+		if _, ok := err.(*RemoteSignerError); ok {
+			return "", err
+		}
+		time.Sleep(sc.timeout)
+	}
+	return "", fmt.Errorf("exhausted all attempts to get type: %w", err)
+}
+
+
 func (sc *RetrySignerClient) SignVote(chainID string, vote *tmproto.Vote) error {
 	var err error
 	for i := 0; i < sc.retries || sc.retries == 0; i++ {

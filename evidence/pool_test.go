@@ -148,7 +148,7 @@ func TestReportConflictingVotes(t *testing.T) {
 	var height int64 = 10
 
 	pool, pv := defaultTestPool(height)
-	val := types.NewValidator(pv.PrivKey.PubKey(), 10)
+	val := types.NewValidator(pv.PrivKey.PubKey(), 10, "standing")
 	ev := types.NewMockDuplicateVoteEvidenceWithValidator(height+1, defaultEvidenceTime, pv, evidenceChainID)
 
 	pool.ReportConflictingVotes(ev.VoteA, ev.VoteB)

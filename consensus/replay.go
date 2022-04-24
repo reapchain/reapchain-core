@@ -311,7 +311,7 @@ func (h *Handshaker) ReplayBlocks(
 	if appBlockHeight == 0 {
 		validators := make([]*types.Validator, len(h.genDoc.Validators))
 		for i, val := range h.genDoc.Validators {
-			validators[i] = types.NewValidator(val.PubKey, val.Power)
+			validators[i] = types.NewValidator(val.PubKey, val.Power, val.Type)
 		}
 		validatorSet := types.NewValidatorSet(validators)
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
@@ -394,7 +394,7 @@ func (h *Handshaker) ReplayBlocks(
 			}
 
 			if len(res.StandingMemberUpdates) > 0 {
-				standingMembers, err := types.PB2TM.StandingMemberUpdates(res.StandingMemberUpdates)
+				standingMembers, err := types.PB2TM.StandingMemberUpdates(res.Validators)
 				if err != nil {
 					return nil, err
 				}
@@ -405,7 +405,7 @@ func (h *Handshaker) ReplayBlocks(
 			}
 
 			if len(res.SteeringMemberCandidateUpdates) > 0 {
-				steeringMemberCandidates, err := types.PB2TM.SteeringMemberCandidateUpdates(res.SteeringMemberCandidateUpdates)
+				steeringMemberCandidates, err := types.PB2TM.SteeringMemberCandidateUpdates(res.Validators)
 
 				if err != nil {
 					return nil, err

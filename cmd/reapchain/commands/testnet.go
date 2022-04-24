@@ -153,6 +153,7 @@ func testnetFiles(cmd *cobra.Command, args []string) error {
 			PubKey:  pubKey,
 			Power:   1,
 			Name:    nodeDirName,
+			Type:    "standing",
 		}
 	}
 

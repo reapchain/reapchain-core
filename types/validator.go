@@ -18,17 +18,18 @@ import (
 type Validator struct {
 	Address     Address       `json:"address"`
 	PubKey      crypto.PubKey `json:"pub_key"`
+	Type      string 					`json:"type"`
 	VotingPower int64         `json:"voting_power"`
-
 	ProposerPriority int64 `json:"proposer_priority"`
 }
 
 // NewValidator returns a new validator with the given pubkey and voting power.
-func NewValidator(pubKey crypto.PubKey, votingPower int64) *Validator {
+func NewValidator(pubKey crypto.PubKey, votingPower int64, validatorType string) *Validator {
 	return &Validator{
 		Address:          pubKey.Address(),
 		PubKey:           pubKey,
 		VotingPower:      votingPower,
+		Type: validatorType,
 		ProposerPriority: 0,
 	}
 }
@@ -188,6 +189,10 @@ func RandValidator(randPower bool, minPower int64) (*Validator, PrivValidator) {
 	if err != nil {
 		panic(fmt.Errorf("could not retrieve pubkey %w", err))
 	}
-	val := NewValidator(pubKey, votePower)
+	validatorType, err := privVal.GetType()
+	if err != nil {
+		panic(fmt.Errorf("could not retrieve validator type %w", err))
+	}
+	val := NewValidator(pubKey, votePower, validatorType)
 	return val, privVal
 }

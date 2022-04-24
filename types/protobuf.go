@@ -95,6 +95,7 @@ func (tm2pb) ValidatorUpdate(val *Validator) abci.ValidatorUpdate {
 	return abci.ValidatorUpdate{
 		PubKey: pk,
 		Power:  val.VotingPower,
+		Type: val.Type,
 	}
 }
 
@@ -209,7 +210,7 @@ func (tm2pb) ConsensusRound(consensudRoundProto *tmproto.ConsensusRound) *abci.C
 }
 
 // XXX: panics on nil or unknown pubkey type
-func (tm2pb) NewValidatorUpdate(pubkey crypto.PubKey, power int64) abci.ValidatorUpdate {
+func (tm2pb) NewValidatorUpdate(pubkey crypto.PubKey, power int64, validatorType string) abci.ValidatorUpdate {
 	pubkeyABCI, err := cryptoenc.PubKeyToProto(pubkey)
 	if err != nil {
 		panic(err)
@@ -217,6 +218,7 @@ func (tm2pb) NewValidatorUpdate(pubkey crypto.PubKey, power int64) abci.Validato
 	return abci.ValidatorUpdate{
 		PubKey: pubkeyABCI,
 		Power:  power,
+		Type: validatorType,
 	}
 }
 
@@ -235,31 +237,35 @@ func (pb2tm) ValidatorUpdates(vals []abci.ValidatorUpdate) ([]*Validator, error)
 		if err != nil {
 			return nil, err
 		}
-		tmVals[i] = NewValidator(pub, v.Power)
+		tmVals[i] = NewValidator(pub, v.Power, v.Type)
 	}
 	return tmVals, nil
 }
 
-func (pb2tm) StandingMemberUpdates(sms []abci.StandingMemberUpdate) ([]*StandingMember, error) {
-	smz := make([]*StandingMember, len(sms))
-	for i, v := range sms {
-		pubKey, err := cryptoenc.PubKeyFromProto(v.PubKey)
-		if err != nil {
-			return nil, err
+func (pb2tm) StandingMemberUpdates(vals []abci.ValidatorUpdate) ([]*StandingMember, error) {
+	smz := make([]*StandingMember, len(vals))
+	for i, v := range vals {
+		if v.GetType() == "standing" {
+			pubKey, err := cryptoenc.PubKeyFromProto(v.PubKey)
+			if err != nil {
+				return nil, err
+			}
+			smz[i] = NewStandingMember(pubKey)
 		}
-		smz[i] = NewStandingMember(pubKey)
 	}
 	return smz, nil
 }
 
-func (pb2tm) SteeringMemberCandidateUpdates(sms []abci.SteeringMemberCandidateUpdate) ([]*SteeringMemberCandidate, error) {
-	smz := make([]*SteeringMemberCandidate, len(sms))
-	for i, v := range sms {
-		pubKey, err := cryptoenc.PubKeyFromProto(v.PubKey)
-		if err != nil {
-			return nil, err
+func (pb2tm) SteeringMemberCandidateUpdates(vals []abci.ValidatorUpdate) ([]*SteeringMemberCandidate, error) {
+	smz := make([]*SteeringMemberCandidate, len(vals))
+	for i, v := range vals {
+		if v.GetType() == "steering" {
+			pubKey, err := cryptoenc.PubKeyFromProto(v.PubKey)
+			if err != nil {
+				return nil, err
+			}
+			smz[i] = NewSteeringMemberCandidate(pubKey)
 		}
-		smz[i] = NewSteeringMemberCandidate(pubKey)
 	}
 	return smz, nil
 }

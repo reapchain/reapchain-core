@@ -156,32 +156,26 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	fail.Fail() // XXX
 
-	var validators []*types.Validator
+	// validate the validator updates and convert to reapchain-core types
+	abciValUpdates := abciResponses.EndBlock.ValidatorUpdates
 
-	abciStandingMemberUpdates := abciResponses.EndBlock.StandingMemberUpdates
-	err = validateStandingMemberUpdates(abciStandingMemberUpdates, state.ConsensusParams.Validator)
+	err = validateStandingMemberUpdates(abciValUpdates, state.ConsensusParams.Validator)
 	if err != nil {
 		return state, 0, fmt.Errorf("error in standing member updates: %v", err)
 	}
-
-	standingMemberUpdates, err := types.PB2TM.StandingMemberUpdates(abciStandingMemberUpdates)
+	standingMemberUpdates, err := types.PB2TM.StandingMemberUpdates(abciValUpdates)
 	if err != nil {
 		return state, 0, err
 	}
-
-	//standingMemberUpdates = state.StandingMemberSet.StandingMembers
-
 	if len(standingMemberUpdates) > 0 {
 		blockExec.logger.Debug("updates to standing members", "updates", types.StandingMemberListString(standingMemberUpdates))
 	}
 
-	abciSteeringMemberCandidateUpdates := abciResponses.EndBlock.SteeringMemberCandidateUpdates
-	err = validateSteeringMemberCandidateUpdates(abciSteeringMemberCandidateUpdates, state.ConsensusParams.Validator)
+	err = validateSteeringMemberCandidateUpdates(abciValUpdates, state.ConsensusParams.Validator)
 	if err != nil {
 		return state, 0, fmt.Errorf("error in steering member candidate updates: %v", err)
 	}
-
-	steeringMemberCandidateUpdates, err := types.PB2TM.SteeringMemberCandidateUpdates(abciSteeringMemberCandidateUpdates)
+	steeringMemberCandidateUpdates, err := types.PB2TM.SteeringMemberCandidateUpdates(abciValUpdates)
 	if err != nil {
 		return state, 0, err
 	}
@@ -189,22 +183,8 @@ func (blockExec *BlockExecutor) ApplyBlock(
 		blockExec.logger.Debug("updates to steering member candidates", "updates", types.SteeringMemberCandidateListString(steeringMemberCandidateUpdates))
 	}
 
-	abciQrnUpdates := abciResponses.EndBlock.QrnUpdates
-	err = validateQrnUpdates(abciQrnUpdates, state.ConsensusParams.Validator)
-	if err != nil {
-		return state, 0, fmt.Errorf("error in steering member candidate updates: %v", err)
-	}
-
-	qrnUpdates, err := types.PB2TM.QrnUpdates(abciQrnUpdates)
-	if err != nil {
-		return state, 0, err
-	}
-	if len(qrnUpdates) > 0 {
-		blockExec.logger.Debug("updates to qrns", "updates", types.QrnListString(qrnUpdates))
-	}
-
 	// Update the state with the block and responses.
-	state, err = updateState(state, blockID, &block.Header, abciResponses, validators, standingMemberUpdates, steeringMemberCandidateUpdates, qrnUpdates)
+	state, err = updateState(state, blockID, &block.Header, abciResponses, standingMemberUpdates, steeringMemberCandidateUpdates)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
@@ -235,7 +215,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	// Events are fired after everything else.
 	// NOTE: if we crash between Commit and Save, events wont be fired during replay
-	fireEvents(blockExec.logger, blockExec.eventBus, block, abciResponses, validators, standingMemberUpdates)
+	fireEvents(blockExec.logger, blockExec.eventBus, block, abciResponses, standingMemberUpdates, steeringMemberCandidateUpdates)
 
 	return state, retainHeight, nil
 }
@@ -436,33 +416,36 @@ func validateValidatorUpdates(abciUpdates []abci.ValidatorUpdate,
 	return nil
 }
 
-func validateStandingMemberUpdates(standingMemberUpdatesAbci []abci.StandingMemberUpdate, params tmproto.ValidatorParams) error {
+func validateStandingMemberUpdates(standingMemberUpdatesAbci abci.ValidatorUpdates, params tmproto.ValidatorParams) error {
 	for _, valUpdate := range standingMemberUpdatesAbci {
-		// Check if validator's pubkey matches an ABCI type in the consensus params
-		pk, err := cryptoenc.PubKeyFromProto(valUpdate.PubKey)
-		if err != nil {
-			return err
-		}
+		if valUpdate.GetType() == "steering" {
+			// Check if validator's pubkey matches an ABCI type in the consensus params
+			pk, err := cryptoenc.PubKeyFromProto(valUpdate.GetPubKey())
+			if err != nil {
+				return err
+			}
 
-		if !types.IsValidPubkeyType(params, pk.Type()) {
-			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
-				valUpdate, pk.Type())
+			if !types.IsValidPubkeyType(params, pk.Type()) {
+				return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
+					valUpdate, pk.Type())
+			}
 		}
 	}
 	return nil
 }
 
-func validateSteeringMemberCandidateUpdates(steeringMemberCandidateUpdatesAbci []abci.SteeringMemberCandidateUpdate, params tmproto.ValidatorParams) error {
-	for _, valUpdate := range steeringMemberCandidateUpdatesAbci {
-		// Check if validator's pubkey matches an ABCI type in the consensus params
-		pk, err := cryptoenc.PubKeyFromProto(valUpdate.PubKey)
-		if err != nil {
-			return err
-		}
+func validateSteeringMemberCandidateUpdates(validatorUpdatesAbci abci.ValidatorUpdates, params tmproto.ValidatorParams) error {
+	for _, valUpdate := range validatorUpdatesAbci {
+		if valUpdate.GetType() == "steering" {
+			pk, err := cryptoenc.PubKeyFromProto(valUpdate.GetPubKey())
+			if err != nil {
+				return err
+			}
 
-		if !types.IsValidPubkeyType(params, pk.Type()) {
-			return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
-				valUpdate, pk.Type())
+			if !types.IsValidPubkeyType(params, pk.Type()) {
+				return fmt.Errorf("validator %v is using pubkey %s, which is unsupported for consensus",
+					valUpdate, pk.Type())
+			}
 		}
 	}
 	return nil
@@ -489,25 +472,18 @@ func updateState(
 	blockID types.BlockID,
 	header *types.Header,
 	abciResponses *tmstate.ABCIResponses,
-	validatorUpdates []*types.Validator,
 	standingMemberUpdates []*types.StandingMember,
 	steeringMemberCandidateUpdates []*types.SteeringMemberCandidate,
-	qrnUpdates []*types.Qrn,
 ) (State, error) {
 	// Copy the valset so we can apply changes from EndBlock
 	// and update s.LastValidators and s.Validators.
 	nValSet := state.NextValidators.Copy()
+
 	standingMemberSet := state.StandingMemberSet.Copy()
 	steeringMemberCandidateSet := state.SteeringMemberCandidateSet.Copy()
 
 	// Update the validator set with the latest abciResponses.
 	lastHeightValsChanged := state.LastHeightValidatorsChanged
-	if len(validatorUpdates) > 0 {
-		nValSet = types.NewValidatorSet(validatorUpdates)
-
-		// Change results from this height but only applies to the next next height.
-		lastHeightValsChanged = header.Height + 1 + 1
-	}
 
 	lastHeightStandingMembersChanged := state.LastHeightStandingMembersChanged
 	if len(standingMemberUpdates) > 0 {
@@ -570,13 +546,13 @@ func updateState(
 
 		if state.SettingSteeringMember != nil {
 			for _, steeringMemberIndex := range state.SettingSteeringMember.SteeringMemberIndexes {
-				validators[i] = types.NewValidator(state.SteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey, 10)
+				validators[i] = types.NewValidator(state.SteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey, 10, "steering")
 				i++
 			}
 		}
 
 		for _, standingMember := range standingMemberSet.StandingMembers {
-			validators[i] = types.NewValidator(standingMember.PubKey, 10)
+			validators[i] = types.NewValidator(standingMember.PubKey, 10, "standing")
 			i++
 		}
 
@@ -598,20 +574,6 @@ func updateState(
 		lastHeightValsChanged = header.Height + 1 + 1
 		standingMemberSet.CurrentCoordinatorRanking = 0
 	}
-
-	/*
-		if state.NextQrnSet == nil {
-			state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
-		}
-
-		if state.NextVrfSet == nil {
-			state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
-		}
-	*/
-
-	// if len(qrnUpdates) > 0 {
-	// 	state.QrnSet = types.NewQrnSet(state.QrnSet.Height, state.StandingMemberSet, qrnUpdates)
-	// }
 
 	nextVersion := state.Version
 
@@ -667,8 +629,8 @@ func fireEvents(
 	eventBus types.BlockEventPublisher,
 	block *types.Block,
 	abciResponses *tmstate.ABCIResponses,
-	validatorUpdates []*types.Validator,
 	standingMemberUpdates []*types.StandingMember,
+	seeringMemberCandidateUpdates []*types.SteeringMemberCandidate,
 ) {
 	if err := eventBus.PublishEventNewBlock(types.EventDataNewBlock{
 		Block:            block,
@@ -709,9 +671,9 @@ func fireEvents(
 		}
 	}
 
-	if len(validatorUpdates) > 0 {
-		if err := eventBus.PublishEventValidatorSetUpdates(
-			types.EventDataValidatorSetUpdates{ValidatorUpdates: validatorUpdates}); err != nil {
+	if len(seeringMemberCandidateUpdates) > 0 {
+		if err := eventBus.PublishEventSteeringMemberCandidateSetUpdates(
+			types.EventDataSteeringMemberCandidateSetUpdates{SteeringMemberCandidateUpdates: seeringMemberCandidateUpdates}); err != nil {
 			logger.Error("failed publishing event", "err", err)
 		}
 	}

@@ -48,7 +48,7 @@ func TestSnapshotPool_Add(t *testing.T) {
 	peer.On("ID").Return(p2p.ID("id"))
 
 	// Adding to the pool should work
-	pool := newSnapshotPool(stateProvider)
+	pool := newSnapshotPool()
 	added, err := pool.Add(peer, &snapshot{
 		Height: 1,
 		Format: 1,
@@ -81,7 +81,7 @@ func TestSnapshotPool_Add(t *testing.T) {
 func TestSnapshotPool_GetPeer(t *testing.T) {
 	stateProvider := &mocks.StateProvider{}
 	stateProvider.On("AppHash", mock.Anything, mock.Anything).Return([]byte("app_hash"), nil)
-	pool := newSnapshotPool(stateProvider)
+	pool := newSnapshotPool()
 
 	s := &snapshot{Height: 1, Format: 1, Chunks: 1, Hash: []byte{1}}
 	peerA := &p2pmocks.Peer{}
@@ -117,7 +117,7 @@ func TestSnapshotPool_GetPeer(t *testing.T) {
 func TestSnapshotPool_GetPeers(t *testing.T) {
 	stateProvider := &mocks.StateProvider{}
 	stateProvider.On("AppHash", mock.Anything, mock.Anything).Return([]byte("app_hash"), nil)
-	pool := newSnapshotPool(stateProvider)
+	pool := newSnapshotPool()
 
 	s := &snapshot{Height: 1, Format: 1, Chunks: 1, Hash: []byte{1}}
 	peerA := &p2pmocks.Peer{}
@@ -141,7 +141,7 @@ func TestSnapshotPool_GetPeers(t *testing.T) {
 func TestSnapshotPool_Ranked_Best(t *testing.T) {
 	stateProvider := &mocks.StateProvider{}
 	stateProvider.On("AppHash", mock.Anything, mock.Anything).Return([]byte("app_hash"), nil)
-	pool := newSnapshotPool(stateProvider)
+	pool := newSnapshotPool()
 
 	// snapshots in expected order (best to worst). Highest height wins, then highest format.
 	// Snapshots with different chunk hashes are considered different, and the most peers is
@@ -186,7 +186,7 @@ func TestSnapshotPool_Ranked_Best(t *testing.T) {
 func TestSnapshotPool_Reject(t *testing.T) {
 	stateProvider := &mocks.StateProvider{}
 	stateProvider.On("AppHash", mock.Anything, mock.Anything).Return([]byte("app_hash"), nil)
-	pool := newSnapshotPool(stateProvider)
+	pool := newSnapshotPool()
 	peer := &p2pmocks.Peer{}
 	peer.On("ID").Return(p2p.ID("id"))
 
@@ -216,7 +216,7 @@ func TestSnapshotPool_Reject(t *testing.T) {
 func TestSnapshotPool_RejectFormat(t *testing.T) {
 	stateProvider := &mocks.StateProvider{}
 	stateProvider.On("AppHash", mock.Anything, mock.Anything).Return([]byte("app_hash"), nil)
-	pool := newSnapshotPool(stateProvider)
+	pool := newSnapshotPool()
 	peer := &p2pmocks.Peer{}
 	peer.On("ID").Return(p2p.ID("id"))
 
@@ -247,7 +247,7 @@ func TestSnapshotPool_RejectFormat(t *testing.T) {
 func TestSnapshotPool_RejectPeer(t *testing.T) {
 	stateProvider := &mocks.StateProvider{}
 	stateProvider.On("AppHash", mock.Anything, mock.Anything).Return([]byte("app_hash"), nil)
-	pool := newSnapshotPool(stateProvider)
+	pool := newSnapshotPool()
 
 	peerA := &p2pmocks.Peer{}
 	peerA.On("ID").Return(p2p.ID("a"))
@@ -289,7 +289,7 @@ func TestSnapshotPool_RejectPeer(t *testing.T) {
 func TestSnapshotPool_RemovePeer(t *testing.T) {
 	stateProvider := &mocks.StateProvider{}
 	stateProvider.On("AppHash", mock.Anything, mock.Anything).Return([]byte("app_hash"), nil)
-	pool := newSnapshotPool(stateProvider)
+	pool := newSnapshotPool()
 
 	peerA := &p2pmocks.Peer{}
 	peerA.On("ID").Return(p2p.ID("a"))

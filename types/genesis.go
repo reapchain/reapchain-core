@@ -31,6 +31,7 @@ const (
 type GenesisValidator struct {
 	Address Address       `json:"address"`
 	PubKey  crypto.PubKey `json:"pub_key"`
+	Type  string 					`json:"type"`
 	Power   int64         `json:"power"`
 	Name    string        `json:"name"`
 }
@@ -71,7 +72,7 @@ func (genDoc *GenesisDoc) SaveAs(file string) error {
 func (genDoc *GenesisDoc) ValidatorHash() []byte {
 	vals := make([]*Validator, len(genDoc.Validators))
 	for i, v := range genDoc.Validators {
-		vals[i] = NewValidator(v.PubKey, v.Power)
+		vals[i] = NewValidator(v.PubKey, v.Power, v.Type)
 	}
 	vset := NewValidatorSet(vals)
 	return vset.Hash()
