@@ -418,7 +418,7 @@ func validateValidatorUpdates(abciUpdates []abci.ValidatorUpdate,
 
 func validateStandingMemberUpdates(standingMemberUpdatesAbci abci.ValidatorUpdates, params tmproto.ValidatorParams) error {
 	for _, valUpdate := range standingMemberUpdatesAbci {
-		if valUpdate.GetType() == "steering" {
+		if valUpdate.GetType() == "standing" {
 			// Check if validator's pubkey matches an ABCI type in the consensus params
 			pk, err := cryptoenc.PubKeyFromProto(valUpdate.GetPubKey())
 			if err != nil {

@@ -243,28 +243,30 @@ func (pb2tm) ValidatorUpdates(vals []abci.ValidatorUpdate) ([]*Validator, error)
 }
 
 func (pb2tm) StandingMemberUpdates(vals []abci.ValidatorUpdate) ([]*StandingMember, error) {
-	smz := make([]*StandingMember, len(vals))
-	for i, v := range vals {
+	var smz []*StandingMember
+
+	for _, v := range vals {
 		if v.GetType() == "standing" {
 			pubKey, err := cryptoenc.PubKeyFromProto(v.PubKey)
 			if err != nil {
 				return nil, err
 			}
-			smz[i] = NewStandingMember(pubKey)
+			smz = append(smz, NewStandingMember(pubKey, v.Power))
 		}
 	}
 	return smz, nil
 }
 
 func (pb2tm) SteeringMemberCandidateUpdates(vals []abci.ValidatorUpdate) ([]*SteeringMemberCandidate, error) {
-	smz := make([]*SteeringMemberCandidate, len(vals))
-	for i, v := range vals {
+	var smz []*SteeringMemberCandidate
+
+	for _, v := range vals {
 		if v.GetType() == "steering" {
 			pubKey, err := cryptoenc.PubKeyFromProto(v.PubKey)
 			if err != nil {
 				return nil, err
 			}
-			smz[i] = NewSteeringMemberCandidate(pubKey)
+			smz = append(smz, NewSteeringMemberCandidate(pubKey, v.Power))
 		}
 	}
 	return smz, nil

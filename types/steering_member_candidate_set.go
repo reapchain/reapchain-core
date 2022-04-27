@@ -105,11 +105,37 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) Size() int {
 	return len(steeringMemberCandidateSet.SteeringMemberCandidates)
 }
 
-func (steeringMemberCandidateSet *SteeringMemberCandidateSet) UpdateWithChangeSet(steeringMemberCandidates []*SteeringMemberCandidate) error {
-	if len(steeringMemberCandidates) != 0 {
-		sort.Sort(SortedSteeringMemberCandidates(steeringMemberCandidates))
-		steeringMemberCandidateSet.SteeringMemberCandidates = steeringMemberCandidates[:]
+func (steeringMemberCandidateSet *SteeringMemberCandidateSet) UpdateWithChangeSet(changes []*SteeringMemberCandidate) error {
+	if len(changes) == 0 {
+		return nil
 	}
+
+	sort.Sort(SortedSteeringMemberCandidates(changes))
+	
+	removals := make([]*SteeringMemberCandidate, 0, len(changes))
+	updates := make([]*SteeringMemberCandidate, 0, len(changes))
+	
+	var prevAddr Address
+	for _, steeringMemberCandidate := range changes {
+		if bytes.Equal(steeringMemberCandidate.Address, prevAddr) {
+			err := fmt.Errorf("duplicate entry %v in %v", steeringMemberCandidate, steeringMemberCandidate)
+			return err
+		}
+
+		if steeringMemberCandidate.VotingPower != 0 {
+			// add
+			updates = append(updates, steeringMemberCandidate)
+		} else {
+			// remove
+			removals = append(removals, steeringMemberCandidate)
+		}
+		prevAddr = steeringMemberCandidate.Address
+	}
+
+	steeringMemberCandidateSet.applyUpdates(updates)
+	steeringMemberCandidateSet.applyRemovals(removals)
+
+	sort.Sort(SortedSteeringMemberCandidates(steeringMemberCandidateSet.SteeringMemberCandidates))
 
 	return nil
 }
@@ -161,4 +187,67 @@ func SteeringMemberCandidateSetFromProto(steeringMemberCandidateSetProto *tmprot
 	steeringMemberCandidateSet.SteeringMemberCandidates = steeringMemberCandidates
 
 	return steeringMemberCandidateSet, steeringMemberCandidateSet.ValidateBasic()
+}
+
+func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyUpdates(updates []*SteeringMemberCandidate) {
+	existing := steeringMemberCandidateSet.SteeringMemberCandidates
+	sort.Sort(SortedSteeringMemberCandidates(existing))
+
+	merged := make([]*SteeringMemberCandidate, len(existing)+len(updates))
+	i := 0
+
+	for len(existing) > 0 && len(updates) > 0 {
+		if bytes.Compare(existing[0].Address, updates[0].Address) < 0 { // unchanged validator
+			merged[i] = existing[0]
+			existing = existing[1:]
+		} else {
+			// Apply add or update.
+			merged[i] = updates[0]
+			if bytes.Equal(existing[0].Address, updates[0].Address) {
+				// SteeringMemberCandidate is present in both, advance existing.
+				existing = existing[1:]
+			}
+			updates = updates[1:]
+		}
+		i++
+	}
+
+	// Add the elements which are left.
+	for j := 0; j < len(existing); j++ {
+		merged[i] = existing[j]
+		i++
+	}
+	// OR add updates which are left.
+	for j := 0; j < len(updates); j++ {
+		merged[i] = updates[j]
+		i++
+	}
+
+	steeringMemberCandidateSet.SteeringMemberCandidates = merged[:i]
+}
+
+func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyRemovals(deletes []*SteeringMemberCandidate) {
+	existing := steeringMemberCandidateSet.SteeringMemberCandidates
+
+	merged := make([]*SteeringMemberCandidate, len(existing)-len(deletes))
+	i := 0
+
+	// Loop over deletes until we removed all of them.
+	for len(deletes) > 0 {
+		if bytes.Equal(existing[0].Address, deletes[0].Address) {
+			deletes = deletes[1:]
+		} else { // Leave it in the resulting slice.
+			merged[i] = existing[0]
+			i++
+		}
+		existing = existing[1:]
+	}
+
+	// Add the elements which are left.
+	for j := 0; j < len(existing); j++ {
+		merged[i] = existing[j]
+		i++
+	}
+
+	steeringMemberCandidateSet.SteeringMemberCandidates = merged[:i]
 }

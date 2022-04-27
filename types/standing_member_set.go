@@ -181,11 +181,37 @@ func (standingMemberSet *StandingMemberSet) Size() int {
 	return len(standingMemberSet.StandingMembers)
 }
 
-func (standingMemberSet *StandingMemberSet) updateWithChangeSet(standingMembers []*StandingMember) error {
-	if len(standingMembers) != 0 {
-		sort.Sort(SortedStandingMembers(standingMembers))
-		standingMemberSet.StandingMembers = standingMembers[:]
+func (standingMemberSet *StandingMemberSet) updateWithChangeSet(changes []*StandingMember) error {
+	if len(changes) == 0 {
+		return nil
 	}
+
+	sort.Sort(SortedStandingMembers(changes))
+	
+	removals := make([]*StandingMember, 0, len(changes))
+	updates := make([]*StandingMember, 0, len(changes))
+	
+	var prevAddr Address
+	for _, standingMember := range changes {
+		if bytes.Equal(standingMember.Address, prevAddr) {
+			err := fmt.Errorf("duplicate entry %v in %v", standingMember, standingMember)
+			return err
+		}
+
+		if standingMember.VotingPower != 0 {
+			// add
+			updates = append(updates, standingMember)
+		} else {
+			// remove
+			removals = append(removals, standingMember)
+		}
+		prevAddr = standingMember.Address
+	}
+
+	standingMemberSet.applyUpdates(updates)
+	standingMemberSet.applyRemovals(removals)
+
+	sort.Sort(SortedStandingMembers(standingMemberSet.StandingMembers))
 
 	return nil
 }
@@ -208,4 +234,67 @@ func (standingMemberSet *StandingMemberSet) GetStandingMemberByAddress(address [
 		}
 	}
 	return -1, nil
+}
+
+func (standingMemberSet *StandingMemberSet) applyUpdates(updates []*StandingMember) {
+	existing := standingMemberSet.StandingMembers
+	sort.Sort(SortedStandingMembers(existing))
+
+	merged := make([]*StandingMember, len(existing)+len(updates))
+	i := 0
+
+	for len(existing) > 0 && len(updates) > 0 {
+		if bytes.Compare(existing[0].Address, updates[0].Address) < 0 { // unchanged validator
+			merged[i] = existing[0]
+			existing = existing[1:]
+		} else {
+			// Apply add or update.
+			merged[i] = updates[0]
+			if bytes.Equal(existing[0].Address, updates[0].Address) {
+				// StandingMember is present in both, advance existing.
+				existing = existing[1:]
+			}
+			updates = updates[1:]
+		}
+		i++
+	}
+
+	// Add the elements which are left.
+	for j := 0; j < len(existing); j++ {
+		merged[i] = existing[j]
+		i++
+	}
+	// OR add updates which are left.
+	for j := 0; j < len(updates); j++ {
+		merged[i] = updates[j]
+		i++
+	}
+
+	standingMemberSet.StandingMembers = merged[:i]
+}
+
+func (standingMemberSet *StandingMemberSet) applyRemovals(deletes []*StandingMember) {
+	existing := standingMemberSet.StandingMembers
+
+	merged := make([]*StandingMember, len(existing)-len(deletes))
+	i := 0
+
+	// Loop over deletes until we removed all of them.
+	for len(deletes) > 0 {
+		if bytes.Equal(existing[0].Address, deletes[0].Address) {
+			deletes = deletes[1:]
+		} else { // Leave it in the resulting slice.
+			merged[i] = existing[0]
+			i++
+		}
+		existing = existing[1:]
+	}
+
+	// Add the elements which are left.
+	for j := 0; j < len(existing); j++ {
+		merged[i] = existing[j]
+		i++
+	}
+
+	standingMemberSet.StandingMembers = merged[:i]
 }
