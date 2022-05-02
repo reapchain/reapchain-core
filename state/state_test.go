@@ -366,7 +366,7 @@ func TestProposerFrequency(t *testing.T) {
 			privVal := types.NewMockPV()
 			pubKey, err := privVal.GetPubKey()
 			require.NoError(t, err)
-			val := types.NewValidator(pubKey, votePower)
+			val := types.NewValidator(pubKey, votePower, "standing")
 			val.ProposerPriority = tmrand.Int64()
 			vals[j] = val
 		}
@@ -383,7 +383,7 @@ func genValSetWithPowers(powers []int64) *types.ValidatorSet {
 	totalVotePower := int64(0)
 	for i := 0; i < size; i++ {
 		totalVotePower += powers[i]
-		val := types.NewValidator(ed25519.GenPrivKey().PubKey(), powers[i])
+		val := types.NewValidator(ed25519.GenPrivKey().PubKey(), powers[i], "standing")
 		val.ProposerPriority = tmrand.Int64()
 		vals[i] = val
 	}
@@ -725,6 +725,7 @@ func TestLargeGenesisValidator(t *testing.T) {
 		Address:     genesisPubKey.Address(),
 		PubKey:      genesisPubKey,
 		VotingPower: genesisVotingPower,
+		Type: "standing",
 	}
 	// reset state validators to above validator
 	state.Validators = types.NewValidatorSet([]*types.Validator{genesisVal})

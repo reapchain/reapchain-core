@@ -65,6 +65,7 @@ type Testnet struct {
 // Node represents a Reapchain node in a testnet.
 type Node struct {
 	Name             string
+	Type			string
 	Testnet          *Testnet
 	Mode             Mode
 	PrivvalKey       crypto.PrivKey

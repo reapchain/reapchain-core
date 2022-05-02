@@ -374,6 +374,7 @@ message StandingMember {
 message ValidatorUpdate {
   reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
   int64                       power   = 2;
+  string                       type   = 3;
 }
 
 message StandingMemberUpdate {

@@ -366,7 +366,8 @@ func TestEventBusPublish(t *testing.T) {
 	require.NoError(t, err)
 	err = eventBus.PublishEventLock(EventDataRoundState{})
 	require.NoError(t, err)
-	err = eventBus.PublishEventValidatorSetUpdates(EventDataValidatorSetUpdates{})
+	err = eventBus.PublishEventStandingMemberSetUpdates(EventDataStandingMemberSetUpdates{})
+	err = eventBus.PublishEventSteeringMemberCandidateSetUpdates(EventDataSteeringMemberCandidateSetUpdates{})
 	require.NoError(t, err)
 
 	select {

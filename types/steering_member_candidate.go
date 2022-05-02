@@ -14,12 +14,14 @@ import (
 type SteeringMemberCandidate struct {
 	PubKey  crypto.PubKey `json:"pub_key"`
 	Address Address       `json:"address"`
+	VotingPower int64         `json:"voting_power"`
 }
 
-func NewSteeringMemberCandidate(pubKey crypto.PubKey) *SteeringMemberCandidate {
+func NewSteeringMemberCandidate(pubKey crypto.PubKey, votingPower int64) *SteeringMemberCandidate {
 	return &SteeringMemberCandidate{
 		Address: pubKey.Address(),
 		PubKey:  pubKey,
+		VotingPower:      votingPower,
 	}
 }
 

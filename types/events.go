@@ -20,7 +20,7 @@ const (
 	EventNewBlockHeader           = "NewBlockHeader"
 	EventNewEvidence              = "NewEvidence"
 	EventTx                       = "Tx"
-	EventValidatorSetUpdates      = "ValidatorSetUpdates"
+	EventSteeringMemberCandidateSetUpdates      = "SteeringMemberCandidateSetUpdates"
 	EventStandingMemberSetUpdates = "StandingMemberSetUpdates"
 
 	// Internal consensus events.
@@ -55,7 +55,8 @@ func init() {
 	tmjson.RegisterType(EventDataNewRound{}, "reapchain/event/NewRound")
 	tmjson.RegisterType(EventDataCompleteProposal{}, "reapchain/event/CompleteProposal")
 	tmjson.RegisterType(EventDataVote{}, "reapchain/event/Vote")
-	tmjson.RegisterType(EventDataValidatorSetUpdates{}, "reapchain/event/ValidatorSetUpdates")
+	tmjson.RegisterType(EventDataSteeringMemberCandidateSetUpdates{}, "reapchain/event/SteeringMemberCandidateSetUpdates")
+	tmjson.RegisterType(EventDataStandingMemberSetUpdates{}, "reapchain/event/StandingMemberSetUpdates")
 	tmjson.RegisterType(EventDataString(""), "reapchain/event/ProposalString")
 }
 
@@ -122,12 +123,12 @@ type EventDataVote struct {
 
 type EventDataString string
 
-type EventDataValidatorSetUpdates struct {
-	ValidatorUpdates []*Validator `json:"validator_updates"`
+type EventDataSteeringMemberCandidateSetUpdates struct {
+	SteeringMemberCandidateUpdates []*SteeringMemberCandidate `json:"steering_member_candidate_updates"`
 }
 
 type EventDataStandingMemberSetUpdates struct {
-	StandingMemberUpdates []*StandingMember `json:"validator_updates"`
+	StandingMemberUpdates []*StandingMember `json:"standing_member_updates"`
 }
 
 // PUBSUB
@@ -161,7 +162,8 @@ var (
 	EventQueryTimeoutWait         = QueryForEvent(EventTimeoutWait)
 	EventQueryTx                  = QueryForEvent(EventTx)
 	EventQueryUnlock              = QueryForEvent(EventUnlock)
-	EventQueryValidatorSetUpdates = QueryForEvent(EventValidatorSetUpdates)
+	EventQuerySteeringMemberCandidateSetUpdates = QueryForEvent(EventSteeringMemberCandidateSetUpdates)
+	EventQueryStandingMemberSetUpdates = QueryForEvent(EventStandingMemberSetUpdates)
 	EventQueryValidBlock          = QueryForEvent(EventValidBlock)
 	EventQueryVote                = QueryForEvent(EventVote)
 )
@@ -180,7 +182,7 @@ type BlockEventPublisher interface {
 	PublishEventNewBlockHeader(header EventDataNewBlockHeader) error
 	PublishEventNewEvidence(evidence EventDataNewEvidence) error
 	PublishEventTx(EventDataTx) error
-	PublishEventValidatorSetUpdates(EventDataValidatorSetUpdates) error
+	PublishEventSteeringMemberCandidateSetUpdates(EventDataSteeringMemberCandidateSetUpdates) error
 	PublishEventStandingMemberSetUpdates(EventDataStandingMemberSetUpdates) error
 }
 

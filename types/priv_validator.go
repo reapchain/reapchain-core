@@ -15,6 +15,7 @@ import (
 // that signs votes and proposals, and never double signs.
 type PrivValidator interface {
 	GetPubKey() (crypto.PubKey, error)
+	GetType() (string, error)
 
 	SignVote(chainID string, vote *tmproto.Vote) error
 	SignProposal(chainID string, proposal *tmproto.Proposal) error
@@ -54,24 +55,30 @@ func (pvs PrivValidatorsByAddress) Swap(i, j int) {
 // Only use it for testing.
 type MockPV struct {
 	PrivKey              crypto.PrivKey
+	Type              string
 	breakProposalSigning bool
 	breakVoteSigning     bool
 }
 
 func NewMockPV() MockPV {
-	return MockPV{ed25519.GenPrivKey(), false, false}
+	return MockPV{ed25519.GenPrivKey(), "steering", false, false}
 }
 
 // NewMockPVWithParams allows one to create a MockPV instance, but with finer
 // grained control over the operation of the mock validator. This is useful for
 // mocking test failures.
-func NewMockPVWithParams(privKey crypto.PrivKey, breakProposalSigning, breakVoteSigning bool) MockPV {
-	return MockPV{privKey, breakProposalSigning, breakVoteSigning}
+func NewMockPVWithParams(privKey crypto.PrivKey, validatorType string, breakProposalSigning, breakVoteSigning bool) MockPV {
+	return MockPV{privKey, validatorType, breakProposalSigning, breakVoteSigning}
 }
 
 // Implements PrivValidator.
 func (pv MockPV) GetPubKey() (crypto.PubKey, error) {
 	return pv.PrivKey.PubKey(), nil
+}
+
+// Implements PrivValidator.
+func (pv MockPV) GetType() (string, error) {
+	return pv.Type, nil
 }
 
 // Implements PrivValidator.
@@ -175,5 +182,5 @@ func (pv *ErroringMockPV) SignProposal(chainID string, proposal *tmproto.Proposa
 // NewErroringMockPV returns a MockPV that fails on each signing request. Again, for testing only.
 
 func NewErroringMockPV() *ErroringMockPV {
-	return &ErroringMockPV{MockPV{ed25519.GenPrivKey(), false, false}}
+	return &ErroringMockPV{MockPV{ed25519.GenPrivKey(), "steering", false, false}}
 }

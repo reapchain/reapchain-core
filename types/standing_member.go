@@ -14,12 +14,14 @@ import (
 type StandingMember struct {
 	PubKey  crypto.PubKey `json:"pub_key"`
 	Address Address       `json:"address"`
+	VotingPower int64         `json:"voting_power"`
 }
 
-func NewStandingMember(pubKey crypto.PubKey) *StandingMember {
+func NewStandingMember(pubKey crypto.PubKey, votingPower int64) *StandingMember {
 	return &StandingMember{
 		Address: pubKey.Address(),
 		PubKey:  pubKey,
+		VotingPower:      votingPower,
 	}
 }
 

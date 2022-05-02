@@ -35,6 +35,17 @@ message PubKeyResponse {
   RemoteSignerError           error   = 2;
 }
 
+// TypeRequest requests the validator type from the remote signer.
+message TypeRequest {
+  string chain_id = 1;
+}
+
+// TypeResponse is a response message containing the validator type.
+message TypeResponse {
+  string type = 1 ;
+  RemoteSignerError           error   = 2;
+}
+
 // SignVoteRequest is a request to sign a vote
 message SignVoteRequest {
   reapchain.types.Vote vote     = 1;
@@ -96,20 +107,24 @@ message Message {
   oneof sum {
     PubKeyRequest          pub_key_request          = 1;
     PubKeyResponse         pub_key_response         = 2;
-    SignVoteRequest        sign_vote_request        = 3;
-    SignedVoteResponse     signed_vote_response     = 4;
-    SignProposalRequest    sign_proposal_request    = 5;
-    SignedProposalResponse signed_proposal_response = 6;
-    PingRequest            ping_request             = 7;
-    PingResponse           ping_response            = 8;
 
-    SignQrnRequest        sign_qrn_request        = 9;
-    SignedQrnResponse     signed_qrn_response     = 10;
-    SignVrfRequest        sign_vrf_request        = 11;
-    SignedVrfResponse     signed_vrf_response     = 12;
+    TypeRequest          type_request          = 3;
+    TypeResponse         type_response         = 4;
+
+    SignVoteRequest        sign_vote_request        = 5;
+    SignedVoteResponse     signed_vote_response     = 6;
+    SignProposalRequest    sign_proposal_request    = 7;
+    SignedProposalResponse signed_proposal_response = 8;
+    PingRequest            ping_request             = 9;
+    PingResponse           ping_response            = 10;
+
+    SignQrnRequest        sign_qrn_request        = 11;
+    SignedQrnResponse     signed_qrn_response     = 12;
+    SignVrfRequest        sign_vrf_request        = 13;
+    SignedVrfResponse     signed_vrf_response     = 14;
     
-    SignSettingSteeringMemberRequest signed_setting_steering_member_request = 13;
-    SignedSettingSteeringMemberResponse     signed_setting_steering_member_response     = 14;
+    SignSettingSteeringMemberRequest signed_setting_steering_member_request = 15;
+    SignedSettingSteeringMemberResponse     signed_setting_steering_member_response     = 16;
     
   }
 }

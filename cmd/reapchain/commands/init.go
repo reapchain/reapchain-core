@@ -80,6 +80,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 			Address: pubKey.Address(),
 			PubKey:  pubKey,
 			Power:   10,
+			Type:   "standing",
 		}}
 
 		genDoc.ConsensusRound = types.NewConsensusRound(1, 4, 4, 4)

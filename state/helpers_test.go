@@ -105,8 +105,9 @@ func makeState(nVals, height int) (sm.State, dbm.DB, map[string]types.PrivValida
 			PubKey:  pk.PubKey(),
 			Power:   1000,
 			Name:    fmt.Sprintf("test%d", i),
+			Type:    "standing",
 		}
-		privVals[valAddr.String()] = types.NewMockPVWithParams(pk, false, false)
+		privVals[valAddr.String()] = types.NewMockPVWithParams(pk, "standing", false, false)
 	}
 	s, _ := sm.MakeGenesisState(&types.GenesisDoc{
 		ChainID:    chainID,
@@ -145,7 +146,7 @@ func makeBlock(state sm.State, height int64) *types.Block {
 func genValSet(size int) *types.ValidatorSet {
 	vals := make([]*types.Validator, size)
 	for i := 0; i < size; i++ {
-		vals[i] = types.NewValidator(ed25519.GenPrivKey().PubKey(), 10)
+		vals[i] = types.NewValidator(ed25519.GenPrivKey().PubKey(), 10, "standing")
 	}
 	return types.NewValidatorSet(vals)
 }
@@ -165,8 +166,8 @@ func makeHeaderPartsResponsesValPubKeyChange(
 	if !bytes.Equal(pubkey.Bytes(), val.PubKey.Bytes()) {
 		abciResponses.EndBlock = &abci.ResponseEndBlock{
 			ValidatorUpdates: []abci.ValidatorUpdate{
-				types.TM2PB.NewValidatorUpdate(val.PubKey, 0),
-				types.TM2PB.NewValidatorUpdate(pubkey, 10),
+				types.TM2PB.NewValidatorUpdate(val.PubKey, 0, "standing"),
+				types.TM2PB.NewValidatorUpdate(pubkey, 10, "standing"),
 			},
 		}
 	}
@@ -190,7 +191,7 @@ func makeHeaderPartsResponsesValPowerChange(
 	if val.VotingPower != power {
 		abciResponses.EndBlock = &abci.ResponseEndBlock{
 			ValidatorUpdates: []abci.ValidatorUpdate{
-				types.TM2PB.NewValidatorUpdate(val.PubKey, power),
+				types.TM2PB.NewValidatorUpdate(val.PubKey, power, val.Type),
 			},
 		}
 	}
@@ -222,6 +223,7 @@ func randomGenesisDoc() *types.GenesisDoc {
 				PubKey:  pubkey,
 				Power:   10,
 				Name:    "myval",
+				Type:    "standing",
 			},
 		},
 		ConsensusParams: types.DefaultConsensusParams(),
