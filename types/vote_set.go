@@ -610,6 +610,11 @@ func (voteSet *VoteSet) MakeCommit() *Commit {
 		if commitSig.ForBlock() && !v.BlockID.Equals(*voteSet.maj23) {
 			commitSig = NewCommitSigAbsent()
 		}
+
+		if(commitSig.Signature == nil) {
+			commitSig.ValidatorAddress, _ = voteSet.valSet.GetByIndex(int32(i))
+		}
+		
 		commitSigs[i] = commitSig
 	}
 

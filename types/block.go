@@ -773,9 +773,9 @@ func (cs CommitSig) ValidateBasic() error {
 
 	switch cs.BlockIDFlag {
 	case BlockIDFlagAbsent:
-		if len(cs.ValidatorAddress) != 0 {
-			return errors.New("validator address is present")
-		}
+		// if len(cs.ValidatorAddress) != 0 {
+		// 	return errors.New("validator address is present")
+		// }
 		if !cs.Timestamp.IsZero() {
 			return errors.New("time is present")
 		}
