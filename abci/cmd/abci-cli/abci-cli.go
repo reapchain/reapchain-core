@@ -22,7 +22,7 @@ import (
 	servertest "github.com/reapchain/reapchain-core/abci/tests/server"
 	"github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/abci/version"
-	"github.com/reapchain/reapchain-core/proto/reapchain/crypto"
+	"github.com/reapchain/reapchain-core/proto/reapchain-core/crypto"
 )
 
 // client is a global variable so it can be reused by the console

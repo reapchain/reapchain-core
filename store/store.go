@@ -8,8 +8,8 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
-	tmstore "github.com/reapchain/reapchain-core/proto/reapchain/store"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmstore "github.com/reapchain/reapchain-core/proto/reapchain-core/store"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

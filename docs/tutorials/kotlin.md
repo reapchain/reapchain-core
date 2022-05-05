@@ -115,7 +115,7 @@ Hello world.
 
 Reapchain Core communicates with the application through the Application
 BlockChain Interface (ABCI). All message types are defined in the [protobuf
-file](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain/abci/types.proto).
+file](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain-core/abci/types.proto).
 This allows Reapchain Core to run applications written in any programming
 language.
 
@@ -168,29 +168,29 @@ Copy the necessary `.proto` files to your project:
 
 ```bash
 mkdir -p \
-  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/abci \
-  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/version \
-  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/types \
-  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/crypto \
-  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/libs \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/abci \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/version \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/libs \
   $KVSTORE_HOME/src/main/proto/github.com/gogo/protobuf/gogoproto
 
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain/abci/types.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/abci/types.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain/version/version.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/version/version.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain/types/types.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/types/types.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain/types/evidence.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/types/evidence.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain/types/params.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/types/params.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain/crypto/merkle.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/crypto/merkle.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain/crypto/keys.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/crypto/keys.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain/libs/types.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain/libs/types.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/abci/types.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/abci/types.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/version/version.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/version/version.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/types/types.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types/types.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/types/evidence.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types/evidence.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/types/params.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types/params.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/merkle.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/merkle.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/keys.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/keys.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/libs/types.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/libs/types.proto
 cp $GOPATH/src/github.com/gogo/protobuf/gogoproto/gogo.proto \
    $KVSTORE_HOME/src/main/proto/github.com/gogo/protobuf/gogoproto/gogo.proto
 ```

@@ -23,7 +23,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/service"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	"github.com/reapchain/reapchain-core/p2p"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"

@@ -7,7 +7,7 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto/merkle"
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 type SteeringMemberCandidateSet struct {

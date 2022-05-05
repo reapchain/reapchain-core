@@ -9,7 +9,7 @@ import (
 	tmjson "github.com/reapchain/reapchain-core/libs/json"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	"github.com/reapchain/reapchain-core/p2p"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

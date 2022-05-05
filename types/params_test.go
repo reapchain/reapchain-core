@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	abci "github.com/reapchain/reapchain-core/abci/types"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 var (

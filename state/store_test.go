@@ -15,8 +15,8 @@ import (
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	tmstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"
 )

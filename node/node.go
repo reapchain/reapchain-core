@@ -327,7 +327,7 @@ func doHandshake(
 func logNodeStartupInfo(state sm.State, pubKey crypto.PubKey, logger, consensusLogger log.Logger) {
 	// Log the version info.
 	logger.Info("Version info",
-		"tendermint_version", version.TMCoreSemVer,
+		"reapchain_core_version", version.TMCoreSemVer,
 		"block", version.BlockProtocol,
 		"p2p", version.P2PProtocol,
 	)

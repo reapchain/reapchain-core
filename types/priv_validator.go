@@ -7,7 +7,7 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/vrfunc"
 )
 

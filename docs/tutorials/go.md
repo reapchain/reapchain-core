@@ -87,7 +87,7 @@ Hello, Reapchain Core
 
 Reapchain Core communicates with the application through the Application
 BlockChain Interface (ABCI). All message types are defined in the [protobuf
-file](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain/abci/types.proto).
+file](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain-core/abci/types.proto).
 This allows Reapchain Core to run applications written in any programming
 language.
 

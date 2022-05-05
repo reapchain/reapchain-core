@@ -6,7 +6,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	bcproto "github.com/reapchain/reapchain-core/proto/reapchain/blockchain"
+	bcproto "github.com/reapchain/reapchain-core/proto/reapchain-core/blockchain"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"
 )

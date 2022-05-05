@@ -4,7 +4,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 
 	tmjson "github.com/reapchain/reapchain-core/libs/json"
-	tmcons "github.com/reapchain/reapchain-core/proto/reapchain/consensus"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain-core/consensus"
 )
 
 // Message is a message that can be sent and received on the Reactor

@@ -11,7 +11,7 @@ import (
 	tmjson "github.com/reapchain/reapchain-core/libs/json"
 	tmos "github.com/reapchain/reapchain-core/libs/os"
 	"github.com/reapchain/reapchain-core/libs/tempfile"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

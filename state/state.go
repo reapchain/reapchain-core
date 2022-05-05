@@ -9,9 +9,9 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	tmstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
-	tmversion "github.com/reapchain/reapchain-core/proto/reapchain/version"
+	tmstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain-core/version"
 	"github.com/reapchain/reapchain-core/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 	"github.com/reapchain/reapchain-core/version"

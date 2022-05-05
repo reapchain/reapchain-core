@@ -23,7 +23,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/log"
 	"github.com/reapchain/reapchain-core/p2p"
 	p2pmocks "github.com/reapchain/reapchain-core/p2p/mocks"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"
 )

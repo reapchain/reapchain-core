@@ -10,7 +10,7 @@ import (
 
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	"github.com/reapchain/reapchain-core/light/store"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

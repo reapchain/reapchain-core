@@ -14,7 +14,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/service"
 	"github.com/reapchain/reapchain-core/p2p"
 	"github.com/reapchain/reapchain-core/p2p/conn"
-	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain-core/p2p"
 )
 
 type Peer = p2p.Peer

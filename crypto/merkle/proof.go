@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
-	tmcrypto "github.com/reapchain/reapchain-core/proto/reapchain/crypto"
+	tmcrypto "github.com/reapchain/reapchain-core/proto/reapchain-core/crypto"
 )
 
 const (

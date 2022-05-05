@@ -1,0 +1,130 @@
+syntax = "proto3";
+package reapchain.privval;
+
+import "reapchain-core/crypto/keys.proto";
+import "reapchain-core/types/types.proto";
+import "reapchain-core/types/qrn.proto";
+import "reapchain-core/types/vrf.proto";
+import "reapchain-core/types/setting_steering_member.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/reapchain/reapchain-core/proto/reapchain-core/privval";
+
+enum Errors {
+  ERRORS_UNKNOWN             = 0;
+  ERRORS_UNEXPECTED_RESPONSE = 1;
+  ERRORS_NO_CONNECTION       = 2;
+  ERRORS_CONNECTION_TIMEOUT  = 3;
+  ERRORS_READ_TIMEOUT        = 4;
+  ERRORS_WRITE_TIMEOUT       = 5;
+}
+
+message RemoteSignerError {
+  int32  code        = 1;
+  string description = 2;
+}
+
+// PubKeyRequest requests the consensus public key from the remote signer.
+message PubKeyRequest {
+  string chain_id = 1;
+}
+
+// PubKeyResponse is a response message containing the public key.
+message PubKeyResponse {
+  reapchain.crypto.PublicKey pub_key = 1 [(gogoproto.nullable) = false];
+  RemoteSignerError           error   = 2;
+}
+
+// TypeRequest requests the validator type from the remote signer.
+message TypeRequest {
+  string chain_id = 1;
+}
+
+// TypeResponse is a response message containing the validator type.
+message TypeResponse {
+  string type = 1 ;
+  RemoteSignerError           error   = 2;
+}
+
+// SignVoteRequest is a request to sign a vote
+message SignVoteRequest {
+  reapchain.types.Vote vote     = 1;
+  string                chain_id = 2;
+}
+
+// SignedVoteResponse is a response containing a signed vote or an error
+message SignedVoteResponse {
+  reapchain.types.Vote vote  = 1 [(gogoproto.nullable) = false];
+  RemoteSignerError     error = 2;
+}
+
+message SignQrnRequest {
+  reapchain.types.Qrn qrn     = 1;
+}
+
+message SignSettingSteeringMemberRequest {
+  reapchain.types.SettingSteeringMember setting_steering_member     = 1;
+}
+
+message SignVrfRequest {
+  reapchain.types.Vrf vrf     = 1;
+}
+
+message SignedQrnResponse {
+  reapchain.types.Qrn qrn  = 1 [(gogoproto.nullable) = false];
+  RemoteSignerError     error = 2;
+}
+
+message SignedSettingSteeringMemberResponse {
+  reapchain.types.SettingSteeringMember setting_steering_member  = 1 [(gogoproto.nullable) = false];
+  RemoteSignerError     error = 2;
+}
+
+message SignedVrfResponse {
+  reapchain.types.Vrf vrf  = 1 [(gogoproto.nullable) = false];
+  RemoteSignerError     error = 2;
+}
+
+// SignProposalRequest is a request to sign a proposal
+message SignProposalRequest {
+  reapchain.types.Proposal proposal = 1;
+  string                    chain_id = 2;
+}
+
+// SignedProposalResponse is response containing a signed proposal or an error
+message SignedProposalResponse {
+  reapchain.types.Proposal proposal = 1 [(gogoproto.nullable) = false];
+  RemoteSignerError         error    = 2;
+}
+
+// PingRequest is a request to confirm that the connection is alive.
+message PingRequest {}
+
+// PingResponse is a response to confirm that the connection is alive.
+message PingResponse {}
+
+message Message {
+  oneof sum {
+    PubKeyRequest          pub_key_request          = 1;
+    PubKeyResponse         pub_key_response         = 2;
+
+    TypeRequest          type_request          = 3;
+    TypeResponse         type_response         = 4;
+
+    SignVoteRequest        sign_vote_request        = 5;
+    SignedVoteResponse     signed_vote_response     = 6;
+    SignProposalRequest    sign_proposal_request    = 7;
+    SignedProposalResponse signed_proposal_response = 8;
+    PingRequest            ping_request             = 9;
+    PingResponse           ping_response            = 10;
+
+    SignQrnRequest        sign_qrn_request        = 11;
+    SignedQrnResponse     signed_qrn_response     = 12;
+    SignVrfRequest        sign_vrf_request        = 13;
+    SignedVrfResponse     signed_vrf_response     = 14;
+    
+    SignSettingSteeringMemberRequest signed_setting_steering_member_request = 15;
+    SignedSettingSteeringMemberResponse     signed_setting_steering_member_response     = 16;
+    
+  }
+}

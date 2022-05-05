@@ -4,7 +4,7 @@ set -eo pipefail
 
 proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
-  buf protoc \
+  protoc \
   -I "proto" \
   -I "third_party/proto" \
   --gogofaster_out=\
@@ -14,9 +14,9 @@ plugins=grpc,paths=source_relative:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 done
 
-cp -r ./reapchain/* ./proto/*
-rm -rf reapchain
+cp -r ./reapchain-core/* ./proto/*
+rm -rf reapchain-core
 
-mv ./proto/reapchain/abci/types.pb.go ./abci/types
+mv ./proto/reapchain-core/abci/types.pb.go ./abci/types
 
-mv ./proto/reapchain/rpc/grpc/types.pb.go ./rpc/grpc
+mv ./proto/reapchain-core/rpc/grpc/types.pb.go ./rpc/grpc

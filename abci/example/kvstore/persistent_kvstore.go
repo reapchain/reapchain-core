@@ -13,7 +13,7 @@ import (
 	"github.com/reapchain/reapchain-core/abci/types"
 	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
 	"github.com/reapchain/reapchain-core/libs/log"
-	pc "github.com/reapchain/reapchain-core/proto/reapchain/crypto"
+	pc "github.com/reapchain/reapchain-core/proto/reapchain-core/crypto"
 )
 
 const (

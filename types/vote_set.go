@@ -8,7 +8,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/bits"
 	tmjson "github.com/reapchain/reapchain-core/libs/json"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 const (

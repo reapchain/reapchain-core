@@ -27,7 +27,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/async"
 	"github.com/reapchain/reapchain-core/libs/protoio"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
-	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain-core/p2p"
 )
 
 // 4 + 1024 == 1028 total frame size

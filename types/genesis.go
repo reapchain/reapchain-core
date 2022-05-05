@@ -12,7 +12,7 @@ import (
 	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
 	tmjson "github.com/reapchain/reapchain-core/libs/json"
 	tmos "github.com/reapchain/reapchain-core/libs/os"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 

@@ -7,7 +7,7 @@ import (
 
 	abci "github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 const (

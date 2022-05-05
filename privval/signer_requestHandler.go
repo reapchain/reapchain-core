@@ -5,9 +5,9 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto"
 	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
-	cryptoproto "github.com/reapchain/reapchain-core/proto/reapchain/crypto"
-	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain/privval"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	cryptoproto "github.com/reapchain/reapchain-core/proto/reapchain-core/crypto"
+	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain-core/privval"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

@@ -11,7 +11,7 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto/merkle"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 const (

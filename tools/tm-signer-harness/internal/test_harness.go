@@ -17,7 +17,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/log"
 	tmnet "github.com/reapchain/reapchain-core/libs/net"
 	tmos "github.com/reapchain/reapchain-core/libs/os"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

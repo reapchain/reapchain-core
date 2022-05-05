@@ -15,7 +15,7 @@ import (
 	"github.com/reapchain/reapchain-core/abci/example/code"
 	abciserver "github.com/reapchain/reapchain-core/abci/server"
 	"github.com/reapchain/reapchain-core/abci/types"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 const (

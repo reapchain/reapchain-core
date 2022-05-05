@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	tmstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
-	tmversion "github.com/reapchain/reapchain-core/proto/reapchain/version"
+	tmstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain-core/version"
 	"github.com/reapchain/reapchain-core/version"
 )
 

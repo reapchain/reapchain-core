@@ -8,7 +8,7 @@ import (
 
 	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
 	tmstrings "github.com/reapchain/reapchain-core/libs/strings"
-	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain-core/p2p"
 	"github.com/reapchain/reapchain-core/version"
 )
 

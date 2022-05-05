@@ -5,7 +5,7 @@ import (
 
 	bc "github.com/reapchain/reapchain-core/blockchain"
 	"github.com/reapchain/reapchain-core/p2p"
-	bcproto "github.com/reapchain/reapchain-core/proto/reapchain/blockchain"
+	bcproto "github.com/reapchain/reapchain-core/proto/reapchain-core/blockchain"
 	"github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"
 )

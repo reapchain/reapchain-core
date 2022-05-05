@@ -6,7 +6,7 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 func TestCanonicalizeBlockID(t *testing.T) {

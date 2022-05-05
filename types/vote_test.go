@@ -12,7 +12,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	"github.com/reapchain/reapchain-core/libs/protoio"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 func examplePrevote() *Vote {

@@ -6,9 +6,9 @@ import (
 	state "github.com/reapchain/reapchain-core/state"
 	mock "github.com/stretchr/testify/mock"
 
-	tendermintstate "github.com/reapchain/reapchain-core/proto/reapchain/state"
+	tendermintstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
 
-	"github.com/reapchain/reapchain-core/proto/reapchain/types"
+	"github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	tenderminttypes "github.com/reapchain/reapchain-core/types"
 )
 

@@ -7,7 +7,7 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto"
 	ce "github.com/reapchain/reapchain-core/crypto/encoding"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 const (

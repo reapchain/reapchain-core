@@ -7,7 +7,7 @@ import (
 
 	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
 	"github.com/reapchain/reapchain-core/libs/protoio"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 

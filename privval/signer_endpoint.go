@@ -8,7 +8,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/protoio"
 	"github.com/reapchain/reapchain-core/libs/service"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
-	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain/privval"
+	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain-core/privval"
 )
 
 const (

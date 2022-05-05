@@ -33,7 +33,7 @@ import (
 	mempl "github.com/reapchain/reapchain-core/mempool"
 	"github.com/reapchain/reapchain-core/p2p"
 	"github.com/reapchain/reapchain-core/privval"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/store"
 	"github.com/reapchain/reapchain-core/types"

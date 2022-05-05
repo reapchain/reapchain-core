@@ -1,0 +1,24 @@
+syntax = "proto3";
+package reapchain.types;
+
+option go_package = "github.com/reapchain/reapchain-core/proto/reapchain-core/types";
+
+import "gogoproto/gogo.proto";
+import "reapchain-core/crypto/keys.proto";
+import "google/protobuf/timestamp.proto";
+import "reapchain-core/types/standing_member.proto";
+
+message QrnSet {
+  int64 height = 1;
+  repeated Qrn qrns         = 2;
+  reapchain.types.StandingMemberSet standing_member_set  = 3;
+}
+
+message Qrn {
+  int64 height = 1;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  reapchain.crypto.PublicKey standing_member_pub_key           = 3 [(gogoproto.nullable) = false];
+  uint64 value = 4;
+  bytes signature         = 5;
+  int32 standing_member_index         = 6;
+}

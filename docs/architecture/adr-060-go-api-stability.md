@@ -95,10 +95,10 @@ For comparison, the following are the number of Reapchain imports in the Cosmos 
       3 github.com/reapchain/reapchain-core/node
       5 github.com/reapchain/reapchain-core/p2p
       4 github.com/reapchain/reapchain-core/privval
-     10 github.com/reapchain/reapchain-core/proto/reapchain/crypto
-      1 github.com/reapchain/reapchain-core/proto/reapchain/libs/bits
-     24 github.com/reapchain/reapchain-core/proto/reapchain/types
-      3 github.com/reapchain/reapchain-core/proto/reapchain/version
+     10 github.com/reapchain/reapchain-core/proto/reapchain-core/crypto
+      1 github.com/reapchain/reapchain-core/proto/reapchain-core/libs/bits
+     24 github.com/reapchain/reapchain-core/proto/reapchain-core/types
+      3 github.com/reapchain/reapchain-core/proto/reapchain-core/version
       2 github.com/reapchain/reapchain-core/proxy
       3 github.com/reapchain/reapchain-core/rpc/client
       1 github.com/reapchain/reapchain-core/rpc/client/http

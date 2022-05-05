@@ -17,8 +17,8 @@ import (
 	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
-	tmversion "github.com/reapchain/reapchain-core/proto/reapchain/version"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain-core/version"
 	"github.com/reapchain/reapchain-core/version"
 )
 

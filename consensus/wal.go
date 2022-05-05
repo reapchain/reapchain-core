@@ -16,7 +16,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/log"
 	tmos "github.com/reapchain/reapchain-core/libs/os"
 	"github.com/reapchain/reapchain-core/libs/service"
-	tmcons "github.com/reapchain/reapchain-core/proto/reapchain/consensus"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain-core/consensus"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 

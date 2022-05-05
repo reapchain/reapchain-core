@@ -51,7 +51,7 @@ As a middle ground approach, the proposal is to add the
 are to be hashed in the header.
 
 ```
-@ proto/reapchain/abci/types.proto:295 @ message BlockParams {
+@ proto/reapchain-core/abci/types.proto:295 @ message BlockParams {
   int64 max_bytes = 1;
   // Note: must be greater or equal to -1
   int64 max_gas = 2;

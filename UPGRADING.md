@@ -34,7 +34,7 @@ Note also that Reapchain 0.34 also requires Go 1.15 or higher.
   Applications should be able to handle these evidence types
   (i.e., through slashing or other accountability measures).
 
-* The [`PublicKey` type](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain/crypto/keys.proto#L13-L15)
+* The [`PublicKey` type](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain-core/crypto/keys.proto#L13-L15)
   (used in ABCI as part of `ValidatorUpdate`) now uses a `oneof` protobuf type.
   Note that since Reapchain only supports ed25519 validator keys, there's only one
   option in the `oneof`.  For more, see "Protocol Buffers," below.

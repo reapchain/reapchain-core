@@ -7,7 +7,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	"github.com/reapchain/reapchain-core/crypto/secp256k1"
 	"github.com/reapchain/reapchain-core/libs/json"
-	pc "github.com/reapchain/reapchain-core/proto/reapchain/crypto"
+	pc "github.com/reapchain/reapchain-core/proto/reapchain-core/crypto"
 )
 
 func init() {

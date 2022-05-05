@@ -15,7 +15,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
 	"github.com/reapchain/reapchain-core/libs/protoio"
-	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain-core/p2p"
 )
 
 type buffer struct {

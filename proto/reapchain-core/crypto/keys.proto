@@ -1,0 +1,17 @@
+syntax = "proto3";
+package reapchain.crypto;
+
+option go_package = "github.com/reapchain/reapchain-core/proto/reapchain-core/crypto";
+
+import "gogoproto/gogo.proto";
+
+// PublicKey defines the keys available for use with Reapchain Validators
+message PublicKey {
+  option (gogoproto.compare) = true;
+  option (gogoproto.equal)   = true;
+
+  oneof sum {
+    bytes ed25519   = 1;
+    bytes secp256k1 = 2;
+  }
+}

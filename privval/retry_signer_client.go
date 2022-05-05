@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/reapchain/reapchain-core/crypto"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

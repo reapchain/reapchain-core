@@ -15,7 +15,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	tmjson "github.com/reapchain/reapchain-core/libs/json"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 )

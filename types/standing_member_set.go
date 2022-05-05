@@ -8,7 +8,7 @@ import (
 	"sort"
 
 	"github.com/reapchain/reapchain-core/crypto/merkle"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 type StandingMemberSet struct {

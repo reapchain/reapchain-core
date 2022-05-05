@@ -3,7 +3,7 @@ package types
 import (
 	"time"
 
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 

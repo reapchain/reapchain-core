@@ -22,7 +22,7 @@ import (
 	"github.com/reapchain/reapchain-core/mempool/mock"
 	"github.com/reapchain/reapchain-core/p2p"
 	"github.com/reapchain/reapchain-core/p2p/conn"
-	bcproto "github.com/reapchain/reapchain-core/proto/reapchain/blockchain"
+	bcproto "github.com/reapchain/reapchain-core/proto/reapchain-core/blockchain"
 	"github.com/reapchain/reapchain-core/proxy"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/store"

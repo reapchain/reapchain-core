@@ -14,8 +14,8 @@ import (
 	"github.com/reapchain/reapchain-core/libs/bits"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
 	"github.com/reapchain/reapchain-core/p2p"
-	tmcons "github.com/reapchain/reapchain-core/proto/reapchain/consensus"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain-core/consensus"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

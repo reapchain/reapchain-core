@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 // BlockMeta contains meta information.

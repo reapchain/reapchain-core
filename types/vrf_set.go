@@ -9,8 +9,10 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/merkle"
 	"github.com/reapchain/reapchain-core/libs/bits"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
+
+const MAXIMUM_STEERING_MEMBERS = 15;
 
 type VrfSet struct {
 	Height int64
@@ -210,10 +212,10 @@ func (vrfSet *VrfSet) GetSteeringMemberIndexes() *SettingSteeringMember {
 	if len(vrfSet.Vrfs) != 0 {
 		sort.Sort(SortedVrfs(vrfSet.Vrfs))
 		var steeringMemberSize int
-		if len(vrfSet.Vrfs) < 15 {
+		if len(vrfSet.Vrfs) < MAXIMUM_STEERING_MEMBERS {
 			steeringMemberSize = len(vrfSet.Vrfs)
 		} else {
-			steeringMemberSize = 15
+			steeringMemberSize = MAXIMUM_STEERING_MEMBERS
 		}
 
 		settingSteeringMember := NewSettingSteeringMember(steeringMemberSize)

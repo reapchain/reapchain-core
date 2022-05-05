@@ -7,7 +7,7 @@ import (
 	clist "github.com/reapchain/reapchain-core/libs/clist"
 	"github.com/reapchain/reapchain-core/libs/log"
 	"github.com/reapchain/reapchain-core/p2p"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

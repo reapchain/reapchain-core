@@ -13,8 +13,8 @@ import (
 
 	"github.com/reapchain/reapchain-core/libs/log"
 	"github.com/reapchain/reapchain-core/libs/protoio"
-	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain/p2p"
-	"github.com/reapchain/reapchain-core/proto/reapchain/types"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 const maxPingPongPacketSize = 1024 // bytes
