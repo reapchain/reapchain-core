@@ -21,6 +21,9 @@ import (
 // It exposes ApplyBlock(), which validates & executes the block, updates state w/ ABCI responses,
 // then commits and updates the mempool atomically, then saves state.
 
+const MAXIMUM_STEERING_MEMBER_CANDIDATES = 30;
+const MAXIMUM_STEERING_MEMBERS = 15;
+
 // BlockExecutor provides the context and accessories for properly executing a block.
 type BlockExecutor struct {
 	// save state, validators, consensus params, abci responses here
@@ -184,7 +187,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	}
 
 	// Update the state with the block and responses.
-	state, err = updateState(state, blockID, &block.Header, abciResponses, standingMemberUpdates, steeringMemberCandidateUpdates)
+	state, err = updateState(blockExec.store, state, blockID, &block.Header, abciResponses, standingMemberUpdates, steeringMemberCandidateUpdates)
 	if err != nil {
 		return state, 0, fmt.Errorf("commit failed for application: %v", err)
 	}
@@ -468,6 +471,7 @@ func validateQrnUpdates(qrnUpdatesAbci []abci.QrnUpdate, params tmproto.Validato
 
 // updateState returns a new State updated according to the header and responses.
 func updateState(
+	store Store,
 	state State,
 	blockID types.BlockID,
 	header *types.Header,
@@ -500,6 +504,30 @@ func updateState(
 		if err != nil {
 			return state, fmt.Errorf("error changing steering member candidate set: %v", err)
 		}
+
+		state.NextVrfSet.UpdateWithChangeSet(steeringMemberCandidateSet.SteeringMemberCandidates)
+		
+		if state.SettingSteeringMember != nil {
+			var steeringMemberSize int
+			if len(steeringMemberCandidateSet.SteeringMemberCandidates) < MAXIMUM_STEERING_MEMBER_CANDIDATES {
+				steeringMemberSize = len(steeringMemberCandidateSet.SteeringMemberCandidates)
+			} else {
+				steeringMemberSize = MAXIMUM_STEERING_MEMBER_CANDIDATES
+			}
+			
+			steeringMemberIndexes := make([]int32, steeringMemberSize)
+
+			for i, steeringMemberIndex := range state.SettingSteeringMember.SteeringMemberIndexes {
+				currentSteeringMemberCandidatePubKey := state.SteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey
+				index, _ := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(currentSteeringMemberCandidatePubKey.Address())
+				if index != -1 {
+					steeringMemberIndexes[i] = index
+				}
+			}
+
+			state.SettingSteeringMember.SteeringMemberIndexes = steeringMemberIndexes
+		}
+
 		lastHeightSteeringMemberCandidatesChanged = header.Height + 1
 	}
 
@@ -548,6 +576,10 @@ func updateState(
 			for _, steeringMemberIndex := range state.SettingSteeringMember.SteeringMemberIndexes {
 				validators[i] = types.NewValidator(state.SteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey, 10, "steering")
 				i++
+
+				if(i == MAXIMUM_STEERING_MEMBERS) {
+					break
+				}
 			}
 		}
 
@@ -573,6 +605,44 @@ func updateState(
 		// Change results from this height but only applies to the next next height.
 		lastHeightValsChanged = header.Height + 1 + 1
 		standingMemberSet.CurrentCoordinatorRanking = 0
+	}
+
+	if len(standingMemberUpdates) > 0 || len(steeringMemberCandidateUpdates) > 0 {
+		standingMemberSize := len(standingMemberSet.StandingMembers)
+		steringMemberSize := len(steeringMemberCandidateSet.SteeringMemberCandidates)
+
+		previousSteeringMemberCandidateSet, err := store.LoadSteeringMemberCandidateSet(state.ConsensusRound.ConsensusStartBlockHeight - 1)
+		previousSettingSteeringMember, err := store.LoadSettingSteeringMember(state.ConsensusRound.ConsensusStartBlockHeight - 1)
+		if (err != nil) {
+			fmt.Errorf("failed load setting steering member", "err", err)
+		}
+
+		if (steringMemberSize > MAXIMUM_STEERING_MEMBERS) {
+			steringMemberSize = MAXIMUM_STEERING_MEMBERS
+		}
+
+		validators := make([]*types.Validator, standingMemberSize + steringMemberSize)
+		i := 0
+		for _, standingMember := range standingMemberSet.StandingMembers {
+			validators[i] = types.NewValidator(standingMember.PubKey, 10, "standing")
+			i++
+		}
+
+		for _, steeringMemberIndex := range previousSettingSteeringMember.SteeringMemberIndexes {
+			currentSteeringMemberCandidatePubKey := previousSteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey
+
+			index, _ := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(currentSteeringMemberCandidatePubKey.Address())
+			if index != -1 {
+				validators[i] = types.NewValidator(currentSteeringMemberCandidatePubKey, 10, "steering")
+				i++
+
+				if(i == MAXIMUM_STEERING_MEMBERS) {
+					break
+				}
+			}		
+		}
+
+		nValSet = types.NewValidatorSet(validators)
 	}
 
 	nextVersion := state.Version

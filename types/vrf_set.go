@@ -12,7 +12,7 @@ import (
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
-const MAXIMUM_STEERING_MEMBERS = 15;
+const MAXIMUM_STEERING_MEMBER_CANDIDATES = 30;
 
 type VrfSet struct {
 	Height int64
@@ -212,10 +212,10 @@ func (vrfSet *VrfSet) GetSteeringMemberIndexes() *SettingSteeringMember {
 	if len(vrfSet.Vrfs) != 0 {
 		sort.Sort(SortedVrfs(vrfSet.Vrfs))
 		var steeringMemberSize int
-		if len(vrfSet.Vrfs) < MAXIMUM_STEERING_MEMBERS {
+		if len(vrfSet.Vrfs) < MAXIMUM_STEERING_MEMBER_CANDIDATES {
 			steeringMemberSize = len(vrfSet.Vrfs)
 		} else {
-			steeringMemberSize = MAXIMUM_STEERING_MEMBERS
+			steeringMemberSize = MAXIMUM_STEERING_MEMBER_CANDIDATES
 		}
 
 		settingSteeringMember := NewSettingSteeringMember(steeringMemberSize)
@@ -286,14 +286,69 @@ type VrfSetReader interface {
 	GetByIndex(int32) *Vrf
 }
 
-func (vrfSet *VrfSet) UpdateWithChangeSet(vrfs []*Vrf) error {
-	return vrfSet.updateWithChangeSet(vrfs)
-}
+func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidates []*SteeringMemberCandidate) error {
 
-func (vrfSet *VrfSet) updateWithChangeSet(vrfs []*Vrf) error {
-	if len(vrfs) != 0 {
-		vrfSet.Vrfs = vrfs[:]
+	vrfs := make([]*Vrf, 0, len(steeringMemberCandidates))
+	vrfsBitArray := bits.NewBitArray(len(steeringMemberCandidates))
+
+	for i, steeringMemberCandidate := range steeringMemberCandidates {
+		vrf := vrfSet.GetVrf(steeringMemberCandidate.PubKey)
+
+		if (vrf == nil) {
+			vrfs[i] = NewVrfAsEmpty(vrfSet.Height, steeringMemberCandidate.PubKey)
+		} else {
+			vrfs[i] = vrf
+			steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(steeringMemberCandidate.PubKey.Address())
+			vrfsBitArray.SetIndex(i, vrfSet.VrfsBitArray.GetIndex(int(steeringMemberCandidateIndex)))
+		}
 	}
+
+	vrfSet.SteeringMemberCandidateSet.SteeringMemberCandidates = steeringMemberCandidates
+	vrfSet.Vrfs = vrfs
+	vrfSet.VrfsBitArray = vrfsBitArray
 
 	return nil
 }
+
+// func (vrfSet *VrfSet) UpdateWithChangeSet(changes []*SteeringMemberCandidate) error {
+// 	if len(changes) == 0 {
+// 		return nil
+// 	}
+
+// 	removals := make([]*SteeringMemberCandidate, 0, len(changes))
+// 	updates := make([]*SteeringMemberCandidate, 0, len(changes))
+
+// 	var prevAddr Address
+// 	for _, steeringMemberCandidate := range changes {
+// 		if bytes.Equal(steeringMemberCandidate.Address, prevAddr) {
+// 			err := fmt.Errorf("duplicate entry %v in %v", steeringMemberCandidate, steeringMemberCandidate)
+// 			return err
+// 		}
+
+// 		if steeringMemberCandidate.VotingPower != 0 {
+// 			updates = append(updates, steeringMemberCandidate)
+// 		} else {
+// 			// remove
+// 			removals = append(removals, steeringMemberCandidate)
+// 		}
+// 		prevAddr = steeringMemberCandidate.Address
+// 	}
+
+// 	vrfs := make([]*Vrf, 0, len(vrfSet.Vrfs) + len(updates) - len(removals))
+
+// 	for i := 0; i < len(updates); i++ {
+// 		vrfs = append(vrfs, NewVrfAsEmpty(vrfSet.Height, updates[i].PubKey))
+// 	}
+
+// 	for i := 0; i < len(vrfSet.Vrfs); i++ {
+// 		for j := 0; j < len(removals); j++ {
+// 			checkVrf := vrfSet.GetVrf(removals[i].PubKey)
+
+// 			if (checkVrf == nil) {
+// 				vrfs = append(vrfs, vrfSet.Vrfs[i])
+// 			}
+// 		}	
+// 	}
+
+// 	return nil
+// }
