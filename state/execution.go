@@ -21,8 +21,8 @@ import (
 // It exposes ApplyBlock(), which validates & executes the block, updates state w/ ABCI responses,
 // then commits and updates the mempool atomically, then saves state.
 
-const MAXIMUM_STEERING_MEMBER_CANDIDATES = 30;
-const MAXIMUM_STEERING_MEMBERS = 15;
+const MAXIMUM_STEERING_MEMBER_CANDIDATES = 30
+const MAXIMUM_STEERING_MEMBERS = 15
 
 // BlockExecutor provides the context and accessories for properly executing a block.
 type BlockExecutor struct {
@@ -506,7 +506,7 @@ func updateState(
 		}
 
 		state.NextVrfSet.UpdateWithChangeSet(steeringMemberCandidateSet.SteeringMemberCandidates)
-		
+
 		if state.SettingSteeringMember != nil {
 			var steeringMemberSize int
 			if len(steeringMemberCandidateSet.SteeringMemberCandidates) < MAXIMUM_STEERING_MEMBER_CANDIDATES {
@@ -514,7 +514,7 @@ func updateState(
 			} else {
 				steeringMemberSize = MAXIMUM_STEERING_MEMBER_CANDIDATES
 			}
-			
+
 			steeringMemberIndexes := make([]int32, steeringMemberSize)
 
 			for i, steeringMemberIndex := range state.SettingSteeringMember.SteeringMemberIndexes {
@@ -574,10 +574,12 @@ func updateState(
 
 		if state.SettingSteeringMember != nil {
 			for _, steeringMemberIndex := range state.SettingSteeringMember.SteeringMemberIndexes {
+				fmt.Println("stompesi - steeringMemberIndex", steeringMemberIndex)
+				
 				validators[i] = types.NewValidator(state.SteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey, 10, "steering")
 				i++
 
-				if(i == MAXIMUM_STEERING_MEMBERS) {
+				if i == MAXIMUM_STEERING_MEMBERS {
 					break
 				}
 			}
@@ -585,6 +587,7 @@ func updateState(
 
 		for _, standingMember := range standingMemberSet.StandingMembers {
 			validators[i] = types.NewValidator(standingMember.PubKey, 10, "standing")
+			fmt.Println("stompesi - standingMember")
 			i++
 		}
 
@@ -608,39 +611,65 @@ func updateState(
 	}
 
 	if len(standingMemberUpdates) > 0 || len(steeringMemberCandidateUpdates) > 0 {
-		standingMemberSize := len(standingMemberSet.StandingMembers)
-		steringMemberSize := len(steeringMemberCandidateSet.SteeringMemberCandidates)
 
 		previousSteeringMemberCandidateSet, err := store.LoadSteeringMemberCandidateSet(state.ConsensusRound.ConsensusStartBlockHeight - 1)
 		previousSettingSteeringMember, err := store.LoadSettingSteeringMember(state.ConsensusRound.ConsensusStartBlockHeight - 1)
-		if (err != nil) {
+
+		standingMemberSize := len(standingMemberSet.StandingMembers)
+		steringMemberSize := len(previousSettingSteeringMember.SteeringMemberIndexes)
+
+		if err != nil {
 			fmt.Errorf("failed load setting steering member", "err", err)
 		}
 
-		if (steringMemberSize > MAXIMUM_STEERING_MEMBERS) {
-			steringMemberSize = MAXIMUM_STEERING_MEMBERS
+		validators := make([]*types.Validator, 0, standingMemberSize+steringMemberSize)
+		// i := 0
+
+		fmt.Println("standingMemberSize", standingMemberSize)
+		fmt.Println("steringMemberSize", steringMemberSize)
+		
+		fmt.Println("state.NextQrnSet", len(state.NextQrnSet.Qrns))
+		fmt.Println("state.QrnSet", len(state.QrnSet.Qrns))
+
+		fmt.Println("state.QrnSet", len(state.QrnSet.Qrns))
+
+		state.NextQrnSet.Copy()
+		state.QrnSet.Copy()
+
+
+		for _, standingMember := range standingMemberSet.StandingMembers {
+			fmt.Println("add standing member")
+			// validators[i] = types.NewValidator(standingMember.PubKey, 10, "standing")
+			validators = append(validators, types.NewValidator(standingMember.PubKey, 10, "standing"))
+			// i++
 		}
 
-		validators := make([]*types.Validator, standingMemberSize + steringMemberSize)
-		i := 0
-		for _, standingMember := range standingMemberSet.StandingMembers {
-			validators[i] = types.NewValidator(standingMember.PubKey, 10, "standing")
-			i++
-		}
+		fmt.Println("val-size", len(validators))
+
+		fmt.Println("currentSteeringMemberCandidateSet", len(steeringMemberCandidateSet.SteeringMemberCandidates))
+		fmt.Println("currentSettingSteeringMember.SteeringMemberIndexes", len(state.SettingSteeringMember.SteeringMemberIndexes))
+
+		fmt.Println("previousSteeringMemberCandidateSet", len(previousSteeringMemberCandidateSet.SteeringMemberCandidates))
+		fmt.Println("previousSettingSteeringMember.SteeringMemberIndexes", len(previousSettingSteeringMember.SteeringMemberIndexes))
 
 		for _, steeringMemberIndex := range previousSettingSteeringMember.SteeringMemberIndexes {
 			currentSteeringMemberCandidatePubKey := previousSteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey
 
 			index, _ := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(currentSteeringMemberCandidatePubKey.Address())
 			if index != -1 {
-				validators[i] = types.NewValidator(currentSteeringMemberCandidatePubKey, 10, "steering")
-				i++
+				fmt.Println("add steering member")
+				// validators[i] = types.NewValidator(currentSteeringMemberCandidatePubKey, 10, "steering")
 
-				if(i == MAXIMUM_STEERING_MEMBERS) {
+				validators = append(validators, types.NewValidator(currentSteeringMemberCandidatePubKey, 10, "steering"))
+				// i++
+
+				// if i == MAXIMUM_STEERING_MEMBERS {
+				if len(validators) == MAXIMUM_STEERING_MEMBERS {
 					break
 				}
-			}		
+			}
 		}
+		fmt.Println("val-size", len(validators))
 
 		nValSet = types.NewValidatorSet(validators)
 	}
@@ -650,6 +679,16 @@ func updateState(
 	standingMemberSet.SetCoordinator(state.QrnSet)
 	_, proposer := nValSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
 	nValSet.Proposer = proposer
+
+	fmt.Println("-------------------------------------")
+	fmt.Println("standingMemberSet", len(standingMemberSet.StandingMembers))
+	fmt.Println("steeringMemberCandidateSet", len(steeringMemberCandidateSet.SteeringMemberCandidates))
+	fmt.Println("qrnSet", len(state.QrnSet.Qrns))
+	fmt.Println("vdfSet", len(state.VrfSet.Vrfs))
+	fmt.Println("nextValidators", len(nValSet.Validators))
+	fmt.Println("Validators", len(state.NextValidators.Validators))
+	fmt.Println("LastValidators", len(state.Validators.Validators))
+	fmt.Println("-------------------------------------")
 
 	// NOTE: the AppHash has not been populated.
 	// It will be filled on state.Save.

@@ -12,7 +12,7 @@ import (
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
-const MAXIMUM_STEERING_MEMBER_CANDIDATES = 30;
+const MAXIMUM_STEERING_MEMBER_CANDIDATES = 30
 
 type VrfSet struct {
 	Height int64
@@ -288,13 +288,13 @@ type VrfSetReader interface {
 
 func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidates []*SteeringMemberCandidate) error {
 
-	vrfs := make([]*Vrf, 0, len(steeringMemberCandidates))
+	vrfs := make([]*Vrf, len(steeringMemberCandidates))
 	vrfsBitArray := bits.NewBitArray(len(steeringMemberCandidates))
 
 	for i, steeringMemberCandidate := range steeringMemberCandidates {
 		vrf := vrfSet.GetVrf(steeringMemberCandidate.PubKey)
 
-		if (vrf == nil) {
+		if vrf == nil {
 			vrfs[i] = NewVrfAsEmpty(vrfSet.Height, steeringMemberCandidate.PubKey)
 		} else {
 			vrfs[i] = vrf
@@ -347,7 +347,7 @@ func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidates []*SteeringMe
 // 			if (checkVrf == nil) {
 // 				vrfs = append(vrfs, vrfSet.Vrfs[i])
 // 			}
-// 		}	
+// 		}
 // 	}
 
 // 	return nil
