@@ -110,6 +110,8 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 	vrfSet.mtx.Lock()
 	defer vrfSet.mtx.Unlock()
 
+	steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(vrf.SteeringMemberCandidatePubKey.Address())
+	
 	if vrf == nil {
 		return fmt.Errorf("Vrf is nil")
 	}
@@ -121,8 +123,6 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 	if vrfSet.Height != vrf.Height {
 		return fmt.Errorf("Invalid vrf height")
 	}
-
-	steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(vrf.SteeringMemberCandidatePubKey.Address())
 
 	if steeringMemberCandidateIndex == -1 {
 		return fmt.Errorf("Not exist standing member of vrf: %v", vrf.SteeringMemberCandidatePubKey.Address())
@@ -208,7 +208,7 @@ func (vrfSet *VrfSet) GetByIndex(steeringMemberCandidateIndex int32) *Vrf {
 	return vrfSet.Vrfs[steeringMemberCandidateIndex]
 }
 
-func (vrfSet *VrfSet) GetSteeringMemberIndexes() *SettingSteeringMember {
+func (vrfSet *VrfSet) GetSteeringMemberAddresses() *SettingSteeringMember {
 	if len(vrfSet.Vrfs) != 0 {
 		sort.Sort(SortedVrfs(vrfSet.Vrfs))
 		var steeringMemberSize int
@@ -221,9 +221,12 @@ func (vrfSet *VrfSet) GetSteeringMemberIndexes() *SettingSteeringMember {
 		settingSteeringMember := NewSettingSteeringMember(steeringMemberSize)
 
 		for i := 0; i < steeringMemberSize; i++ {
-			settingSteeringMember.SteeringMemberIndexes[i] = vrfSet.Vrfs[i].SteeringMemberCandidateIndex
+			if (vrfSet.Vrfs[i].Value != nil) {
+				settingSteeringMember.SteeringMemberAddresses = append(settingSteeringMember.SteeringMemberAddresses, vrfSet.Vrfs[i].SteeringMemberCandidatePubKey.Address())
+			}
 		}
 
+		fmt.Println("stompesi - settingSteeringMember", settingSteeringMember)
 		return settingSteeringMember
 	}
 	return nil
@@ -297,10 +300,12 @@ func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidates []*SteeringMe
 		if vrf == nil {
 			vrfs[i] = NewVrfAsEmpty(vrfSet.Height, steeringMemberCandidate.PubKey)
 		} else {
-			vrfs[i] = vrf
+			vrfs[i] = vrf.Copy()
+			
 			steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(steeringMemberCandidate.PubKey.Address())
 			vrfsBitArray.SetIndex(i, vrfSet.VrfsBitArray.GetIndex(int(steeringMemberCandidateIndex)))
 		}
+		vrfs[i].SteeringMemberCandidateIndex = int32(i)
 	}
 
 	vrfSet.SteeringMemberCandidateSet.SteeringMemberCandidates = steeringMemberCandidates

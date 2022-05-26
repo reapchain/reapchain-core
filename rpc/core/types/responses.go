@@ -169,7 +169,7 @@ type ResultQrns struct {
 type ResultSettingSteeringMember struct {
 	BlockHeight           int64          `json:"block_height"`
 	Height                int64          `json:"height"`
-	SteeringMemberIndexes []int32        `json:"steering_member_indexes"`
+	SteeringMemberAddresses [][]byte        `json:"steering_member_addresses"`
 	Timestamp             time.Time      `json:"timestamp"`
 	Address               bytes.HexBytes `json:"address"`
 }

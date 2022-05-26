@@ -1795,7 +1795,7 @@ func (cs *State) finalizeCommit(height int64) {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
 			if cs.isProposer(address) {
-				settingSteeringMember := cs.state.NextVrfSet.GetSteeringMemberIndexes()
+				settingSteeringMember := cs.state.NextVrfSet.GetSteeringMemberAddresses()
 
 				if settingSteeringMember != nil {
 					settingSteeringMember.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Period)

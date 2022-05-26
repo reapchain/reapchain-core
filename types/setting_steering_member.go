@@ -18,14 +18,14 @@ type SettingSteeringMember struct {
 	Height                int64         `json:"height"`
 	Timestamp             time.Time     `json:"timestamp"`
 	CoordinatorPubKey     crypto.PubKey `json:"coordinator_pub_key"`
-	SteeringMemberIndexes []int32       `json:"steering_member_indexes"`
+	SteeringMemberAddresses [][]byte       `json:"steering_member_indexes"`
 	Signature             []byte        `json:"signature"`
 }
 
 func NewSettingSteeringMember(steeringMemberSize int) *SettingSteeringMember {
 	settingSteeringMember := SettingSteeringMember{
 		Timestamp:             time.Now(),
-		SteeringMemberIndexes: make([]int32, steeringMemberSize),
+		SteeringMemberAddresses: make([][]byte, 0, steeringMemberSize),
 	}
 
 	return &settingSteeringMember
@@ -65,11 +65,12 @@ func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberByte
 		panic(err)
 	}
 
+
 	settingSteeringMemberProto := tmproto.SettingSteeringMember{
 		Height:                settingSteeringMember.Height,
 		Timestamp:             settingSteeringMember.Timestamp,
 		CoordinatorPubKey:     pubKeyProto,
-		SteeringMemberIndexes: settingSteeringMember.SteeringMemberIndexes,
+		SteeringMemberAddresses: settingSteeringMember.SteeringMemberAddresses,
 	}
 
 	SettingSteeringMemberignBytes, err := settingSteeringMemberProto.Marshal()
@@ -93,7 +94,7 @@ func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberByte
 		Height:                settingSteeringMember.Height,
 		Timestamp:             settingSteeringMember.Timestamp,
 		CoordinatorPubKey:     pubKeyProto,
-		SteeringMemberIndexes: settingSteeringMember.SteeringMemberIndexes,
+		SteeringMemberAddresses: settingSteeringMember.SteeringMemberAddresses,
 		Signature:             settingSteeringMember.Signature,
 	}
 
@@ -118,7 +119,7 @@ func (settingSteeringMember *SettingSteeringMember) GetBytesForSign() []byte {
 		Height:                settingSteeringMember.Height,
 		Timestamp:             settingSteeringMember.Timestamp,
 		CoordinatorPubKey:     pubKeyProto,
-		SteeringMemberIndexes: settingSteeringMember.SteeringMemberIndexes,
+		SteeringMemberAddresses: settingSteeringMember.SteeringMemberAddresses,
 	}
 
 	SettingSteeringMemberignBytes, err := settingSteeringMemberProto.Marshal()
@@ -151,7 +152,7 @@ func (settingSteeringMember *SettingSteeringMember) ToProto() *tmproto.SettingSt
 		Height:                settingSteeringMember.Height,
 		Timestamp:             settingSteeringMember.Timestamp,
 		CoordinatorPubKey:     pubKey,
-		SteeringMemberIndexes: settingSteeringMember.SteeringMemberIndexes,
+		SteeringMemberAddresses: settingSteeringMember.SteeringMemberAddresses,
 		Signature:             settingSteeringMember.Signature,
 	}
 
@@ -172,7 +173,7 @@ func SettingSteeringMemberFromProto(settingSteeringMemberProto *tmproto.SettingS
 	settingSteeringMember.Height = settingSteeringMemberProto.Height
 	settingSteeringMember.Timestamp = settingSteeringMemberProto.Timestamp
 	settingSteeringMember.CoordinatorPubKey = pubKey
-	settingSteeringMember.SteeringMemberIndexes = settingSteeringMemberProto.SteeringMemberIndexes
+	settingSteeringMember.SteeringMemberAddresses = settingSteeringMemberProto.SteeringMemberAddresses
 	settingSteeringMember.Signature = settingSteeringMemberProto.Signature
 
 	return settingSteeringMember

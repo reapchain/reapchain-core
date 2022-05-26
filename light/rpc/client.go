@@ -576,7 +576,7 @@ func (c *Client) SettingSteeringMember(ctx context.Context, height *int64) (*cty
 	return &ctypes.ResultSettingSteeringMember{
 		BlockHeight:           l.Height,
 		Height:                l.SettingSteeringMember.Height,
-		SteeringMemberIndexes: l.SettingSteeringMember.SteeringMemberIndexes,
+		SteeringMemberAddresses: l.SettingSteeringMember.SteeringMemberAddresses,
 		Timestamp:             l.SettingSteeringMember.Timestamp,
 		Address:               l.SettingSteeringMember.CoordinatorPubKey.Address(),
 	}, nil

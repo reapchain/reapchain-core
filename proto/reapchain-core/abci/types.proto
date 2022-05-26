@@ -84,6 +84,7 @@ message RequestBeginBlock {
   reapchain.types.Header header                = 2 [(gogoproto.nullable) = false];
   LastCommitInfo          last_commit_info     = 3 [(gogoproto.nullable) = false];
   repeated Evidence       byzantine_validators = 4 [(gogoproto.nullable) = false];
+  VrfCheckList            vrf_check_list       = 5 [(gogoproto.nullable) = false];
 }
 
 enum CheckTxType {
@@ -326,6 +327,15 @@ message BlockParams {
 message LastCommitInfo {
   int32             round = 1;
   repeated VoteInfo votes = 2 [(gogoproto.nullable) = false];
+}
+
+message VrfCheck {
+  bytes         steering_member_candidate_address = 1;
+  bool          is_vrf_transmission = 2;
+}
+
+message VrfCheckList {
+  repeated VrfCheck vrf_check_list = 1;
 }
 
 // Event allows application developers to attach additional information to

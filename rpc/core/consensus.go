@@ -132,7 +132,7 @@ func SettingSteeringMember(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.Res
 	return &ctypes.ResultSettingSteeringMember{
 		BlockHeight:           height,
 		Height:                settingSteeringMember.Height,
-		SteeringMemberIndexes: settingSteeringMember.SteeringMemberIndexes,
+		SteeringMemberAddresses: settingSteeringMember.SteeringMemberAddresses,
 		Timestamp:             settingSteeringMember.Timestamp,
 		Address:               settingSteeringMember.CoordinatorPubKey.Address(),
 	}, nil

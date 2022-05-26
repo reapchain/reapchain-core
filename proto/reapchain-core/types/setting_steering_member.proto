@@ -11,6 +11,6 @@ message SettingSteeringMember {
   int64 height = 1;
   google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   reapchain.crypto.PublicKey coordinator_pub_key           = 3 [(gogoproto.nullable) = false];
-  repeated int32 steering_member_indexes = 4;
+  repeated bytes steering_member_addresses = 4;
   bytes signature         = 5;
 }
