@@ -503,6 +503,7 @@ func updateState(
 			return state, fmt.Errorf("error changing standing member set: %v", err)
 		}
 		lastHeightStandingMembersChanged = header.Height + 1
+		
 	}
 
 	lastHeightSteeringMemberCandidatesChanged := state.LastHeightSteeringMemberCandidatesChanged
@@ -590,9 +591,6 @@ func updateState(
 				}
 			}
 		}
-
-
-
 		state.IsSetSteeringMember = false
 
 		nextConsensusRound.ConsensusStartBlockHeight = header.Height + 1
@@ -699,6 +697,7 @@ func updateState(
 		
 
 		nValSet = types.NewValidatorSet(validators)
+		lastHeightValsChanged = header.Height + 1 + 1
 	}
 
 	nextVersion := state.Version
