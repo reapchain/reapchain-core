@@ -2480,9 +2480,6 @@ func repairWalFile(src, dst string) error {
 }
 
 func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
-	// if qrn.Height != cs.Height {
-	// 	return false, fmt.Errorf("Failed to add qrn: difference height / qrnHeight: %v & consensusRoundHeight: %v", qrn.Height, cs.Height)
-	// }
 	if err := cs.state.NextQrnSet.AddQrn(qrn); err != nil {
 		return false, fmt.Errorf("Failed to add qrn: %v", err) // err="Failed to add qrn: Difference
 	}
@@ -2491,9 +2488,7 @@ func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
 }
 
 func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeringMember, peerID p2p.ID) error {
-	// if cs.state.ConsensusRound.ConsensusStartBlockHeight > cs.Height || cs.Height > settingSteeringMember.Height {
-	// 	return nil
-	// }
+	cs.StandingMemberSet.SetCoordinator(cs.QrnSet)
 	currentCoordinator := cs.StandingMemberSet.Coordinator.Copy()
 
 	if currentCoordinator.PubKey.Equals(settingSteeringMember.CoordinatorPubKey) == false {
