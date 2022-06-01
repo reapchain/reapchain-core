@@ -290,6 +290,8 @@ type VrfSetReader interface {
 }
 
 func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidates []*SteeringMemberCandidate) error {
+	vrfSet.mtx.Lock()
+	defer vrfSet.mtx.Unlock()
 
 	vrfs := make([]*Vrf, len(steeringMemberCandidates))
 	vrfsBitArray := bits.NewBitArray(len(steeringMemberCandidates))

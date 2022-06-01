@@ -712,8 +712,14 @@ func updateState(
 	fmt.Println("qrnSet", len(state.QrnSet.Qrns))
 	fmt.Println("nextQrnSet", len(state.NextQrnSet.Qrns))
 
+	fmt.Println("state.QrnSet.Qrns[0]", state.QrnSet.Qrns[0].Value)
+	fmt.Println("state.NextQrnSet.Qrns[0]", state.NextQrnSet.Qrns[0].Value)
+
 	fmt.Println("vrfSet", len(state.VrfSet.Vrfs))
 	fmt.Println("nextVrfSet", len(state.NextVrfSet.Vrfs))
+	
+	fmt.Println("state.VrfSet.Vrfs[0]", state.VrfSet.Vrfs[0].Value)
+	fmt.Println("state.NextVrfSet.Vrfs[0]", state.NextVrfSet.Vrfs[0].Value)
 
 	fmt.Println("nextValidators", len(nValSet.Validators))
 	fmt.Println("Validators", len(state.NextValidators.Validators))

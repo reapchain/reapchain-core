@@ -7,10 +7,13 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto/merkle"
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 type SteeringMemberCandidateSet struct {
+	mtx     tmsync.Mutex
+	
 	SteeringMemberCandidates []*SteeringMemberCandidate `json:"steering_member_candidates"`
 }
 
@@ -106,6 +109,9 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) Size() int {
 }
 
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) UpdateWithChangeSet(changes []*SteeringMemberCandidate) error {
+	steeringMemberCandidateSet.mtx.Lock()
+	defer steeringMemberCandidateSet.mtx.Unlock()
+	
 	if len(changes) == 0 {
 		return nil
 	}
@@ -227,7 +233,9 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyUpdates(updat
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyRemovals(deletes []*SteeringMemberCandidate) {
 	existing := steeringMemberCandidateSet.SteeringMemberCandidates
 
-	merged := make([]*SteeringMemberCandidate, len(existing)-len(deletes))
+	fmt.Println("applyRemovals", "existing", len(existing), "deletes", len(deletes))
+	
+	merged := make([]*SteeringMemberCandidate, len(existing) - len(deletes))
 	i := 0
 
 	// Loop over deletes until we removed all of them.
