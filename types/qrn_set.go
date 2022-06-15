@@ -130,7 +130,7 @@ func (qrnSet *QrnSet) AddQrn(qrn *Qrn) error {
 	}
 
 	if qrn.VerifySign() == false {
-		return fmt.Errorf("Invalid qrn sign")
+		return nil
 	}
 
 	if qrnSet.Height != qrn.Height {

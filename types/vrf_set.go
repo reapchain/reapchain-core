@@ -117,7 +117,7 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 	}
 
 	if vrf.Verify() == false {
-		return fmt.Errorf("Invalid vrf sign")
+		return nil
 	}
 
 	if vrfSet.Height != vrf.Height {
