@@ -173,7 +173,6 @@ type ResultSettingSteeringMember struct {
 	Timestamp             time.Time      `json:"timestamp"`
 	Address               bytes.HexBytes `json:"address"`
 }
-
 type ResultVrfs struct {
 	BlockHeight int64        `json:"block_height"`
 	Vrfs        []*types.Vrf `json:"vrfs"`

@@ -698,7 +698,7 @@ func (cs *State) updateToState(state sm.State) {
 	cs.TriggeredTimeoutPrecommit = false
 
 	cs.StandingMemberSet = state.StandingMemberSet
-	cs.QrnSet = state.QrnSet
+	
 	cs.SteeringMemberCandidateSet = state.SteeringMemberCandidateSet
 	cs.state = state
 
@@ -883,21 +883,12 @@ func (cs *State) handleMsg(mi msgInfo) {
 
 	case *QrnMessage:
 		added, err = cs.tryAddQrn(msg.Qrn, peerID)
-		if err != nil {
-			fmt.Println("qrn-height-update", cs.state.QrnSet.Height)
-		}
 
 	case *SettingSteeringMemberMessage:
 		err = cs.trySetSteeringMember(msg.SettingSteeringMember, peerID)
-		if err != nil {
-			fmt.Println("update-validator-set")
-		}
 
 	case *VrfMessage:
 		added, err = cs.tryAddVrf(msg.Vrf, peerID)
-		if err != nil {
-			fmt.Println("qrn-height-update", cs.state.QrnSet.Height)
-		}
 
 	default:
 		cs.Logger.Error("unknown msg type", "type", fmt.Sprintf("%T", msg))
@@ -1048,7 +1039,7 @@ func (cs *State) enterNewRound(height int64, round int32) {
 		cs.ProposalBlockParts = nil
 	}
 
-	cs.StandingMemberSet.SetCoordinator(cs.QrnSet)
+	cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
 	_, proposer := cs.Validators.GetByAddress(cs.StandingMemberSet.Coordinator.PubKey.Address())
 	cs.Validators.Proposer = proposer
 
@@ -1744,10 +1735,10 @@ func (cs *State) finalizeCommit(height int64) {
 		logger.Error("failed to get private validator pubkey", "err", err)
 	}
 
-	if cs.state.ConsensusRound.ConsensusStartBlockHeight == height {
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight-1 == height {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
-			if cs.RoundState.StandingMemberSet.HasAddress(address) == true {
+			if cs.state.NextQrnSet.StandingMemberSet.HasAddress(address) == true {
 
 				standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
 				if standingMemberIndex != -1 {
@@ -1764,10 +1755,10 @@ func (cs *State) finalizeCommit(height int64) {
 				}
 			}
 		}
-	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod) == height {
+	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod)-1 == height {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
-			if cs.RoundState.SteeringMemberCandidateSet.HasAddress(address) == true {
+			if cs.state.NextVrfSet.SteeringMemberCandidateSet.HasAddress(address) == true {
 				isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
 
 				if isFull == false {
@@ -1791,7 +1782,7 @@ func (cs *State) finalizeCommit(height int64) {
 				}
 			}
 		}
-	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod+cs.state.ConsensusRound.VrfPeriod) == height {
+	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod+cs.state.ConsensusRound.VrfPeriod)-1 == height {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
 			if cs.isProposer(address) {
@@ -2481,14 +2472,14 @@ func repairWalFile(src, dst string) error {
 
 func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
 	if err := cs.state.NextQrnSet.AddQrn(qrn); err != nil {
-		return false, fmt.Errorf("Failed to add qrn: %v", err) // err="Failed to add qrn: Difference
+		return false, err
 	}
 
 	return true, nil
 }
 
 func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeringMember, peerID p2p.ID) error {
-	cs.StandingMemberSet.SetCoordinator(cs.QrnSet)
+	cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
 	currentCoordinator := cs.StandingMemberSet.Coordinator.Copy()
 
 	if currentCoordinator.PubKey.Equals(settingSteeringMember.CoordinatorPubKey) == false {
@@ -2509,7 +2500,7 @@ func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeri
 
 func (cs *State) tryAddVrf(vrf *types.Vrf, peerID p2p.ID) (bool, error) {
 	if err := cs.state.NextVrfSet.AddVrf(vrf); err != nil {
-		return false, fmt.Errorf("Failed to add vrf: %v", err)
+		return false, err
 	}
 
 	return true, nil

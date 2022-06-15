@@ -289,18 +289,19 @@ type VrfSetReader interface {
 	GetByIndex(int32) *Vrf
 }
 
-func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidates []*SteeringMemberCandidate) error {
+func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
 	vrfSet.mtx.Lock()
 	defer vrfSet.mtx.Unlock()
 
-	vrfs := make([]*Vrf, len(steeringMemberCandidates))
-	vrfsBitArray := bits.NewBitArray(len(steeringMemberCandidates))
+	vrfs := make([]*Vrf, len(steeringMemberCandidateSet.SteeringMemberCandidates))
+	vrfsBitArray := bits.NewBitArray(len(steeringMemberCandidateSet.SteeringMemberCandidates))
 
-	for i, steeringMemberCandidate := range steeringMemberCandidates {
+	for i, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
 		vrf := vrfSet.GetVrf(steeringMemberCandidate.PubKey)
 
 		if vrf == nil {
 			vrfs[i] = NewVrfAsEmpty(vrfSet.Height, steeringMemberCandidate.PubKey)
+			vrfsBitArray.SetIndex(i, true)
 		} else {
 			vrfs[i] = vrf.Copy()
 			
@@ -310,52 +311,9 @@ func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidates []*SteeringMe
 		vrfs[i].SteeringMemberCandidateIndex = int32(i)
 	}
 
-	vrfSet.SteeringMemberCandidateSet.SteeringMemberCandidates = steeringMemberCandidates
+	vrfSet.SteeringMemberCandidateSet = steeringMemberCandidateSet.Copy()
 	vrfSet.Vrfs = vrfs
 	vrfSet.VrfsBitArray = vrfsBitArray
 
 	return nil
 }
-
-// func (vrfSet *VrfSet) UpdateWithChangeSet(changes []*SteeringMemberCandidate) error {
-// 	if len(changes) == 0 {
-// 		return nil
-// 	}
-
-// 	removals := make([]*SteeringMemberCandidate, 0, len(changes))
-// 	updates := make([]*SteeringMemberCandidate, 0, len(changes))
-
-// 	var prevAddr Address
-// 	for _, steeringMemberCandidate := range changes {
-// 		if bytes.Equal(steeringMemberCandidate.Address, prevAddr) {
-// 			err := fmt.Errorf("duplicate entry %v in %v", steeringMemberCandidate, steeringMemberCandidate)
-// 			return err
-// 		}
-
-// 		if steeringMemberCandidate.VotingPower != 0 {
-// 			updates = append(updates, steeringMemberCandidate)
-// 		} else {
-// 			// remove
-// 			removals = append(removals, steeringMemberCandidate)
-// 		}
-// 		prevAddr = steeringMemberCandidate.Address
-// 	}
-
-// 	vrfs := make([]*Vrf, 0, len(vrfSet.Vrfs) + len(updates) - len(removals))
-
-// 	for i := 0; i < len(updates); i++ {
-// 		vrfs = append(vrfs, NewVrfAsEmpty(vrfSet.Height, updates[i].PubKey))
-// 	}
-
-// 	for i := 0; i < len(vrfSet.Vrfs); i++ {
-// 		for j := 0; j < len(removals); j++ {
-// 			checkVrf := vrfSet.GetVrf(removals[i].PubKey)
-
-// 			if (checkVrf == nil) {
-// 				vrfs = append(vrfs, vrfSet.Vrfs[i])
-// 			}
-// 		}
-// 	}
-
-// 	return nil
-// }

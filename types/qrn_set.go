@@ -64,6 +64,7 @@ func QrnSetFromProto(qrnSetProto *tmproto.QrnSet) (*QrnSet, error) {
 	}
 	qrnSet.StandingMemberSet = standingMemberSet
 	qrnSet.QrnsBitArray = bits.NewBitArray(standingMemberSet.Size())
+
 	qrnSet.Qrns = qrns
 
 	return qrnSet, qrnSet.ValidateBasic()
@@ -278,8 +279,33 @@ type QrnSetReader interface {
 	GetByIndex(int32) *Qrn
 }
 
-func (qrnSet *QrnSet) UpdateWithChangeSet(qrns []*Qrn) error {
-	return qrnSet.updateWithChangeSet(qrns)
+func (qrnSet *QrnSet) UpdateWithChangeSet(standingMemberSet *StandingMemberSet) error {
+	qrnSet.mtx.Lock()
+	defer qrnSet.mtx.Unlock()
+
+	qrns := make([]*Qrn, len(standingMemberSet.StandingMembers))
+	qrnsBitArray := bits.NewBitArray(len(standingMemberSet.StandingMembers))
+
+	for i, steeringMemberCandidate := range standingMemberSet.StandingMembers {
+		qrn := qrnSet.GetQrn(steeringMemberCandidate.PubKey)
+
+		if qrn == nil {
+			qrns[i] = NewQrnAsEmpty(qrnSet.Height, steeringMemberCandidate.PubKey)
+			qrnsBitArray.SetIndex(i, true)
+		} else {
+			qrns[i] = qrn.Copy()
+			
+			steeringMemberCandidateIndex, _ := qrnSet.StandingMemberSet.GetStandingMemberByAddress(steeringMemberCandidate.PubKey.Address())
+			qrnsBitArray.SetIndex(i, qrnSet.QrnsBitArray.GetIndex(int(steeringMemberCandidateIndex)))
+		}
+		qrns[i].StandingMemberIndex = int32(i)
+	}
+
+	qrnSet.StandingMemberSet = standingMemberSet.Copy()
+	qrnSet.Qrns = qrns
+	qrnSet.QrnsBitArray = qrnsBitArray
+
+	return nil
 }
 
 func (qrnSet *QrnSet) updateWithChangeSet(qrns []*Qrn) error {

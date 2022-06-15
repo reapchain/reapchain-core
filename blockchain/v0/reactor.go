@@ -460,12 +460,15 @@ FOR_LOOP:
 				// TODO: validate
 				state.QrnSet = firstState.QrnSet
 				state.VrfSet = firstState.VrfSet
-				state.SettingSteeringMember = firstState.SettingSteeringMember
+				state.SettingSteeringMember = firstState.SettingSteeringMember.Copy()
 				state.NextQrnSet = firstState.NextQrnSet
 				state.NextVrfSet = firstState.NextVrfSet
 
 				state.StandingMemberSet = firstState.StandingMemberSet.Copy()
 				state.SteeringMemberCandidateSet = firstState.SteeringMemberCandidateSet.Copy()
+
+				fmt.Println("stompesi - SettingSteeringMember", state.SettingSteeringMember)
+				fmt.Println("stompesi - state.SteeringMemberCandidateSet", state.SteeringMemberCandidateSet)
 
 				// TODO: batch saves so we dont persist to disk every block
 				bcR.store.SaveBlock(first, firstParts, second.LastCommit)
@@ -474,7 +477,12 @@ FOR_LOOP:
 				// get the hash without persisting the state
 				var err error
 
+				fmt.Println("stompesi - state.NextValidators", state.NextValidators)
+				
 				state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
+
+				fmt.Println("stompesi2 - state.NextValidators", state.NextValidators)
+
 				if err != nil {
 					// TODO This is bad, are we zombie?
 					panic(fmt.Sprintf("Failed to process committed block (%d:%X): %v", first.Height, first.Hash(), err))

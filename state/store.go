@@ -48,7 +48,7 @@ func calcNextVrfsKey(height int64) []byte {
 }
 
 func calcSettingSteeringMemberKey(height int64) []byte {
-	return []byte(fmt.Sprintf("SettingSteeringMemberKey:%v", height))
+	return []byte(fmt.Sprintf("settingSteeringMemberKey:%v", height))
 }
 
 func calcStandingMembersKey(height int64) []byte {
@@ -748,6 +748,8 @@ func (store dbStore) saveSettingSteeringMemberInfo(nextHeight int64, settingStee
 		LastHeightChanged: nextHeight,
 	}
 
+	fmt.Println("Stompesi - saveSettingSteeringMemberInfo", settingSteeringMember)
+
 	settingSteeringMemberProto := settingSteeringMember.ToProto()
 
 	SettingSteeringMemberInfo.SettingSteeringMember = settingSteeringMemberProto
@@ -766,10 +768,6 @@ func (store dbStore) saveSettingSteeringMemberInfo(nextHeight int64, settingStee
 }
 
 func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, standingMemberSet *types.StandingMemberSet) error {
-	if lastHeightChanged > height {
-		return errors.New("lastHeightChanged cannot be greater than StandingMembersInfo height")
-	}
-
 	smInfo := &tmstate.StandingMembersInfo{
 		LastHeightChanged:         lastHeightChanged,
 		CurrentCoordinatorRanking: standingMemberSet.CurrentCoordinatorRanking,
@@ -796,9 +794,6 @@ func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, st
 }
 
 func (store dbStore) saveSteeringMemberCandidatesInfo(height, lastHeightChanged int64, steeringMemberCandidateSet *types.SteeringMemberCandidateSet) error {
-	if lastHeightChanged > height {
-		return errors.New("lastHeightChanged cannot be greater than SteeringMemberCandidatesInfo height")
-	}
 	smInfo := &tmstate.SteeringMemberCandidateSetInfo{
 		LastHeightChanged: lastHeightChanged,
 	}
@@ -1061,6 +1056,7 @@ func (store dbStore) LoadSettingSteeringMember(height int64) (*types.SettingStee
 		return nil, ErrNoSettingSteeringMemberForHeight{height}
 	}
 
+	fmt.Println("stompesi - LoadSettingSteeringMember", SettingSteeringMemberInfo, height)
 	settingSteeringMember := types.SettingSteeringMemberFromProto(SettingSteeringMemberInfo.SettingSteeringMember)
 
 	return settingSteeringMember, nil

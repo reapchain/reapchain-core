@@ -53,6 +53,8 @@ func RPCRoutes(c *lrpc.Client) map[string]*rpcserver.RPCFunc {
 		"standing_members":           rpcserver.NewRPCFunc(makeStandingMembersFunc(c), "height"),
 		"qrns":                       rpcserver.NewRPCFunc(makeQrnsFunc(c), "height"),
 		"steering_member_candidates": rpcserver.NewRPCFunc(makeSteeringMemberCandidatesFunc(c), "height"),
+
+		"setting_steering_member": rpcserver.NewRPCFunc(makeSettringSteeringMemberFunc(c), "height"),
 	}
 }
 
@@ -207,6 +209,12 @@ type rpcSteeringMemberCandidatesFunc func(ctx *rpctypes.Context, height *int64) 
 func makeSteeringMemberCandidatesFunc(c *lrpc.Client) rpcSteeringMemberCandidatesFunc {
 	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultSteeringMemberCandidates, error) {
 		return c.SteeringMemberCandidates(ctx.Context(), height)
+	}
+}
+
+func makeSettringSteeringMemberFunc(c *lrpc.Client) rpcSettingSteeringMemberFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
+		return c.SettingSteeringMember(ctx.Context(), height)
 	}
 }
 

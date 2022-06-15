@@ -1,6 +1,8 @@
 package core
 
 import (
+	"time"
+
 	cm "github.com/reapchain/reapchain-core/consensus"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
@@ -127,6 +129,16 @@ func SettingSteeringMember(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.Res
 	settingSteeringMember, err := env.StateStore.LoadSettingSteeringMember(height)
 	if err != nil {
 		return nil, err
+	}
+
+	if settingSteeringMember == nil {
+		return &ctypes.ResultSettingSteeringMember{
+			BlockHeight:           		height,
+			Height:                		0,
+			SteeringMemberAddresses: 	nil,
+			Timestamp:             		time.Now(),
+			Address:               		[]byte(""),
+		}, nil
 	}
 
 	return &ctypes.ResultSettingSteeringMember{

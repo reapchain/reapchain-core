@@ -207,10 +207,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	// Update the app hash and save the state.
 	state.AppHash = appHash
 
-	// dt := time.Now()
-	// fmt.Println("ApplyBlock - time is: ", dt.String())
-	// fmt.Println("")
-
+	fmt.Println("stompesi - ApplyBlock", state.SettingSteeringMember)
 	if err := blockExec.store.Save(state); err != nil {
 		return state, 0, err
 	}
@@ -486,6 +483,8 @@ func updateState(
 	standingMemberUpdates []*types.StandingMember,
 	steeringMemberCandidateUpdates []*types.SteeringMemberCandidate,
 ) (State, error) {
+
+	
 	// Copy the valset so we can apply changes from EndBlock
 	// and update s.LastValidators and s.Validators.
 	nValSet := state.NextValidators.Copy()
@@ -502,6 +501,8 @@ func updateState(
 		if err != nil {
 			return state, fmt.Errorf("error changing standing member set: %v", err)
 		}
+
+		state.NextQrnSet.UpdateWithChangeSet(standingMemberSet)
 		lastHeightStandingMembersChanged = header.Height + 1
 		
 	}
@@ -513,22 +514,7 @@ func updateState(
 			return state, fmt.Errorf("error changing steering member candidate set: %v", err)
 		}
 
-		state.NextVrfSet.UpdateWithChangeSet(steeringMemberCandidateSet.SteeringMemberCandidates)
-
-		// if state.SettingSteeringMember != nil {
-		// 	steeringMemberAddresses := make([]int32, 0, len(steeringMemberCandidateSet.SteeringMemberCandidates))
-
-		// 	for _, steeringMemberIndex := range state.SettingSteeringMember.SteeringMemberAddresses {
-		// 		currentSteeringMemberCandidatePubKey := state.SteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey
-		// 		index, _ := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(currentSteeringMemberCandidatePubKey.Address())
-		// 		if index != -1 {
-		// 			steeringMemberAddresses = append(steeringMemberAddresses, index)
-		// 		}
-		// 	}
-
-		// 	state.SettingSteeringMember.SteeringMemberAddresses = steeringMemberAddresses
-		// }
-
+		state.NextVrfSet.UpdateWithChangeSet(steeringMemberCandidateSet)
 		lastHeightSteeringMemberCandidatesChanged = header.Height + 1
 	}
 
@@ -559,12 +545,22 @@ func updateState(
 		if err != nil {
 			return state, fmt.Errorf("error updating consensus round: %v", err)
 		}
-
 		// Change results from this height but only applies to the next height.
 		lastHeightParamsChanged = header.Height + 1
 	}
 
 	if nextConsensusRound.ConsensusStartBlockHeight+int64(nextConsensusRound.Period)-1 == header.Height {
+		nextConsensusRound.ConsensusStartBlockHeight = header.Height + 1
+		nextConsensusStartBlockHeight := nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.Period)
+		state.QrnSet = state.NextQrnSet.Copy()
+		state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
+		state.VrfSet = state.NextVrfSet.Copy()
+		state.NextVrfSet = types.NewVrfSet(nextConsensusStartBlockHeight, steeringMemberCandidateSet, nil)	
+		state.IsSetSteeringMember = false
+		state.SettingSteeringMember = nil
+	}
+
+	if nextConsensusRound.ConsensusStartBlockHeight+int64(nextConsensusRound.Period)-3 == header.Height {
 		validatorSize := len(standingMemberSet.StandingMembers)
 		if state.SettingSteeringMember != nil {
 			validatorSize = validatorSize + len(state.SettingSteeringMember.SteeringMemberAddresses)
@@ -578,6 +574,7 @@ func updateState(
 		}
 
 		if state.SettingSteeringMember != nil {
+			fmt.Println("state.SettingSteeringMember - 있음")
 			for _, steeringMemberAddress := range state.SettingSteeringMember.SteeringMemberAddresses {
 				fmt.Println("stompesi - steeringMemberAddress", steeringMemberAddress)
 
@@ -590,21 +587,10 @@ func updateState(
 					break
 				}
 			}
+		} else {
+			fmt.Println("state.SettingSteeringMember - 없음")
 		}
-		state.IsSetSteeringMember = false
-
-		nextConsensusRound.ConsensusStartBlockHeight = header.Height + 1
-
-		nextConsensusStartBlockHeight := nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.Period)
-
-		state.QrnSet = state.NextQrnSet.Copy()
-		state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
-
-		state.VrfSet = state.NextVrfSet.Copy()
-		state.NextVrfSet = types.NewVrfSet(nextConsensusStartBlockHeight, steeringMemberCandidateSet, nil)
-
-		state.SettingSteeringMember = nil
-
+		
 		nValSet = types.NewValidatorSet(validators)
 
 		// Change results from this height but only applies to the next next height.
@@ -629,84 +615,24 @@ func updateState(
 				validators = append(validators, types.NewValidator(validator.PubKey, 10, "standing"))
 			}
 		}
-
-		// previousSteeringMemberCandidateSet, err := store.LoadSteeringMemberCandidateSet(state.ConsensusRound.ConsensusStartBlockHeight - 1)
-		// previousSettingSteeringMember, err := store.LoadSettingSteeringMember(state.ConsensusRound.ConsensusStartBlockHeight - 1)
-
-		// if previousSettingSteeringMember == nil {
-		// 	standingMemberSize := len(standingMemberSet.StandingMembers)
-		// 	steringMemberSize := len(previousSettingSteeringMember.SteeringMemberAddresses)
-
-		// } else {
-		// 	standingMemberSize := len(standingMemberSet.StandingMembers)
-		// 	steringMemberSize := len(previousSettingSteeringMember.SteeringMemberAddresses)
-
-		// 	if err != nil {
-		// 		fmt.Errorf("failed load setting steering member", "err", err)
-		// 	}
-
-		// 	validators := make([]*types.Validator, 0, standingMemberSize+steringMemberSize)
-		// 	// i := 0
-
-		// 	fmt.Println("standingMemberSize", standingMemberSize)
-		// 	fmt.Println("steringMemberSize", steringMemberSize)
-			
-		// 	fmt.Println("state.NextQrnSet", len(state.NextQrnSet.Qrns))
-		// 	fmt.Println("state.QrnSet", len(state.QrnSet.Qrns))
-
-		// 	fmt.Println("state.QrnSet", len(state.QrnSet.Qrns))
-
-		// 	state.NextQrnSet.Copy()
-		// 	state.QrnSet.Copy()
-
-
-		// 	for _, standingMember := range standingMemberSet.StandingMembers {
-		// 		fmt.Println("add standing member")
-		// 		// validators[i] = types.NewValidator(standingMember.PubKey, 10, "standing")
-		// 		validators = append(validators, types.NewValidator(standingMember.PubKey, 10, "standing"))
-		// 		// i++
-		// 	}
-
-		// 	fmt.Println("val-size", len(validators))
-
-		// 	fmt.Println("currentSteeringMemberCandidateSet", len(steeringMemberCandidateSet.SteeringMemberCandidates))
-		// 	fmt.Println("currentSettingSteeringMember.SteeringMemberAddresses", len(state.SettingSteeringMember.SteeringMemberAddresses))
-
-		// 	fmt.Println("previousSteeringMemberCandidateSet", len(previousSteeringMemberCandidateSet.SteeringMemberCandidates))
-		// 	fmt.Println("previousSettingSteeringMember.SteeringMemberAddresses", len(previousSettingSteeringMember.SteeringMemberAddresses))
-
-		// 	for _, steeringMemberIndex := range previousSettingSteeringMember.SteeringMemberAddresses {
-		// 		currentSteeringMemberCandidatePubKey := previousSteeringMemberCandidateSet.SteeringMemberCandidates[steeringMemberIndex].PubKey
-
-		// 		index, _ := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(currentSteeringMemberCandidatePubKey.Address())
-		// 		if index != -1 {
-		// 			fmt.Println("add steering member")
-		// 			// validators[i] = types.NewValidator(currentSteeringMemberCandidatePubKey, 10, "steering")
-
-		// 			validators = append(validators, types.NewValidator(currentSteeringMemberCandidatePubKey, 10, "steering"))
-		// 			// i++
-
-		// 			// if i == MAXIMUM_STEERING_MEMBERS {
-		// 			if len(validators) == MAXIMUM_STEERING_MEMBERS {
-		// 				break
-		// 			}
-		// 		}
-		// 	}
-		// 	fmt.Println("val-size", len(validators))
-		// }
 		
-
 		nValSet = types.NewValidatorSet(validators)
 		lastHeightValsChanged = header.Height + 1 + 1
 	}
 
 	nextVersion := state.Version
 
+	fmt.Println("-------------------------------------")
+	fmt.Println("state.InitialHeight", state.InitialHeight)
+	fmt.Println("header.Height", header.Height)
+	fmt.Println("")
+	fmt.Println("-------------------------------------")
 	standingMemberSet.SetCoordinator(state.QrnSet)
 	_, proposer := nValSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
 	nValSet.Proposer = proposer
 
 	fmt.Println("-------------------------------------")
+	fmt.Println("standingMemberSet", len(standingMemberSet.StandingMembers))
 	fmt.Println("standingMemberSet", len(standingMemberSet.StandingMembers))
 	fmt.Println("steeringMemberCandidateSet", len(steeringMemberCandidateSet.SteeringMemberCandidates))
 	fmt.Println("qrnSet", len(state.QrnSet.Qrns))
@@ -763,7 +689,7 @@ func updateState(
 		NextVrfSet: state.NextVrfSet.Copy(),
 		VrfSet:     state.VrfSet.Copy(),
 
-		SettingSteeringMember: state.SettingSteeringMember,
+		SettingSteeringMember: state.SettingSteeringMember.Copy(),
 		IsSetSteeringMember:   state.IsSetSteeringMember,
 	}, nil
 }

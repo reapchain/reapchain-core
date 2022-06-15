@@ -76,7 +76,7 @@ type QrnHashsByValue []*QrnHash
 func (qrnHash QrnHashsByValue) Len() int { return len(qrnHash) }
 
 func (qrnHash QrnHashsByValue) Less(i, j int) bool {
-	return qrnHash[i].HashValue < qrnHash[j].HashValue
+	return qrnHash[i].HashValue > qrnHash[j].HashValue
 }
 
 func (qrnHash QrnHashsByValue) Swap(i, j int) {
@@ -105,10 +105,24 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 			qrnHashs[i].HashValue = encoding_binary.LittleEndian.Uint64(merkle.HashFromByteSlices(qrnHash))
 		}
 	}
-
+	fmt.Println("stompesi-qrnHashs", qrnHashs)
 	sort.Sort(QrnHashsByValue(qrnHashs))
+	fmt.Println("standingMemberSet.CurrentCoordinatorRanking", standingMemberSet.CurrentCoordinatorRanking)
+	fmt.Println("qrnHashs[0]", qrnHashs[0].Address, qrnHashs[0].HashValue)
+
+	if qrnSet.Size() == 2 {
+		fmt.Println("qrnHashs[1]", qrnHashs[1].Address, qrnHashs[1].HashValue)
+	}
 
 	_, standingMember := standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
+
+	for standingMember == nil {
+		standingMemberSet.CurrentCoordinatorRanking++
+		if standingMemberSet.CurrentCoordinatorRanking == int64(qrnSet.Size()) {
+			standingMemberSet.CurrentCoordinatorRanking = 0
+		}
+		_, standingMember = standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
+	}
 	standingMemberSet.Coordinator = standingMember
 }
 

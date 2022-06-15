@@ -267,6 +267,8 @@ func MsgFromProto(msg *tmcons.Message) (Message, error) {
 			Part:   parts,
 		}
 	case *tmcons.Message_SettingSteeringMember:
+		fmt.Println("stompesi - tmcons.Message_SettingSteeringMember")
+
 		settingSteeringMember := types.SettingSteeringMemberFromProto(msg.SettingSteeringMember.SettingSteeringMember)
 		if settingSteeringMember == nil {
 			return nil, fmt.Errorf("settingSteeringMember msg to proto error")
