@@ -322,9 +322,6 @@ func execBlockOnProxyApp(
 	}
 
 	vrfCheckList := types.GetVrfCheckList(vrfSet)
-	fmt.Println("stompesi - vrfCheckList", vrfCheckList.VrfCheckList[0].SteeringMemberCandidateAddress, vrfCheckList.VrfCheckList[0].IsVrfTransmission)
-	fmt.Println("stompesi - vrfCheckList", vrfCheckList.VrfCheckList[1].SteeringMemberCandidateAddress, vrfCheckList.VrfCheckList[1].IsVrfTransmission)
-	fmt.Println("stompesi - vrfCheckList", vrfCheckList.VrfCheckList[2].SteeringMemberCandidateAddress, vrfCheckList.VrfCheckList[2].IsVrfTransmission)
 
 	// Send block information
 	abciResponses.BeginBlock, err = proxyAppConn.BeginBlockSync(abci.RequestBeginBlock{
