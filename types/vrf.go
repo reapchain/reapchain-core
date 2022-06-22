@@ -41,7 +41,7 @@ func NewVrf(height int64, steeringMemberCandidatePubKey crypto.PubKey, seed []by
 func NewVrfAsEmpty(height int64, steeringMemberCandidatePubKey crypto.PubKey) *Vrf {
 	vrf := Vrf{
 		Height:                        height,
-		Timestamp:                     time.Now(),
+		Timestamp:                     time.Unix(0, 0),
 		SteeringMemberCandidatePubKey: steeringMemberCandidatePubKey,
 	}
 

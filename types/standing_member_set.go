@@ -94,14 +94,15 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 		qrnHash[0] = qrnSetHash
 		qrnHash[1] = qrn.GetQrnBytes()
 
-		index, _ := standingMemberSet.GetStandingMemberByAddress(qrn.StandingMemberPubKey.Address())
+		address := qrn.StandingMemberPubKey.Address()
+		index, _ := standingMemberSet.GetStandingMemberByAddress(address)
 
 		qrnHashs[i] = &QrnHash{
 			Address:   qrn.StandingMemberPubKey.Address(),
 			HashValue: 0,
 		}
 
-		if (index != -1 && qrn.Signature != nil) {
+		if index != -1 && qrn.Signature != nil {
 			qrnHashs[i].HashValue = encoding_binary.LittleEndian.Uint64(merkle.HashFromByteSlices(qrnHash))
 		}
 	}

@@ -39,7 +39,7 @@ func NewQrn(height int64, standingMemberPubKey crypto.PubKey, value uint64) *Qrn
 func NewQrnAsEmpty(height int64, standingMemberPubKey crypto.PubKey) *Qrn {
 	qrn := Qrn{
 		Height:               height,
-		Timestamp:            time.Now(),
+		Timestamp:            time.Unix(0, 0),
 		StandingMemberPubKey: standingMemberPubKey,
 	}
 

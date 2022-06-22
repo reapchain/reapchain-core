@@ -308,14 +308,6 @@ func (qrnSet *QrnSet) UpdateWithChangeSet(standingMemberSet *StandingMemberSet) 
 	return nil
 }
 
-func (qrnSet *QrnSet) updateWithChangeSet(qrns []*Qrn) error {
-	if len(qrns) != 0 {
-		qrnSet.Qrns = qrns[:]
-	}
-
-	return nil
-}
-
 func QrnListString(qrns []*Qrn) string {
 	chunks := make([]string, len(qrns))
 	for i, qrn := range qrns {
