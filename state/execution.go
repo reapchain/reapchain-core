@@ -205,6 +205,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	fail.Fail() // XXX
 
 	// Update the app hash and save the state.
+	fmt.Println("stompesi-apphash2")
 	state.AppHash = appHash
 
 	fmt.Println("stompesi - ApplyBlock", state.SettingSteeringMember)
@@ -244,6 +245,8 @@ func (blockExec *BlockExecutor) Commit(
 
 	// Commit block, get hash back
 	res, err := blockExec.proxyApp.CommitSync()
+	fmt.Println("stompesi-apphash4", res.Data)
+	
 	if err != nil {
 		blockExec.logger.Error("client error during proxyAppConn.CommitSync", "err", err)
 		return nil, 0, err
@@ -783,7 +786,7 @@ func ExecCommitBlock(
 		logger.Error("client error during proxyAppConn.CommitSync", "err", res)
 		return nil, err
 	}
-
+	fmt.Println("stompesi-apphash6", res.Data)
 	// ResponseCommit has no error or log, just data
 	return res.Data, nil
 }

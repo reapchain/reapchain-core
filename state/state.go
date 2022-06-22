@@ -301,6 +301,7 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.ConsensusParams = pb.ConsensusParams
 	state.LastHeightConsensusParamsChanged = pb.LastHeightConsensusParamsChanged
 	state.LastResultsHash = pb.LastResultsHash
+	fmt.Println("stompesi-apphash3")
 	state.AppHash = pb.AppHash
 
 	standingMemberSet, err := types.StandingMemberSetFromProto(pb.StandingMemberSet)
