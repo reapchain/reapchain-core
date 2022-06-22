@@ -64,8 +64,7 @@ func QrnSetFromProto(qrnSetProto *tmproto.QrnSet) (*QrnSet, error) {
 	}
 	qrnSet.StandingMemberSet = standingMemberSet
 	qrnSet.QrnsBitArray = bits.NewBitArray(standingMemberSet.Size())
-
-	qrnSet.Qrns = qrns[:]
+	qrnSet.Qrns = qrns
 
 	return qrnSet, qrnSet.ValidateBasic()
 }
@@ -291,7 +290,7 @@ func (qrnSet *QrnSet) UpdateWithChangeSet(standingMemberSet *StandingMemberSet) 
 
 		if qrn == nil {
 			qrns[i] = NewQrnAsEmpty(qrnSet.Height, steeringMemberCandidate.PubKey)
-			qrnsBitArray.SetIndex(i, true)
+			// qrnsBitArray.SetIndex(i, true)
 		} else {
 			qrns[i] = qrn.Copy()
 			
