@@ -3,6 +3,7 @@ package state
 import (
 	"errors"
 	"fmt"
+	"runtime/debug"
 	"time"
 
 	abci "github.com/reapchain/reapchain-core/abci/types"
@@ -246,6 +247,8 @@ func (blockExec *BlockExecutor) Commit(
 	// Commit block, get hash back
 	res, err := blockExec.proxyApp.CommitSync()
 	fmt.Println("stompesi-apphash4", res.Data)
+	debug.PrintStack()
+	
 	
 	if err != nil {
 		blockExec.logger.Error("client error during proxyAppConn.CommitSync", "err", err)

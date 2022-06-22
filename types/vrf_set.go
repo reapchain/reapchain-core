@@ -300,8 +300,8 @@ func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMe
 		vrf := vrfSet.GetVrf(steeringMemberCandidate.PubKey)
 
 		if vrf == nil {
-			vrfs[i] = NewVrfAsEmpty(vrfSet.Height, steeringMemberCandidate.PubKey)
-			vrfsBitArray.SetIndex(i, true)
+			// vrfs[i] = NewVrfAsEmpty(vrfSet.Height, steeringMemberCandidate.PubKey)
+			// vrfsBitArray.SetIndex(i, true)
 		} else {
 			vrfs[i] = vrf.Copy()
 			
