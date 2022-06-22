@@ -68,7 +68,7 @@ func VrfSetFromProto(vrfSetProto *tmproto.VrfSet) (*VrfSet, error) {
 	}
 	vrfSet.SteeringMemberCandidateSet = steeringMemberCandidateSet
 	vrfSet.VrfsBitArray = bits.NewBitArray(steeringMemberCandidateSet.Size())
-	vrfSet.Vrfs = vrfs
+	vrfSet.Vrfs = vrfs[:]
 
 	return vrfSet, vrfSet.ValidateBasic()
 }
@@ -331,13 +331,12 @@ func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMe
 
 		if vrf == nil {
 			vrfs[i] = NewVrfAsEmpty(vrfSet.Height, steeringMemberCandidate.PubKey)
-			fmt.Println("stompesi-UpdateWithChangeSet-add-nill")
+			vrfsBitArray.SetIndex(i, true)
 		} else {
 			vrfs[i] = vrf.Copy()
 			
 			steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(steeringMemberCandidate.PubKey.Address())
 			vrfsBitArray.SetIndex(i, vrfSet.VrfsBitArray.GetIndex(int(steeringMemberCandidateIndex)))
-			fmt.Println("stompesi-UpdateWithChangeSet-add-not-nill")
 		}
 		vrfs[i].SteeringMemberCandidateIndex = int32(i)
 	}

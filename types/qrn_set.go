@@ -65,7 +65,7 @@ func QrnSetFromProto(qrnSetProto *tmproto.QrnSet) (*QrnSet, error) {
 	qrnSet.StandingMemberSet = standingMemberSet
 	qrnSet.QrnsBitArray = bits.NewBitArray(standingMemberSet.Size())
 
-	qrnSet.Qrns = qrns
+	qrnSet.Qrns = qrns[:]
 
 	return qrnSet, qrnSet.ValidateBasic()
 }
@@ -302,8 +302,8 @@ func (qrnSet *QrnSet) UpdateWithChangeSet(standingMemberSet *StandingMemberSet) 
 	}
 
 	qrnSet.StandingMemberSet = standingMemberSet.Copy()
-	qrnSet.Qrns = qrns
-	qrnSet.QrnsBitArray = qrnsBitArray
+	qrnSet.Qrns = qrns[:]
+	qrnSet.QrnsBitArray = qrnsBitArray.Copy()
 
 	return nil
 }
