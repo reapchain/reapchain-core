@@ -115,6 +115,8 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) UpdateWithChangeSe
 	if len(changes) == 0 {
 		return nil
 	}
+
+	sort.Sort(SortedSteeringMemberCandidates(changes))
 	
 	removals := make([]*SteeringMemberCandidate, 0, len(changes))
 	updates := make([]*SteeringMemberCandidate, 0, len(changes))
