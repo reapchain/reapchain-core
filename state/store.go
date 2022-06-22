@@ -229,6 +229,14 @@ func (store dbStore) save(state State, key []byte) error {
 		if err := store.saveNextVrfsInfo(nextHeight, state.NextVrfSet); err != nil {
 			return err
 		}
+
+		if err := store.saveStandingMembersInfo(nextHeight, nextHeight, state.StandingMemberSet); err != nil {
+			return err
+		}
+
+		if err := store.saveSteeringMemberCandidatesInfo(nextHeight, nextHeight, state.SteeringMemberCandidateSet); err != nil {
+			return err
+		}
 	}
 
 	if err := store.saveConsensusRoundInfo(nextHeight, state.LastHeightConsensusRoundChanged, state.ConsensusRound); err != nil {
@@ -255,11 +263,11 @@ func (store dbStore) save(state State, key []byte) error {
 		return err
 	}
 
-	if err := store.saveStandingMembersInfo(nextHeight, state.LastHeightStandingMembersChanged, state.StandingMemberSet); err != nil {
+	if err := store.saveStandingMembersInfo(nextHeight+1, state.LastHeightStandingMembersChanged, state.StandingMemberSet); err != nil {
 		return err
 	}
 
-	if err := store.saveSteeringMemberCandidatesInfo(nextHeight, state.LastHeightSteeringMemberCandidatesChanged, state.SteeringMemberCandidateSet); err != nil {
+	if err := store.saveSteeringMemberCandidatesInfo(nextHeight+1, state.LastHeightSteeringMemberCandidatesChanged, state.SteeringMemberCandidateSet); err != nil {
 		return err
 	}
 

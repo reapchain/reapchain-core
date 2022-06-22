@@ -496,7 +496,7 @@ func updateState(
 	steeringMemberCandidateSet := state.SteeringMemberCandidateSet.Copy()
 
 	// Update the validator set with the latest abciResponses.
-	lastHeightValsChanged := state.LastHeightValidatorsChanged
+	lastHeightValsChanged := state.LastHeightValidatorsChanged 
 
 	lastHeightStandingMembersChanged := state.LastHeightStandingMembersChanged
 	if len(standingMemberUpdates) > 0 {
@@ -506,7 +506,7 @@ func updateState(
 		}
 
 		state.NextQrnSet.UpdateWithChangeSet(standingMemberSet)
-		lastHeightStandingMembersChanged = header.Height + 1
+		lastHeightStandingMembersChanged = header.Height  + 1 + 1
 		
 	}
 
@@ -518,7 +518,7 @@ func updateState(
 		}
 
 		state.NextVrfSet.UpdateWithChangeSet(steeringMemberCandidateSet)
-		lastHeightSteeringMemberCandidatesChanged = header.Height + 1
+		lastHeightSteeringMemberCandidatesChanged = header.Height  + 1 + 1
 	}
 
 	// Update the params with the latest abciResponses.
@@ -555,10 +555,13 @@ func updateState(
 	if nextConsensusRound.ConsensusStartBlockHeight+int64(nextConsensusRound.Period)-1 == header.Height {
 		nextConsensusRound.ConsensusStartBlockHeight = header.Height + 1
 		nextConsensusStartBlockHeight := nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.Period)
+		
 		state.QrnSet = state.NextQrnSet.Copy()
 		state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
+		
 		state.VrfSet = state.NextVrfSet.Copy()
 		state.NextVrfSet = types.NewVrfSet(nextConsensusStartBlockHeight, steeringMemberCandidateSet, nil)	
+
 		state.IsSetSteeringMember = false
 		state.SettingSteeringMember = nil
 	}
