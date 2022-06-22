@@ -537,11 +537,11 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		cdcEncode(h.LastResultsHash),
 		cdcEncode(h.EvidenceHash),
 		cdcEncode(h.ProposerAddress),
-		cdcEncode(h.StandingMembersHash),
+		cdcEncode(h.StandingMembersHash), //
 		cdcEncode(h.ConsensusRound),
-		cdcEncode(h.QrnsHash),
-		cdcEncode(h.VrfsHash),
-		cdcEncode(h.SteeringMemberCandidatesHash),
+		cdcEncode(h.QrnsHash), //
+		cdcEncode(h.VrfsHash), //
+		cdcEncode(h.SteeringMemberCandidatesHash), // 
 		crbz,
 	})
 }

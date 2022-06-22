@@ -437,7 +437,8 @@ func (state State) MakeBlock(
 	block.Header.Populate(
 		state.Version.Consensus, state.ChainID,
 		timestamp, state.LastBlockID,
-		state.Validators.Hash(), state.NextValidators.Hash(),
+		state.Validators.Hash(), 
+		state.NextValidators.Hash(),
 		types.HashConsensusParams(state.ConsensusParams), state.AppHash, state.LastResultsHash,
 		proposerAddress,
 		state.StandingMemberSet.Hash(),
@@ -602,9 +603,9 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		LastHeightConsensusRoundChanged: genDoc.InitialHeight,
 
 		QrnSet:     qrnSet,
-		NextQrnSet: nextQrnSet.Copy(),
+		NextQrnSet: nextQrnSet,
 
 		VrfSet:     vrfSet,
-		NextVrfSet: nextVrfSet.Copy(),
+		NextVrfSet: nextVrfSet,
 	}, nil
 }

@@ -290,8 +290,8 @@ func (qrnSet *QrnSet) UpdateWithChangeSet(standingMemberSet *StandingMemberSet) 
 		qrn := qrnSet.GetQrn(steeringMemberCandidate.PubKey)
 
 		if qrn == nil {
-			// qrns[i] = NewQrnAsEmpty(qrnSet.Height, steeringMemberCandidate.PubKey)
-			// qrnsBitArray.SetIndex(i, true)
+			qrns[i] = NewQrnAsEmpty(qrnSet.Height, steeringMemberCandidate.PubKey)
+			qrnsBitArray.SetIndex(i, true)
 		} else {
 			qrns[i] = qrn.Copy()
 			
