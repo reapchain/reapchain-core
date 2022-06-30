@@ -445,6 +445,7 @@ FOR_LOOP:
 					// still need to clean up the rest.
 					bcR.Switch.StopPeerForError(peer, fmt.Errorf("blockchainReactor validation error: %v", err))
 				}
+
 				peerID2 := bcR.blockPool.RedoRequest(second.Height)
 				peer2 := bcR.Switch.Peers().Get(peerID2)
 				if peer2 != nil && peer2 != peer {
@@ -454,21 +455,50 @@ FOR_LOOP:
 				}
 				continue FOR_LOOP
 			} else {
+				// if bytes.Compare(first.QrnsHash.Bytes(), firstState.QrnSet.Hash()) != 0 ||
+				// 	 bytes.Compare(first.VrfsHash.Bytes(), firstState.VrfSet.Hash()) != 0 ||
+				// 	 bytes.Compare(first.StandingMembersHash.Bytes(), firstState.StandingMemberSet.Hash()) != 0 ||
+				// 	 bytes.Compare(first.SteeringMemberCandidatesHash.Bytes() , firstState.SteeringMemberCandidateSet.Hash()) != 0 {
+
+				// 		fmt.Println("stompesi - QrnsHash", bytes.Compare(first.QrnsHash.Bytes(), firstState.QrnSet.Hash()) )
+				// 		fmt.Println("stompesi - VrfsHash", bytes.Compare(first.VrfsHash.Bytes(), firstState.VrfSet.Hash()) )
+				// 		fmt.Println("stompesi - StandingMembersHash", bytes.Compare(first.StandingMembersHash.Bytes(), firstState.StandingMemberSet.Hash()) )
+				// 		fmt.Println("stompesi - SteeringMemberCandidatesHash", bytes.Compare(first.SteeringMemberCandidatesHash.Bytes() , firstState.SteeringMemberCandidateSet.Hash()))
+
+				// 	bcR.Logger.Error("Invalid state")
+				// 	peerID := bcR.blockPool.RedoRequest(first.Height)
+				// 	peer := bcR.Switch.Peers().Get(peerID)
+				// 	if peer != nil {
+				// 		// NOTE: we've already removed the peer's request, but we
+				// 		// still need to clean up the rest.
+				// 		bcR.Switch.StopPeerForError(peer, fmt.Errorf("blockchainReactor validation error: %v", err))
+				// 	}
+
+				// 	peerID2 := bcR.blockPool.RedoRequest(second.Height)
+				// 	peer2 := bcR.Switch.Peers().Get(peerID2)
+				// 	if peer2 != nil && peer2 != peer {
+				// 		// NOTE: we've already removed the peer's request, but we
+				// 		// still need to clean up the rest.
+				// 		bcR.Switch.StopPeerForError(peer2, fmt.Errorf("blockchainReactor validation error: %v", err))
+				// 	}
+				// 	continue FOR_LOOP
+				// }
+
 				bcR.blockPool.PopRequest()
 				bcR.statePool.PopRequest()
 
-				// TODO: validate
-				state.QrnSet = firstState.QrnSet
-				state.VrfSet = firstState.VrfSet
+				// state.QrnSet = firstState.QrnSet
+				// state.VrfSet = firstState.VrfSet
+				// state.StandingMemberSet = firstState.StandingMemberSet.Copy()
+				// state.SteeringMemberCandidateSet = firstState.SteeringMemberCandidateSet.Copy()
+				
+				
 				state.SettingSteeringMember = firstState.SettingSteeringMember.Copy()
-				state.NextQrnSet = firstState.NextQrnSet
-				state.NextVrfSet = firstState.NextVrfSet
+				state.NextQrnSet = firstState.NextQrnSet.Copy()
+				state.NextVrfSet = firstState.NextVrfSet.Copy()
 
-				state.StandingMemberSet = firstState.StandingMemberSet.Copy()
-				state.SteeringMemberCandidateSet = firstState.SteeringMemberCandidateSet.Copy()
-
-				fmt.Println("stompesi - SettingSteeringMember", state.SettingSteeringMember)
-				fmt.Println("stompesi - state.SteeringMemberCandidateSet", state.SteeringMemberCandidateSet)
+				// fmt.Println("stompesi - SettingSteeringMember", state.SettingSteeringMember)
+				// fmt.Println("stompesi - state.SteeringMemberCandidateSet", state.SteeringMemberCandidateSet)
 
 				// TODO: batch saves so we dont persist to disk every block
 				bcR.store.SaveBlock(first, firstParts, second.LastCommit)
@@ -477,11 +507,11 @@ FOR_LOOP:
 				// get the hash without persisting the state
 				var err error
 
-				fmt.Println("stompesi - state.NextValidators", state.NextValidators)
+				// fmt.Println("stompesi - state.NextValidators", state.NextValidators)
 				
 				state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
 
-				fmt.Println("stompesi2 - state.NextValidators", state.NextValidators)
+				// fmt.Println("stompesi2 - state.NextValidators", state.NextValidators)
 
 				if err != nil {
 					// TODO This is bad, are we zombie?
@@ -545,12 +575,12 @@ func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 			return false
 		}
 
-		standingMemberSet, err := bcR.stateStore.LoadStandingMemberSet(msg.Height)
+		standingMemberSet, err := bcR.stateStore.LoadStandingMemberSet(msg.Height+1)
 		if err != nil {
 			return false
 		}
 
-		steeringMemberCandidateSet, err := bcR.stateStore.LoadSteeringMemberCandidateSet(msg.Height)
+		steeringMemberCandidateSet, err := bcR.stateStore.LoadSteeringMemberCandidateSet(msg.Height+1)
 		if err != nil {
 			return false
 		}

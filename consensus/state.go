@@ -698,8 +698,8 @@ func (cs *State) updateToState(state sm.State) {
 	cs.TriggeredTimeoutPrecommit = false
 
 	cs.StandingMemberSet = state.StandingMemberSet
-	
 	cs.SteeringMemberCandidateSet = state.SteeringMemberCandidateSet
+	
 	cs.state = state
 
 	// Finally, broadcast RoundState
@@ -1768,7 +1768,7 @@ func (cs *State) finalizeCommit(height int64) {
 				if standingMemberIndex != -1 {
 					qrnValue := tmrand.Uint64()
 
-					qrn := types.NewQrn(cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Period), cs.privValidatorPubKey, qrnValue)
+					qrn := types.NewQrn(cs.state.NextQrnSet.GetHeight(), cs.privValidatorPubKey, qrnValue)
 					qrn.StandingMemberIndex = standingMemberIndex
 					err := cs.privValidator.SignQrn(qrn)
 					if err != nil {
@@ -1792,7 +1792,7 @@ func (cs *State) finalizeCommit(height int64) {
 
 				seed := cs.state.NextQrnSet.GetMaxValue()
 
-				vrf := types.NewVrf(cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.Period), cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
+				vrf := types.NewVrf(cs.state.NextVrfSet.GetHeight(), cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
 				vrf.Timestamp = time.Now()
 
 				if err := cs.privValidator.ProveVrf(vrf); err != nil {
@@ -1802,6 +1802,7 @@ func (cs *State) finalizeCommit(height int64) {
 				if vrf.Verify() == false {
 					cs.Logger.Error("Invalid vrf sign")
 				} else {
+					fmt.Println("Send Vrf", address, height, vrf.SteeringMemberCandidatePubKey.Address(), vrf)
 					cs.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
 				}
 			}

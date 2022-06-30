@@ -515,6 +515,8 @@ func updateState(
 			return state, fmt.Errorf("error changing steering member candidate set: %v", err)
 		}
 
+
+		fmt.Println("stompesi - steeringMemberCandidateSet22", len(steeringMemberCandidateSet.SteeringMemberCandidates))
 		state.NextVrfSet.UpdateWithChangeSet(steeringMemberCandidateSet)
 		lastHeightSteeringMemberCandidatesChanged = header.Height  + 1 + 1
 	}
@@ -558,6 +560,7 @@ func updateState(
 		state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
 		
 		state.VrfSet = state.NextVrfSet.Copy()
+		fmt.Println("stompesi - steeringMemberCandidateSet", len(steeringMemberCandidateSet.SteeringMemberCandidates))
 		state.NextVrfSet = types.NewVrfSet(nextConsensusStartBlockHeight, steeringMemberCandidateSet, nil)	
 
 		state.IsSetSteeringMember = false
@@ -577,7 +580,6 @@ func updateState(
 			validators = append(validators, types.NewValidator(standingMember.PubKey, 10, "standing"))
 			fmt.Println("stompesi - standingMember")
 		}
-
 
 		if state.SettingSteeringMember != nil {
 			fmt.Println("state.SettingSteeringMember - 있음")

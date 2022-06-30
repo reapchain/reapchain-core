@@ -115,13 +115,17 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 		return fmt.Errorf("Vrf is nil")
 	}
 
-	if vrf.Verify() == false {
-		return fmt.Errorf("Invalid vrf sign")
+	if vrf.Value != nil {
+		if vrf.Verify() == false {
+			return fmt.Errorf("Invalid vrf sign")
+		}
+	
+		if vrfSet.Height != vrf.Height {
+			fmt.Println("stompesi - Invalid vrf height", "vrfSet.Height", vrfSet.Height, "vrfHeight", vrf.Height, vrf.SteeringMemberCandidatePubKey.Address(), vrf)
+			return fmt.Errorf("Invalid vrf height")
+		}
 	}
 
-	if vrfSet.Height != vrf.Height {
-		return fmt.Errorf("Invalid vrf height")
-	}
 
 	steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(vrf.SteeringMemberCandidatePubKey.Address())
 	if steeringMemberCandidateIndex == -1 {
@@ -372,8 +376,8 @@ func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMe
 	}
 
 	vrfSet.SteeringMemberCandidateSet = steeringMemberCandidateSet.Copy()
-	vrfSet.Vrfs = vrfs
-	vrfSet.VrfsBitArray = vrfsBitArray
+	vrfSet.Vrfs = vrfs[:]
+	vrfSet.VrfsBitArray = vrfsBitArray.Copy()
 
 	return nil
 }

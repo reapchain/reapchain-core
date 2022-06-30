@@ -829,7 +829,6 @@ OUTER_LOOP:
 
 		if rs.Height == prs.Height {
 			if ps.PickSendVrf(conR.conS.state.NextVrfSet) {
-				time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 				continue OUTER_LOOP
 			}
 		}

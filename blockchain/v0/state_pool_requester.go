@@ -48,6 +48,7 @@ func (stateRequester *StatePoolRequester) setState(state *sm.State, peerID p2p.I
 		stateRequester.mtx.Unlock()
 		return false
 	}
+	
 	stateRequester.state = state
 	stateRequester.mtx.Unlock()
 
