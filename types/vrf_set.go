@@ -143,7 +143,7 @@ func (vrfSet *VrfSet) Hash() []byte {
 	vrfBytesArray := make([][]byte, len(vrfSet.Vrfs))
 	for i, vrf := range vrfSet.Vrfs {
 		if vrf != nil && vrf.Proof != nil {
-			fmt.Println("stompesi - vrf hash", vrf)
+			// fmt.Println("stompesi - vrf hash", vrf)
 			vrfBytesArray[i] = vrf.GetVrfBytes()
 		}
 	}

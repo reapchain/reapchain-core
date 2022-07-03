@@ -616,13 +616,13 @@ func updateState(
 			index, _ := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(validator.Address)
 			if index != -1 {
 				fmt.Println("add steering member")
-				validators = append(validators, types.NewValidator(validator.PubKey, 10, "steering"))
+				validators = append(validators, validator.Copy())
 			}
 
 			index, _ = standingMemberSet.GetStandingMemberByAddress(validator.Address)
 			if index != -1 {
 				fmt.Println("add steering member")
-				validators = append(validators, types.NewValidator(validator.PubKey, 10, "standing"))
+				validators = append(validators, validator.Copy())
 			}
 		}
 		
@@ -642,7 +642,7 @@ func updateState(
 	nValSet.Proposer = proposer
 
 	fmt.Println("-------------------------------------")
-	fmt.Println("standingMemberSet", len(standingMemberSet.StandingMembers))
+	fmt.Println("height", header.Height)
 	fmt.Println("standingMemberSet", len(standingMemberSet.StandingMembers))
 	fmt.Println("steeringMemberCandidateSet", len(steeringMemberCandidateSet.SteeringMemberCandidates))
 	fmt.Println("qrnSet", len(state.QrnSet.Qrns))

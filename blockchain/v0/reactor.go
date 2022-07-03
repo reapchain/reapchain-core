@@ -547,7 +547,11 @@ func (bcR *BlockchainReactor) BroadcastStatusRequest() error {
 
 func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 	src p2p.Peer) (queued bool) {
-	qrnSet, err := bcR.stateStore.LoadQrnSet(msg.Height)
+	requestHeight := msg.Height
+	if msg.Height == 1 {
+		requestHeight = 2
+	}
+	qrnSet, err := bcR.stateStore.LoadQrnSet(requestHeight-1)
 	if err != nil {
 		return false
 	}
@@ -555,32 +559,32 @@ func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 	if qrnSet != nil {
 		bcR.stateStore.Load()
 
-		vrfSet, err := bcR.stateStore.LoadVrfSet(msg.Height)
+		vrfSet, err := bcR.stateStore.LoadVrfSet(requestHeight-1)
 		if err != nil {
 			return false
 		}
 
-		settingSteeringMember, err := bcR.stateStore.LoadSettingSteeringMember(msg.Height)
+		settingSteeringMember, err := bcR.stateStore.LoadSettingSteeringMember(requestHeight-1)
 		if err != nil {
 			return false
 		}
 
-		nextVrfSet, err := bcR.stateStore.LoadNextVrfSet(msg.Height)
+		nextVrfSet, err := bcR.stateStore.LoadNextVrfSet(requestHeight-1)
 		if err != nil {
 			return false
 		}
 
-		nextQrnSet, err := bcR.stateStore.LoadNextQrnSet(msg.Height)
+		nextQrnSet, err := bcR.stateStore.LoadNextQrnSet(requestHeight-1)
 		if err != nil {
 			return false
 		}
 
-		standingMemberSet, err := bcR.stateStore.LoadStandingMemberSet(msg.Height+1)
+		standingMemberSet, err := bcR.stateStore.LoadStandingMemberSet(requestHeight)
 		if err != nil {
 			return false
 		}
 
-		steeringMemberCandidateSet, err := bcR.stateStore.LoadSteeringMemberCandidateSet(msg.Height+1)
+		steeringMemberCandidateSet, err := bcR.stateStore.LoadSteeringMemberCandidateSet(requestHeight)
 		if err != nil {
 			return false
 		}
