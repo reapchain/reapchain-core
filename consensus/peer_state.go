@@ -385,7 +385,6 @@ func (ps *PeerState) ApplyNewRoundStepMessage(msg *NewRoundStepMessage, consensu
 	ps.PRS.Step = msg.Step
 	ps.PRS.StartTime = startTime
 
-	// ps.VrfsBitArray = ps.stat
 	if ps.NextConsensusStartBlockHeight != consensusStartBlockHeight {
 		ps.NextConsensusStartBlockHeight = consensusStartBlockHeight
 		ps.QrnsBitArray = nil
@@ -457,28 +456,6 @@ func (ps *PeerState) ApplyProposalPOLMessage(msg *ProposalPOLMessage) {
 	// TODO: Merge onto existing ps.PRS.ProposalPOL?
 	// We might have sent some prevotes in the meantime.
 	ps.PRS.ProposalPOL = msg.ProposalPOL
-}
-
-func (ps *PeerState) ApplyHasQrnMessage(msg *HasQrnMessage) {
-	ps.mtx.Lock()
-	defer ps.mtx.Unlock()
-
-	if ps.PRS.Height != msg.Height {
-		return
-	}
-
-	ps.setHasQrn(msg.Height, msg.Index)
-}
-
-func (ps *PeerState) ApplyHasVrfMessage(msg *HasVrfMessage) {
-	ps.mtx.Lock()
-	defer ps.mtx.Unlock()
-
-	if ps.PRS.Height != msg.Height {
-		return
-	}
-
-	ps.setHasVrf(msg.Height, msg.Index)
 }
 
 func (ps *PeerState) ApplyHasSettingSteeringMemberMessage(msg *HasSettingSteeringMemberMessage) {

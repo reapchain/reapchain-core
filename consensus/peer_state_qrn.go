@@ -78,3 +78,14 @@ func (ps *PeerState) getQrnBitArray(height int64) *bits.BitArray {
 
 	return nil
 }
+
+func (ps *PeerState) ApplyHasQrnMessage(msg *HasQrnMessage) {
+	ps.mtx.Lock()
+	defer ps.mtx.Unlock()
+
+	if ps.PRS.Height != msg.Height {
+		return
+	}
+
+	ps.setHasQrn(msg.Height, msg.Index)
+}

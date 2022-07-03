@@ -79,3 +79,14 @@ func (ps *PeerState) getVrfBitArray(height int64) *bits.BitArray {
 
 	return nil
 }
+
+func (ps *PeerState) ApplyHasVrfMessage(msg *HasVrfMessage) {
+	ps.mtx.Lock()
+	defer ps.mtx.Unlock()
+
+	if ps.PRS.Height != msg.Height {
+		return
+	}
+
+	ps.setHasVrf(msg.Height, msg.Index)
+}

@@ -286,10 +286,6 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			ps.ApplyNewValidBlockMessage(msg)
 		case *HasVoteMessage:
 			ps.ApplyHasVoteMessage(msg)
-		case *HasQrnMessage:
-			ps.ApplyHasQrnMessage(msg)
-		case *HasVrfMessage:
-			ps.ApplyHasVrfMessage(msg)
 		case *HasSettingSteeringMemberMessage:
 			ps.ApplyHasSettingSteeringMemberMessage(msg)
 		case *VoteSetMaj23Message:
@@ -353,6 +349,8 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			return
 		}
 		switch msg := msg.(type) {
+		case *HasQrnMessage:
+			ps.ApplyHasQrnMessage(msg)
 		case *QrnMessage:
 			cs := conR.conS
 			cs.mtx.RLock()
@@ -374,6 +372,8 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			return
 		}
 		switch msg := msg.(type) {
+		case *HasVrfMessage:
+			ps.ApplyHasVrfMessage(msg)
 		case *VrfMessage:
 			cs := conR.conS
 			cs.mtx.RLock()
@@ -787,53 +787,6 @@ OUTER_LOOP:
 
 		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 		continue OUTER_LOOP
-	}
-}
-
-func (conR *Reactor) gossipQrnsRoutine(peer p2p.Peer, ps *PeerState) {
-	logger := conR.Logger.With("peer", peer)
-
-OUTER_LOOP:
-	for {
-		// Manage disconnects from self or peer.
-		if !peer.IsRunning() || !conR.IsRunning() {
-			logger.Info("Stopping gossipQrnRoutine for peer")
-			return
-		}
-		rs := conR.conS.GetRoundState()
-		prs := ps.GetRoundState()
-
-		if rs.Height == prs.Height {
-			if ps.PickSendQrn(conR.conS.state.NextQrnSet) {
-				time.Sleep(conR.conS.config.PeerGossipSleepDuration)
-				continue OUTER_LOOP
-			}
-		}
-
-		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
-	}
-}
-
-func (conR *Reactor) gossipVrfsRoutine(peer p2p.Peer, ps *PeerState) {
-	logger := conR.Logger.With("peer", peer)
-
-OUTER_LOOP:
-	for {
-		// Manage disconnects from self or peer.
-		if !peer.IsRunning() || !conR.IsRunning() {
-			logger.Info("Stopping gossipVrfRoutine for peer")
-			return
-		}
-		rs := conR.conS.GetRoundState()
-		prs := ps.GetRoundState()
-
-		if rs.Height == prs.Height {
-			if ps.PickSendVrf(conR.conS.state.NextVrfSet) {
-				continue OUTER_LOOP
-			}
-		}
-
-		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 	}
 }
 

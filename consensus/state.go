@@ -2495,14 +2495,6 @@ func repairWalFile(src, dst string) error {
 	return nil
 }
 
-func (cs *State) tryAddQrn(qrn *types.Qrn, peerID p2p.ID) (bool, error) {
-	if err := cs.state.NextQrnSet.AddQrn(qrn); err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
 func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeringMember, peerID p2p.ID) error {
 	cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
 	currentCoordinator := cs.StandingMemberSet.Coordinator.Copy()
@@ -2521,12 +2513,4 @@ func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeri
 	}
 
 	return nil
-}
-
-func (cs *State) tryAddVrf(vrf *types.Vrf, peerID p2p.ID) (bool, error) {
-	if err := cs.state.NextVrfSet.AddVrf(vrf); err != nil {
-		return false, err
-	}
-
-	return true, nil
 }
