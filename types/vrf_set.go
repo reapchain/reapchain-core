@@ -110,7 +110,6 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 	vrfSet.mtx.Lock()
 	defer vrfSet.mtx.Unlock()
 
-	
 	if vrf == nil {
 		return fmt.Errorf("Vrf is nil")
 	}
@@ -186,8 +185,9 @@ func (vrfSet *VrfSet) ToProto() (*tmproto.VrfSet, error) {
 }
 
 func (vrfSet *VrfSet) Copy() *VrfSet {
-	vrfSet.mtx.Lock()
-	defer vrfSet.mtx.Unlock()
+	if vrfSet == nil {
+		return nil
+	}
 
 	vrfsCopy := make([]*Vrf, len(vrfSet.Vrfs))
 	for i, vrf := range vrfSet.Vrfs {
@@ -195,6 +195,7 @@ func (vrfSet *VrfSet) Copy() *VrfSet {
 			vrfsCopy[i] = vrf.Copy()
 		}
 	}
+
 	return &VrfSet{
 		Height:                     vrfSet.Height,
 		SteeringMemberCandidateSet: vrfSet.SteeringMemberCandidateSet.Copy(),
@@ -208,8 +209,6 @@ func (vrfSet *VrfSet) GetByIndex(steeringMemberCandidateIndex int32) *Vrf {
 		return nil
 	}
 
-	vrfSet.mtx.Lock()
-	defer vrfSet.mtx.Unlock()
 	return vrfSet.Vrfs[steeringMemberCandidateIndex]
 }
 
@@ -247,46 +246,6 @@ func (vrfSet *VrfSet) BitArray() *bits.BitArray {
 	return vrfSet.VrfsBitArray.Copy()
 }
 
-// -----
-const nilVrfSetString = "nil-VrfSet"
-
-func (vrfSet *VrfSet) StringShort() string {
-	if vrfSet == nil {
-		return nilVrfSetString
-	}
-	vrfSet.mtx.Lock()
-	defer vrfSet.mtx.Unlock()
-
-	return fmt.Sprintf(`VrfSet{H:%v %v}`,
-		vrfSet.Height, vrfSet.VrfsBitArray)
-}
-
-func (vrfSet *VrfSet) VrfStrings() []string {
-	vrfSet.mtx.Lock()
-	defer vrfSet.mtx.Unlock()
-
-	vrfStrings := make([]string, len(vrfSet.Vrfs))
-	for i, vrf := range vrfSet.Vrfs {
-		if vrf == nil {
-			vrfStrings[i] = "nil-Vrf"
-		} else {
-			vrfStrings[i] = vrf.String()
-		}
-	}
-	return vrfStrings
-}
-
-func (vrfSet *VrfSet) BitArrayString() string {
-	vrfSet.mtx.Lock()
-	defer vrfSet.mtx.Unlock()
-	return vrfSet.bitArrayString()
-}
-
-func (vrfSet *VrfSet) bitArrayString() string {
-	bAString := vrfSet.VrfsBitArray.String()
-	return fmt.Sprintf("%s", bAString)
-}
-
 type VrfSetReader interface {
 	GetHeight() int64
 	Size() int
@@ -294,40 +253,7 @@ type VrfSetReader interface {
 	GetByIndex(int32) *Vrf
 }
 
-// func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
-// 	vrfSet.mtx.Lock()
-// 	defer vrfSet.mtx.Unlock()
-
-// 	vrfs := make([]*Vrf, 0, len(steeringMemberCandidateSet.SteeringMemberCandidates))
-	
-// 	for _, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
-// 		vrf := vrfSet.GetVrf(steeringMemberCandidate.PubKey)
-
-// 		if vrf != nil {
-// 			vrfs = append(vrfs, vrf.Copy())
-// 		} 	
-// 	}
-
-// 	vrfsBitArray := bits.NewBitArray(len(vrfs))
-
-// 	for i, vrf := range vrfs {
-// 		steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(vrf.SteeringMemberCandidatePubKey.Address())
-
-// 		vrfsBitArray.SetIndex(i, vrfSet.VrfsBitArray.GetIndex(int(steeringMemberCandidateIndex)))
-// 		vrfs[i].SteeringMemberCandidateIndex = int32(i)
-// 	}
-
-// 	vrfSet.SteeringMemberCandidateSet = steeringMemberCandidateSet.Copy()
-// 	vrfSet.Vrfs = vrfs
-// 	vrfSet.VrfsBitArray = vrfsBitArray
-
-// 	return nil
-// }
-
 func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
-	vrfSet.mtx.Lock()
-	defer vrfSet.mtx.Unlock()
-
 	vrfs := make([]*Vrf, len(steeringMemberCandidateSet.SteeringMemberCandidates))
 	vrfsBitArray := bits.NewBitArray(len(steeringMemberCandidateSet.SteeringMemberCandidates))
 
@@ -352,35 +278,3 @@ func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMe
 
 	return nil
 }
-
-
-/*
-func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
-	vrfSet.mtx.Lock()
-	defer vrfSet.mtx.Unlock()
-
-	vrfs := make([]*Vrf, 0, len(steeringMemberCandidateSet.SteeringMemberCandidates))
-
-	for _, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
-		vrf := vrfSet.GetVrf(steeringMemberCandidate.PubKey)
-
-		if vrf != nil {
-			vrfs = append(vrfs, vrf.Copy())
-		}
-	}
-
-	vrfsBitArray := bits.NewBitArray(len(vrfs))
-	
-	for i, vrf := range vrfs {
-		steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(vrf.SteeringMemberCandidatePubKey.Address())
-		vrfsBitArray.SetIndex(i, vrfSet.VrfsBitArray.GetIndex(int(steeringMemberCandidateIndex)))
-	}
-
-	vrfSet.SteeringMemberCandidateSet = steeringMemberCandidateSet.Copy()
-	vrfSet.Vrfs = vrfs[:]
-	vrfSet.VrfsBitArray = vrfsBitArray.Copy()
-
-	return nil
-}
-
-*/
