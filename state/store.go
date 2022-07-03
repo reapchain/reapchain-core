@@ -748,10 +748,7 @@ func (store dbStore) saveSettingSteeringMemberInfo(nextHeight int64, settingStee
 		LastHeightChanged: nextHeight,
 	}
 
-	fmt.Println("Stompesi - saveSettingSteeringMemberInfo", settingSteeringMember)
-
 	settingSteeringMemberProto := settingSteeringMember.ToProto()
-
 	SettingSteeringMemberInfo.SettingSteeringMember = settingSteeringMemberProto
 
 	bz, err := SettingSteeringMemberInfo.Marshal()
@@ -1056,7 +1053,6 @@ func (store dbStore) LoadSettingSteeringMember(height int64) (*types.SettingStee
 		return nil, ErrNoSettingSteeringMemberForHeight{height}
 	}
 
-	fmt.Println("stompesi - LoadSettingSteeringMember", SettingSteeringMemberInfo, height)
 	settingSteeringMember := types.SettingSteeringMemberFromProto(SettingSteeringMemberInfo.SettingSteeringMember)
 
 	return settingSteeringMember, nil

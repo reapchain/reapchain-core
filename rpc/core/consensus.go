@@ -99,6 +99,7 @@ func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 		BlockHeight: height,
 		Qrns:        qrnSet.Qrns[:],
 		Count:       qrnSet.Size(),
+		QrnHash:       qrnSet.Hash(),
 	}, nil
 }
 
@@ -117,6 +118,7 @@ func NextQrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, erro
 		BlockHeight: height,
 		Qrns:        qrnSet.Qrns[:],
 		Count:       qrnSet.Size(),
+		QrnHash: 		 qrnSet.Hash(),
 	}, nil
 }
 
@@ -136,7 +138,7 @@ func SettingSteeringMember(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.Res
 			BlockHeight:           		height,
 			Height:                		0,
 			SteeringMemberAddresses: 	nil,
-			Timestamp:             		time.Now(),
+			Timestamp:             		time.Unix(0, 0),
 			Address:               		[]byte(""),
 		}, nil
 	}
@@ -165,6 +167,7 @@ func Vrfs(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultVrfs, error) {
 		BlockHeight: height,
 		Vrfs:        vrfSet.Vrfs[:],
 		Count:       vrfSet.Size(),
+		VrfHash:       vrfSet.Hash(),
 	}, nil
 }
 
@@ -183,6 +186,7 @@ func NextVrfs(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultVrfs, erro
 		BlockHeight: height,
 		Vrfs:        vrfSet.Vrfs[:],
 		Count:       vrfSet.Size(),
+		VrfHash:       vrfSet.Hash(),
 	}, nil
 }
 

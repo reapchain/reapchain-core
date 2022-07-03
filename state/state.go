@@ -360,29 +360,29 @@ func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state := new(State)
 	state.LastBlockHeight = pb.LastBlockHeight
 
-	standingMemberSet, err := types.StandingMemberSetFromProto(pb.StandingMemberSet)
-	if err != nil {
-		return nil, err
-	}
-	state.StandingMemberSet = standingMemberSet
+	// standingMemberSet, err := types.StandingMemberSetFromProto(pb.StandingMemberSet)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// state.StandingMemberSet = standingMemberSet
 
-	steeringMemberCandidate, err := types.SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidateSet)
-	if err != nil {
-		return nil, err
-	}
-	state.SteeringMemberCandidateSet = steeringMemberCandidate
+	// steeringMemberCandidate, err := types.SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidateSet)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// state.SteeringMemberCandidateSet = steeringMemberCandidate
 
-	qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
-	if err != nil {
-		return nil, err
-	}
-	state.QrnSet = qrnSet
+	// qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// state.QrnSet = qrnSet
 
-	vrfSet, err := types.VrfSetFromProto(pb.VrfSet)
-	if err != nil {
-		return nil, err
-	}
-	state.VrfSet = vrfSet
+	// vrfSet, err := types.VrfSetFromProto(pb.VrfSet)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// state.VrfSet = vrfSet
 
 	if pb.NextQrnSet != nil {
 		nextQrnSet, err := types.QrnSetFromProto(pb.NextQrnSet)

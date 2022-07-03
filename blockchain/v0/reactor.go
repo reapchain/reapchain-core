@@ -490,12 +490,7 @@ FOR_LOOP:
 				// state.QrnSet = firstState.QrnSet
 				// state.VrfSet = firstState.VrfSet
 				// state.StandingMemberSet = firstState.StandingMemberSet.Copy()
-				// state.SteeringMemberCandidateSet = firstState.SteeringMemberCandidateSet.Copy()
-				
-				
-				state.SettingSteeringMember = firstState.SettingSteeringMember.Copy()
-				state.NextQrnSet = firstState.NextQrnSet.Copy()
-				state.NextVrfSet = firstState.NextVrfSet.Copy()
+				// state.SteeringMemberCandidateSet = firstState.SteeringMemberCandidateSet.Copy()				
 
 				// fmt.Println("stompesi - SettingSteeringMember", state.SettingSteeringMember)
 				// fmt.Println("stompesi - state.SteeringMemberCandidateSet", state.SteeringMemberCandidateSet)
@@ -507,11 +502,11 @@ FOR_LOOP:
 				// get the hash without persisting the state
 				var err error
 
-				// fmt.Println("stompesi - state.NextValidators", state.NextValidators)
-				
 				state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
 
-				// fmt.Println("stompesi2 - state.NextValidators", state.NextValidators)
+				state.SettingSteeringMember = secondState.SettingSteeringMember.Copy()
+				state.NextQrnSet = secondState.NextQrnSet.Copy()
+				state.NextVrfSet = secondState.NextVrfSet.Copy()
 
 				if err != nil {
 					// TODO This is bad, are we zombie?
@@ -547,76 +542,37 @@ func (bcR *BlockchainReactor) BroadcastStatusRequest() error {
 
 func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 	src p2p.Peer) (queued bool) {
-	requestHeight := msg.Height
-	if msg.Height == 1 {
-		requestHeight = 2
-	}
-	qrnSet, err := bcR.stateStore.LoadQrnSet(requestHeight-1)
+	settingSteeringMember, err := bcR.stateStore.LoadSettingSteeringMember(msg.Height+1)
 	if err != nil {
 		return false
 	}
 
-	if qrnSet != nil {
-		bcR.stateStore.Load()
-
-		vrfSet, err := bcR.stateStore.LoadVrfSet(requestHeight-1)
-		if err != nil {
-			return false
-		}
-
-		settingSteeringMember, err := bcR.stateStore.LoadSettingSteeringMember(requestHeight-1)
-		if err != nil {
-			return false
-		}
-
-		nextVrfSet, err := bcR.stateStore.LoadNextVrfSet(requestHeight-1)
-		if err != nil {
-			return false
-		}
-
-		nextQrnSet, err := bcR.stateStore.LoadNextQrnSet(requestHeight-1)
-		if err != nil {
-			return false
-		}
-
-		standingMemberSet, err := bcR.stateStore.LoadStandingMemberSet(requestHeight)
-		if err != nil {
-			return false
-		}
-
-		steeringMemberCandidateSet, err := bcR.stateStore.LoadSteeringMemberCandidateSet(requestHeight)
-		if err != nil {
-			return false
-		}
-
-		state := &sm.State{
-			LastBlockHeight:            msg.Height,
-			SettingSteeringMember:      settingSteeringMember,
-			VrfSet:                     vrfSet,
-			QrnSet:                     qrnSet,
-			NextVrfSet:                 nextVrfSet,
-			NextQrnSet:                 nextQrnSet,
-			StandingMemberSet:          standingMemberSet,
-			SteeringMemberCandidateSet: steeringMemberCandidateSet,
-		}
-
-		stateProto, err := state.ToProto()
-		if err != nil {
-			return false
-		}
-
-		msgBytes, err := bc.EncodeMsg(&bcproto.StateResponse{State: stateProto})
-
-		if err != nil {
-			bcR.Logger.Error("could not marshal msg", "err", err)
-			return false
-		}
-		return src.TrySend(BlockchainChannel, msgBytes)
+	nextVrfSet, err := bcR.stateStore.LoadNextVrfSet(msg.Height)
+	if err != nil {
+		return false
 	}
 
-	msgBytes, err := bc.EncodeMsg(&bcproto.NoStateResponse{Height: msg.Height})
+	nextQrnSet, err := bcR.stateStore.LoadNextQrnSet(msg.Height)
 	if err != nil {
-		bcR.Logger.Error("could not convert msg to protobuf", "err", err)
+		return false
+	}
+
+	state := &sm.State{
+		LastBlockHeight:            msg.Height,
+		SettingSteeringMember:      settingSteeringMember,
+		NextVrfSet:                 nextVrfSet,
+		NextQrnSet:                 nextQrnSet,
+	}
+
+	stateProto, err := state.ToProto()
+	if err != nil {
+		return false
+	}
+
+	msgBytes, err := bc.EncodeMsg(&bcproto.StateResponse{State: stateProto})
+
+	if err != nil {
+		bcR.Logger.Error("could not marshal msg", "err", err)
 		return false
 	}
 

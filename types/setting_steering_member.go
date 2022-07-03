@@ -161,17 +161,13 @@ func (settingSteeringMember *SettingSteeringMember) ToProto() *tmproto.SettingSt
 
 func SettingSteeringMemberFromProto(settingSteeringMemberProto *tmproto.SettingSteeringMember) *SettingSteeringMember {
 	if settingSteeringMemberProto == nil {
-		fmt.Println("stompesi - SettingSteeringMemberFromProto1")
 		return nil
 	}
 
 	pubKey, err := ce.PubKeyFromProto(settingSteeringMemberProto.CoordinatorPubKey)
 	if err != nil {
-		fmt.Println("stompesi - SettingSteeringMemberFromProto2")
 		return nil
 	}
-
-	fmt.Println("stompesi - SettingSteeringMemberFromProto3")
 
 	settingSteeringMember := new(SettingSteeringMember)
 	settingSteeringMember.Height = settingSteeringMemberProto.Height

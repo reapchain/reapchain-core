@@ -635,6 +635,7 @@ func updateState(
 	fmt.Println("-------------------------------------")
 	fmt.Println("state.InitialHeight", state.InitialHeight)
 	fmt.Println("header.Height", header.Height)
+	fmt.Println("nextConsensusRound", nextConsensusRound)
 	fmt.Println("")
 	fmt.Println("-------------------------------------")
 	standingMemberSet.SetCoordinator(state.QrnSet)

@@ -162,8 +162,8 @@ type ResultSteeringMemberCandidates struct {
 type ResultQrns struct {
 	BlockHeight int64        `json:"block_height"`
 	Qrns        []*types.Qrn `json:"qrns"`
-	// Count of actual validators in this result
 	Count int `json:"count"`
+	QrnHash []byte `json:"qrn_hash"`
 }
 
 type ResultSettingSteeringMember struct {
@@ -178,6 +178,7 @@ type ResultVrfs struct {
 	Vrfs        []*types.Vrf `json:"vrfs"`
 	// Count of actual validators in this result
 	Count int `json:"count"`
+	VrfHash []byte `json:"vrf_hash"`
 }
 
 // ConsensusParams for given height
