@@ -6,12 +6,10 @@ option go_package = "github.com/reapchain/reapchain-core/proto/reapchain-core/ty
 import "gogoproto/gogo.proto";
 import "reapchain-core/crypto/keys.proto";
 import "google/protobuf/timestamp.proto";
-import "reapchain-core/types/steering_member_candidate.proto";
 
 message VrfSet {
   int64 height = 1;
   repeated Vrf vrfs         = 2;
-  reapchain.types.SteeringMemberCandidateSet steering_member_candidate_set  = 3;
 }
 
 message Vrf {
@@ -20,6 +18,6 @@ message Vrf {
   reapchain.crypto.PublicKey steering_member_candidate_pub_key           = 3 [(gogoproto.nullable) = false];
   bytes value = 4;
   bytes proof         = 5;
-  int32 steering_member_candidate_index         = 6;
+  int32 vrf_index         = 6;
   bytes seed = 7;
 }

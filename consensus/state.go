@@ -1452,6 +1452,8 @@ func (cs *State) enterPrecommit(height int64, round int32) {
 		// Validate the block.
 
 		fmt.Println("-----------------2222222222--------------------")
+		fmt.Println("ProposalBlock.Height", cs.ProposalBlock.Height)
+		
 		fmt.Println("standingMemberSet", len(cs.state.StandingMemberSet.StandingMembers))
 		fmt.Println("standingMemberSet", len(cs.state.StandingMemberSet.StandingMembers))
 		fmt.Println("steeringMemberCandidateSet", len(cs.state.SteeringMemberCandidateSet.SteeringMemberCandidates))
@@ -1782,7 +1784,7 @@ func (cs *State) finalizeCommit(height int64) {
 	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod)-1 == height {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
-			if cs.state.NextVrfSet.SteeringMemberCandidateSet.HasAddress(address) == true {
+			if cs.state.NextVrfSet.HasAddress(address) == true {
 				isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
 
 				if isFull == false {

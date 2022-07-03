@@ -1,6 +1,7 @@
 package types
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"sort"
@@ -17,8 +18,6 @@ const MAXIMUM_STEERING_MEMBER_CANDIDATES = 30
 type VrfSet struct {
 	Height int64
 
-	SteeringMemberCandidateSet *SteeringMemberCandidateSet
-
 	mtx          tmsync.Mutex
 	Vrfs         []*Vrf
 	VrfsBitArray *bits.BitArray
@@ -30,17 +29,12 @@ func NewVrfSet(height int64, steeringMemberCandidateSet *SteeringMemberCandidate
 		vrfs = make([]*Vrf, steeringMemberCandidateSet.Size())
 		for i, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
 			vrfs[i] = NewVrfAsEmpty(height, steeringMemberCandidate.PubKey)
+			vrfs[i].VrfIndex = int32(i)
 		}
-	}
-
-	for i, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
-		steeringMemberCandidateIndex, _ := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(steeringMemberCandidate.Address)
-		vrfs[i].SteeringMemberCandidateIndex = steeringMemberCandidateIndex
 	}
 
 	return &VrfSet{
 		Height:                     height,
-		SteeringMemberCandidateSet: steeringMemberCandidateSet.Copy(),
 		VrfsBitArray:               bits.NewBitArray(steeringMemberCandidateSet.Size()),
 		Vrfs:                       vrfs,
 	}
@@ -62,12 +56,7 @@ func VrfSetFromProto(vrfSetProto *tmproto.VrfSet) (*VrfSet, error) {
 		vrfs[i] = vrf
 	}
 	vrfSet.Height = vrfSetProto.Height
-	steeringMemberCandidateSet, err := SteeringMemberCandidateSetFromProto(vrfSetProto.SteeringMemberCandidateSet)
-	if err != nil {
-		return nil, err
-	}
-	vrfSet.SteeringMemberCandidateSet = steeringMemberCandidateSet
-	vrfSet.VrfsBitArray = bits.NewBitArray(steeringMemberCandidateSet.Size())
+	vrfSet.VrfsBitArray = bits.NewBitArray(len(vrfs))
 	vrfSet.Vrfs = vrfs
 
 	return vrfSet, vrfSet.ValidateBasic()
@@ -126,26 +115,25 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 	}
 
 
-	steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(vrf.SteeringMemberCandidatePubKey.Address())
-	if steeringMemberCandidateIndex == -1 {
+	vrfIndex := vrfSet.GetVrfIndexByAddress(vrf.SteeringMemberCandidatePubKey.Address())
+	if vrfIndex == -1 {
 		return fmt.Errorf("Not exist standing member of vrf: %v", vrf.SteeringMemberCandidatePubKey.Address())
 	}
 
-	if vrfSet.VrfsBitArray.GetIndex(int(steeringMemberCandidateIndex)) == false {
-		vrf.SteeringMemberCandidateIndex = steeringMemberCandidateIndex
-
-		vrfSet.Vrfs[steeringMemberCandidateIndex] = vrf.Copy()
-		vrfSet.VrfsBitArray.SetIndex(int(steeringMemberCandidateIndex), true)
+	if vrfSet.VrfsBitArray.GetIndex(int(vrfIndex)) == false {
+		vrf.VrfIndex = vrfIndex
+		vrfSet.Vrfs[vrfIndex] = vrf.Copy()
+		vrfSet.VrfsBitArray.SetIndex(int(vrfIndex), true)
 	}
 
 	return nil
 }
 
 func (vrfSet *VrfSet) GetVrf(steeringMemberCandidatePubKey crypto.PubKey) (vrf *Vrf) {
-	steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(steeringMemberCandidatePubKey.Address())
+	vrfIndex := vrfSet.GetVrfIndexByAddress(steeringMemberCandidatePubKey.Address())
 
-	if steeringMemberCandidateIndex != -1 {
-		return vrfSet.Vrfs[steeringMemberCandidateIndex]
+	if vrfIndex != -1 {
+		return vrfSet.Vrfs[vrfIndex]
 	}
 
 	return nil
@@ -176,9 +164,6 @@ func (vrfSet *VrfSet) ToProto() (*tmproto.VrfSet, error) {
 		}
 	}
 	vrfSetProto.Height = vrfSet.Height
-	steeringMemberCandidateSet, _ := vrfSet.SteeringMemberCandidateSet.ToProto()
-	vrfSetProto.SteeringMemberCandidateSet = steeringMemberCandidateSet
-
 	vrfSetProto.Vrfs = vrfsProto
 
 	return vrfSetProto, nil
@@ -198,18 +183,17 @@ func (vrfSet *VrfSet) Copy() *VrfSet {
 
 	return &VrfSet{
 		Height:                     vrfSet.Height,
-		SteeringMemberCandidateSet: vrfSet.SteeringMemberCandidateSet.Copy(),
 		Vrfs:                       vrfsCopy,
 		VrfsBitArray:               vrfSet.VrfsBitArray.Copy(),
 	}
 }
 
-func (vrfSet *VrfSet) GetByIndex(steeringMemberCandidateIndex int32) *Vrf {
+func (vrfSet *VrfSet) GetByIndex(vrfIndex int32) *Vrf {
 	if vrfSet == nil {
 		return nil
 	}
 
-	return vrfSet.Vrfs[steeringMemberCandidateIndex]
+	return vrfSet.Vrfs[vrfIndex]
 }
 
 func (vrfSet *VrfSet) GetSteeringMemberAddresses() *SettingSteeringMember {
@@ -253,28 +237,79 @@ type VrfSetReader interface {
 	GetByIndex(int32) *Vrf
 }
 
-func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
-	vrfs := make([]*Vrf, len(steeringMemberCandidateSet.SteeringMemberCandidates))
-	vrfsBitArray := bits.NewBitArray(len(steeringMemberCandidateSet.SteeringMemberCandidates))
+// func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
+// 	vrfs := make([]*Vrf, len(steeringMemberCandidateSet.SteeringMemberCandidates))
+// 	vrfsBitArray := bits.NewBitArray(len(steeringMemberCandidateSet.SteeringMemberCandidates))
 
-	for i, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
+// 	for i, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
+// 		vrf := vrfSet.GetVrf(steeringMemberCandidate.PubKey)
+
+// 		if vrf == nil {
+// 			// vrfs[i] = NewVrfAsEmpty(vrfSet.Height, steeringMemberCandidate.PubKey)
+// 			// vrfsBitArray.SetIndex(i, true)
+// 		} else {
+// 			vrfs[i] = vrf.Copy()
+			
+// 			vrfIndex := vrfSet.GetVrfIndexByAddress(steeringMemberCandidate.PubKey.Address())
+// 			vrfsBitArray.SetIndex(i, vrfSet.VrfsBitArray.GetIndex(int(vrfIndex)))
+// 		}
+// 		vrfs[i].VrfIndex = int32(i)
+// 	}
+
+// 	vrfSet.Vrfs = vrfs[:]
+// 	vrfSet.VrfsBitArray = vrfsBitArray.Copy()
+
+// 	return nil
+// }
+
+func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
+	vrfSet.mtx.Lock()
+	defer vrfSet.mtx.Unlock()
+
+	vrfs := make([]*Vrf, 0, len(steeringMemberCandidateSet.SteeringMemberCandidates))
+
+	for _, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
 		vrf := vrfSet.GetVrf(steeringMemberCandidate.PubKey)
 
-		if vrf == nil {
-			vrfs[i] = NewVrfAsEmpty(vrfSet.Height, steeringMemberCandidate.PubKey)
-			// vrfsBitArray.SetIndex(i, true)
-		} else {
-			vrfs[i] = vrf.Copy()
-			
-			steeringMemberCandidateIndex, _ := vrfSet.SteeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(steeringMemberCandidate.PubKey.Address())
-			vrfsBitArray.SetIndex(i, vrfSet.VrfsBitArray.GetIndex(int(steeringMemberCandidateIndex)))
+		if vrf != nil {
+			vrfs = append(vrfs, vrf.Copy())
 		}
-		vrfs[i].SteeringMemberCandidateIndex = int32(i)
 	}
 
-	vrfSet.SteeringMemberCandidateSet = steeringMemberCandidateSet.Copy()
+	vrfsBitArray := bits.NewBitArray(len(vrfs))
+	
+	for i, vrf := range vrfs {
+		vrfIndex := vrfSet.GetVrfIndexByAddress(vrf.SteeringMemberCandidatePubKey.Address())
+		vrfsBitArray.SetIndex(i, vrfSet.VrfsBitArray.GetIndex(int(vrfIndex)))
+	}
+
 	vrfSet.Vrfs = vrfs[:]
 	vrfSet.VrfsBitArray = vrfsBitArray.Copy()
 
 	return nil
 }
+
+func (vrfSet *VrfSet) GetVrfIndexByAddress(address []byte) (int32) {
+	if vrfSet == nil {
+		return -1
+	}
+	for idx, vrf := range vrfSet.Vrfs {
+		if bytes.Equal(vrf.SteeringMemberCandidatePubKey.Address(), address) {
+			return int32(idx)
+		}
+	}
+	return -1
+}
+
+func (vrfSet *VrfSet) HasAddress(address []byte) (bool) {
+	if vrfSet == nil {
+		return false
+	}
+	for _, vrf := range vrfSet.Vrfs {
+		if bytes.Equal(vrf.SteeringMemberCandidatePubKey.Address(), address) {
+			return true
+		}
+	}
+	return false
+}
+

@@ -16,7 +16,7 @@ func (ps *PeerState) SetHasVrf(vrf *types.Vrf) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
 
-	ps.setHasVrf(vrf.Height, vrf.SteeringMemberCandidateIndex)
+	ps.setHasVrf(vrf.Height, vrf.VrfIndex)
 }
 
 func (ps *PeerState) PickSendVrf(vrfSet types.VrfSetReader) bool {

@@ -3,6 +3,7 @@ package state
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"time"
 
 	abci "github.com/reapchain/reapchain-core/abci/types"
@@ -558,6 +559,8 @@ func updateState(
 		
 		state.QrnSet = state.NextQrnSet.Copy()
 		state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
+		
+		sort.Sort(types.SortedVrfs(state.NextVrfSet.Vrfs))
 		
 		state.VrfSet = state.NextVrfSet.Copy()
 		fmt.Println("stompesi - steeringMemberCandidateSet", len(steeringMemberCandidateSet.SteeringMemberCandidates))
