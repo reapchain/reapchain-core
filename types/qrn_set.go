@@ -1,10 +1,10 @@
 package types
 
 import (
+	"bytes"
 	encoding_binary "encoding/binary"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/merkle"
@@ -15,7 +15,6 @@ import (
 
 type QrnSet struct {
 	Height            int64
-	StandingMemberSet *StandingMemberSet
 	mtx               tmsync.Mutex
 	Qrns              []*Qrn
 	QrnsBitArray      *bits.BitArray
@@ -26,17 +25,12 @@ func NewQrnSet(height int64, standingMemberSet *StandingMemberSet, qrns []*Qrn) 
 		qrns = make([]*Qrn, standingMemberSet.Size())
 		for i, standingMember := range standingMemberSet.StandingMembers {
 			qrns[i] = NewQrnAsEmpty(height, standingMember.PubKey)
+			qrns[i].QrnIndex = int32(i)
 		}
-	}
-
-	for i, standingMember := range standingMemberSet.StandingMembers {
-		standingMemberIndex, _ := standingMemberSet.GetStandingMemberByAddress(standingMember.Address)
-		qrns[i].StandingMemberIndex = standingMemberIndex
 	}
 
 	return &QrnSet{
 		Height:            height,
-		StandingMemberSet: standingMemberSet,
 		QrnsBitArray:      bits.NewBitArray(standingMemberSet.Size()),
 		Qrns:              qrns,
 	}
@@ -58,12 +52,7 @@ func QrnSetFromProto(qrnSetProto *tmproto.QrnSet) (*QrnSet, error) {
 		qrns[i] = qrn
 	}
 	qrnSet.Height = qrnSetProto.Height
-	standingMemberSet, err := StandingMemberSetFromProto(qrnSetProto.StandingMemberSet)
-	if err != nil {
-		return nil, err
-	}
-	qrnSet.StandingMemberSet = standingMemberSet
-	qrnSet.QrnsBitArray = bits.NewBitArray(standingMemberSet.Size())
+	qrnSet.QrnsBitArray = bits.NewBitArray(len(qrns))
 	qrnSet.Qrns = qrns
 
 	return qrnSet, qrnSet.ValidateBasic()
@@ -127,35 +116,36 @@ func (qrnSet *QrnSet) AddQrn(qrn *Qrn) error {
 	if qrn == nil {
 		return fmt.Errorf("Qrn is nil")
 	}
-
-	if qrn.VerifySign() == false {
-		return nil
+	
+	if qrn.Value != 0 {
+		if qrn.VerifySign() == false {
+			return fmt.Errorf("Invalid qrn sign")
+		}
+	
+		if qrnSet.Height != qrn.Height {
+			return fmt.Errorf("Invalid qrn height")
+		}
 	}
 
-	if qrnSet.Height != qrn.Height {
-		return fmt.Errorf("Invalid qrn height")
-	}
+	qrnIndex := qrnSet.GetQrnIndexByAddress(qrn.StandingMemberPubKey.Address())
 
-	standingMemberIndex, _ := qrnSet.StandingMemberSet.GetStandingMemberByAddress(qrn.StandingMemberPubKey.Address())
-
-	if standingMemberIndex == -1 {
+	if qrnIndex == -1 {
 		return fmt.Errorf("Not exist standing member of qrn: %v", qrn.StandingMemberPubKey.Address())
 	}
 
-	if qrnSet.QrnsBitArray.GetIndex(int(standingMemberIndex)) == false {
-		qrn.StandingMemberIndex = standingMemberIndex
-
-		qrnSet.Qrns[standingMemberIndex] = qrn.Copy()
-		qrnSet.QrnsBitArray.SetIndex(int(standingMemberIndex), true)
+	if qrnSet.QrnsBitArray.GetIndex(int(qrnIndex)) == false {
+		qrn.QrnIndex = qrnIndex
+		qrnSet.Qrns[qrnIndex] = qrn.Copy()
+		qrnSet.QrnsBitArray.SetIndex(int(qrnIndex), true)
 	}
 	return nil
 }
 
 func (qrnSet *QrnSet) GetQrn(standingMemberPubKey crypto.PubKey) (qrn *Qrn) {
-	standingMemberIndex, _ := qrnSet.StandingMemberSet.GetStandingMemberByAddress(standingMemberPubKey.Address())
+	qrnIndex := qrnSet.GetQrnIndexByAddress(standingMemberPubKey.Address())
 
-	if standingMemberIndex != -1 {
-		return qrnSet.Qrns[standingMemberIndex]
+	if qrnIndex != -1 {
+		return qrnSet.Qrns[qrnIndex]
 	}
 
 	return nil
@@ -186,16 +176,15 @@ func (qrnSet *QrnSet) ToProto() (*tmproto.QrnSet, error) {
 		}
 	}
 	qrnSetProto.Height = qrnSet.Height
-	standingMemberSet, _ := qrnSet.StandingMemberSet.ToProto()
-	qrnSetProto.StandingMemberSet = standingMemberSet
 	qrnSetProto.Qrns = qrnsProto
 
 	return qrnSetProto, nil
 }
 
 func (qrnSet *QrnSet) Copy() *QrnSet {
-	qrnSet.mtx.Lock()
-	defer qrnSet.mtx.Unlock()
+	if qrnSet == nil {
+		return nil
+	}
 
 	qrnsCopy := make([]*Qrn, len(qrnSet.Qrns))
 	for i, qrn := range qrnSet.Qrns {
@@ -206,20 +195,17 @@ func (qrnSet *QrnSet) Copy() *QrnSet {
 
 	return &QrnSet{
 		Height:            qrnSet.Height,
-		StandingMemberSet: qrnSet.StandingMemberSet.Copy(),
 		Qrns:              qrnsCopy,
 		QrnsBitArray:      qrnSet.QrnsBitArray.Copy(),
 	}
 }
 
-func (qrnSet *QrnSet) GetByIndex(standingMemberIndex int32) *Qrn {
+func (qrnSet *QrnSet) GetByIndex(qrnIndex int32) *Qrn {
 	if qrnSet == nil {
 		return nil
 	}
 
-	qrnSet.mtx.Lock()
-	defer qrnSet.mtx.Unlock()
-	return qrnSet.Qrns[standingMemberIndex]
+	return qrnSet.Qrns[qrnIndex]
 }
 
 func (qrnSet *QrnSet) BitArray() *bits.BitArray {
@@ -230,46 +216,6 @@ func (qrnSet *QrnSet) BitArray() *bits.BitArray {
 	qrnSet.mtx.Lock()
 	defer qrnSet.mtx.Unlock()
 	return qrnSet.QrnsBitArray.Copy()
-}
-
-// -----
-const nilQrnSetString = "nil-QrnSet"
-
-func (qrnSet *QrnSet) StringShort() string {
-	if qrnSet == nil {
-		return nilQrnSetString
-	}
-	qrnSet.mtx.Lock()
-	defer qrnSet.mtx.Unlock()
-
-	return fmt.Sprintf(`QrnSet{H:%v %v}`,
-		qrnSet.Height, qrnSet.QrnsBitArray)
-}
-
-func (qrnSet *QrnSet) QrnStrings() []string {
-	qrnSet.mtx.Lock()
-	defer qrnSet.mtx.Unlock()
-
-	qrnStrings := make([]string, len(qrnSet.Qrns))
-	for i, qrn := range qrnSet.Qrns {
-		if qrn == nil {
-			qrnStrings[i] = "nil-Qrn"
-		} else {
-			qrnStrings[i] = qrn.String()
-		}
-	}
-	return qrnStrings
-}
-
-func (qrnSet *QrnSet) BitArrayString() string {
-	qrnSet.mtx.Lock()
-	defer qrnSet.mtx.Unlock()
-	return qrnSet.bitArrayString()
-}
-
-func (qrnSet *QrnSet) bitArrayString() string {
-	bAString := qrnSet.QrnsBitArray.String()
-	return fmt.Sprintf("%s", bAString)
 }
 
 type QrnSetReader interface {
@@ -283,36 +229,49 @@ func (qrnSet *QrnSet) UpdateWithChangeSet(standingMemberSet *StandingMemberSet) 
 	qrnSet.mtx.Lock()
 	defer qrnSet.mtx.Unlock()
 
-	qrns := make([]*Qrn, len(standingMemberSet.StandingMembers))
-	qrnsBitArray := bits.NewBitArray(len(standingMemberSet.StandingMembers))
+	qrns := make([]*Qrn, 0, len(standingMemberSet.StandingMembers))
 
-	for i, steeringMemberCandidate := range standingMemberSet.StandingMembers {
+	for _, steeringMemberCandidate := range standingMemberSet.StandingMembers {
 		qrn := qrnSet.GetQrn(steeringMemberCandidate.PubKey)
 
-		if qrn == nil {
-			qrns[i] = NewQrnAsEmpty(qrnSet.Height, steeringMemberCandidate.PubKey)
-			// qrnsBitArray.SetIndex(i, true)
-		} else {
-			qrns[i] = qrn.Copy()
-			
-			steeringMemberCandidateIndex, _ := qrnSet.StandingMemberSet.GetStandingMemberByAddress(steeringMemberCandidate.PubKey.Address())
-			qrnsBitArray.SetIndex(i, qrnSet.QrnsBitArray.GetIndex(int(steeringMemberCandidateIndex)))
+		if qrn != nil {
+			qrns = append(qrns, qrn.Copy())
 		}
-		qrns[i].StandingMemberIndex = int32(i)
 	}
 
-	qrnSet.StandingMemberSet = standingMemberSet.Copy()
+	qrnsBitArray := bits.NewBitArray(len(qrns))
+	
+	for i, qrn := range qrns {
+		qrnIndex := qrnSet.GetQrnIndexByAddress(qrn.StandingMemberPubKey.Address())
+		qrnsBitArray.SetIndex(i, qrnSet.QrnsBitArray.GetIndex(int(qrnIndex)))
+	}
+
 	qrnSet.Qrns = qrns[:]
 	qrnSet.QrnsBitArray = qrnsBitArray.Copy()
 
 	return nil
 }
 
-func QrnListString(qrns []*Qrn) string {
-	chunks := make([]string, len(qrns))
-	for i, qrn := range qrns {
-		chunks[i] = fmt.Sprintf("%s", qrn.StandingMemberPubKey.Address())
+func (qrnSet *QrnSet) GetQrnIndexByAddress(address []byte) (int32) {
+	if qrnSet == nil {
+		return -1
 	}
+	for idx, qrn := range qrnSet.Qrns {
+		if bytes.Equal(qrn.StandingMemberPubKey.Address(), address) {
+			return int32(idx)
+		}
+	}
+	return -1
+}
 
-	return strings.Join(chunks, ",")
+func (qrnSet *QrnSet) HasAddress(address []byte) (bool) {
+	if qrnSet == nil {
+		return false
+	}
+	for _, qrn := range qrnSet.Qrns {
+		if bytes.Equal(qrn.StandingMemberPubKey.Address(), address) {
+			return true
+		}
+	}
+	return false
 }

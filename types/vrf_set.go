@@ -117,7 +117,7 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 
 	vrfIndex := vrfSet.GetVrfIndexByAddress(vrf.SteeringMemberCandidatePubKey.Address())
 	if vrfIndex == -1 {
-		return fmt.Errorf("Not exist standing member of vrf: %v", vrf.SteeringMemberCandidatePubKey.Address())
+		return fmt.Errorf("Not exist steering member candidate of vrf: %v", vrf.SteeringMemberCandidatePubKey.Address())
 	}
 
 	if vrfSet.VrfsBitArray.GetIndex(int(vrfIndex)) == false {
@@ -142,7 +142,7 @@ func (vrfSet *VrfSet) GetVrf(steeringMemberCandidatePubKey crypto.PubKey) (vrf *
 func (vrfSet *VrfSet) Hash() []byte {
 	vrfBytesArray := make([][]byte, len(vrfSet.Vrfs))
 	for i, vrf := range vrfSet.Vrfs {
-		if vrf != nil {
+		if vrf != nil && vrf.Proof != nil {
 			fmt.Println("stompesi - vrf hash", vrf)
 			vrfBytesArray[i] = vrf.GetVrfBytes()
 		}
@@ -196,30 +196,6 @@ func (vrfSet *VrfSet) GetByIndex(vrfIndex int32) *Vrf {
 	return vrfSet.Vrfs[vrfIndex]
 }
 
-func (vrfSet *VrfSet) GetSteeringMemberAddresses() *SettingSteeringMember {
-	if len(vrfSet.Vrfs) != 0 {
-		sort.Sort(SortedVrfs(vrfSet.Vrfs))
-		var steeringMemberSize int
-		if len(vrfSet.Vrfs) < MAXIMUM_STEERING_MEMBER_CANDIDATES {
-			steeringMemberSize = len(vrfSet.Vrfs)
-		} else {
-			steeringMemberSize = MAXIMUM_STEERING_MEMBER_CANDIDATES
-		}
-
-		settingSteeringMember := NewSettingSteeringMember(steeringMemberSize)
-
-		for i := 0; i < steeringMemberSize; i++ {
-			if (vrfSet.Vrfs[i].Value != nil) {
-				settingSteeringMember.SteeringMemberAddresses = append(settingSteeringMember.SteeringMemberAddresses, vrfSet.Vrfs[i].SteeringMemberCandidatePubKey.Address())
-			}
-		}
-
-		fmt.Println("stompesi - settingSteeringMember", settingSteeringMember)
-		return settingSteeringMember
-	}
-	return nil
-}
-
 func (vrfSet *VrfSet) BitArray() *bits.BitArray {
 	if vrfSet == nil {
 		return nil
@@ -236,31 +212,6 @@ type VrfSetReader interface {
 	BitArray() *bits.BitArray
 	GetByIndex(int32) *Vrf
 }
-
-// func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
-// 	vrfs := make([]*Vrf, len(steeringMemberCandidateSet.SteeringMemberCandidates))
-// 	vrfsBitArray := bits.NewBitArray(len(steeringMemberCandidateSet.SteeringMemberCandidates))
-
-// 	for i, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
-// 		vrf := vrfSet.GetVrf(steeringMemberCandidate.PubKey)
-
-// 		if vrf == nil {
-// 			// vrfs[i] = NewVrfAsEmpty(vrfSet.Height, steeringMemberCandidate.PubKey)
-// 			// vrfsBitArray.SetIndex(i, true)
-// 		} else {
-// 			vrfs[i] = vrf.Copy()
-			
-// 			vrfIndex := vrfSet.GetVrfIndexByAddress(steeringMemberCandidate.PubKey.Address())
-// 			vrfsBitArray.SetIndex(i, vrfSet.VrfsBitArray.GetIndex(int(vrfIndex)))
-// 		}
-// 		vrfs[i].VrfIndex = int32(i)
-// 	}
-
-// 	vrfSet.Vrfs = vrfs[:]
-// 	vrfSet.VrfsBitArray = vrfsBitArray.Copy()
-
-// 	return nil
-// }
 
 func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
 	vrfSet.mtx.Lock()
@@ -313,3 +264,26 @@ func (vrfSet *VrfSet) HasAddress(address []byte) (bool) {
 	return false
 }
 
+func (vrfSet *VrfSet) GetSteeringMemberAddresses() *SettingSteeringMember {
+	if len(vrfSet.Vrfs) != 0 {
+		sort.Sort(SortedVrfs(vrfSet.Vrfs))
+		var steeringMemberSize int
+		if len(vrfSet.Vrfs) < MAXIMUM_STEERING_MEMBER_CANDIDATES {
+			steeringMemberSize = len(vrfSet.Vrfs)
+		} else {
+			steeringMemberSize = MAXIMUM_STEERING_MEMBER_CANDIDATES
+		}
+
+		settingSteeringMember := NewSettingSteeringMember(steeringMemberSize)
+
+		for i := 0; i < steeringMemberSize; i++ {
+			if (vrfSet.Vrfs[i].Value != nil) {
+				settingSteeringMember.SteeringMemberAddresses = append(settingSteeringMember.SteeringMemberAddresses, vrfSet.Vrfs[i].SteeringMemberCandidatePubKey.Address())
+			}
+		}
+
+		fmt.Println("stompesi - settingSteeringMember", settingSteeringMember)
+		return settingSteeringMember
+	}
+	return nil
+}

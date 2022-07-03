@@ -1453,7 +1453,7 @@ func (cs *State) enterPrecommit(height int64, round int32) {
 
 		fmt.Println("-----------------2222222222--------------------")
 		fmt.Println("ProposalBlock.Height", cs.ProposalBlock.Height)
-		
+
 		fmt.Println("standingMemberSet", len(cs.state.StandingMemberSet.StandingMembers))
 		fmt.Println("standingMemberSet", len(cs.state.StandingMemberSet.StandingMembers))
 		fmt.Println("steeringMemberCandidateSet", len(cs.state.SteeringMemberCandidateSet.SteeringMemberCandidates))
@@ -1764,20 +1764,15 @@ func (cs *State) finalizeCommit(height int64) {
 	if cs.state.ConsensusRound.ConsensusStartBlockHeight-1 == height {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
-			if cs.state.NextQrnSet.StandingMemberSet.HasAddress(address) == true {
-
-				standingMemberIndex, _ := cs.RoundState.StandingMemberSet.GetStandingMemberByAddress(cs.privValidatorPubKey.Address())
-				if standingMemberIndex != -1 {
-					qrnValue := tmrand.Uint64()
-
-					qrn := types.NewQrn(cs.state.NextQrnSet.GetHeight(), cs.privValidatorPubKey, qrnValue)
-					qrn.StandingMemberIndex = standingMemberIndex
-					err := cs.privValidator.SignQrn(qrn)
-					if err != nil {
-						fmt.Println("Can't sign qrn", "err", err)
-					} else {
-						cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
-					}
+			if cs.state.NextQrnSet.HasAddress(address) == true {
+				qrnValue := tmrand.Uint64()
+				qrn := types.NewQrn(cs.state.NextQrnSet.GetHeight(), cs.privValidatorPubKey, qrnValue)
+				
+				err := cs.privValidator.SignQrn(qrn)
+				if err != nil {
+					fmt.Println("Can't sign qrn", "err", err)
+				} else {
+					cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
 				}
 			}
 		}
@@ -1793,9 +1788,7 @@ func (cs *State) finalizeCommit(height int64) {
 				}
 
 				seed := cs.state.NextQrnSet.GetMaxValue()
-
 				vrf := types.NewVrf(cs.state.NextVrfSet.GetHeight(), cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
-				vrf.Timestamp = time.Now()
 
 				if err := cs.privValidator.ProveVrf(vrf); err != nil {
 					cs.Logger.Error("Can't prove vrf", "err", err)

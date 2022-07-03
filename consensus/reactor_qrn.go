@@ -6,7 +6,6 @@ import (
 	"github.com/reapchain/reapchain-core/p2p"
 )
 
-
 func (conR *Reactor) gossipQrnsRoutine(peer p2p.Peer, ps *PeerState) {
 	logger := conR.Logger.With("peer", peer)
 
@@ -19,11 +18,16 @@ OUTER_LOOP:
 		}
 		rs := conR.conS.GetRoundState()
 		prs := ps.GetRoundState()
+		
+		if rs.LockedBlock != nil {
+			consensusStartBlockHeight := rs.LockedBlock.ConsensusRound.ConsensusStartBlockHeight
+			qrnPeriod := rs.LockedBlock.ConsensusRound.QrnPeriod
 
-		if rs.Height == prs.Height {
-			if ps.PickSendQrn(conR.conS.state.NextQrnSet) {
-				time.Sleep(conR.conS.config.PeerGossipSleepDuration)
-				continue OUTER_LOOP
+			if prs.Height >= consensusStartBlockHeight && prs.Height < consensusStartBlockHeight + int64(qrnPeriod) {
+				if ps.PickSendQrn(conR.conS.state.NextQrnSet) {
+					time.Sleep(conR.conS.config.PeerGossipSleepDuration)
+					continue OUTER_LOOP
+				}
 			}
 		}
 

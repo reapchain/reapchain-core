@@ -16,7 +16,7 @@ func (ps *PeerState) SetHasQrn(qrn *types.Qrn) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
 
-	ps.setHasQrn(qrn.Height, qrn.StandingMemberIndex)
+	ps.setHasQrn(qrn.Height, qrn.QrnIndex)
 }
 
 func (ps *PeerState) PickSendQrn(qrnSet types.QrnSetReader) bool {

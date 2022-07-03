@@ -557,13 +557,12 @@ func updateState(
 		nextConsensusRound.ConsensusStartBlockHeight = header.Height + 1
 		nextConsensusStartBlockHeight := nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.Period)
 		
+		sort.Sort(types.SortedQrns(state.NextQrnSet.Qrns))
 		state.QrnSet = state.NextQrnSet.Copy()
 		state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
 		
 		sort.Sort(types.SortedVrfs(state.NextVrfSet.Vrfs))
-		
 		state.VrfSet = state.NextVrfSet.Copy()
-		fmt.Println("stompesi - steeringMemberCandidateSet", len(steeringMemberCandidateSet.SteeringMemberCandidates))
 		state.NextVrfSet = types.NewVrfSet(nextConsensusStartBlockHeight, steeringMemberCandidateSet, nil)	
 
 		state.IsSetSteeringMember = false
