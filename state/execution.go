@@ -592,6 +592,8 @@ func updateState(
 		state.SettingSteeringMember = nil
 		lastHeightQrnChanged = header.Height + 1
 		lastHeightVrfChanged = header.Height + 1
+		state.LastHeightNextQrnChanged = header.Height + 1
+		state.LastHeightNextVrfChanged = header.Height + 1
 
 		lastHeightConsensusRoundChanged = header.Height + 1
 

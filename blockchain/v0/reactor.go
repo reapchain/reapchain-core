@@ -502,11 +502,11 @@ FOR_LOOP:
 				// get the hash without persisting the state
 				var err error
 
-				state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
+				state.SettingSteeringMember = firstState.SettingSteeringMember.Copy()
+				state.NextQrnSet = firstState.NextQrnSet.Copy()
+				state.NextVrfSet = firstState.NextVrfSet.Copy()
 
-				state.SettingSteeringMember = secondState.SettingSteeringMember.Copy()
-				state.NextQrnSet = secondState.NextQrnSet.Copy()
-				state.NextVrfSet = secondState.NextVrfSet.Copy()
+				state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
 
 				if err != nil {
 					// TODO This is bad, are we zombie?
