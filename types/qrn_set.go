@@ -231,8 +231,8 @@ func (qrnSet *QrnSet) UpdateWithChangeSet(standingMemberSet *StandingMemberSet) 
 
 	qrns := make([]*Qrn, 0, len(standingMemberSet.StandingMembers))
 
-	for _, steeringMemberCandidate := range standingMemberSet.StandingMembers {
-		qrn := qrnSet.GetQrn(steeringMemberCandidate.PubKey)
+	for _, standingMember := range standingMemberSet.StandingMembers {
+		qrn := qrnSet.GetQrn(standingMember.PubKey)
 
 		if qrn != nil {
 			qrns = append(qrns, qrn.Copy())

@@ -127,4 +127,10 @@ message State {
 
   reapchain.types.SettingSteeringMember setting_steering_member          = 25;
   bool is_set_steering_member          = 26;
+
+  int64                         last_height_qrn_changed = 27;
+  int64                         last_height_next_qrn_changed = 28;
+  int64                         last_height_vrf_changed = 29;
+  int64                         last_height_next_vrf_changed = 30;
+  int64                         last_height_setting_steering_member_changed = 31;
 }

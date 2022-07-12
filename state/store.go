@@ -213,19 +213,19 @@ func (store dbStore) save(state State, key []byte) error {
 			return err
 		}
 
-		if err := store.saveQrnsInfo(nextHeight, state.QrnSet); err != nil {
+		if err := store.saveQrnsInfo(nextHeight, nextHeight, state.QrnSet); err != nil {
 			return err
 		}
 
-		if err := store.saveNextQrnsInfo(nextHeight, state.NextQrnSet); err != nil {
+		if err := store.saveNextQrnsInfo(nextHeight, nextHeight, state.NextQrnSet); err != nil {
 			return err
 		}
 
-		if err := store.saveVrfsInfo(nextHeight, state.VrfSet); err != nil {
+		if err := store.saveVrfsInfo(nextHeight, nextHeight, state.VrfSet); err != nil {
 			return err
 		}
 
-		if err := store.saveNextVrfsInfo(nextHeight, state.NextVrfSet); err != nil {
+		if err := store.saveNextVrfsInfo(nextHeight, nextHeight, state.NextVrfSet); err != nil {
 			return err
 		}
 
@@ -242,23 +242,23 @@ func (store dbStore) save(state State, key []byte) error {
 		return err
 	}
 
-	if err := store.saveQrnsInfo(nextHeight, state.QrnSet); err != nil {
+	if err := store.saveQrnsInfo(nextHeight, state.LastHeightQrnChanged, state.QrnSet); err != nil {
 		return err
 	}
 
-	if err := store.saveNextQrnsInfo(nextHeight, state.NextQrnSet); err != nil {
+	if err := store.saveNextQrnsInfo(nextHeight, state.LastHeightNextQrnChanged, state.NextQrnSet); err != nil {
 		return err
 	}
 
-	if err := store.saveVrfsInfo(nextHeight, state.VrfSet); err != nil {
+	if err := store.saveVrfsInfo(nextHeight, state.LastHeightVrfChanged, state.VrfSet); err != nil {
 		return err
 	}
 
-	if err := store.saveNextVrfsInfo(nextHeight, state.NextVrfSet); err != nil {
+	if err := store.saveNextVrfsInfo(nextHeight, state.LastHeightNextVrfChanged, state.NextVrfSet); err != nil {
 		return err
 	}
 
-	if err := store.saveSettingSteeringMemberInfo(nextHeight, state.SettingSteeringMember); err != nil {
+	if err := store.saveSettingSteeringMemberInfo(nextHeight, state.LastHeightSettingSteeringMemberChanged, state.SettingSteeringMember); err != nil {
 		return err
 	}
 
@@ -276,8 +276,7 @@ func (store dbStore) save(state State, key []byte) error {
 	}
 
 	// Save next consensus params.
-	if err := store.saveConsensusParamsInfo(nextHeight,
-		state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
+	if err := store.saveConsensusParamsInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
 		return err
 	}
 
@@ -305,15 +304,23 @@ func (store dbStore) Bootstrap(state State) error {
 		return err
 	}
 
-	if err := store.saveQrnsInfo(height, state.QrnSet); err != nil {
+	if err := store.saveQrnsInfo(height, height, state.QrnSet); err != nil {
 		return err
 	}
 
-	if err := store.saveVrfsInfo(height, state.VrfSet); err != nil {
+	if err := store.saveNextQrnsInfo(height, height, state.NextQrnSet); err != nil {
 		return err
 	}
 
-	if err := store.saveSettingSteeringMemberInfo(height, state.SettingSteeringMember); err != nil {
+	if err := store.saveVrfsInfo(height, height, state.VrfSet); err != nil {
+		return err
+	}
+
+	if err := store.saveNextVrfsInfo(height, height, state.NextVrfSet); err != nil {
+		return err
+	}
+
+	if err := store.saveSettingSteeringMemberInfo(height, height, state.SettingSteeringMember); err != nil {
 		return err
 	}
 
@@ -333,8 +340,7 @@ func (store dbStore) Bootstrap(state State) error {
 		return err
 	}
 
-	if err := store.saveConsensusParamsInfo(height,
-		state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
+	if err := store.saveConsensusParamsInfo(height, state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
 		return err
 	}
 
@@ -647,23 +653,30 @@ func (store dbStore) saveValidatorsInfo(height, lastHeightChanged int64, valSet 
 	return nil
 }
 
-func (store dbStore) saveQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) error {
-	qrnSetInfo := &tmstate.QrnsInfo{
-		LastHeightChanged: nextHeight,
+func (store dbStore) saveQrnsInfo(height, lastHeightChanged int64, qrnSet *types.QrnSet) error {
+	if lastHeightChanged > height {
+		return errors.New("lastHeightChanged cannot be greater than QrnsInfo height")
 	}
 
-	qrnSetProto, err := qrnSet.ToProto()
-	if err != nil {
-		return err
+	qrnSetInfo := &tmstate.QrnsInfo{
+		LastHeightChanged: lastHeightChanged,
 	}
-	qrnSetInfo.QrnSet = qrnSetProto
+
+	if height == lastHeightChanged {
+		qrnSetProto, err := qrnSet.ToProto()
+		if err != nil {
+			return err
+		}
+		qrnSetInfo.QrnSet = qrnSetProto
+	}
+
 
 	bz, err := qrnSetInfo.Marshal()
 	if err != nil {
 		return err
 	}
 
-	err = store.db.Set(calcQrnsKey(nextHeight), bz)
+	err = store.db.Set(calcQrnsKey(height), bz)
 	if err != nil {
 		return err
 	}
@@ -671,47 +684,60 @@ func (store dbStore) saveQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) error 
 	return nil
 }
 
-func (store dbStore) saveNextQrnsInfo(nextHeight int64, qrnSet *types.QrnSet) error {
-	qrnSetInfo := &tmstate.QrnsInfo{
-		LastHeightChanged: nextHeight,
+func (store dbStore) saveNextQrnsInfo(height, lastHeightChanged int64, qrnSet *types.QrnSet) error {
+		if lastHeightChanged > height {
+		return errors.New("lastHeightChanged cannot be greater than QrnsInfo height")
 	}
 
-	qrnSetProto, err := qrnSet.ToProto()
-	if err != nil {
-		return err
+	qrnSetInfo := &tmstate.QrnsInfo{
+		LastHeightChanged: lastHeightChanged,
 	}
-	qrnSetInfo.QrnSet = qrnSetProto
+
+	if height == lastHeightChanged {
+		qrnSetProto, err := qrnSet.ToProto()
+		if err != nil {
+			return err
+		}
+		qrnSetInfo.QrnSet = qrnSetProto
+	}
+
 
 	bz, err := qrnSetInfo.Marshal()
 	if err != nil {
 		return err
 	}
 
-	err = store.db.Set(calcNextQrnsKey(nextHeight), bz)
+	err = store.db.Set(calcNextQrnsKey(height), bz)
 	if err != nil {
 		return err
 	}
-	// VrfChannel
+
 	return nil
 }
 
-func (store dbStore) saveVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) error {
-	vrfSetInfo := &tmstate.VrfsInfo{
-		LastHeightChanged: nextHeight,
+func (store dbStore) saveVrfsInfo(height, lastHeightChanged int64, vrfSet *types.VrfSet) error {
+	if lastHeightChanged > height {
+		return errors.New("lastHeightChanged cannot be greater than VrfsInfo height")
 	}
 
-	vrfSetProto, err := vrfSet.ToProto()
-	if err != nil {
-		return err
+	vrfSetInfo := &tmstate.VrfsInfo{
+		LastHeightChanged: lastHeightChanged,
 	}
-	vrfSetInfo.VrfSet = vrfSetProto
+
+	if height == lastHeightChanged {
+		vrfSetProto, err := vrfSet.ToProto()
+		if err != nil {
+			return err
+		}
+		vrfSetInfo.VrfSet = vrfSetProto
+	}
 
 	bz, err := vrfSetInfo.Marshal()
 	if err != nil {
 		return err
 	}
 
-	err = store.db.Set(calcVrfsKey(nextHeight), bz)
+	err = store.db.Set(calcVrfsKey(height), bz)
 	if err != nil {
 		return err
 	}
@@ -719,23 +745,29 @@ func (store dbStore) saveVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) error 
 	return nil
 }
 
-func (store dbStore) saveNextVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) error {
-	vrfSetInfo := &tmstate.VrfsInfo{
-		LastHeightChanged: nextHeight,
+func (store dbStore) saveNextVrfsInfo(height, lastHeightChanged int64, vrfSet *types.VrfSet) error {
+	if lastHeightChanged > height {
+		return errors.New("lastHeightChanged cannot be greater than VrfsInfo height")
 	}
 
-	vrfSetProto, err := vrfSet.ToProto()
-	if err != nil {
-		return err
+	vrfSetInfo := &tmstate.VrfsInfo{
+		LastHeightChanged: lastHeightChanged,
 	}
-	vrfSetInfo.VrfSet = vrfSetProto
+
+	if height == lastHeightChanged {
+		vrfSetProto, err := vrfSet.ToProto()
+		if err != nil {
+			return err
+		}
+		vrfSetInfo.VrfSet = vrfSetProto
+	}
 
 	bz, err := vrfSetInfo.Marshal()
 	if err != nil {
 		return err
 	}
 
-	err = store.db.Set(calcNextVrfsKey(nextHeight), bz)
+	err = store.db.Set(calcNextVrfsKey(height), bz)
 	if err != nil {
 		return err
 	}
@@ -743,20 +775,25 @@ func (store dbStore) saveNextVrfsInfo(nextHeight int64, vrfSet *types.VrfSet) er
 	return nil
 }
 
-func (store dbStore) saveSettingSteeringMemberInfo(nextHeight int64, settingSteeringMember *types.SettingSteeringMember) error {
+func (store dbStore) saveSettingSteeringMemberInfo(height, lastHeightChanged int64, settingSteeringMember *types.SettingSteeringMember) error {
+		if lastHeightChanged > height {
+		return errors.New("lastHeightChanged cannot be greater than SettingSteeringMemberInfo height")
+	}
+
 	SettingSteeringMemberInfo := &tmstate.SettingSteeringMemberInfo{
-		LastHeightChanged: nextHeight,
+		LastHeightChanged: height,
 	}
-
-	settingSteeringMemberProto := settingSteeringMember.ToProto()
-	SettingSteeringMemberInfo.SettingSteeringMember = settingSteeringMemberProto
+	
+	if height == lastHeightChanged {
+		SettingSteeringMemberInfo.SettingSteeringMember = settingSteeringMember.ToProto()
+	}
 
 	bz, err := SettingSteeringMemberInfo.Marshal()
 	if err != nil {
 		return err
 	}
 
-	err = store.db.Set(calcSettingSteeringMemberKey(nextHeight), bz)
+	err = store.db.Set(calcSettingSteeringMemberKey(height), bz)
 	if err != nil {
 		return err
 	}

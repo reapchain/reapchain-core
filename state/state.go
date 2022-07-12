@@ -89,13 +89,21 @@ type State struct {
 	LastHeightConsensusRoundChanged int64
 
 	QrnSet     *types.QrnSet
+	LastHeightQrnChanged int64
+
 	NextQrnSet *types.QrnSet
+	LastHeightNextQrnChanged int64
 
 	VrfSet     *types.VrfSet
-	NextVrfSet *types.VrfSet
+	LastHeightVrfChanged int64
 
-	IsSetSteeringMember   bool
+	NextVrfSet *types.VrfSet
+	LastHeightNextVrfChanged int64
+
 	SettingSteeringMember *types.SettingSteeringMember
+	LastHeightSettingSteeringMemberChanged int64
+	
+	IsSetSteeringMember   bool
 }
 
 // Copy makes a copy of the State for mutating.
@@ -118,26 +126,31 @@ func (state State) Copy() State {
 		ConsensusParams:                  state.ConsensusParams,
 		LastHeightConsensusParamsChanged: state.LastHeightConsensusParamsChanged,
 
-		AppHash: state.AppHash,
-
 		LastResultsHash: state.LastResultsHash,
+		AppHash: state.AppHash,
 
 		StandingMemberSet:                state.StandingMemberSet.Copy(),
 		LastHeightStandingMembersChanged: state.LastHeightStandingMembersChanged,
-
 		SteeringMemberCandidateSet:                state.SteeringMemberCandidateSet.Copy(),
 		LastHeightSteeringMemberCandidatesChanged: state.LastHeightSteeringMemberCandidatesChanged,
-
 		ConsensusRound:                  state.ConsensusRound,
 		LastHeightConsensusRoundChanged: state.LastHeightConsensusRoundChanged,
-
+		
 		QrnSet:     state.QrnSet.Copy(),
+		LastHeightQrnChanged: state.LastHeightQrnChanged,
+
 		NextQrnSet: state.NextQrnSet.Copy(),
+		LastHeightNextQrnChanged: state.LastHeightNextQrnChanged,
 
 		VrfSet:     state.VrfSet.Copy(),
+		LastHeightVrfChanged: state.LastHeightVrfChanged,
+		
 		NextVrfSet: state.NextVrfSet.Copy(),
-
+		LastHeightNextVrfChanged: state.LastHeightNextVrfChanged,
+		
 		SettingSteeringMember: state.SettingSteeringMember.Copy(),
+		LastHeightSettingSteeringMemberChanged: state.LastHeightSettingSteeringMemberChanged,
+		
 		IsSetSteeringMember:   state.IsSetSteeringMember,
 	}
 }
@@ -230,26 +243,32 @@ func (state *State) ToProto() (*tmstate.State, error) {
 		return nil, err
 	}
 	sm.QrnSet = qrnSetProto
+	sm.LastHeightQrnChanged = state.LastHeightQrnChanged
 
 	nextQrnSetProto, err := state.NextQrnSet.ToProto()
 	if err != nil {
 		return nil, err
 	}
 	sm.NextQrnSet = nextQrnSetProto
+	sm.LastHeightNextQrnChanged = state.LastHeightNextQrnChanged
 
 	vrfSetProto, err := state.VrfSet.ToProto()
 	if err != nil {
 		return nil, err
 	}
 	sm.VrfSet = vrfSetProto
+	sm.LastHeightVrfChanged = state.LastHeightVrfChanged
 
 	nextVrfSetProto, err := state.NextVrfSet.ToProto()
 	if err != nil {
 		return nil, err
 	}
 	sm.NextVrfSet = nextVrfSetProto
+	sm.LastHeightNextVrfChanged = state.LastHeightNextVrfChanged
 
 	sm.SettingSteeringMember = state.SettingSteeringMember.ToProto()
+	sm.LastHeightSettingSteeringMemberChanged = state.LastHeightSettingSteeringMemberChanged
+	
 	sm.IsSetSteeringMember = state.IsSetSteeringMember
 
 	return sm, nil
@@ -301,7 +320,6 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.ConsensusParams = pb.ConsensusParams
 	state.LastHeightConsensusParamsChanged = pb.LastHeightConsensusParamsChanged
 	state.LastResultsHash = pb.LastResultsHash
-	fmt.Println("stompesi-apphash3")
 	state.AppHash = pb.AppHash
 
 	standingMemberSet, err := types.StandingMemberSetFromProto(pb.StandingMemberSet)
@@ -326,27 +344,32 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 		return nil, err
 	}
 	state.QrnSet = qrnSet
+	state.LastHeightQrnChanged = pb.LastHeightQrnChanged
 
 	nextQrnSet, err := types.QrnSetFromProto(pb.NextQrnSet)
 	if err != nil {
 		return nil, err
 	}
 	state.NextQrnSet = nextQrnSet
+	state.LastHeightNextQrnChanged = pb.LastHeightNextQrnChanged
 
 	vrfSet, err := types.VrfSetFromProto(pb.VrfSet)
 	if err != nil {
 		return nil, err
 	}
 	state.VrfSet = vrfSet
+	state.LastHeightVrfChanged = pb.LastHeightVrfChanged
 
 	nextVrfSet, err := types.VrfSetFromProto(pb.NextVrfSet)
 	if err != nil {
 		return nil, err
 	}
 	state.NextVrfSet = nextVrfSet
+	state.LastHeightNextVrfChanged = pb.LastHeightNextVrfChanged
 
-	fmt.Println("stompesi - StateFromProto")
 	state.SettingSteeringMember = types.SettingSteeringMemberFromProto(pb.SettingSteeringMember)
+	state.LastHeightSettingSteeringMemberChanged = pb.LastHeightSettingSteeringMemberChanged
+
 	state.IsSetSteeringMember = pb.IsSetSteeringMember
 
 	return state, nil
@@ -360,30 +383,6 @@ func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state := new(State)
 	state.LastBlockHeight = pb.LastBlockHeight
 
-	// standingMemberSet, err := types.StandingMemberSetFromProto(pb.StandingMemberSet)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// state.StandingMemberSet = standingMemberSet
-
-	// steeringMemberCandidate, err := types.SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidateSet)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// state.SteeringMemberCandidateSet = steeringMemberCandidate
-
-	// qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// state.QrnSet = qrnSet
-
-	// vrfSet, err := types.VrfSetFromProto(pb.VrfSet)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// state.VrfSet = vrfSet
-
 	if pb.NextQrnSet != nil {
 		nextQrnSet, err := types.QrnSetFromProto(pb.NextQrnSet)
 		if err != nil {
@@ -391,6 +390,7 @@ func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 		}
 		state.NextQrnSet = nextQrnSet
 	}
+	state.LastHeightNextQrnChanged = pb.LastHeightNextQrnChanged
 
 	if pb.NextVrfSet != nil {
 		nextVrfSet, err := types.VrfSetFromProto(pb.NextVrfSet)
@@ -399,8 +399,10 @@ func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 		}
 		state.NextVrfSet = nextVrfSet
 	}
+	state.LastHeightNextVrfChanged = pb.LastHeightNextVrfChanged
 
 	state.SettingSteeringMember = types.SettingSteeringMemberFromProto(pb.SettingSteeringMember)
+	state.LastHeightSettingSteeringMemberChanged = pb.LastHeightSettingSteeringMemberChanged
 
 	return state, nil
 }
@@ -607,5 +609,11 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 
 		VrfSet:     vrfSet,
 		NextVrfSet: nextVrfSet,
+
+		LastHeightQrnChanged: genDoc.InitialHeight,
+		LastHeightNextQrnChanged: genDoc.InitialHeight,
+		LastHeightVrfChanged: genDoc.InitialHeight,
+		LastHeightNextVrfChanged: genDoc.InitialHeight,
+		LastHeightSettingSteeringMemberChanged: genDoc.InitialHeight,
 	}, nil
 }

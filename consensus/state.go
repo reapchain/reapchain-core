@@ -2505,6 +2505,7 @@ func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeri
 	if cs.state.IsSetSteeringMember == false {
 		cs.state.SettingSteeringMember = settingSteeringMember.Copy()
 		cs.state.IsSetSteeringMember = true
+		cs.state.LastHeightSettingSteeringMemberChanged = cs.state.LastBlockHeight + 1
 	}
 
 	return nil

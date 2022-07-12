@@ -12,6 +12,6 @@ func (cs *State) tryAddVrf(vrf *types.Vrf, peerID p2p.ID) (bool, error) {
 		fmt.Println("stompesi - tryAddVrf", err)
 		return false, err
 	}
-
+	
 	return true, nil
 }

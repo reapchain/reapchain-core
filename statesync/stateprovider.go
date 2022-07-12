@@ -158,7 +158,6 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 	state.LastBlockHeight = lastLightBlock.Height
 	state.LastBlockTime = lastLightBlock.Time
 	state.LastBlockID = lastLightBlock.Commit.BlockID
-	fmt.Println("stompesi-apphash4")
 	state.AppHash = currentLightBlock.AppHash
 	state.LastResultsHash = currentLightBlock.LastResultsHash
 	state.LastValidators = lastLightBlock.ValidatorSet
@@ -174,6 +173,8 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 	state.StandingMemberSet = currentLightBlock.StandingMemberSet
 	state.SteeringMemberCandidateSet = currentLightBlock.SteeringMemberCandidateSet
 
+	state.SettingSteeringMember = currentLightBlock.SettingSteeringMember
+	
 	state.StandingMemberSet = currentLightBlock.StandingMemberSet
 
 	state.SteeringMemberCandidateSet = currentLightBlock.SteeringMemberCandidateSet
@@ -202,6 +203,15 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 	}
 	state.ConsensusParams = result.ConsensusParams
 	state.LastHeightConsensusParamsChanged = currentLightBlock.Height
+
+	state.LastHeightStandingMembersChanged = nextLightBlock.Height
+	state.LastHeightSteeringMemberCandidatesChanged = nextLightBlock.Height
+	state.LastHeightConsensusRoundChanged = currentLightBlock.Height
+	state.LastHeightQrnChanged = currentLightBlock.Height
+	state.LastHeightNextQrnChanged = currentLightBlock.Height
+	state.LastHeightVrfChanged = currentLightBlock.Height
+	state.LastHeightNextVrfChanged = currentLightBlock.Height
+	state.LastHeightSettingSteeringMemberChanged = currentLightBlock.Height
 
 	return state, nil
 }

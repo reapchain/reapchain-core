@@ -49,6 +49,46 @@ func Rollback(bs BlockStore, ss Store) (int64, []byte, error) {
 		paramsChangeHeight = rollbackHeight
 	}
 
+	standingMembersChangeHeight := invalidState.LastHeightStandingMembersChanged
+	if standingMembersChangeHeight > rollbackHeight {
+		standingMembersChangeHeight = rollbackHeight
+	}
+
+	steeringMemberCandidatesChangeHeight := invalidState.LastHeightSteeringMemberCandidatesChanged
+	if steeringMemberCandidatesChangeHeight > rollbackHeight {
+		steeringMemberCandidatesChangeHeight = rollbackHeight
+	}
+
+	consensusRoundChangeHeight := invalidState.LastHeightConsensusRoundChanged
+	if consensusRoundChangeHeight > rollbackHeight {
+		consensusRoundChangeHeight = rollbackHeight
+	}
+
+	qrnChangeHeight := invalidState.LastHeightQrnChanged
+	if qrnChangeHeight > rollbackHeight {
+		qrnChangeHeight = rollbackHeight
+	}
+
+	nextQrnChangeHeight := invalidState.LastHeightNextQrnChanged
+	if nextQrnChangeHeight > rollbackHeight {
+		nextQrnChangeHeight = rollbackHeight
+	}
+
+	vrfChangeHeight := invalidState.LastHeightVrfChanged
+	if vrfChangeHeight > rollbackHeight {
+		vrfChangeHeight = rollbackHeight
+	}
+
+	nextVrfChangeHeight := invalidState.LastHeightNextVrfChanged
+	if nextVrfChangeHeight > rollbackHeight {
+		nextVrfChangeHeight = rollbackHeight
+	}
+
+	settingSteeringMemberChangeHeight := invalidState.LastHeightSettingSteeringMemberChanged
+	if settingSteeringMemberChangeHeight > rollbackHeight {
+		settingSteeringMemberChangeHeight = rollbackHeight
+	}
+
 	// build the new state from the old state and the prior block
 	rolledBackState := State{
 		Version: tmstate.Version{
@@ -76,6 +116,32 @@ func Rollback(bs BlockStore, ss Store) (int64, []byte, error) {
 
 		LastResultsHash: rollbackBlock.Header.LastResultsHash,
 		AppHash:         rollbackBlock.Header.AppHash,
+		
+		StandingMemberSet: invalidState.StandingMemberSet,
+		LastHeightStandingMembersChanged: standingMembersChangeHeight,
+
+		SteeringMemberCandidateSet: invalidState.SteeringMemberCandidateSet,
+		LastHeightSteeringMemberCandidatesChanged: steeringMemberCandidatesChangeHeight,
+		
+		ConsensusRound: invalidState.ConsensusRound,
+		LastHeightConsensusRoundChanged: consensusRoundChangeHeight,
+		
+		QrnSet: invalidState.QrnSet,
+		LastHeightQrnChanged: qrnChangeHeight,
+
+		NextQrnSet: invalidState.NextQrnSet,
+		LastHeightNextQrnChanged: nextQrnChangeHeight,
+
+		VrfSet: invalidState.VrfSet,
+		LastHeightVrfChanged: vrfChangeHeight,
+
+		NextVrfSet: invalidState.NextVrfSet,
+		LastHeightNextVrfChanged: nextVrfChangeHeight, 
+
+		SettingSteeringMember: invalidState.SettingSteeringMember,
+		LastHeightSettingSteeringMemberChanged: settingSteeringMemberChangeHeight,
+
+		IsSetSteeringMember: invalidState.IsSetSteeringMember,
 	}
 
 	// persist the new state. This overrides the invalid one. NOTE: this will also
