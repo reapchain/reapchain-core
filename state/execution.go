@@ -501,6 +501,7 @@ func updateState(
 
 		state.NextQrnSet.UpdateWithChangeSet(standingMemberSet)
 		lastHeightStandingMembersChanged = header.Height  + 1 + 1
+		state.LastHeightNextQrnChanged = header.Height + 1
 	}
 
 	steeringMemberCandidateSet := state.SteeringMemberCandidateSet.Copy()
@@ -513,6 +514,7 @@ func updateState(
 
 		state.NextVrfSet.UpdateWithChangeSet(steeringMemberCandidateSet)
 		lastHeightSteeringMemberCandidatesChanged = header.Height  + 1 + 1
+		state.LastHeightNextVrfChanged = header.Height + 1
 	}
 
 	if len(standingMemberUpdates) > 0 || len(steeringMemberCandidateUpdates) > 0 {
@@ -554,11 +556,11 @@ func updateState(
 		lastHeightParamsChanged = header.Height + 1
 	}
 
-	nextConsensusRound := state.ConsensusRound
+	currentConsensusRound := state.ConsensusRound
 	lastHeightConsensusRoundChanged := state.LastHeightConsensusRoundChanged
 	if abciResponses.EndBlock.ConsensusRoundUpdates != nil {
-		nextConsensusRound = types.UpdateConsensusRound(state.ConsensusRound, abciResponses.EndBlock.ConsensusRoundUpdates)
-		err := types.ValidateConsensusRound(nextConsensusRound, header.Height)
+		currentConsensusRound = types.UpdateConsensusRound(state.ConsensusRound, abciResponses.EndBlock.ConsensusRoundUpdates)
+		err := types.ValidateConsensusRound(currentConsensusRound, header.Height)
 		if err != nil {
 			return state, fmt.Errorf("error updating consensus round: %v", err)
 		}
@@ -568,8 +570,7 @@ func updateState(
 
 	lastHeightQrnChanged := state.LastHeightQrnChanged
 	lastHeightVrfChanged := state.LastHeightVrfChanged
-	lastHeightSettingSteeringMemberChanged := state.LastHeightSettingSteeringMemberChanged
-	if nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.Period) - 1 == header.Height {
+	if currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period) - 1 == header.Height {
 		fmt.Println("stompesi - change view", header.Height)
 		fmt.Println("state.QrnSet.Height", state.QrnSet.Height)
 		fmt.Println("state.NextQrnSet.Height", state.NextQrnSet.Height)
@@ -577,8 +578,8 @@ func updateState(
 		fmt.Println("state.VrfSet.Height", state.VrfSet.Height)
 		fmt.Println("state.NextVrfSet.Height", state.NextVrfSet.Height)
 
-		nextConsensusRound.ConsensusStartBlockHeight = header.Height + 1
-		nextConsensusStartBlockHeight := nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.Period)
+		currentConsensusRound.ConsensusStartBlockHeight = header.Height + 1
+		nextConsensusStartBlockHeight := currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period)
 		
 		sort.Sort(types.SortedQrns(state.NextQrnSet.Qrns))
 		state.QrnSet = state.NextQrnSet.Copy()
@@ -601,7 +602,7 @@ func updateState(
 		fmt.Println("state.VrfSet.Height2", state.VrfSet.Height)
 	}
 
-	if nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.Period) - 2 == header.Height {
+	if currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period) - 2 == header.Height {
 		validatorSize := len(standingMemberSet.StandingMembers)
 
 		if state.SettingSteeringMember != nil {
@@ -626,7 +627,7 @@ func updateState(
 					break
 				}
 			}
-			lastHeightSettingSteeringMemberChanged = header.Height + 1
+			// lastHeightSettingSteeringMemberChanged = header.Height + 1
 		}
 		
 		nValSet = types.NewValidatorSet(validators)
@@ -638,17 +639,21 @@ func updateState(
 
 	nextVersion := state.Version
 
-	if (nextConsensusRound.ConsensusStartBlockHeight <= header.Height && header.Height < nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.QrnPeriod)) {
+	if (currentConsensusRound.ConsensusStartBlockHeight <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod)) {
 		state.LastHeightNextQrnChanged = header.Height + 1
 	}
 
-	if (nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.QrnPeriod) <= header.Height && header.Height < nextConsensusRound.ConsensusStartBlockHeight + int64(nextConsensusRound.QrnPeriod) + int64(nextConsensusRound.VrfPeriod)) {
+	if (currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) + int64(currentConsensusRound.VrfPeriod)) {
 		state.LastHeightNextVrfChanged = header.Height + 1
+	}
+
+	if (currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) + int64(currentConsensusRound.VrfPeriod) <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period)) {
+		state.LastHeightSettingSteeringMemberChanged = header.Height + 1
 	}
 
 	fmt.Println("-------------------------------------")
 	fmt.Println("header.Height", header.Height)
-	fmt.Println("nextConsensusRound", nextConsensusRound)
+	fmt.Println("currentConsensusRound", currentConsensusRound)
 	fmt.Println("")
 	fmt.Println("-------------------------------------")
 	standingMemberSet.SetCoordinator(state.QrnSet)
@@ -704,7 +709,7 @@ func updateState(
 		SteeringMemberCandidateSet:                steeringMemberCandidateSet.Copy(),
 		LastHeightSteeringMemberCandidatesChanged: lastHeightSteeringMemberCandidatesChanged,
 
-		ConsensusRound:                  nextConsensusRound,
+		ConsensusRound:                  currentConsensusRound,
 		LastHeightConsensusRoundChanged: lastHeightConsensusRoundChanged,
 
 		QrnSet:     state.QrnSet,
@@ -720,7 +725,7 @@ func updateState(
 		LastHeightNextVrfChanged: state.LastHeightNextVrfChanged,
 
 		SettingSteeringMember: state.SettingSteeringMember,
-		LastHeightSettingSteeringMemberChanged: lastHeightSettingSteeringMemberChanged,
+		LastHeightSettingSteeringMemberChanged: state.LastHeightSettingSteeringMemberChanged,
 
 		IsSetSteeringMember:   state.IsSetSteeringMember,
 	}, nil
