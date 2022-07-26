@@ -502,9 +502,11 @@ FOR_LOOP:
 				// get the hash without persisting the state
 				var err error
 
-				fmt.Println("sync - sync setting height", firstState.SettingSteeringMember.Height)
-				fmt.Println("sync - sync setting", firstState.SettingSteeringMember.SteeringMemberAddresses)
-				fmt.Println("sync - sync coordinatorPubKey", firstState.SettingSteeringMember.CoordinatorPubKey.Address())
+				if firstState.SettingSteeringMember != nil {
+					fmt.Println("sync - sync setting height", firstState.SettingSteeringMember.Height)
+					fmt.Println("sync - sync setting", firstState.SettingSteeringMember.SteeringMemberAddresses)
+					fmt.Println("sync - sync coordinatorPubKey", firstState.SettingSteeringMember.CoordinatorPubKey.Address())
+				}
 
 				state.SettingSteeringMember = firstState.SettingSteeringMember.Copy()
 				state.NextQrnSet = firstState.NextQrnSet.Copy()
