@@ -109,7 +109,6 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 		}
 	
 		if vrfSet.Height != vrf.Height {
-			fmt.Println("stompesi - Invalid vrf height", "vrfSet.Height", vrfSet.Height, "vrfHeight", vrf.Height, vrf.SteeringMemberCandidatePubKey.Address(), vrf)
 			return fmt.Errorf("Invalid vrf height")
 		}
 	}
@@ -143,7 +142,6 @@ func (vrfSet *VrfSet) Hash() []byte {
 	vrfBytesArray := make([][]byte, len(vrfSet.Vrfs))
 	for i, vrf := range vrfSet.Vrfs {
 		if vrf != nil && vrf.Proof != nil {
-			// fmt.Println("stompesi - vrf hash", vrf)
 			vrfBytesArray[i] = vrf.GetVrfBytes()
 		}
 	}
@@ -282,7 +280,6 @@ func (vrfSet *VrfSet) GetSteeringMemberAddresses() *SettingSteeringMember {
 			}
 		}
 
-		fmt.Println("stompesi - settingSteeringMember", settingSteeringMember)
 		return settingSteeringMember
 	}
 	return nil

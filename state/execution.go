@@ -247,8 +247,6 @@ func (blockExec *BlockExecutor) Commit(
 
 	// Commit block, get hash back
 	res, err := blockExec.proxyApp.CommitSync()
-	fmt.Println("stompesi-apphash4", res.Data)
-	
 	
 	if err != nil {
 		blockExec.logger.Error("client error during proxyAppConn.CommitSync", "err", err)
@@ -524,13 +522,11 @@ func updateState(
 		for _, validator := range state.Validators.Validators {
 			index, _ := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(validator.Address)
 			if index != -1 {
-				fmt.Println("add steering member")
 				validators = append(validators, validator.Copy())
 			}
 
 			index, _ = standingMemberSet.GetStandingMemberByAddress(validator.Address)
 			if index != -1 {
-				fmt.Println("add steering member")
 				validators = append(validators, validator.Copy())
 			}
 		}
@@ -571,13 +567,6 @@ func updateState(
 	lastHeightQrnChanged := state.LastHeightQrnChanged
 	lastHeightVrfChanged := state.LastHeightVrfChanged
 	if currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period) - 1 == header.Height {
-		fmt.Println("stompesi - change view", header.Height)
-		fmt.Println("state.QrnSet.Height", state.QrnSet.Height)
-		fmt.Println("state.NextQrnSet.Height", state.NextQrnSet.Height)
-
-		fmt.Println("state.VrfSet.Height", state.VrfSet.Height)
-		fmt.Println("state.NextVrfSet.Height", state.NextVrfSet.Height)
-
 		currentConsensusRound.ConsensusStartBlockHeight = header.Height + 1
 		nextConsensusStartBlockHeight := currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period)
 		
@@ -597,9 +586,6 @@ func updateState(
 		state.LastHeightNextVrfChanged = header.Height + 1
 
 		lastHeightConsensusRoundChanged = header.Height + 1
-
-		fmt.Println("state.QrnSet.Height2", state.QrnSet.Height)
-		fmt.Println("state.VrfSet.Height2", state.VrfSet.Height)
 	}
 
 	if currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period) - 2 == header.Height {
@@ -651,37 +637,9 @@ func updateState(
 		state.LastHeightSettingSteeringMemberChanged = header.Height + 1
 	}
 
-	fmt.Println("-------------------------------------")
-	fmt.Println("header.Height", header.Height)
-	fmt.Println("currentConsensusRound", currentConsensusRound)
-	fmt.Println("")
-	fmt.Println("-------------------------------------")
 	standingMemberSet.SetCoordinator(state.QrnSet)
 	_, proposer := nValSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
 	nValSet.Proposer = proposer
-
-	fmt.Println("-------------------------------------")
-	fmt.Println("height", header.Height)
-	fmt.Println("standingMemberSet", len(standingMemberSet.StandingMembers))
-	fmt.Println("steeringMemberCandidateSet", len(steeringMemberCandidateSet.SteeringMemberCandidates))
-	fmt.Println("qrnSet", len(state.QrnSet.Qrns))
-	fmt.Println("nextQrnSet", len(state.NextQrnSet.Qrns))
-
-	fmt.Println("state.QrnSet.Qrns[0]", state.QrnSet.Qrns[0].Value)
-	fmt.Println("state.NextQrnSet.Qrns[0]", state.NextQrnSet.Qrns[0].Value)
-
-	fmt.Println("vrfSet", len(state.VrfSet.Vrfs))
-	fmt.Println("nextVrfSet", len(state.NextVrfSet.Vrfs))
-	
-	fmt.Println("state.VrfSet.Vrfs[0]", state.VrfSet.Vrfs[0].Value)
-	fmt.Println("state.NextVrfSet.Vrfs[0]", state.NextVrfSet.Vrfs[0].Value)
-
-	fmt.Println("nextValidators", len(nValSet.Validators))
-	fmt.Println("Validators", len(state.NextValidators.Validators))
-	fmt.Println("LastValidators", len(state.Validators.Validators))
-
-	fmt.Println("SettingSteeringMember", state.SettingSteeringMember)
-	fmt.Println("-------------------------------------")
 
 	// NOTE: the AppHash has not been populated.
 	// It will be filled on state.Save.
@@ -821,7 +779,6 @@ func ExecCommitBlock(
 		logger.Error("client error during proxyAppConn.CommitSync", "err", res)
 		return nil, err
 	}
-	fmt.Println("stompesi-apphash6", res.Data)
 	// ResponseCommit has no error or log, just data
 	return res.Data, nil
 }

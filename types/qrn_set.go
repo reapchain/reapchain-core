@@ -155,7 +155,6 @@ func (qrnSet *QrnSet) Hash() []byte {
 	qrnBytesArray := make([][]byte, len(qrnSet.Qrns))
 	for i, qrn := range qrnSet.Qrns {
 		if qrn != nil && qrn.Signature != nil {
-			// fmt.Println("stompesi - qrn hash", qrn)
 			qrnBytesArray[i] = qrn.GetQrnBytes()
 		}
 	}

@@ -378,7 +378,6 @@ func (h *Handshaker) ReplayBlocks(
 			// the state. We don't set appHash since we don't want the genesis doc app hash
 			// recorded in the genesis block. We should probably just remove GenesisDoc.AppHash.
 			if len(res.AppHash) > 0 {
-				fmt.Println("stompesi-apphash1")
 				state.AppHash = res.AppHash
 			}
 			// If the app returned validators or consensus params, update the state.

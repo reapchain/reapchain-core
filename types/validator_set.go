@@ -353,7 +353,6 @@ func (vals *ValidatorSet) findProposer() *Validator {
 func (vals *ValidatorSet) Hash() []byte {
 	bzs := make([][]byte, len(vals.Validators))
 	for i, val := range vals.Validators {
-		fmt.Println("stompesi - validator", val)
 		bzs[i] = val.Bytes()
 	}
 	return merkle.HashFromByteSlices(bzs)

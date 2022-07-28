@@ -1450,32 +1450,6 @@ func (cs *State) enterPrecommit(height int64, round int32) {
 		logger.Debug("precommit step; +2/3 prevoted proposal block; locking", "hash", blockID.Hash)
 
 		// Validate the block.
-
-		fmt.Println("-----------------2222222222--------------------")
-		fmt.Println("ProposalBlock.Height", cs.ProposalBlock.Height)
-
-		fmt.Println("standingMemberSet", len(cs.state.StandingMemberSet.StandingMembers))
-		fmt.Println("standingMemberSet", len(cs.state.StandingMemberSet.StandingMembers))
-		fmt.Println("steeringMemberCandidateSet", len(cs.state.SteeringMemberCandidateSet.SteeringMemberCandidates))
-		fmt.Println("qrnSet", len(cs.state.QrnSet.Qrns))
-		fmt.Println("nextQrnSet", len(cs.state.NextQrnSet.Qrns))
-
-		fmt.Println("state.QrnSet.Qrns[0]", cs.state.QrnSet.Qrns[0].Value)
-		fmt.Println("state.NextQrnSet.Qrns[0]", cs.state.NextQrnSet.Qrns[0].Value)
-
-		fmt.Println("vrfSet", len(cs.state.VrfSet.Vrfs))
-		fmt.Println("nextVrfSet", len(cs.state.NextVrfSet.Vrfs))
-		
-		fmt.Println("state.VrfSet.Vrfs[0]", cs.state.VrfSet.Vrfs[0].Value)
-		fmt.Println("state.NextVrfSet.Vrfs[0]", cs.state.NextVrfSet.Vrfs[0].Value)
-
-		fmt.Println("nextValidators", len(cs.state.Validators.Validators))
-		fmt.Println("Validators", len(cs.state.NextValidators.Validators))
-		fmt.Println("LastValidators", len(cs.state.Validators.Validators))
-
-		fmt.Println("SettingSteeringMember", cs.state.SettingSteeringMember)
-		fmt.Println("-------------------------------------")
-		
 		if err := cs.blockExec.ValidateBlock(cs.state, cs.ProposalBlock); err != nil {
 			panic(fmt.Sprintf("precommit step; +2/3 prevoted for an invalid block: %v", err))
 		}
