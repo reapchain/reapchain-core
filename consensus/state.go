@@ -1761,7 +1761,7 @@ func (cs *State) finalizeCommit(height int64) {
 		logger.Error("failed to get private validator pubkey", "err", err)
 	}
 
-	if cs.state.ConsensusRound.ConsensusStartBlockHeight-1 == height {
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight-1 == height || 1 == height {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
 			if cs.state.NextQrnSet.HasAddress(address) == true {

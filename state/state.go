@@ -556,7 +556,7 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 			qrns[i] = qrn.Copy()
 		}
 		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, qrns)
-		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), standingMemberSet, qrns)
+		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), standingMemberSet, nil)
 	}
 
 	var vrfSet, nextVrfSet *types.VrfSet

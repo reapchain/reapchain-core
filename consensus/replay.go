@@ -429,7 +429,7 @@ func (h *Handshaker) ReplayBlocks(
 					return nil, err
 				}
 				state.QrnSet = types.NewQrnSet(h.genDoc.InitialHeight, state.StandingMemberSet, qrns)
-				state.NextQrnSet = types.NewQrnSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.StandingMemberSet, qrns).Copy()
+				state.NextQrnSet = types.NewQrnSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.StandingMemberSet, nil).Copy()
 
 				state.StandingMemberSet.SetCoordinator(state.QrnSet)
 				_, proposer := state.Validators.GetByAddress(state.StandingMemberSet.Coordinator.PubKey.Address())
