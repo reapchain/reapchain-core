@@ -16,12 +16,12 @@ const (
 	// after a block has been committed.
 	// These are also used by the tx indexer for async indexing.
 	// All of this data can be fetched through the rpc.
-	EventNewBlock                 = "NewBlock"
-	EventNewBlockHeader           = "NewBlockHeader"
-	EventNewEvidence              = "NewEvidence"
-	EventTx                       = "Tx"
-	EventSteeringMemberCandidateSetUpdates      = "SteeringMemberCandidateSetUpdates"
-	EventStandingMemberSetUpdates = "StandingMemberSetUpdates"
+	EventNewBlock                          = "NewBlock"
+	EventNewBlockHeader                    = "NewBlockHeader"
+	EventNewEvidence                       = "NewEvidence"
+	EventTx                                = "Tx"
+	EventSteeringMemberCandidateSetUpdates = "SteeringMemberCandidateSetUpdates"
+	EventStandingMemberSetUpdates          = "StandingMemberSetUpdates"
 
 	// Internal consensus events.
 	// These are used for testing the consensus state machine.
@@ -50,7 +50,7 @@ func init() {
 	tmjson.RegisterType(EventDataNewBlock{}, "reapchain/event/NewBlock")
 	tmjson.RegisterType(EventDataNewBlockHeader{}, "reapchain/event/NewBlockHeader")
 	tmjson.RegisterType(EventDataNewEvidence{}, "reapchain/event/NewEvidence")
-	tmjson.RegisterType(EventDataTx{}, "reapchain/event/Tx")
+	tmjson.RegisterType(EventDataTx{}, "tendermint/event/Tx")
 	tmjson.RegisterType(EventDataRoundState{}, "reapchain/event/RoundState")
 	tmjson.RegisterType(EventDataNewRound{}, "reapchain/event/NewRound")
 	tmjson.RegisterType(EventDataCompleteProposal{}, "reapchain/event/CompleteProposal")
@@ -149,23 +149,23 @@ const (
 )
 
 var (
-	EventQueryCompleteProposal    = QueryForEvent(EventCompleteProposal)
-	EventQueryLock                = QueryForEvent(EventLock)
-	EventQueryNewBlock            = QueryForEvent(EventNewBlock)
-	EventQueryNewBlockHeader      = QueryForEvent(EventNewBlockHeader)
-	EventQueryNewEvidence         = QueryForEvent(EventNewEvidence)
-	EventQueryNewRound            = QueryForEvent(EventNewRound)
-	EventQueryNewRoundStep        = QueryForEvent(EventNewRoundStep)
-	EventQueryPolka               = QueryForEvent(EventPolka)
-	EventQueryRelock              = QueryForEvent(EventRelock)
-	EventQueryTimeoutPropose      = QueryForEvent(EventTimeoutPropose)
-	EventQueryTimeoutWait         = QueryForEvent(EventTimeoutWait)
-	EventQueryTx                  = QueryForEvent(EventTx)
-	EventQueryUnlock              = QueryForEvent(EventUnlock)
+	EventQueryCompleteProposal                  = QueryForEvent(EventCompleteProposal)
+	EventQueryLock                              = QueryForEvent(EventLock)
+	EventQueryNewBlock                          = QueryForEvent(EventNewBlock)
+	EventQueryNewBlockHeader                    = QueryForEvent(EventNewBlockHeader)
+	EventQueryNewEvidence                       = QueryForEvent(EventNewEvidence)
+	EventQueryNewRound                          = QueryForEvent(EventNewRound)
+	EventQueryNewRoundStep                      = QueryForEvent(EventNewRoundStep)
+	EventQueryPolka                             = QueryForEvent(EventPolka)
+	EventQueryRelock                            = QueryForEvent(EventRelock)
+	EventQueryTimeoutPropose                    = QueryForEvent(EventTimeoutPropose)
+	EventQueryTimeoutWait                       = QueryForEvent(EventTimeoutWait)
+	EventQueryTx                                = QueryForEvent(EventTx)
+	EventQueryUnlock                            = QueryForEvent(EventUnlock)
 	EventQuerySteeringMemberCandidateSetUpdates = QueryForEvent(EventSteeringMemberCandidateSetUpdates)
-	EventQueryStandingMemberSetUpdates = QueryForEvent(EventStandingMemberSetUpdates)
-	EventQueryValidBlock          = QueryForEvent(EventValidBlock)
-	EventQueryVote                = QueryForEvent(EventVote)
+	EventQueryStandingMemberSetUpdates          = QueryForEvent(EventStandingMemberSetUpdates)
+	EventQueryValidBlock                        = QueryForEvent(EventValidBlock)
+	EventQueryVote                              = QueryForEvent(EventVote)
 )
 
 func EventQueryTxFor(tx Tx) tmpubsub.Query {
