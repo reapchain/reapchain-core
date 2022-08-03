@@ -215,7 +215,12 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	// Events are fired after everything else.
 	// NOTE: if we crash between Commit and Save, events wont be fired during replay
-	fireEvents(blockExec.logger, blockExec.eventBus, block, abciResponses, standingMemberUpdates, steeringMemberCandidateUpdates)
+	fireEvents(blockExec.logger, blockExec.eventBus, block, abciResponses, standingMemberUpdates, steeringMemberCandidateUpdates, state.ConsensusRound, 
+	state.VrfSet, 
+	state.NextVrfSet, 
+	state.QrnSet, 
+	state.NextQrnSet, 
+	state.SettingSteeringMember)
 
 
 	// 요기...!@
@@ -699,11 +704,33 @@ func fireEvents(
 	abciResponses *tmstate.ABCIResponses,
 	standingMemberUpdates []*types.StandingMember,
 	seeringMemberCandidateUpdates []*types.SteeringMemberCandidate,
+	consensusRoundProto tmproto.ConsensusRound,
+	vrfSet *types.VrfSet,
+	nextVrfSet *types.VrfSet,
+	qrnSet *types.QrnSet,
+	nextQrnSet *types.QrnSet,
+	settingSteeringMember *types.SettingSteeringMember,
 ) {
+	vrfSetProto, _ := vrfSet.ToProto();
+	nextVrfSetProto, _ := nextVrfSet.ToProto();
+	qrnSetProto, _ := qrnSet.ToProto();
+	nextQrnSetProto, _ := nextQrnSet.ToProto();
+	settingSteeringMemberProto := settingSteeringMember.ToProto();
+
+	consensus_info := &abci.ConsensusInfo{
+		ConsensusRound:        &consensusRoundProto,
+		VrfSet:                vrfSetProto,
+		NextVrfSet:            nextVrfSetProto,
+		QrnSet:                qrnSetProto,
+		NextQrnSet:            nextQrnSetProto,
+		SettingSteeringMember: settingSteeringMemberProto,
+	};
+
 	if err := eventBus.PublishEventNewBlock(types.EventDataNewBlock{
 		Block:            block,
 		ResultBeginBlock: *abciResponses.BeginBlock,
 		ResultEndBlock:   *abciResponses.EndBlock,
+		ConsensusInfo:   	*consensus_info,
 	}); err != nil {
 		logger.Error("failed publishing new block", "err", err)
 	}

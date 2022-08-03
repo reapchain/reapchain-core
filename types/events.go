@@ -68,6 +68,7 @@ type EventDataNewBlock struct {
 
 	ResultBeginBlock abci.ResponseBeginBlock `json:"result_begin_block"`
 	ResultEndBlock   abci.ResponseEndBlock   `json:"result_end_block"`
+	ConsensusInfo 	 abci.ConsensusInfo 		 `json:"consensus_info"`
 }
 
 type EventDataNewBlockHeader struct {
