@@ -12,6 +12,13 @@ import "reapchain-core/types/params.proto";
 import "google/protobuf/timestamp.proto";
 import "gogoproto/gogo.proto";
 
+import "reapchain-core/types/vrf.proto";
+import "reapchain-core/types/qrn.proto";
+import "reapchain-core/types/setting_steering_member.proto";
+import "reapchain-core/types/consensus_round.proto";
+
+  
+
 // This file is copied from http://github.com/reapchain-core/abci
 // NOTE: When using custom types, mind the warnings.
 // https://github.com/gogo/protobuf/blob/master/custom_types.md#warnings-and-issues
@@ -254,6 +261,16 @@ message ResponseEndBlock {
       [(gogoproto.nullable) = false];
 }
 
+message ConsensusInfo {
+  reapchain.types.ConsensusRound consensus_round = 1;
+  
+  reapchain.types.VrfSet vrf_set = 2;
+  reapchain.types.VrfSet next_vrf_set = 3;
+
+  reapchain.types.QrnSet qrn_set = 4;
+  reapchain.types.QrnSet next_qrn_set = 5;
+  reapchain.types.SettingSteeringMember setting_steering_member     = 6;
+}
 message ResponseCommit {
   // reserve 1
   bytes data          = 2;
