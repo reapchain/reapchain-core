@@ -14,7 +14,7 @@ import (
 type StandingMember struct {
 	PubKey  crypto.PubKey `json:"pub_key"`
 	Address Address       `json:"address"`
-	VotingPower int64         `json:"voting_power"`
+	VotingPower int64     `json:"voting_power"`
 }
 
 func NewStandingMember(pubKey crypto.PubKey, votingPower int64) *StandingMember {
@@ -70,6 +70,7 @@ func StandingMemberFromProto(standingMemberProto *tmproto.StandingMember) (*Stan
 	standingMember := new(StandingMember)
 	standingMember.Address = standingMemberProto.GetAddress()
 	standingMember.PubKey = pubKey
+	standingMember.VotingPower = standingMemberProto.GetVotingPower()
 
 	return standingMember, nil
 }
@@ -87,6 +88,7 @@ func (standingMember *StandingMember) ToProto() (*tmproto.StandingMember, error)
 	standingMemberProto := tmproto.StandingMember{
 		Address: standingMember.Address,
 		PubKey:  pubKeyProto,
+		VotingPower:      standingMember.VotingPower,
 	}
 
 	return &standingMemberProto, nil

@@ -586,6 +586,10 @@ func (vals *ValidatorSet) applyRemovals(deletes []*Validator) {
 	vals.Validators = merged[:i]
 }
 
+func (vals *ValidatorSet) UpdateTotalVotingPower() {
+	vals.updateTotalVotingPower()
+}
+
 // Main function used by UpdateWithChangeSet() and NewValidatorSet().
 // If 'allowDeletes' is false then delete operations (identified by validators with voting power 0)
 // are not allowed and will trigger an error if present in 'changes'.

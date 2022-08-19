@@ -318,14 +318,14 @@ func (h *Handshaker) ReplayBlocks(
 
 		standingMembers := make([]*types.StandingMember, len(h.genDoc.StandingMembers))
 		for i, val := range h.genDoc.StandingMembers {
-			standingMembers[i] = types.NewStandingMember(val.PubKey, 10)
+			standingMembers[i] = types.NewStandingMember(val.PubKey, val.Power)
 		}
 		standingMemberSet := types.NewStandingMemberSet(standingMembers)
 		standingMemberUpdates := types.TM2PB.StandingMemberSetUpdate(standingMemberSet)
 
 		steeringMemberCandidates := make([]*types.SteeringMemberCandidate, len(h.genDoc.SteeringMemberCandidates))
 		for i, val := range h.genDoc.SteeringMemberCandidates {
-			steeringMemberCandidates[i] = types.NewSteeringMemberCandidate(val.PubKey, 10)
+			steeringMemberCandidates[i] = types.NewSteeringMemberCandidate(val.PubKey, val.Power)
 		}
 		steeringMemberCandidateSet := types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
 		steeringMemberCandidateUpdates := types.TM2PB.SteeringMemberCandidateSetUpdate(steeringMemberCandidateSet)

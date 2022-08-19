@@ -530,7 +530,7 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 	} else {
 		standingMembers := make([]*types.StandingMember, len(genDoc.StandingMembers))
 		for i, standingMember := range genDoc.StandingMembers {
-			standingMembers[i] = types.NewStandingMember(standingMember.PubKey, 10)
+			standingMembers[i] = types.NewStandingMember(standingMember.PubKey, standingMember.Power)
 		}
 		standingMemberSet = types.NewStandingMemberSet(standingMembers)
 	}
@@ -541,7 +541,7 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 	} else {
 		steeringMemberCandidates := make([]*types.SteeringMemberCandidate, len(genDoc.SteeringMemberCandidates))
 		for i, steeringMemberCandidate := range genDoc.SteeringMemberCandidates {
-			steeringMemberCandidates[i] = types.NewSteeringMemberCandidate(steeringMemberCandidate.PubKey, 10)
+			steeringMemberCandidates[i] = types.NewSteeringMemberCandidate(steeringMemberCandidate.PubKey, steeringMemberCandidate.Power)
 		}
 		steeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
 	}

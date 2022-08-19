@@ -71,6 +71,7 @@ func (steeringMemberCandidate *SteeringMemberCandidate) ToProto() (*tmproto.Stee
 	steeringMemberCandidateProto := tmproto.SteeringMemberCandidate{
 		Address: steeringMemberCandidate.Address,
 		PubKey:  pubKeyProto,
+		VotingPower:      steeringMemberCandidate.VotingPower,
 	}
 
 	return &steeringMemberCandidateProto, nil
@@ -102,6 +103,7 @@ func SteeringMemberCandidateFromProto(steeringMemberCandidateProto *tmproto.Stee
 	steeringMemberCandidate := new(SteeringMemberCandidate)
 	steeringMemberCandidate.Address = steeringMemberCandidateProto.GetAddress()
 	steeringMemberCandidate.PubKey = pubKey
+	steeringMemberCandidate.VotingPower = steeringMemberCandidateProto.GetVotingPower()
 
 	return steeringMemberCandidate, nil
 }

@@ -9,6 +9,7 @@ import "reapchain-core/crypto/keys.proto";
 message SteeringMemberCandidate {
   reapchain.crypto.PublicKey pub_key  = 1 [(gogoproto.nullable) = false];
   bytes address                       = 2;
+  int64                       voting_power      = 3;
 }
 
 message SteeringMemberCandidateSet {

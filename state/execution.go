@@ -603,7 +603,7 @@ func updateState(
 		validators := make([]*types.Validator, 0, validatorSize)
 
 		for _, standingMember := range standingMemberSet.StandingMembers {
-			validators = append(validators, types.NewValidator(standingMember.PubKey, 10, "standing"))
+			validators = append(validators, types.NewValidator(standingMember.PubKey, standingMember.VotingPower, "standing"))
 		}
 
 		if state.SettingSteeringMember != nil {
@@ -611,7 +611,7 @@ func updateState(
 
 				index, currentSteeringMemberCandidate := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(steeringMemberAddress)
 				if index != -1 {
-					validators = append(validators, types.NewValidator(currentSteeringMemberCandidate.PubKey, 10, "steering"))
+					validators = append(validators, types.NewValidator(currentSteeringMemberCandidate.PubKey, currentSteeringMemberCandidate.VotingPower, "steering"))
 				}
 
 				if len(validators) == MAXIMUM_VALIDATORS {
@@ -645,6 +645,7 @@ func updateState(
 	standingMemberSet.SetCoordinator(state.QrnSet)
 	_, proposer := nValSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
 	nValSet.Proposer = proposer
+	nValSet.UpdateTotalVotingPower()
 
 	// NOTE: the AppHash has not been populated.
 	// It will be filled on state.Save.

@@ -89,6 +89,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 			genDoc.StandingMembers = []types.GenesisMember{{
 				Address: pubKey.Address(),
 				PubKey:  pubKey,
+				Power: 10,
 			}}
 			genDoc.SteeringMemberCandidates = []types.GenesisMember{}
 
@@ -111,6 +112,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 			genDoc.SteeringMemberCandidates = []types.GenesisMember{{
 				Address: pubKey.Address(),
 				PubKey:  pubKey,
+				Power: 10,
 			}}
 			genDoc.Qrns = []types.Qrn{}
 		}

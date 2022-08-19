@@ -31,7 +31,7 @@ const (
 type GenesisValidator struct {
 	Address Address       `json:"address"`
 	PubKey  crypto.PubKey `json:"pub_key"`
-	Type  string 					`json:"type"`
+	Type  	string 				`json:"type"`
 	Power   int64         `json:"power"`
 	Name    string        `json:"name"`
 }
@@ -41,6 +41,7 @@ type GenesisMember struct {
 	Address Address       `json:"address"`
 	PubKey  crypto.PubKey `json:"pub_key"`
 	Name    string        `json:"name"`
+	Power   int64         `json:"power"`
 }
 
 // GenesisDoc defines the initial conditions for a reapchain blockchain, in particular its validator set.
@@ -112,7 +113,12 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 		}
 	}
 
+
 	for i, standingMember := range genDoc.StandingMembers {
+
+		if standingMember.Power == 0 {
+			return fmt.Errorf("the genesis file cannot contain standingMembers with no voting power: %v", standingMember)
+		}
 		if len(standingMember.Address) > 0 && !bytes.Equal(standingMember.PubKey.Address(), standingMember.Address) {
 			return fmt.Errorf("incorrect address for validator %v in the genesis file, should be %v", standingMember, standingMember.PubKey.Address())
 		}
