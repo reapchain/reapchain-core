@@ -388,6 +388,21 @@ func (h *Handshaker) ReplayBlocks(
 				}
 				state.Validators = types.NewValidatorSet(vals)
 				state.NextValidators = types.NewValidatorSet(vals).Copy()
+
+				standingMembers, err := types.PB2TM.StandingMemberUpdates(res.Validators)
+				if err != nil {
+					return nil, err
+				}
+
+				state.StandingMemberSet = types.NewStandingMemberSet(standingMembers)
+
+				steeringMemberCandidates, err := types.PB2TM.SteeringMemberCandidateUpdates(res.Validators)
+
+				if err != nil {
+					return nil, err
+				}
+
+				state.SteeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
 			} else if len(h.genDoc.Validators) == 0 {
 				// If validator set is not set in genesis and still empty after InitChain, exit.
 				return nil, fmt.Errorf("validator set is nil in genesis and still empty after InitChain")
