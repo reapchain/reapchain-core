@@ -23,7 +23,7 @@ import (
 // then commits and updates the mempool atomically, then saves state.
 
 const MAXIMUM_STEERING_MEMBER_CANDIDATES = 30
-const MAXIMUM_VALIDATORS = 29
+const MAXIMUM_STEERING_MEMBERS = 15
 
 // BlockExecutor provides the context and accessories for properly executing a block.
 type BlockExecutor struct {
@@ -607,14 +607,16 @@ func updateState(
 		}
 
 		if state.SettingSteeringMember != nil {
+			currentNumberofSteeringMembers := 0
 			for _, steeringMemberAddress := range state.SettingSteeringMember.SteeringMemberAddresses {
 
 				index, currentSteeringMemberCandidate := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(steeringMemberAddress)
 				if index != -1 {
 					validators = append(validators, types.NewValidator(currentSteeringMemberCandidate.PubKey, currentSteeringMemberCandidate.VotingPower, "steering"))
+					currentNumberofSteeringMembers++
 				}
 
-				if len(validators) == MAXIMUM_VALIDATORS {
+				if currentNumberofSteeringMembers == MAXIMUM_STEERING_MEMBERS {
 					break
 				}
 			}
