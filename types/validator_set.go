@@ -325,6 +325,12 @@ func (vals *ValidatorSet) TotalVotingPower() int64 {
 	return vals.totalVotingPower
 }
 
+// TotalVotingPower returns the sum of the voting powers of all validators.
+// It recomputes the total voting power if required.
+func (vals *ValidatorSet) GetTotalVotingCount() int64 {
+	return int64(len(vals.Validators))
+}
+
 // GetProposer returns the current proposer. If the validator set is empty, nil
 // is returned.
 func (vals *ValidatorSet) GetProposer() (proposer *Validator) {
