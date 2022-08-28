@@ -524,15 +524,21 @@ func updateState(
 
 		validators := make([]*types.Validator, 0, len(state.Validators.Validators))
 
+		currentNumberofSteeringMembers := 0
 		for _, validator := range state.Validators.Validators {
-			index, _ := steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(validator.Address)
+			index, _ := standingMemberSet.GetStandingMemberByAddress(validator.Address)
 			if index != -1 {
 				validators = append(validators, validator.Copy())
+				continue
 			}
 
-			index, _ = standingMemberSet.GetStandingMemberByAddress(validator.Address)
+			index, _ = steeringMemberCandidateSet.GetSteeringMemberCandidateByAddress(validator.Address)
 			if index != -1 {
+				if currentNumberofSteeringMembers == MAXIMUM_STEERING_MEMBERS {
+					break
+				}
 				validators = append(validators, validator.Copy())
+				currentNumberofSteeringMembers++
 			}
 		}
 		
