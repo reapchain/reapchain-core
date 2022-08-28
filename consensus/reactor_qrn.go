@@ -17,17 +17,17 @@ OUTER_LOOP:
 			return
 		}
 		rs := conR.conS.GetRoundState()
-		// prs := ps.GetRoundState()
+		prs := ps.GetRoundState()
 		
 		if rs.LockedBlock != nil {
-			// consensusStartBlockHeight := rs.LockedBlock.ConsensusRound.ConsensusStartBlockHeight
-			// roundPeriod := rs.LockedBlock.ConsensusRound.Period
+			consensusStartBlockHeight := rs.LockedBlock.ConsensusRound.ConsensusStartBlockHeight
+			roundPeriod := rs.LockedBlock.ConsensusRound.Period
 
-			// if consensusStartBlockHeight <= prs.Height && prs.Height < consensusStartBlockHeight + int64(roundPeriod) {
+			if consensusStartBlockHeight <= prs.Height && prs.Height < consensusStartBlockHeight + int64(roundPeriod) {
 				if ps.PickSendQrn(conR.conS.state.NextQrnSet) {
 					continue OUTER_LOOP
 				}
-			// }
+			}
 		}
 
 		time.Sleep(conR.conS.config.PeerGossipSleepDuration)

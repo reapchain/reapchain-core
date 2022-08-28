@@ -109,7 +109,7 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 		}
 	
 		if vrfSet.Height != vrf.Height {
-			return fmt.Errorf("Invalid vrf height")
+			return fmt.Errorf("Invalid vrf height vrfSet height: %v / vrf height: %v", vrfSet.Height, vrf.Height)
 		}
 	}
 

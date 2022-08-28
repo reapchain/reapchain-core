@@ -2010,9 +2010,6 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 
 		cs.ProposalBlock = block
 
-		// dt := time.Now()
-		// fmt.Println("Received complete proposal block - time is: ", dt.String())
-
 		// NOTE: it's possible to receive complete proposal blocks for future rounds without having the proposal
 		cs.Logger.Info("Received complete proposal block", "height", cs.ProposalBlock.Height, "hash", cs.ProposalBlock.Hash())
 

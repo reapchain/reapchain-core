@@ -53,6 +53,11 @@ func (ps *PeerState) PickVrfToSend(vrfSet types.VrfSetReader) (vrf *types.Vrf, o
 
 	if index, ok := vrfSet.BitArray().Sub(psVrfBitArray).PickRandom(); ok {
 		vrf := vrfSet.GetByIndex(int32(index))
+		if vrf == nil {
+			return nil, false
+		} else if vrf.Value == nil {
+			return nil, false
+		}
 		return vrf, true
 	}
 	return nil, false

@@ -52,6 +52,11 @@ func (ps *PeerState) PickQrnToSend(qrnSet types.QrnSetReader) (qrn *types.Qrn, o
 
 	if index, ok := qrnSet.BitArray().Sub(psQrnBitArray).PickRandom(); ok {
 		qrn := qrnSet.GetByIndex(int32(index))
+		if qrn == nil {
+			return nil, false
+		} else if qrn.Value == 0 {
+			return nil, false
+		}
 		return qrn, true
 	}
 	return nil, false
