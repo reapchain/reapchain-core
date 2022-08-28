@@ -19,38 +19,6 @@ func validateBlock(state State, block *types.Block) error {
 		return err
 	}
 
-	// validate standing members
-	if !bytes.Equal(block.StandingMembersHash, state.StandingMemberSet.Hash()) {
-		return fmt.Errorf("wrong Block.Header.StandingMembersHash.  Expected %X, got %v",
-			state.StandingMemberSet.Hash(),
-			block.StandingMembersHash,
-		)
-	}
-
-	// validate steering member candidates
-	if !bytes.Equal(block.SteeringMemberCandidatesHash, state.SteeringMemberCandidateSet.Hash()) {
-		return fmt.Errorf("wrong Block.Header.SteeringMemberCandidatesHash.  Expected %X, got %v",
-			state.SteeringMemberCandidateSet.Hash(),
-			block.SteeringMemberCandidatesHash,
-		)
-	}
-
-	// validate qrns
-	if !bytes.Equal(block.QrnsHash, state.QrnSet.Hash()) {
-		return fmt.Errorf("wrong Block.Header.QrnsHash.  Expected %X, got %v",
-			state.QrnSet.Hash(),
-			block.QrnsHash,
-		)
-	}
-
-	// validate vrfs
-	if !bytes.Equal(block.VrfsHash, state.VrfSet.Hash()) {
-		return fmt.Errorf("wrong Block.Header.VrfsHash.  Expected %X, got %v",
-			state.VrfSet.Hash(),
-			block.VrfsHash,
-		)
-	}
-
 	// Validate basic info.
 	if block.Version.App != state.Version.Consensus.App ||
 		block.Version.Block != state.Version.Consensus.Block {
@@ -109,7 +77,6 @@ func validateBlock(state State, block *types.Block) error {
 			block.ValidatorsHash,
 		)
 	}
-
 	if !bytes.Equal(block.NextValidatorsHash, state.NextValidators.Hash()) {
 		return fmt.Errorf("wrong Block.Header.NextValidatorsHash.  Expected %X, got %v",
 			state.NextValidators.Hash(),
@@ -142,6 +109,27 @@ func validateBlock(state State, block *types.Block) error {
 	if !state.Validators.HasAddress(block.ProposerAddress) {
 		return fmt.Errorf("block.Header.ProposerAddress %X is not a validator",
 			block.ProposerAddress,
+		)
+	}
+	if !state.StandingMemberSet.HasAddress(block.ProposerAddress) {
+		return fmt.Errorf("block.Header.ProposerAddress %X is not a standing member",
+			block.ProposerAddress,
+		)
+	}
+
+	// validate standing members
+	if !bytes.Equal(block.StandingMembersHash, state.StandingMemberSet.Hash()) {
+		return fmt.Errorf("wrong Block.Header.StandingMembersHash.  Expected %X, got %v",
+			state.StandingMemberSet.Hash(),
+			block.StandingMembersHash,
+		)
+	}
+
+	// validate steering member candidates
+	if !bytes.Equal(block.SteeringMemberCandidatesHash, state.SteeringMemberCandidateSet.Hash()) {
+		return fmt.Errorf("wrong Block.Header.SteeringMemberCandidatesHash.  Expected %X, got %v",
+			state.SteeringMemberCandidateSet.Hash(),
+			block.SteeringMemberCandidatesHash,
 		)
 	}
 
