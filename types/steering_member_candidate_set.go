@@ -199,16 +199,16 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyUpdates(updat
 	existing := steeringMemberCandidateSet.SteeringMemberCandidates
 	sort.Sort(SortedSteeringMemberCandidates(existing))
 
-	merged := make([]*SteeringMemberCandidate, len(existing)+len(updates))
+	merged := make([]*SteeringMemberCandidate, 0, len(existing)+len(updates))
 	i := 0
 
 	for len(existing) > 0 && len(updates) > 0 {
 		if bytes.Compare(existing[0].Address, updates[0].Address) < 0 { // unchanged validator
-			merged[i] = existing[0]
+			merged = append(merged, existing[0])
 			existing = existing[1:]
 		} else {
 			// Apply add or update.
-			merged[i] = updates[0]
+			merged = append(merged, updates[0])
 			if bytes.Equal(existing[0].Address, updates[0].Address) {
 				// SteeringMemberCandidate is present in both, advance existing.
 				existing = existing[1:]
@@ -220,12 +220,12 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyUpdates(updat
 
 	// Add the elements which are left.
 	for j := 0; j < len(existing); j++ {
-		merged[i] = existing[j]
+		merged = append(merged, existing[j])
 		i++
 	}
 	// OR add updates which are left.
 	for j := 0; j < len(updates); j++ {
-		merged[i] = updates[j]
+		merged = append(merged, updates[j])
 		i++
 	}
 
@@ -233,28 +233,26 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyUpdates(updat
 }
 
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyRemovals(deletes []*SteeringMemberCandidate) {
-	existing := steeringMemberCandidateSet.SteeringMemberCandidates
-
-	fmt.Println("applyRemovals", "existing", len(existing), "deletes", len(deletes))
-	
-	merged := make([]*SteeringMemberCandidate, len(existing) - len(deletes))
+	existing := steeringMemberCandidateSet.SteeringMemberCandidates	
+	merged := make([]*SteeringMemberCandidate, 0, len(existing))
 	i := 0
 
-	// Loop over deletes until we removed all of them.
-	for len(deletes) > 0 {
-		if bytes.Equal(existing[0].Address, deletes[0].Address) {
-			deletes = deletes[1:]
-		} else { // Leave it in the resulting slice.
-			merged[i] = existing[0]
+	for len(existing) > 0 {
+		j := 0
+		deleteLen := len(deletes)
+		for deleteLen > j {
+			if bytes.Equal(existing[0].Address, deletes[j].Address) {
+				deletes = deletes[j+1:]
+				break
+			} 
+			j++
+		} 
+
+		if (deleteLen == j) {
+			merged = append(merged, existing[0])
 			i++
 		}
 		existing = existing[1:]
-	}
-
-	// Add the elements which are left.
-	for j := 0; j < len(existing); j++ {
-		merged[i] = existing[j]
-		i++
 	}
 
 	steeringMemberCandidateSet.SteeringMemberCandidates = merged[:i]
