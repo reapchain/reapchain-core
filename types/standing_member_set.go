@@ -287,11 +287,6 @@ func (standingMemberSet *StandingMemberSet) applyRemovals(deletes []*StandingMem
 	merged := make([]*StandingMember, 0, len(existing))
 	i := 0
 
-
-	// 			// existing: [2] [3]
-	// 			// deletes:  [1] [2] [3]
-	// 			// merged:   [2] [3] [에러]
-
 	for len(existing) > 0 {
 		j := 0
 		deleteLen := len(deletes)
@@ -305,28 +300,10 @@ func (standingMemberSet *StandingMemberSet) applyRemovals(deletes []*StandingMem
 
 		if (deleteLen == j) {
 			merged = append(merged, existing[0])
+			i++
 		}
 		existing = existing[1:]
 	}
-	// Loop over deletes until we removed all of them.
-	// if len(existing) > 0 {
-	// 	for len(deletes) > 0 {
-	// 		if bytes.Equal(existing[0].Address, deletes[0].Address) {
-	// 			deletes = deletes[1:]
-	// 		} else { // Leave it in the resulting slice.
-				
-	// 			merged = append(merged, existing[0])
-	// 			i++
-	// 		}
-	// 		existing = existing[1:]
-	// 	}
-	// }
-
-	// // Add the elements which are left.
-	// for j := 0; j < len(existing); j++ {
-	// 	merged = append(merged, existing[j])
-	// 	i++
-	// }
 
 	standingMemberSet.StandingMembers = merged[:i]
 }
