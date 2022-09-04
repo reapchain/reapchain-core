@@ -309,12 +309,7 @@ func (standingMemberSet *StandingMemberSet) applyRemovals(deletes []*StandingMem
 }
 
 func StandingMemberSetFromExistingStandingMembers(standingMembers []*StandingMember) (*StandingMemberSet, error) {
-	fmt.Println("stompesi - StandingMemberSetFromExistingStandingMembers len", len(standingMembers))
-	fmt.Println("stompesi - StandingMemberSetFromExistingStandingMembers", standingMembers[0].Address)
-	fmt.Println("stompesi - StandingMemberSetFromExistingStandingMembers", standingMembers[1].Address)
 	sort.Sort(SortedStandingMembers(standingMembers))
-	fmt.Println("stompesi - StandingMemberSetFromExistingStandingMembers2", standingMembers[0].Address)
-	fmt.Println("stompesi - StandingMemberSetFromExistingStandingMembers2", standingMembers[1].Address)
 
 	if len(standingMembers) == 0 {
 		return nil, errors.New("standing member set is empty")

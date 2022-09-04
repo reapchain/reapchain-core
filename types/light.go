@@ -65,25 +65,15 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 		)
 	}
 
-	fmt.Println("stompesi - lb.StandingMemberSet.StandingMembers[0].Address", lb.StandingMemberSet.StandingMembers[0].Address)
-	fmt.Println("stompesi - lb.StandingMemberSet.StandingMembers[1].Address", lb.StandingMemberSet.StandingMembers[1].Address)
-
-	fmt.Println("stompesi - lb.StandingMemberSet.StandingMembers[0].PubKey", lb.StandingMemberSet.StandingMembers[0].PubKey)
-	fmt.Println("stompesi - lb.StandingMemberSet.StandingMembers[1].PubKey", lb.StandingMemberSet.StandingMembers[1].PubKey)
-
-	fmt.Println("stompesi - lb.SteeringMemberCandidateSet.SteeringMemberCandidates[0].Address", lb.SteeringMemberCandidateSet.SteeringMemberCandidates[0].Address)
-	fmt.Println("stompesi - lb.SteeringMemberCandidateSet.SteeringMemberCandidates[1].Address", lb.SteeringMemberCandidateSet.SteeringMemberCandidates[1].Address)
-	fmt.Println("stompesi - lb.SteeringMemberCandidateSet.SteeringMemberCandidates[2].Address", lb.SteeringMemberCandidateSet.SteeringMemberCandidates[2].Address)
+	if steeringMemberCandidateSetHash := lb.SteeringMemberCandidateSet.Hash(); !bytes.Equal(lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash) {
+		return fmt.Errorf("expected sttering member candidate hash of header to match sttering member candidate set hash (%X != %X)",
+			lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash,
+		)
+	}
 
 	if standingMemberSetHash := lb.StandingMemberSet.Hash(); !bytes.Equal(lb.SignedHeader.StandingMembersHash, standingMemberSetHash) {
 		return fmt.Errorf("expected standing member hash of header to match standing member set hash (%X != %X)",
 			lb.SignedHeader.StandingMembersHash, standingMemberSetHash,
-		)
-	}
-
-	if steeringMemberCandidateSetHash := lb.SteeringMemberCandidateSet.Hash(); !bytes.Equal(lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash) {
-		return fmt.Errorf("expected sttering member candidate hash of header to match sttering member candidate set hash (%X != %X)",
-			lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash,
 		)
 	}
 
@@ -131,7 +121,6 @@ func (lb *LightBlock) ToProto() (*tmproto.LightBlock, error) {
 	if lb.SignedHeader != nil {
 		lbp.SignedHeader = lb.SignedHeader.ToProto()
 	}
-
 	if lb.ValidatorSet != nil {
 		lbp.ValidatorSet, err = lb.ValidatorSet.ToProto()
 		if err != nil {

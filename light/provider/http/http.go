@@ -269,17 +269,13 @@ func (p *http) standingMemberSet(ctx context.Context, height *int64) (*types.Sta
 		}
 	}
 
-	fmt.Println("stompesi - standingMemberSet", standingMembers[0].Address)
-	fmt.Println("stompesi - standingMemberSet", standingMembers[1].Address)
-
 	standingMemberSet, err := types.StandingMemberSetFromExistingStandingMembers(standingMembers)
 	standingMemberSet.Coordinator = standingMemberSet.StandingMembers[currentCoordinatorRanking]
 	standingMemberSet.CurrentCoordinatorRanking = currentCoordinatorRanking
 	if err != nil {
 		return nil, provider.ErrBadLightBlock{Reason: err}
 	}
-	fmt.Println("stompesi - standingMemberSet2", standingMemberSet.StandingMembers[0].Address)
-	fmt.Println("stompesi - standingMemberSet2", standingMemberSet.StandingMembers[1].Address)
+	
 	return standingMemberSet, nil
 }
 

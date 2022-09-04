@@ -832,13 +832,9 @@ func (store dbStore) saveSteeringMemberCandidatesInfo(height, lastHeightChanged 
 		LastHeightChanged: lastHeightChanged,
 	}
 
-	fmt.Println("stompesi - saveSteeringMemberCandidatesInfo - height", height)
-	fmt.Println("stompesi - saveSteeringMemberCandidatesInfo - lastHeightChanged", lastHeightChanged)
-
 	if height == lastHeightChanged || height%steeringMemberCandidateSetCheckpointInterval == 0 {
 		steeringMemberCandidateSetProto, err := steeringMemberCandidateSet.ToProto()
 		if err != nil {
-			fmt.Println("stompesi - saveSteeringMemberCandidatesInfo - err3")
 			return err
 		}
 		smInfo.SteeringMemberCandidateSet = steeringMemberCandidateSetProto
@@ -846,13 +842,11 @@ func (store dbStore) saveSteeringMemberCandidatesInfo(height, lastHeightChanged 
 
 	bz, err := smInfo.Marshal()
 	if err != nil {
-		fmt.Println("stompesi - saveSteeringMemberCandidatesInfo - err1")
 		return err
 	}
 
 	err = store.db.Set(calcSteeringMemberCandidatesKey(height), bz)
 	if err != nil {
-		fmt.Println("stompesi - saveSteeringMemberCandidatesInfo -err2")
 		return err
 	}
 
