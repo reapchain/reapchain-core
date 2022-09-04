@@ -81,6 +81,36 @@ type BatchHTTP struct {
 	*baseRPCClient
 }
 
+// NextQrns implements rpcClient
+func (c *BatchHTTP) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	result := new(ctypes.ResultQrns)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_qrns", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// NextVrfs implements rpcClient
+func (c *BatchHTTP) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	result := new(ctypes.ResultVrfs)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_vrfs", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 // rpcClient is an internal interface to which our RPC clients (batch and
 // non-batch) must conform. Acts as an additional code-level sanity check to
 // make sure the implementations stay coherent.
@@ -603,6 +633,20 @@ func (c *baseRPCClient) Qrns(
 	}
 	return result, nil
 }
+// NextQrns implements rpcClient
+func (c *baseRPCClient) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	result := new(ctypes.ResultQrns)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_qrns", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
 
 func (c *baseRPCClient) SettingSteeringMember(
 	ctx context.Context,
@@ -638,12 +682,57 @@ func (c *baseRPCClient) Vrfs(
 	return result, nil
 }
 
+// NextVrfs implements rpcClient
+func (c *baseRPCClient) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	result := new(ctypes.ResultVrfs)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_vrfs", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *baseRPCClient) BroadcastEvidence(
 	ctx context.Context,
 	ev types.Evidence,
 ) (*ctypes.ResultBroadcastEvidence, error) {
 	result := new(ctypes.ResultBroadcastEvidence)
 	_, err := c.caller.Call(ctx, "broadcast_evidence", map[string]interface{}{"evidence": ev}, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// NextQrns implements client.RemoteClient
+func (c *HTTP) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	result := new(ctypes.ResultQrns)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_qrns", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// NextVrfs implements client.RemoteClient
+func (c *HTTP) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	result := new(ctypes.ResultVrfs)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_vrfs", params, result)
 	if err != nil {
 		return nil, err
 	}

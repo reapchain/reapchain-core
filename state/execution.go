@@ -503,7 +503,7 @@ func updateState(
 		}
 
 		state.NextQrnSet.UpdateWithChangeSet(standingMemberSet)
-		lastHeightStandingMembersChanged = header.Height  + 1 + 1
+		lastHeightStandingMembersChanged = header.Height  + 1
 		state.LastHeightNextQrnChanged = header.Height + 1
 	}
 
@@ -516,7 +516,7 @@ func updateState(
 		}
 
 		state.NextVrfSet.UpdateWithChangeSet(steeringMemberCandidateSet)
-		lastHeightSteeringMemberCandidatesChanged = header.Height  + 1 + 1
+		lastHeightSteeringMemberCandidatesChanged = header.Height + 1
 		state.LastHeightNextVrfChanged = header.Height + 1
 	}
 

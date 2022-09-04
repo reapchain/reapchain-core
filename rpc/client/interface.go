@@ -72,7 +72,13 @@ type SignClient interface {
 	Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.ResultTx, error)
 
 	StandingMembers(ctx context.Context, height *int64) (*ctypes.ResultStandingMembers, error)
+	SteeringMemberCandidates(ctx context.Context, height *int64) (*ctypes.ResultSteeringMemberCandidates, error)
+
 	Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error)
+	NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error)
+
+	Vrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error)
+	NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error)
 
 	SettingSteeringMember(ctx context.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error)
 

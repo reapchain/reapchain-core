@@ -207,8 +207,7 @@ func (voteSet *VoteSet) addVote(vote *Vote) (added bool, err error) {
 	}
 
 	// Add vote and get conflicting vote if any.
-	// added, conflicting := voteSet.addVerifiedVote(vote, blockKey, val.VotingPower)
-	added, conflicting := voteSet.addVerifiedVote(vote, blockKey, 10)
+	added, conflicting := voteSet.addVerifiedVote(vote, blockKey, val.VotingPower)
 	if conflicting != nil {
 		return added, NewConflictingVoteError(conflicting, vote)
 	}

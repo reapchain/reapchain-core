@@ -350,12 +350,12 @@ type Header struct {
 	ProposerAddress Address          `json:"proposer_address"` // original proposer of the block
 
 	StandingMembersHash tmbytes.HexBytes `json:"standing_members_hash"`
-	ConsensusRound      ConsensusRound   `json:"consensus_round"`
+	SteeringMemberCandidatesHash tmbytes.HexBytes `json:"steering_member_candidates_hash"`
 
 	QrnsHash tmbytes.HexBytes `json:"qrns_hash"`
 	VrfsHash tmbytes.HexBytes `json:"vrfs_hash"`
 
-	SteeringMemberCandidatesHash tmbytes.HexBytes `json:"steering_member_candidates_hash"`
+	ConsensusRound      ConsensusRound   `json:"consensus_round"`
 }
 
 // Populate the Header with state-derived data.

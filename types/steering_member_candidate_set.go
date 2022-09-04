@@ -2,6 +2,7 @@ package types
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"sort"
 
@@ -203,7 +204,7 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyUpdates(updat
 	i := 0
 
 	for len(existing) > 0 && len(updates) > 0 {
-		if bytes.Compare(existing[0].Address, updates[0].Address) < 0 { // unchanged validator
+		if bytes.Compare(existing[0].Address, updates[0].Address) < 0 { // unchanged steering member candidate
 			merged = append(merged, existing[0])
 			existing = existing[1:]
 		} else {
@@ -256,4 +257,22 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyRemovals(dele
 	}
 
 	steeringMemberCandidateSet.SteeringMemberCandidates = merged[:i]
+}
+
+func SteeringMemberCandidateSetFromExistingSteeringMemberCandidates(steeringMemberCandidates []*SteeringMemberCandidate) (*SteeringMemberCandidateSet, error) {
+	if len(steeringMemberCandidates) == 0 {
+		return nil, errors.New("steering member candidate set is empty")
+	}
+	for _, val := range steeringMemberCandidates {
+		err := val.ValidateBasic()
+		if err != nil {
+			return nil, fmt.Errorf("can't create steering member candidate set: %w", err)
+		}
+	}
+
+	steeringMemberCandidateSet := &SteeringMemberCandidateSet{
+		SteeringMemberCandidates: steeringMemberCandidates,
+	}
+	sort.Sort(SortedSteeringMemberCandidates(steeringMemberCandidateSet.SteeringMemberCandidates))
+	return steeringMemberCandidateSet, nil
 }

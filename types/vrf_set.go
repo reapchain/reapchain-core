@@ -284,3 +284,19 @@ func (vrfSet *VrfSet) GetSteeringMemberAddresses() *SettingSteeringMember {
 	}
 	return nil
 }
+func VrfSetFromExistingVrfs(vrfs []*Vrf) (*VrfSet, error) {
+	if len(vrfs) == 0 {
+		return nil, errors.New("vrf set is empty")
+	}
+	for _, val := range vrfs {
+		err := val.ValidateBasic()
+		if err != nil {
+			return nil, fmt.Errorf("can't create vrf set: %w", err)
+		}
+	}
+
+	vrfSet := &VrfSet{
+		Vrfs: vrfs,
+	}
+	return vrfSet, nil
+}

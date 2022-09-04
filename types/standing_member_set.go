@@ -253,7 +253,7 @@ func (standingMemberSet *StandingMemberSet) applyUpdates(updates []*StandingMemb
 	i := 0
 
 	for len(existing) > 0 && len(updates) > 0 {
-		if bytes.Compare(existing[0].Address, updates[0].Address) < 0 { // unchanged validator
+		if bytes.Compare(existing[0].Address, updates[0].Address) < 0 { // unchanged standing member
 			merged = append(merged, existing[0])
 			existing = existing[1:]
 		} else {
@@ -306,4 +306,29 @@ func (standingMemberSet *StandingMemberSet) applyRemovals(deletes []*StandingMem
 	}
 
 	standingMemberSet.StandingMembers = merged[:i]
+}
+
+func StandingMemberSetFromExistingStandingMembers(standingMembers []*StandingMember) (*StandingMemberSet, error) {
+	fmt.Println("stompesi - StandingMemberSetFromExistingStandingMembers len", len(standingMembers))
+	fmt.Println("stompesi - StandingMemberSetFromExistingStandingMembers", standingMembers[0].Address)
+	fmt.Println("stompesi - StandingMemberSetFromExistingStandingMembers", standingMembers[1].Address)
+	sort.Sort(SortedStandingMembers(standingMembers))
+	fmt.Println("stompesi - StandingMemberSetFromExistingStandingMembers2", standingMembers[0].Address)
+	fmt.Println("stompesi - StandingMemberSetFromExistingStandingMembers2", standingMembers[1].Address)
+
+	if len(standingMembers) == 0 {
+		return nil, errors.New("standing member set is empty")
+	}
+	for _, standingMember := range standingMembers {
+		err := standingMember.ValidateBasic()
+		if err != nil {
+			return nil, fmt.Errorf("can't create standing member set: %w", err)
+		}
+	}
+
+	standingMemberSet := &StandingMemberSet{
+		StandingMembers: standingMembers[:],
+	}
+	
+	return standingMemberSet, nil
 }

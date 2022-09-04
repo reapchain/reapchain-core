@@ -567,6 +567,20 @@ func (c *Client) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, e
 	}, nil
 }
 
+// NextQrns implements client.Client
+func (c *Client) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultQrns{
+		BlockHeight: l.Height,
+		Qrns:        l.NextQrnSet.Qrns[:],
+		Count:       l.NextQrnSet.Size(),
+	}, nil
+}
+
 func (c *Client) SettingSteeringMember(ctx context.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
 	l, err := c.updateLightClientIfNeededTo(ctx, height)
 	if err != nil {
@@ -574,11 +588,11 @@ func (c *Client) SettingSteeringMember(ctx context.Context, height *int64) (*cty
 	}
 
 	return &ctypes.ResultSettingSteeringMember{
-		BlockHeight:           l.Height,
-		Height:                l.SettingSteeringMember.Height,
+		BlockHeight:             l.Height,
+		Height:                  l.SettingSteeringMember.Height,
 		SteeringMemberAddresses: l.SettingSteeringMember.SteeringMemberAddresses,
-		Timestamp:             l.SettingSteeringMember.Timestamp,
-		Address:               l.SettingSteeringMember.CoordinatorPubKey.Address(),
+		Timestamp:               l.SettingSteeringMember.Timestamp,
+		Address:                 l.SettingSteeringMember.CoordinatorPubKey.Address(),
 	}, nil
 }
 
@@ -592,6 +606,20 @@ func (c *Client) Vrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, e
 		BlockHeight: l.Height,
 		Vrfs:        l.VrfSet.Vrfs[:],
 		Count:       l.VrfSet.Size(),
+	}, nil
+}
+
+// NextVrfs implements client.Client
+func (c *Client) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultVrfs{
+		BlockHeight: l.Height,
+		Vrfs:        l.NextVrfSet.Vrfs[:],
+		Count:       l.NextVrfSet.Size(),
 	}, nil
 }
 

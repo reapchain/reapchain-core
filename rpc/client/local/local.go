@@ -181,6 +181,11 @@ func (c *Local) StandingMembers(ctx context.Context, height *int64) (*ctypes.Res
 	return core.StandingMembers(c.ctx, height)
 }
 
+// SteeringMemberCandidates implements client.Client
+func (c *Local) SteeringMemberCandidates(ctx context.Context, height *int64) (*ctypes.ResultSteeringMemberCandidates, error) {
+	return core.SteeringMemberCandidates(c.ctx, height)
+}
+
 func (c *Local) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
 	return core.Qrns(c.ctx, height)
 }

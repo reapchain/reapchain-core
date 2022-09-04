@@ -65,15 +65,25 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 		)
 	}
 
-	if steeringMemberCandidateSetHash := lb.SteeringMemberCandidateSet.Hash(); !bytes.Equal(lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash) {
-		return fmt.Errorf("expected sttering member candidate hash of header to match sttering member candidate set hash (%X != %X)",
-			lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash,
-		)
-	}
+	fmt.Println("stompesi - lb.StandingMemberSet.StandingMembers[0].Address", lb.StandingMemberSet.StandingMembers[0].Address)
+	fmt.Println("stompesi - lb.StandingMemberSet.StandingMembers[1].Address", lb.StandingMemberSet.StandingMembers[1].Address)
+
+	fmt.Println("stompesi - lb.StandingMemberSet.StandingMembers[0].PubKey", lb.StandingMemberSet.StandingMembers[0].PubKey)
+	fmt.Println("stompesi - lb.StandingMemberSet.StandingMembers[1].PubKey", lb.StandingMemberSet.StandingMembers[1].PubKey)
+
+	fmt.Println("stompesi - lb.SteeringMemberCandidateSet.SteeringMemberCandidates[0].Address", lb.SteeringMemberCandidateSet.SteeringMemberCandidates[0].Address)
+	fmt.Println("stompesi - lb.SteeringMemberCandidateSet.SteeringMemberCandidates[1].Address", lb.SteeringMemberCandidateSet.SteeringMemberCandidates[1].Address)
+	fmt.Println("stompesi - lb.SteeringMemberCandidateSet.SteeringMemberCandidates[2].Address", lb.SteeringMemberCandidateSet.SteeringMemberCandidates[2].Address)
 
 	if standingMemberSetHash := lb.StandingMemberSet.Hash(); !bytes.Equal(lb.SignedHeader.StandingMembersHash, standingMemberSetHash) {
 		return fmt.Errorf("expected standing member hash of header to match standing member set hash (%X != %X)",
 			lb.SignedHeader.StandingMembersHash, standingMemberSetHash,
+		)
+	}
+
+	if steeringMemberCandidateSetHash := lb.SteeringMemberCandidateSet.Hash(); !bytes.Equal(lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash) {
+		return fmt.Errorf("expected sttering member candidate hash of header to match sttering member candidate set hash (%X != %X)",
+			lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash,
 		)
 	}
 
@@ -121,11 +131,58 @@ func (lb *LightBlock) ToProto() (*tmproto.LightBlock, error) {
 	if lb.SignedHeader != nil {
 		lbp.SignedHeader = lb.SignedHeader.ToProto()
 	}
+
 	if lb.ValidatorSet != nil {
 		lbp.ValidatorSet, err = lb.ValidatorSet.ToProto()
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	if lb.StandingMemberSet != nil {
+		lbp.StandingMemberSet, err = lb.StandingMemberSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.SteeringMemberCandidateSet != nil {
+		lbp.SteeringMemberCandidateSet, err = lb.SteeringMemberCandidateSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.QrnSet != nil {
+		lbp.QrnSet, err = lb.QrnSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.VrfSet != nil {
+		lbp.VrfSet, err = lb.VrfSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.NextQrnSet != nil {
+		lbp.NextQrnSet, err = lb.NextQrnSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.NextVrfSet != nil {
+		lbp.NextVrfSet, err = lb.NextVrfSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.SettingSteeringMember != nil {
+		lbp.SettingSteeringMember = lb.SettingSteeringMember.ToProto()
 	}
 
 	return lbp, nil
@@ -164,6 +221,14 @@ func LightBlockFromProto(pb *tmproto.LightBlock) (*LightBlock, error) {
 		lb.StandingMemberSet = standingMemberSet
 	}
 
+	if pb.SteeringMemberCandidateSet != nil {
+		steeringMemberCandidateSet, err := SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidateSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.SteeringMemberCandidateSet = steeringMemberCandidateSet
+	}
+
 	if pb.QrnSet != nil {
 		qrnSet, err := QrnSetFromProto(pb.QrnSet)
 		if err != nil {
@@ -194,6 +259,10 @@ func LightBlockFromProto(pb *tmproto.LightBlock) (*LightBlock, error) {
 			return nil, err
 		}
 		lb.NextVrfSet = nextVrfSet
+	}
+
+	if pb.SettingSteeringMember != nil {
+		lb.SettingSteeringMember = SettingSteeringMemberFromProto(pb.SettingSteeringMember)
 	}
 	return lb, nil
 }

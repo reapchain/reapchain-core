@@ -274,3 +274,20 @@ func (qrnSet *QrnSet) HasAddress(address []byte) (bool) {
 	}
 	return false
 }
+
+func QrnSetFromExistingQrns(qrns []*Qrn) (*QrnSet, error) {
+	if len(qrns) == 0 {
+		return nil, errors.New("qrn set is empty")
+	}
+	for _, val := range qrns {
+		err := val.ValidateBasic()
+		if err != nil {
+			return nil, fmt.Errorf("can't create qrn set: %w", err)
+		}
+	}
+
+	qrnSet := &QrnSet{
+		Qrns: qrns,
+	}
+	return qrnSet, nil
+}

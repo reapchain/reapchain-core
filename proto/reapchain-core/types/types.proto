@@ -9,9 +9,11 @@ import "reapchain-core/crypto/proof.proto";
 import "reapchain-core/version/types.proto";
 import "reapchain-core/types/validator.proto";
 import "reapchain-core/types/standing_member.proto";
+import "reapchain-core/types/steering_member_candidate.proto";
 import "reapchain-core/types/qrn.proto";
 import "reapchain-core/types/vrf.proto";
 import "reapchain-core/types/consensus_round.proto";
+import "reapchain-core/types/setting_steering_member.proto";
 
 // BlockIdFlag indicates which BlcokID the signature is for
 enum BlockIDFlag {
@@ -152,11 +154,13 @@ message LightBlock {
   SignedHeader                  signed_header = 1;
   reapchain.types.ValidatorSet validator_set = 2;
   reapchain.types.StandingMemberSet standing_member_set = 3;
-  reapchain.types.QrnSet qrn_set = 4;
-  reapchain.types.VrfSet vrf_set = 5;
+  reapchain.types.SteeringMemberCandidateSet steering_member_candidate_set = 4;
+  reapchain.types.QrnSet qrn_set = 5;
+  reapchain.types.VrfSet vrf_set = 6;
 
-  reapchain.types.QrnSet next_qrn_set = 6;
-  reapchain.types.VrfSet next_vrf_set = 7;
+  reapchain.types.QrnSet next_qrn_set = 7;
+  reapchain.types.VrfSet next_vrf_set = 8;
+  reapchain.types.SettingSteeringMember setting_steering_member     = 9;
 }
 
 message BlockMeta {
