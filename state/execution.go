@@ -223,8 +223,6 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	state.SettingSteeringMember)
 
 
-	// 요기...!@
-
 	return state, retainHeight, nil
 }
 
@@ -496,7 +494,8 @@ func updateState(
 
 	standingMemberSet := state.StandingMemberSet.Copy()
 	lastHeightStandingMembersChanged := state.LastHeightStandingMembersChanged
-	if len(standingMemberUpdates) > 0 {
+	
+	if len(standingMemberUpdates) > 0 { // add or remove standing members
 		err := standingMemberSet.UpdateWithChangeSet(standingMemberUpdates)
 		if err != nil {
 			return state, fmt.Errorf("error changing standing member set: %v", err)
@@ -577,25 +576,30 @@ func updateState(
 
 	lastHeightQrnChanged := state.LastHeightQrnChanged
 	lastHeightVrfChanged := state.LastHeightVrfChanged
+	
+	// Change conensus round
 	if currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period) - 1 == header.Height {
 		currentConsensusRound.ConsensusStartBlockHeight = header.Height + 1
 		nextConsensusStartBlockHeight := currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period)
 		
-		sort.Sort(types.SortedQrns(state.NextQrnSet.Qrns))
+		// reset NextQrns
 		state.QrnSet = state.NextQrnSet.Copy()
-		state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet, nil)
+		sort.Sort(types.SortedQrns(state.QrnSet.Qrns))
+		state.NextQrnSet = types.NewQrnSet(nextConsensusStartBlockHeight, standingMemberSet.Copy(), nil)
 		
-		sort.Sort(types.SortedVrfs(state.NextVrfSet.Vrfs))
+		// reset NextVrfs
 		state.VrfSet = state.NextVrfSet.Copy()
-		state.NextVrfSet = types.NewVrfSet(nextConsensusStartBlockHeight, steeringMemberCandidateSet, nil)	
+		sort.Sort(types.SortedVrfs(state.VrfSet.Vrfs))
+		state.NextVrfSet = types.NewVrfSet(nextConsensusStartBlockHeight, steeringMemberCandidateSet.Copy(), nil)	
 
+		// reset Consensus round info
 		state.IsSetSteeringMember = false
 		state.SettingSteeringMember = nil
+
 		lastHeightQrnChanged = header.Height + 1
 		lastHeightVrfChanged = header.Height + 1
 		state.LastHeightNextQrnChanged = header.Height + 1
 		state.LastHeightNextVrfChanged = header.Height + 1
-
 		lastHeightConsensusRoundChanged = header.Height + 1
 	}
 

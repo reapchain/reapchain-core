@@ -96,8 +96,13 @@ func (vrfSet *VrfSet) IsNilOrEmpty() bool {
 }
 
 func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
+	fmt.Println("stompesi - AddVrf - lock")
 	vrfSet.mtx.Lock()
-	defer vrfSet.mtx.Unlock()
+	defer func() {
+		fmt.Println("stompesi - AddVrf - unlock")
+		vrfSet.mtx.Unlock()
+	}()
+
 
 	if vrf == nil {
 		return fmt.Errorf("Vrf is nil")
@@ -115,6 +120,7 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 
 
 	vrfIndex := vrfSet.GetVrfIndexByAddress(vrf.SteeringMemberCandidatePubKey.Address())
+	
 	if vrfIndex == -1 {
 		return fmt.Errorf("Not exist steering member candidate of vrf: %v", vrf.SteeringMemberCandidatePubKey.Address())
 	}
@@ -199,8 +205,13 @@ func (vrfSet *VrfSet) BitArray() *bits.BitArray {
 		return nil
 	}
 
+	fmt.Println("stompesi - BitArray - lock")
 	vrfSet.mtx.Lock()
-	defer vrfSet.mtx.Unlock()
+	defer func() {
+		fmt.Println("stompesi - BitArray - unlock")
+		vrfSet.mtx.Unlock()
+	}()
+
 	return vrfSet.VrfsBitArray.Copy()
 }
 
@@ -212,8 +223,12 @@ type VrfSetReader interface {
 }
 
 func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
+	fmt.Println("stompesi - UpdateWithChangeSet - lock")
 	vrfSet.mtx.Lock()
-	defer vrfSet.mtx.Unlock()
+	defer func() {
+		fmt.Println("stompesi - UpdateWithChangeSet - unlock")
+		vrfSet.mtx.Unlock()
+	}()
 
 	vrfs := make([]*Vrf, 0, len(steeringMemberCandidateSet.SteeringMemberCandidates))
 
