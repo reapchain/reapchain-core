@@ -44,6 +44,10 @@ type Reactor struct {
 	eventBus *types.EventBus
 
 	Metrics *Metrics
+
+	CatchupQrnMessages []*QrnMessage
+	CatchupVrfMessages []*VrfMessage
+	CatchupSettingSteeringMemberMessage *SettingSteeringMemberMessage
 }
 
 type ReactorOption func(*Reactor)
@@ -55,6 +59,9 @@ func NewReactor(consensusState *State, waitSync bool, options ...ReactorOption) 
 		conS:     consensusState,
 		waitSync: waitSync,
 		Metrics:  NopMetrics(),
+		CatchupQrnMessages: make([]*QrnMessage, 0),
+		CatchupVrfMessages: make([]*VrfMessage, 0),
+		CatchupSettingSteeringMemberMessage: nil,
 	}
 	conR.BaseReactor = *p2p.NewBaseReactor("Consensus", conR)
 
@@ -107,12 +114,30 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 		conR.conS.reconstructLastCommit(state)
 	}
 
-	// NOTE: The line below causes broadcastNewRoundStepRoutine() to broadcast a
+		for _, currentVrfMessage := range conR.CatchupVrfMessages {
+		state.NextVrfSet.AddVrf(currentVrfMessage.Vrf)
+	}
+
+	for _, currentQrnMessage := range conR.CatchupQrnMessages {
+		state.NextQrnSet.AddQrn(currentQrnMessage.Qrn)
+	}
+
+	if (conR.CatchupSettingSteeringMemberMessage != nil) {
+		state.SettingSteeringMember = conR.CatchupSettingSteeringMemberMessage.SettingSteeringMember
+	}
+
+	// TODO: stompesi - catchup
+	fmt.Println("stompesi - conR.CatchupQrnMessages", conR.CatchupQrnMessages)
+	fmt.Println("stompesi - conR.CatchupVrfMessages", conR.CatchupVrfMessages)
+	fmt.Println("stompesi - conR.CatchupSettingSteeringMemberMessage", conR.CatchupSettingSteeringMemberMessage)
+
+		// NOTE: The line below causes broadcastNewRoundStepRoutine() to broadcast a
 	// NewRoundStepMessage.
 	conR.conS.updateToState(state)
 
 	conR.mtx.Lock()
 	conR.waitSync = false
+
 	conR.mtx.Unlock()
 	conR.Metrics.FastSyncing.Set(0)
 	conR.Metrics.StateSyncing.Set(0)
@@ -191,6 +216,15 @@ func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 // InitPeer implements Reactor by creating a state for the peer.
 func (conR *Reactor) InitPeer(peer p2p.Peer) p2p.Peer {
 	peerState := NewPeerState(peer).SetLogger(conR.Logger)
+
+	// cs := conR.conS
+	// cs.mtx.RLock()
+	// height, steeringMemberCandidate := cs.Height, cs.RoundState.SteeringMemberCandidateSet.Size()
+	// height, standingMemberSize := cs.Height, cs.RoundState.StandingMemberSet.Size()
+	// cs.mtx.RUnlock()
+	// peerState.EnsureVrfBitArrays(height, steeringMemberCandidate)
+	// peerState.EnsureQrnBitArrays(height, standingMemberSize)
+
 	peer.Set(types.PeerStateKey, peerState)
 	return peer
 }
@@ -345,7 +379,14 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 
 	case QrnChannel:
 		if conR.WaitSync() {
-			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
+			fmt.Println("stompesi - tryAddCatchupQrnMessage : 싱크중")
+			switch msg := msg.(type) {
+				case *QrnMessage:
+					conR.mtx.Lock()
+					conR.tryAddCatchupQrnMessage(msg)
+					conR.mtx.Unlock()
+			}
+			
 			return
 		}
 		switch msg := msg.(type) {
@@ -368,7 +409,13 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 
 	case VrfChannel:
 		if conR.WaitSync() {
-			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
+			fmt.Println("stompesi - tryAddCatchupVrfMessage : 싱크중")
+			switch msg := msg.(type) {
+				case *VrfMessage:
+					conR.mtx.Lock()
+					conR.tryAddCatchupVrfMessage(msg)
+					conR.mtx.Unlock()
+			}
 			return
 		}
 		switch msg := msg.(type) {
@@ -391,7 +438,13 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 
 	case SettingSteeringMemberChannel:
 		if conR.WaitSync() {
-			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
+			fmt.Println("stompesi - tryAddCatchupSettingSteeringMemberMessage : 싱크중")
+			switch msg := msg.(type) {
+				case *SettingSteeringMemberMessage:
+					conR.mtx.Lock()
+					conR.tryAddCatchupSettingSteeringMemberMessage(msg)
+					conR.mtx.Unlock()
+			}
 			return
 		}
 		switch msg := msg.(type) {
@@ -413,6 +466,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
 			return
 		}
+		
 		switch msg := msg.(type) {
 		case *VoteMessage:
 			cs := conR.conS
@@ -507,6 +561,26 @@ func (conR *Reactor) subscribeToBroadcastEvents() {
 		conR.Logger.Error("Error adding listener for events", "err", err)
 	}
 
+	if err := conR.conS.evsw.AddListenerForEvent(subscriber, types.EventQrn,
+		func(data tmevents.EventData) {
+			conR.broadcastQrnMessage(data.(*types.Qrn))
+		}); err != nil {
+		conR.Logger.Error("Error adding listener for events", "err", err)
+	}
+
+	if err := conR.conS.evsw.AddListenerForEvent(subscriber, types.EventVrf,
+		func(data tmevents.EventData) {
+			conR.broadcastVrfMessage(data.(*types.Vrf))
+		}); err != nil {
+		conR.Logger.Error("Error adding listener for events", "err", err)
+	}
+
+	if err := conR.conS.evsw.AddListenerForEvent(subscriber, types.EventSettingSteeringMember,
+		func(data tmevents.EventData) {
+			conR.broadcastSettingSteeringMemberMessage(data.(*types.SettingSteeringMember))
+		}); err != nil {
+		conR.Logger.Error("Error adding listener for events", "err", err)
+	}
 }
 
 func (conR *Reactor) unsubscribeFromBroadcastEvents() {
@@ -559,6 +633,27 @@ func (conR *Reactor) broadcastHasVoteMessage(vote *types.Vote) {
 	*/
 }
 
+func (conR *Reactor) broadcastQrnMessage(qrn *types.Qrn) {
+	msg := &QrnMessage{
+		Qrn: qrn.Copy(),
+	}
+	conR.Switch.Broadcast(QrnChannel, MustEncode(msg))
+}
+
+func (conR *Reactor) broadcastVrfMessage(vrf *types.Vrf) {
+	msg := &VrfMessage{
+		Vrf: vrf.Copy(),
+	}
+	conR.Switch.Broadcast(VrfChannel, MustEncode(msg))
+}
+
+func (conR *Reactor) broadcastSettingSteeringMemberMessage(settingSteeringMember *types.SettingSteeringMember) {
+	msg := &SettingSteeringMemberMessage{
+		SettingSteeringMember: settingSteeringMember.Copy(),
+	}
+	conR.Switch.Broadcast(SettingSteeringMemberChannel, MustEncode(msg))
+}
+
 func makeRoundStepMessage(rs *cstypes.RoundState) (nrsMsg *NewRoundStepMessage) {
 	nrsMsg = &NewRoundStepMessage{
 		Height:                rs.Height,
@@ -579,99 +674,99 @@ func (conR *Reactor) sendNewRoundStepMessage(peer p2p.Peer) {
 func (conR *Reactor) gossipDataRoutine(peer p2p.Peer, ps *PeerState) {
 	logger := conR.Logger.With("peer", peer)
 
-OUTER_LOOP:
-	for {
-		// Manage disconnects from self or peer.
-		if !peer.IsRunning() || !conR.IsRunning() {
-			logger.Info("Stopping gossipDataRoutine for peer")
-			return
-		}
-		rs := conR.conS.GetRoundState()
-		prs := ps.GetRoundState()
+	OUTER_LOOP:
+		for {
+			// Manage disconnects from self or peer.
+			if !peer.IsRunning() || !conR.IsRunning() {
+				logger.Info("Stopping gossipDataRoutine for peer")
+				return
+			}
+			rs := conR.conS.GetRoundState()
+			prs := ps.GetRoundState()
 
-		// Send proposal Block parts?
-		if rs.ProposalBlockParts.HasHeader(prs.ProposalBlockPartSetHeader) {
-			if index, ok := rs.ProposalBlockParts.BitArray().Sub(prs.ProposalBlockParts.Copy()).PickRandom(); ok {
-				part := rs.ProposalBlockParts.GetPart(index)
-				msg := &BlockPartMessage{
-					Height: rs.Height, // This tells peer that this part applies to us.
-					Round:  rs.Round,  // This tells peer that this part applies to us.
-					Part:   part,
+			// Send proposal Block parts?
+			if rs.ProposalBlockParts.HasHeader(prs.ProposalBlockPartSetHeader) {
+				if index, ok := rs.ProposalBlockParts.BitArray().Sub(prs.ProposalBlockParts.Copy()).PickRandom(); ok {
+					part := rs.ProposalBlockParts.GetPart(index)
+					msg := &BlockPartMessage{
+						Height: rs.Height, // This tells peer that this part applies to us.
+						Round:  rs.Round,  // This tells peer that this part applies to us.
+						Part:   part,
+					}
+					logger.Debug("Sending block part", "height", prs.Height, "round", prs.Round)
+					if peer.Send(DataChannel, MustEncode(msg)) {
+						ps.SetHasProposalBlockPart(prs.Height, prs.Round, index)
+					}
+					continue OUTER_LOOP
 				}
-				logger.Debug("Sending block part", "height", prs.Height, "round", prs.Round)
-				if peer.Send(DataChannel, MustEncode(msg)) {
-					ps.SetHasProposalBlockPart(prs.Height, prs.Round, index)
+			}
+
+			// If the peer is on a previous height that we have, help catch up.
+			blockStoreBase := conR.conS.blockStore.Base()
+			if blockStoreBase > 0 && 0 < prs.Height && prs.Height < rs.Height && prs.Height >= blockStoreBase {
+				heightLogger := logger.With("height", prs.Height)
+
+				// if we never received the commit message from the peer, the block parts wont be initialized
+				if prs.ProposalBlockParts == nil {
+					blockMeta := conR.conS.blockStore.LoadBlockMeta(prs.Height)
+					if blockMeta == nil {
+						heightLogger.Error("Failed to load block meta",
+							"blockstoreBase", blockStoreBase, "blockstoreHeight", conR.conS.blockStore.Height())
+						time.Sleep(conR.conS.config.PeerGossipSleepDuration)
+					} else {
+						ps.InitProposalBlockParts(blockMeta.BlockID.PartSetHeader)
+					}
+					// continue the loop since prs is a copy and not effected by this initialization
+					continue OUTER_LOOP
+				}
+				conR.gossipDataForCatchup(heightLogger, rs, prs, ps, peer)
+				continue OUTER_LOOP
+			}
+
+			// If height and round don't match, sleep.
+			if (rs.Height != prs.Height) || (rs.Round != prs.Round) {
+				// logger.Info("Peer Height|Round mismatch, sleeping",
+				// "peerHeight", prs.Height, "peerRound", prs.Round, "peer", peer)
+				time.Sleep(conR.conS.config.PeerGossipSleepDuration)
+				continue OUTER_LOOP
+			}
+
+			// By here, height and round match.
+			// Proposal block parts were already matched and sent if any were wanted.
+			// (These can match on hash so the round doesn't matter)
+			// Now consider sending other things, like the Proposal itself.
+
+			// Send Proposal && ProposalPOL BitArray?
+			if rs.Proposal != nil && !prs.Proposal {
+				// Proposal: share the proposal metadata with peer.
+				{
+					msg := &ProposalMessage{Proposal: rs.Proposal}
+					logger.Debug("Sending proposal", "height", prs.Height, "round", prs.Round)
+					if peer.Send(DataChannel, MustEncode(msg)) {
+						// NOTE[ZM]: A peer might have received different proposal msg so this Proposal msg will be rejected!
+						ps.SetHasProposal(rs.Proposal)
+					}
+				}
+				// ProposalPOL: lets peer know which POL votes we have so far.
+				// Peer must receive ProposalMessage first.
+				// rs.Proposal was validated, so rs.Proposal.POLRound <= rs.Round,
+				// so we definitely have rs.Votes.Prevotes(rs.Proposal.POLRound).
+				if 0 <= rs.Proposal.POLRound {
+					msg := &ProposalPOLMessage{
+						Height:           rs.Height,
+						ProposalPOLRound: rs.Proposal.POLRound,
+						ProposalPOL:      rs.Votes.Prevotes(rs.Proposal.POLRound).BitArray(),
+					}
+					logger.Debug("Sending POL", "height", prs.Height, "round", prs.Round)
+					peer.Send(DataChannel, MustEncode(msg))
 				}
 				continue OUTER_LOOP
 			}
-		}
 
-		// If the peer is on a previous height that we have, help catch up.
-		blockStoreBase := conR.conS.blockStore.Base()
-		if blockStoreBase > 0 && 0 < prs.Height && prs.Height < rs.Height && prs.Height >= blockStoreBase {
-			heightLogger := logger.With("height", prs.Height)
-
-			// if we never received the commit message from the peer, the block parts wont be initialized
-			if prs.ProposalBlockParts == nil {
-				blockMeta := conR.conS.blockStore.LoadBlockMeta(prs.Height)
-				if blockMeta == nil {
-					heightLogger.Error("Failed to load block meta",
-						"blockstoreBase", blockStoreBase, "blockstoreHeight", conR.conS.blockStore.Height())
-					time.Sleep(conR.conS.config.PeerGossipSleepDuration)
-				} else {
-					ps.InitProposalBlockParts(blockMeta.BlockID.PartSetHeader)
-				}
-				// continue the loop since prs is a copy and not effected by this initialization
-				continue OUTER_LOOP
-			}
-			conR.gossipDataForCatchup(heightLogger, rs, prs, ps, peer)
-			continue OUTER_LOOP
-		}
-
-		// If height and round don't match, sleep.
-		if (rs.Height != prs.Height) || (rs.Round != prs.Round) {
-			// logger.Info("Peer Height|Round mismatch, sleeping",
-			// "peerHeight", prs.Height, "peerRound", prs.Round, "peer", peer)
+			// Nothing to do. Sleep.
 			time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 			continue OUTER_LOOP
 		}
-
-		// By here, height and round match.
-		// Proposal block parts were already matched and sent if any were wanted.
-		// (These can match on hash so the round doesn't matter)
-		// Now consider sending other things, like the Proposal itself.
-
-		// Send Proposal && ProposalPOL BitArray?
-		if rs.Proposal != nil && !prs.Proposal {
-			// Proposal: share the proposal metadata with peer.
-			{
-				msg := &ProposalMessage{Proposal: rs.Proposal}
-				logger.Debug("Sending proposal", "height", prs.Height, "round", prs.Round)
-				if peer.Send(DataChannel, MustEncode(msg)) {
-					// NOTE[ZM]: A peer might have received different proposal msg so this Proposal msg will be rejected!
-					ps.SetHasProposal(rs.Proposal)
-				}
-			}
-			// ProposalPOL: lets peer know which POL votes we have so far.
-			// Peer must receive ProposalMessage first.
-			// rs.Proposal was validated, so rs.Proposal.POLRound <= rs.Round,
-			// so we definitely have rs.Votes.Prevotes(rs.Proposal.POLRound).
-			if 0 <= rs.Proposal.POLRound {
-				msg := &ProposalPOLMessage{
-					Height:           rs.Height,
-					ProposalPOLRound: rs.Proposal.POLRound,
-					ProposalPOL:      rs.Votes.Prevotes(rs.Proposal.POLRound).BitArray(),
-				}
-				logger.Debug("Sending POL", "height", prs.Height, "round", prs.Round)
-				peer.Send(DataChannel, MustEncode(msg))
-			}
-			continue OUTER_LOOP
-		}
-
-		// Nothing to do. Sleep.
-		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
-		continue OUTER_LOOP
-	}
 }
 
 func (conR *Reactor) gossipDataForCatchup(logger log.Logger, rs *cstypes.RoundState,
@@ -787,30 +882,6 @@ OUTER_LOOP:
 
 		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 		continue OUTER_LOOP
-	}
-}
-
-func (conR *Reactor) gossipSettingSteeringMemberRoutine(peer p2p.Peer, ps *PeerState) {
-	logger := conR.Logger.With("peer", peer)
-
-OUTER_LOOP:
-	for {
-		// Manage disconnects from self or peer.
-		if !peer.IsRunning() || !conR.IsRunning() {
-			logger.Info("Stopping gossipSettingSteeringMemberRoutine for peer")
-			return
-		}
-		rs := conR.conS.GetRoundState()
-		prs := ps.GetRoundState()
-
-		if rs.Height == prs.Height {
-			if ps.PickSendSettingSteeringMember(conR.conS.state.SettingSteeringMember) {
-				time.Sleep(conR.conS.config.PeerGossipSleepDuration)
-				continue OUTER_LOOP
-			}
-		}
-
-		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 	}
 }
 

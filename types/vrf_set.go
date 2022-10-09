@@ -95,26 +95,27 @@ func (vrfSet *VrfSet) IsNilOrEmpty() bool {
 	return vrfSet == nil || len(vrfSet.Vrfs) == 0
 }
 
-func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
-	fmt.Println("stompesi - AddVrf - lock")
+func (vrfSet *VrfSet) AddVrf(vrf *Vrf) bool {
 	vrfSet.mtx.Lock()
 	defer func() {
-		fmt.Println("stompesi - AddVrf - unlock")
 		vrfSet.mtx.Unlock()
 	}()
 
 
 	if vrf == nil {
-		return fmt.Errorf("Vrf is nil")
+		// return fmt.Errorf("Vrf is nil")
+		return false
 	}
 
 	if vrf.Value != nil {
 		if vrf.Verify() == false {
-			return fmt.Errorf("Invalid vrf sign")
+			// return fmt.Errorf("Invalid vrf sign")
+			return false
 		}
 	
 		if vrfSet.Height != vrf.Height {
-			return fmt.Errorf("Invalid vrf height vrfSet height: %v / vrf height: %v", vrfSet.Height, vrf.Height)
+			// return fmt.Errorf("Invalid vrf height vrfSet height: %v / vrf height: %v", vrfSet.Height, vrf.Height)
+			return false
 		}
 	}
 
@@ -122,16 +123,18 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) error {
 	vrfIndex := vrfSet.GetVrfIndexByAddress(vrf.SteeringMemberCandidatePubKey.Address())
 	
 	if vrfIndex == -1 {
-		return fmt.Errorf("Not exist steering member candidate of vrf: %v", vrf.SteeringMemberCandidatePubKey.Address())
+		// return fmt.Errorf("Not exist steering member candidate of vrf: %v", vrf.SteeringMemberCandidatePubKey.Address())
+		return false
 	}
 
 	if vrfSet.VrfsBitArray.GetIndex(int(vrfIndex)) == false {
 		vrf.VrfIndex = vrfIndex
 		vrfSet.Vrfs[vrfIndex] = vrf.Copy()
 		vrfSet.VrfsBitArray.SetIndex(int(vrfIndex), true)
+		return true
 	}
 
-	return nil
+	return false
 }
 
 func (vrfSet *VrfSet) GetVrf(steeringMemberCandidatePubKey crypto.PubKey) (vrf *Vrf) {
@@ -205,10 +208,10 @@ func (vrfSet *VrfSet) BitArray() *bits.BitArray {
 		return nil
 	}
 
-	fmt.Println("stompesi - BitArray - lock")
+	// fmt.Println("stompesi - BitArray - lock")
 	vrfSet.mtx.Lock()
 	defer func() {
-		fmt.Println("stompesi - BitArray - unlock")
+		// fmt.Println("stompesi - BitArray - unlock")
 		vrfSet.mtx.Unlock()
 	}()
 
@@ -223,10 +226,8 @@ type VrfSetReader interface {
 }
 
 func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
-	fmt.Println("stompesi - UpdateWithChangeSet - lock")
 	vrfSet.mtx.Lock()
 	defer func() {
-		fmt.Println("stompesi - UpdateWithChangeSet - unlock")
 		vrfSet.mtx.Unlock()
 	}()
 

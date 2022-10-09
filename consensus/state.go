@@ -2477,6 +2477,12 @@ func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeri
 		cs.state.SettingSteeringMember = settingSteeringMember.Copy()
 		cs.state.IsSetSteeringMember = true
 		cs.state.LastHeightSettingSteeringMemberChanged = cs.state.LastBlockHeight + 1
+		
+		if err := cs.eventBus.PublishEventSettingSteeringMember(types.EventDataSettingSteeringMember{SettingSteeringMember: settingSteeringMember}); err != nil {
+			return err
+		}
+	
+		cs.evsw.FireEvent(types.EventSettingSteeringMember, settingSteeringMember)
 	}
 
 	return nil

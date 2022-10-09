@@ -109,36 +109,40 @@ func (qrnSet *QrnSet) GetMaxValue() uint64 {
 	return maxValue
 }
 
-func (qrnSet *QrnSet) AddQrn(qrn *Qrn) error {
+func (qrnSet *QrnSet) AddQrn(qrn *Qrn) bool {
 	qrnSet.mtx.Lock()
 	defer qrnSet.mtx.Unlock()
 
 	if qrn == nil {
-		return fmt.Errorf("Qrn is nil")
+		// return fmt.Errorf("Qrn is nil")
+		return false
 	}
 	
 	if qrn.Value != 0 {
 		if qrn.VerifySign() == false {
-			return fmt.Errorf("Invalid qrn sign")
+			// return fmt.Errorf("Invalid qrn sign")
+			return false
 		}
 	
 		if qrnSet.Height != qrn.Height {
-			return fmt.Errorf("Invalid qrn height")
+			return false
 		}
 	}
 
 	qrnIndex := qrnSet.GetQrnIndexByAddress(qrn.StandingMemberPubKey.Address())
 
 	if qrnIndex == -1 {
-		return fmt.Errorf("Not exist standing member of qrn: %v", qrn.StandingMemberPubKey.Address())
+		// return fmt.Errorf("Not exist standing member of qrn: %v", qrn.StandingMemberPubKey.Address())
+		return false
 	}
 
 	if qrnSet.QrnsBitArray.GetIndex(int(qrnIndex)) == false {
 		qrn.QrnIndex = qrnIndex
 		qrnSet.Qrns[qrnIndex] = qrn.Copy()
 		qrnSet.QrnsBitArray.SetIndex(int(qrnIndex), true)
+		return true
 	}
-	return nil
+	return false
 }
 
 func (qrnSet *QrnSet) GetQrn(standingMemberPubKey crypto.PubKey) (qrn *Qrn) {

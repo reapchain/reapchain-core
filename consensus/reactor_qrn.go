@@ -1,6 +1,8 @@
 package consensus
 
 import (
+	"bytes"
+	"fmt"
 	"time"
 
 	"github.com/reapchain/reapchain-core/p2p"
@@ -32,4 +34,26 @@ OUTER_LOOP:
 
 		time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 	}
+}
+
+func (conR *Reactor) tryAddCatchupQrnMessage(qrnMessage *QrnMessage) (error) {
+	if qrnMessage == nil {
+		return fmt.Errorf("QrnMessage is nil")
+	}
+
+	if qrnMessage.Qrn.VerifySign() == false {
+		return fmt.Errorf("Invalid qrn sign")
+	}
+
+	for idx, currentQrnMessage := range conR.CatchupQrnMessages {
+		if bytes.Equal(currentQrnMessage.Qrn.StandingMemberPubKey.Address(), qrnMessage.Qrn.StandingMemberPubKey.Address()) {
+			if currentQrnMessage.Qrn.Height < qrnMessage.Qrn.Height {
+				conR.CatchupQrnMessages[idx] = &QrnMessage{Qrn: qrnMessage.Qrn.Copy()}
+			}
+			return nil
+		}
+	}
+
+	conR.CatchupQrnMessages = append(conR.CatchupQrnMessages, &QrnMessage{Qrn: qrnMessage.Qrn.Copy()})
+	return nil
 }

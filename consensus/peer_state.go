@@ -36,7 +36,7 @@ type PeerState struct {
 	NextConsensusStartBlockHeight int64          `json:"next_consensus_start_block_height"` // Height peer is at
 	QrnsBitArray                  *bits.BitArray `json:"qrns"`                              // All qrns peer has for this round
 	VrfsBitArray                  *bits.BitArray `json:"vrfs"`                              // All vrfs peer has for this round
-	DidSendSettingSteeringMember  bool           `json:"setting_steering_members"`          // All vrfs peer has for this round
+	DidSendSettingSteeringMember  bool           `json:"setting_steering_members"`          // All settingSteeringMember peer has for this round
 }
 
 // peerStateStats holds internal statistics for a peer.

@@ -166,6 +166,20 @@ func (b *EventBus) PublishEventVote(data EventDataVote) error {
 	return b.Publish(EventVote, data)
 }
 
+// Add publish event function
+func (b *EventBus) PublishEventQrn(data EventDataQrn) error {
+	return b.Publish(EventQrn, data)
+}
+
+func (b *EventBus) PublishEventVrf(data EventDataVrf) error {
+	return b.Publish(EventVrf, data)
+}
+
+func (b *EventBus) PublishEventSettingSteeringMember(data EventDataSettingSteeringMember) error {
+	return b.Publish(EventSettingSteeringMember, data)
+}
+///--------------------------------------
+
 func (b *EventBus) PublishEventValidBlock(data EventDataRoundState) error {
 	return b.Publish(EventValidBlock, data)
 }

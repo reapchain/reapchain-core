@@ -37,6 +37,10 @@ const (
 	EventUnlock           = "Unlock"
 	EventValidBlock       = "ValidBlock"
 	EventVote             = "Vote"
+
+	EventQrn             					= "Qrn"
+	EventVrf             					= "Vrf"
+	EventSettingSteeringMember    = "SettingSteeringMember"
 )
 
 // ENCODING / DECODING
@@ -58,6 +62,10 @@ func init() {
 	tmjson.RegisterType(EventDataSteeringMemberCandidateSetUpdates{}, "reapchain/event/SteeringMemberCandidateSetUpdates")
 	tmjson.RegisterType(EventDataStandingMemberSetUpdates{}, "reapchain/event/StandingMemberSetUpdates")
 	tmjson.RegisterType(EventDataString(""), "reapchain/event/ProposalString")
+
+	tmjson.RegisterType(EventDataQrn{}, "reapchain/event/Qrn")
+	tmjson.RegisterType(EventDataVrf{}, "reapchain/event/Vrf")
+	tmjson.RegisterType(EventDataSettingSteeringMember{}, "reapchain/event/SetEventDataSettingSteeringMember")
 }
 
 // Most event messages are basic types (a block, a transaction)
@@ -122,6 +130,19 @@ type EventDataVote struct {
 	Vote *Vote
 }
 
+// Add event
+type EventDataQrn struct {
+	Qrn *Qrn
+}
+
+type EventDataVrf struct {
+	Vrf *Vrf
+}
+
+type EventDataSettingSteeringMember struct {
+	SettingSteeringMember *SettingSteeringMember
+}
+
 type EventDataString string
 
 type EventDataSteeringMemberCandidateSetUpdates struct {
@@ -167,6 +188,10 @@ var (
 	EventQueryStandingMemberSetUpdates          = QueryForEvent(EventStandingMemberSetUpdates)
 	EventQueryValidBlock                        = QueryForEvent(EventValidBlock)
 	EventQueryVote                              = QueryForEvent(EventVote)
+
+	EventQueryQrn                              = QueryForEvent(EventQrn)
+	EventQueryVrf                              = QueryForEvent(EventVrf)
+	EventQuerySettingSteeringMember						 = QueryForEvent(EventSettingSteeringMember)
 )
 
 func EventQueryTxFor(tx Tx) tmpubsub.Query {
