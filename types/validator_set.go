@@ -325,8 +325,8 @@ func (vals *ValidatorSet) TotalVotingPower() int64 {
 	return vals.totalVotingPower
 }
 
-// TotalVotingPower returns the sum of the voting powers of all validators.
-// It recomputes the total voting power if required.
+// TotalVotingCount returns the sum of the voting count of all validators.
+// It recomputes the total voting count if required.
 func (vals *ValidatorSet) GetTotalVotingCount() int64 {
 	return int64(len(vals.Validators))
 }
@@ -691,8 +691,9 @@ func (vals *ValidatorSet) VerifyCommit(chainID string, blockID BlockID,
 			blockID, commit.BlockID)
 	}
 
-	talliedVotingPower := int64(0)
-	votingPowerNeeded := vals.TotalVotingPower() * 2 / 3
+	talliedVotingCount := int64(0)
+	// votingPowerNeeded := vals.TotalVotingPower() * 2 / 3
+	votingCountNeeded := vals.GetTotalVotingCount() * 2 / 3
 	for idx, commitSig := range commit.Signatures {
 		if commitSig.Absent() {
 			continue // OK, some signatures can be absent.
@@ -709,7 +710,8 @@ func (vals *ValidatorSet) VerifyCommit(chainID string, blockID BlockID,
 		}
 		// Good!
 		if commitSig.ForBlock() {
-			talliedVotingPower += val.VotingPower
+			// talliedVotingPower += val.VotingPower
+			talliedVotingCount += 1
 		}
 		// else {
 		// It's OK. We include stray signatures (~votes for nil) to measure
@@ -717,8 +719,8 @@ func (vals *ValidatorSet) VerifyCommit(chainID string, blockID BlockID,
 		// }
 	}
 
-	if got, needed := talliedVotingPower, votingPowerNeeded; got <= needed {
-		return ErrNotEnoughVotingPowerSigned{Got: got, Needed: needed}
+	if got, needed := talliedVotingCount, votingCountNeeded; got <= needed {
+		return ErrNotEnoughVotingCountSigned{Got: got, Needed: needed}
 	}
 
 	return nil
@@ -746,8 +748,10 @@ func (vals *ValidatorSet) VerifyCommitLight(chainID string, blockID BlockID,
 			blockID, commit.BlockID)
 	}
 
-	talliedVotingPower := int64(0)
-	votingPowerNeeded := vals.TotalVotingPower() * 2 / 3
+	talliedVotingCount := int64(0)
+	// votingPowerNeeded := vals.TotalVotingPower() * 2 / 3
+	votingCountNeeded := vals.GetTotalVotingCount() * 2 / 3
+
 	for idx, commitSig := range commit.Signatures {
 		// No need to verify absent or nil votes.
 		if !commitSig.ForBlock() {
@@ -764,15 +768,16 @@ func (vals *ValidatorSet) VerifyCommitLight(chainID string, blockID BlockID,
 			return fmt.Errorf("wrong signature (#%d): %X", idx, commitSig.Signature)
 		}
 
-		talliedVotingPower += val.VotingPower
+		// talliedVotingPower += val.VotingPower
+		talliedVotingCount += 1
 
 		// return as soon as +2/3 of the signatures are verified
-		if talliedVotingPower > votingPowerNeeded {
+		if talliedVotingCount > votingCountNeeded {
 			return nil
 		}
 	}
 
-	return ErrNotEnoughVotingPowerSigned{Got: talliedVotingPower, Needed: votingPowerNeeded}
+	return ErrNotEnoughVotingCountSigned{Got: talliedVotingCount, Needed: votingCountNeeded}
 }
 
 // VerifyCommitLightTrusting verifies that trustLevel of the validator set signed
@@ -790,16 +795,17 @@ func (vals *ValidatorSet) VerifyCommitLightTrusting(chainID string, commit *Comm
 	}
 
 	var (
-		talliedVotingPower int64
+		talliedVotingCount int64
 		seenVals           = make(map[int32]int, len(commit.Signatures)) // validator index -> commit index
 	)
 
 	// Safely calculate voting power needed.
-	totalVotingPowerMulByNumerator, overflow := safeMul(vals.TotalVotingPower(), int64(trustLevel.Numerator))
-	if overflow {
-		return errors.New("int64 overflow while calculating voting power needed. please provide smaller trustLevel numerator")
-	}
-	votingPowerNeeded := totalVotingPowerMulByNumerator / int64(trustLevel.Denominator)
+	// totalVotingPowerMulByNumerator, overflow := safeMul(vals.TotalVotingPower(), int64(trustLevel.Numerator))
+	// if overflow {
+	// 	return errors.New("int64 overflow while calculating voting power needed. please provide smaller trustLevel numerator")
+	// }
+	// votingPowerNeeded := totalVotingPowerMulByNumerator / int64(trustLevel.Denominator)
+	votingCountNeeded := vals.GetTotalVotingCount() * 2 / 3
 
 	for idx, commitSig := range commit.Signatures {
 		// No need to verify absent or nil votes.
@@ -825,15 +831,16 @@ func (vals *ValidatorSet) VerifyCommitLightTrusting(chainID string, commit *Comm
 				return fmt.Errorf("wrong signature (#%d): %X", idx, commitSig.Signature)
 			}
 
-			talliedVotingPower += val.VotingPower
+			// talliedVotingCount += val.VotingPower
+			talliedVotingCount += 1
 
-			if talliedVotingPower > votingPowerNeeded {
+			if talliedVotingCount > votingCountNeeded {
 				return nil
 			}
 		}
 	}
 
-	return ErrNotEnoughVotingPowerSigned{Got: talliedVotingPower, Needed: votingPowerNeeded}
+	return ErrNotEnoughVotingCountSigned{Got: talliedVotingCount, Needed: votingCountNeeded}
 }
 
 // findPreviousProposer reverses the compare proposer priority function to find the validator
@@ -856,21 +863,21 @@ func (vals *ValidatorSet) findPreviousProposer() *Validator {
 
 //-----------------
 
-// IsErrNotEnoughVotingPowerSigned returns true if err is
-// ErrNotEnoughVotingPowerSigned.
-func IsErrNotEnoughVotingPowerSigned(err error) bool {
-	return errors.As(err, &ErrNotEnoughVotingPowerSigned{})
+// IsErrNotEnoughVotingCountSigned returns true if err is
+// ErrNotEnoughVotingCountSigned.
+func IsErrNotEnoughVotingCountSigned(err error) bool {
+	return errors.As(err, &ErrNotEnoughVotingCountSigned{})
 }
 
-// ErrNotEnoughVotingPowerSigned is returned when not enough validators signed
+// ErrNotEnoughVotingCountSigned is returned when not enough validators signed
 // a commit.
-type ErrNotEnoughVotingPowerSigned struct {
+type ErrNotEnoughVotingCountSigned struct {
 	Got    int64
 	Needed int64
 }
 
-func (e ErrNotEnoughVotingPowerSigned) Error() string {
-	return fmt.Sprintf("invalid commit -- insufficient voting power: got %d, needed more than %d", e.Got, e.Needed)
+func (e ErrNotEnoughVotingCountSigned) Error() string {
+	return fmt.Sprintf("invalid commit -- insufficient voting count: got %d, needed more than %d", e.Got, e.Needed)
 }
 
 //----------------
