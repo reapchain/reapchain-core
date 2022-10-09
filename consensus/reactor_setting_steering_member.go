@@ -20,10 +20,15 @@ OUTER_LOOP:
 		rs := conR.conS.GetRoundState()
 		prs := ps.GetRoundState()
 
-		if rs.Height == prs.Height {
-			if ps.PickSendSettingSteeringMember(conR.conS.state.SettingSteeringMember) {
-				time.Sleep(conR.conS.config.PeerGossipSleepDuration)
-				continue OUTER_LOOP
+		if rs.LockedBlock != nil {
+			consensusStartBlockHeight := rs.LockedBlock.ConsensusRound.ConsensusStartBlockHeight
+			roundPeriod := rs.LockedBlock.ConsensusRound.Period
+
+			if consensusStartBlockHeight <= prs.Height && prs.Height < consensusStartBlockHeight + int64(roundPeriod) {
+				if ps.PickSendSettingSteeringMember(conR.conS.state.SettingSteeringMember) {
+					time.Sleep(conR.conS.config.PeerGossipSleepDuration)
+					continue OUTER_LOOP
+				}
 			}
 		}
 

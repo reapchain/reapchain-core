@@ -123,7 +123,9 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 	}
 
 	if (conR.CatchupSettingSteeringMemberMessage != nil) {
-		state.SettingSteeringMember = conR.CatchupSettingSteeringMemberMessage.SettingSteeringMember
+		if (state.ConsensusRound.ConsensusStartBlockHeight + int64(state.ConsensusRound.Period) == conR.CatchupSettingSteeringMemberMessage.SettingSteeringMember.Height)  {
+			state.SettingSteeringMember = conR.CatchupSettingSteeringMemberMessage.SettingSteeringMember
+		}
 	}
 
 	// TODO: stompesi - catchup
@@ -137,7 +139,6 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 
 	conR.mtx.Lock()
 	conR.waitSync = false
-
 	conR.mtx.Unlock()
 	conR.Metrics.FastSyncing.Set(0)
 	conR.Metrics.StateSyncing.Set(0)
@@ -216,15 +217,6 @@ func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 // InitPeer implements Reactor by creating a state for the peer.
 func (conR *Reactor) InitPeer(peer p2p.Peer) p2p.Peer {
 	peerState := NewPeerState(peer).SetLogger(conR.Logger)
-
-	// cs := conR.conS
-	// cs.mtx.RLock()
-	// height, steeringMemberCandidate := cs.Height, cs.RoundState.SteeringMemberCandidateSet.Size()
-	// height, standingMemberSize := cs.Height, cs.RoundState.StandingMemberSet.Size()
-	// cs.mtx.RUnlock()
-	// peerState.EnsureVrfBitArrays(height, steeringMemberCandidate)
-	// peerState.EnsureQrnBitArrays(height, standingMemberSize)
-
 	peer.Set(types.PeerStateKey, peerState)
 	return peer
 }
