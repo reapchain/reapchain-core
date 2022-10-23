@@ -22,6 +22,11 @@ var (
 	stateKey = []byte("stateKey")
 )
 
+// rollback state key
+var (
+	rollbackStateKey = []byte("rollbackStateKey")
+)
+
 //-----------------------------------------------------------------------------
 
 // InitStateVersion sets the Consensus.Block and Software versions,

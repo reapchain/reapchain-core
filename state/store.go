@@ -87,6 +87,8 @@ type Store interface {
 	LoadFromDBOrGenesisDoc(*types.GenesisDoc) (State, error)
 	// Load loads the current state of the blockchain
 	Load() (State, error)
+	// Load loads the rollback state of the blockchain
+	LoadRollback() (State, error)
 	// LoadValidators loads the validator set at a given height
 	LoadValidators(int64) (*types.ValidatorSet, error)
 	// LoadABCIResponses loads the abciResponse for a given height
@@ -195,9 +197,46 @@ func (store dbStore) loadState(key []byte) (state State, err error) {
 	return *sm, nil
 }
 
+// LoadState loads the State from the database.
+func (store dbStore) LoadRollback() (State, error) {
+	return store.loadState(rollbackStateKey)
+}
+
+func (store dbStore) loadRollbackState(key []byte) (state State, err error) {
+	buf, err := store.db.Get(key)
+	if err != nil {
+		return state, err
+	}
+
+	if len(buf) == 0 {
+		return state, nil
+	}
+
+	sp := new(tmstate.State)
+
+	err = proto.Unmarshal(buf, sp)
+	if err != nil {
+		// DATA HAS BEEN CORRUPTED OR THE SPEC HAS CHANGED
+		tmos.Exit(fmt.Sprintf(`LoadState: Data has been corrupted or its spec has changed:
+		%v\n`, err))
+	}
+
+	sm, err := StateFromProto(sp)
+	if err != nil {
+		return state, err
+	}
+
+	return *sm, nil
+}
+
 // Save persists the State, the ValidatorsInfo, and the ConsensusParamsInfo to the database.
 // This flushes the writes (e.g. calls SetSync).
 func (store dbStore) Save(state State) error {
+	if (state.ConsensusRound.ConsensusStartBlockHeight - 1 == state.LastBlockHeight ) {
+		fmt.Println("stompesi - rallback 저장", state.ConsensusRound.ConsensusStartBlockHeight, state.LastBlockHeight)
+		store.save(state, rollbackStateKey)	
+	}
+
 	return store.save(state, stateKey)
 }
 

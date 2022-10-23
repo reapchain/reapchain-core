@@ -114,26 +114,25 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 		conR.conS.reconstructLastCommit(state)
 	}
 
-		for _, currentVrfMessage := range conR.CatchupVrfMessages {
+	for _, currentVrfMessage := range conR.CatchupVrfMessages {
 		state.NextVrfSet.AddVrf(currentVrfMessage.Vrf)
 	}
 
 	for _, currentQrnMessage := range conR.CatchupQrnMessages {
 		state.NextQrnSet.AddQrn(currentQrnMessage.Qrn)
 	}
-
+	
 	if (conR.CatchupSettingSteeringMemberMessage != nil) {
 		if (state.ConsensusRound.ConsensusStartBlockHeight + int64(state.ConsensusRound.Period) == conR.CatchupSettingSteeringMemberMessage.SettingSteeringMember.Height)  {
 			state.SettingSteeringMember = conR.CatchupSettingSteeringMemberMessage.SettingSteeringMember
 		}
 	}
 
-	// TODO: stompesi - catchup
 	fmt.Println("stompesi - conR.CatchupQrnMessages", conR.CatchupQrnMessages)
 	fmt.Println("stompesi - conR.CatchupVrfMessages", conR.CatchupVrfMessages)
 	fmt.Println("stompesi - conR.CatchupSettingSteeringMemberMessage", conR.CatchupSettingSteeringMemberMessage)
 
-		// NOTE: The line below causes broadcastNewRoundStepRoutine() to broadcast a
+	// NOTE: The line below causes broadcastNewRoundStepRoutine() to broadcast a
 	// NewRoundStepMessage.
 	conR.conS.updateToState(state)
 

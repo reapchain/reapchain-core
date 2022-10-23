@@ -414,6 +414,17 @@ func (bs *BlockStore) saveState() {
 	SaveBlockStoreState(&bss, bs.db)
 }
 
+func (bs *BlockStore) SaveRollbackBlock(height int64) {
+	bs.mtx.RLock()
+	bss := tmstore.BlockStoreState{
+		Base:   1,
+		Height: height,
+	}
+	bs.mtx.RUnlock()
+
+	SaveBlockStoreState(&bss, bs.db)
+}
+
 // SaveSeenCommit saves a seen commit, used by e.g. the state sync reactor when bootstrapping node.
 func (bs *BlockStore) SaveSeenCommit(height int64, seenCommit *types.Commit) error {
 	pbc := seenCommit.ToProto()
