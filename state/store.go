@@ -21,8 +21,6 @@ const (
 	// https://github.com/reapchain/reapchain-core/pull/3438
 	// 100000 results in ~ 100ms to get 100 validators (see BenchmarkLoadValidators)
 	valSetCheckpointInterval                     = 100000
-	standingMemberSetCheckpointInterval          = 100000
-	steeringMemberCandidateSetCheckpointInterval = 100000
 )
 
 //------------------------------------------------------------------------
@@ -428,7 +426,7 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 	keepSettingSteeringMember := make(map[int64]bool)
 	if SettingSteeringMemberInfo.SettingSteeringMember == nil {
 		keepSettingSteeringMember[SettingSteeringMemberInfo.LastHeightChanged] = true
-		keepSettingSteeringMember[lastStoredHeightFor(to, SettingSteeringMemberInfo.LastHeightChanged)] = true // keep last checkpoint too
+		keepSettingSteeringMember[tmmath.MaxInt64(to, SettingSteeringMemberInfo.LastHeightChanged)] = true
 	}
 
 	keepVals := make(map[int64]bool)
@@ -451,7 +449,7 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 	keepQrnSet := make(map[int64]bool)
 	if qrnsInfo.QrnSet == nil {
 		keepQrnSet[qrnsInfo.LastHeightChanged] = true
-		keepQrnSet[lastStoredHeightFor(to, qrnsInfo.LastHeightChanged)] = true // keep last checkpoint too
+		keepQrnSet[tmmath.MaxInt64(to, qrnsInfo.LastHeightChanged)] = true // keep last checkpoint too
 	}
 
 	batch := store.db.NewBatch()
@@ -845,7 +843,7 @@ func (store dbStore) saveStandingMembersInfo(height, lastHeightChanged int64, st
 		LastHeightChanged:         lastHeightChanged,
 		CurrentCoordinatorRanking: standingMemberSet.CurrentCoordinatorRanking,
 	}
-	if height == lastHeightChanged || height%standingMemberSetCheckpointInterval == 0 {
+	if height == lastHeightChanged || height%valSetCheckpointInterval == 0 {
 		standingMemberSetProto, err := standingMemberSet.ToProto()
 		if err != nil {
 			return err
@@ -871,7 +869,7 @@ func (store dbStore) saveSteeringMemberCandidatesInfo(height, lastHeightChanged 
 		LastHeightChanged: lastHeightChanged,
 	}
 
-	if height == lastHeightChanged || height%steeringMemberCandidateSetCheckpointInterval == 0 {
+	if height == lastHeightChanged || height%valSetCheckpointInterval == 0 {
 		steeringMemberCandidateSetProto, err := steeringMemberCandidateSet.ToProto()
 		if err != nil {
 			return err
@@ -1075,7 +1073,7 @@ func (store dbStore) LoadQrnSet(height int64) (*types.QrnSet, error) {
 	}
 
 	if qrnSetInfo.QrnSet == nil {
-		lastStoredHeight := lastStoredHeightFor(height, qrnSetInfo.LastHeightChanged)
+		lastStoredHeight := qrnSetInfo.LastHeightChanged
 		qrnSetInfo2, err := loadQrnSetInfo(store.db, lastStoredHeight)
 		if err != nil || qrnSetInfo2.QrnSet == nil {
 			return nil,
@@ -1103,7 +1101,7 @@ func (store dbStore) LoadNextQrnSet(height int64) (*types.QrnSet, error) {
 	}
 
 	if qrnSetInfo.QrnSet == nil {
-		lastStoredHeight := lastStoredHeightFor(height, qrnSetInfo.LastHeightChanged)
+		lastStoredHeight := qrnSetInfo.LastHeightChanged
 		qrnSetInfo2, err := loadNextQrnSetInfo(store.db, lastStoredHeight)
 		if err != nil || qrnSetInfo2.QrnSet == nil {
 			return nil,
@@ -1142,7 +1140,7 @@ func (store dbStore) LoadVrfSet(height int64) (*types.VrfSet, error) {
 	}
 
 	if vrfSetInfo.VrfSet == nil {
-		lastStoredHeight := lastStoredHeightFor(height, vrfSetInfo.LastHeightChanged)
+		lastStoredHeight := vrfSetInfo.LastHeightChanged
 		vrfSetInfo2, err := loadVrfSetInfo(store.db, lastStoredHeight)
 		if err != nil || vrfSetInfo2.VrfSet == nil {
 			return nil,
@@ -1170,7 +1168,9 @@ func (store dbStore) LoadNextVrfSet(height int64) (*types.VrfSet, error) {
 	}
 
 	if vrfSetInfo.VrfSet == nil {
-		lastStoredHeight := lastStoredHeightFor(height, vrfSetInfo.LastHeightChanged)
+		lastStoredHeight := vrfSetInfo.LastHeightChanged
+
+		fmt.Println("stompesi - lastStoredHeight", lastStoredHeight)
 		vrfSetInfo2, err := loadNextVrfSetInfo(store.db, lastStoredHeight)
 		if err != nil || vrfSetInfo2.VrfSet == nil {
 			return nil,
@@ -1200,7 +1200,7 @@ func (store dbStore) LoadConsensusRound(height int64) (tmproto.ConsensusRound, e
 	}
 
 	if consensusRoundInfo.ConsensusRound.Equal(&empty) {
-		lastStoredHeight := lastStoredHeightFor(height, consensusRoundInfo.LastHeightChanged)
+		lastStoredHeight := consensusRoundInfo.LastHeightChanged
 		consensusRoundInfo2, err := loadConsensusRoundInfo(store.db, lastStoredHeight)
 		if err != nil {
 			return empty,
