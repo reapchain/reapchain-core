@@ -148,7 +148,6 @@ func runProxy(cmd *cobra.Command, args []string) error {
 	options := []light.Option{
 		light.Logger(logger),
 		light.ConfirmationFunction(func(action string) bool {
-			fmt.Println(action)
 			scanner := bufio.NewScanner(os.Stdin)
 			for {
 				scanner.Scan()

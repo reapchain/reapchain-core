@@ -231,7 +231,6 @@ func (store dbStore) loadRollbackState(key []byte) (state State, err error) {
 // This flushes the writes (e.g. calls SetSync).
 func (store dbStore) Save(state State) error {
 	if (state.ConsensusRound.ConsensusStartBlockHeight - 1 == state.LastBlockHeight ) {
-		fmt.Println("stompesi - rallback 저장", state.ConsensusRound.ConsensusStartBlockHeight, state.LastBlockHeight)
 		store.save(state, rollbackStateKey)	
 	}
 
@@ -1169,8 +1168,6 @@ func (store dbStore) LoadNextVrfSet(height int64) (*types.VrfSet, error) {
 
 	if vrfSetInfo.VrfSet == nil {
 		lastStoredHeight := vrfSetInfo.LastHeightChanged
-
-		fmt.Println("stompesi - lastStoredHeight", lastStoredHeight)
 		vrfSetInfo2, err := loadNextVrfSetInfo(store.db, lastStoredHeight)
 		if err != nil || vrfSetInfo2.VrfSet == nil {
 			return nil,

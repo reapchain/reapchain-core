@@ -128,10 +128,6 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 		}
 	}
 
-	fmt.Println("stompesi - conR.CatchupQrnMessages", conR.CatchupQrnMessages)
-	fmt.Println("stompesi - conR.CatchupVrfMessages", conR.CatchupVrfMessages)
-	fmt.Println("stompesi - conR.CatchupSettingSteeringMemberMessage", conR.CatchupSettingSteeringMemberMessage)
-
 	// NOTE: The line below causes broadcastNewRoundStepRoutine() to broadcast a
 	// NewRoundStepMessage.
 	conR.conS.updateToState(state)
@@ -370,7 +366,6 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 
 	case QrnChannel:
 		if conR.WaitSync() {
-			fmt.Println("stompesi - tryAddCatchupQrnMessage : 싱크중")
 			switch msg := msg.(type) {
 				case *QrnMessage:
 					conR.mtx.Lock()
@@ -400,7 +395,6 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 
 	case VrfChannel:
 		if conR.WaitSync() {
-			fmt.Println("stompesi - tryAddCatchupVrfMessage : 싱크중")
 			switch msg := msg.(type) {
 				case *VrfMessage:
 					conR.mtx.Lock()
@@ -429,7 +423,6 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 
 	case SettingSteeringMemberChannel:
 		if conR.WaitSync() {
-			fmt.Println("stompesi - tryAddCatchupSettingSteeringMemberMessage : 싱크중")
 			switch msg := msg.(type) {
 				case *SettingSteeringMemberMessage:
 					conR.mtx.Lock()

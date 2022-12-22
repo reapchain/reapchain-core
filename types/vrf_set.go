@@ -208,10 +208,8 @@ func (vrfSet *VrfSet) BitArray() *bits.BitArray {
 		return nil
 	}
 
-	// fmt.Println("stompesi - BitArray - lock")
 	vrfSet.mtx.Lock()
 	defer func() {
-		// fmt.Println("stompesi - BitArray - unlock")
 		vrfSet.mtx.Unlock()
 	}()
 
@@ -300,6 +298,7 @@ func (vrfSet *VrfSet) GetSteeringMemberAddresses() *SettingSteeringMember {
 	}
 	return nil
 }
+
 func VrfSetFromExistingVrfs(vrfs []*Vrf) (*VrfSet, error) {
 	if len(vrfs) == 0 {
 		return nil, errors.New("vrf set is empty")

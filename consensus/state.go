@@ -469,9 +469,6 @@ func (cs *State) OpenWAL(walFile string) (WAL, error) {
 
 // AddVote inputs a vote.
 func (cs *State) AddVote(vote *types.Vote, peerID p2p.ID) (added bool, err error) {
-	// dt := time.Now()
-	// fmt.Println("AddVote - time is: ", dt.String())
-
 	if peerID == "" {
 		cs.internalMsgQueue <- msgInfo{&VoteMessage{vote}, ""}
 	} else {
@@ -484,9 +481,6 @@ func (cs *State) AddVote(vote *types.Vote, peerID p2p.ID) (added bool, err error
 
 // SetProposal inputs a proposal.
 func (cs *State) SetProposal(proposal *types.Proposal, peerID p2p.ID) error {
-	// dt := time.Now()
-	// fmt.Println("SetProposal - time is: ", dt.String())
-
 	if peerID == "" {
 		cs.internalMsgQueue <- msgInfo{&ProposalMessage{proposal}, ""}
 	} else {
@@ -499,9 +493,6 @@ func (cs *State) SetProposal(proposal *types.Proposal, peerID p2p.ID) error {
 
 // AddProposalBlockPart inputs a part of the proposal block.
 func (cs *State) AddProposalBlockPart(height int64, round int32, part *types.Part, peerID p2p.ID) error {
-	// dt := time.Now()
-	// fmt.Println("AddProposalBlockPart - time is: ", dt.String())
-
 	if peerID == "" {
 		cs.internalMsgQueue <- msgInfo{&BlockPartMessage{height, round, part}, ""}
 	} else {
@@ -519,9 +510,6 @@ func (cs *State) SetProposalAndBlock(
 	parts *types.PartSet,
 	peerID p2p.ID,
 ) error {
-	// dt := time.Now()
-	// fmt.Println("SetProposalAndBlock - time is: ", dt.String())
-
 	if err := cs.SetProposal(proposal, peerID); err != nil {
 		return err
 	}
@@ -1095,9 +1083,6 @@ func (cs *State) enterPropose(height int64, round int32) {
 		return
 	}
 
-	// dt := time.Now()
-	// fmt.Println("Entering propose step - time is: ", dt.String())
-
 	defer func() {
 		// Done enterPropose:
 		cs.updateRoundStep(round, cstypes.RoundStepPropose)
@@ -1148,9 +1133,6 @@ func (cs *State) isProposer(address []byte) bool {
 }
 
 func (cs *State) defaultDecideProposal(height int64, round int32) {
-	// dt := time.Now()
-	// fmt.Println("Default decide proposal - time is: ", dt.String())
-
 	var block *types.Block
 	var blockParts *types.PartSet
 
@@ -1201,9 +1183,6 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 // Returns true if the proposal block is complete &&
 // (if POLRound was proposed, we have +2/3 prevotes from there).
 func (cs *State) isProposalComplete() bool {
-	// dt := time.Now()
-	// fmt.Println("Is proposal complete - time is: ", dt.String())
-
 	if cs.Proposal == nil || cs.ProposalBlock == nil {
 		return false
 	}
@@ -1225,9 +1204,6 @@ func (cs *State) isProposalComplete() bool {
 // NOTE: keep it side-effect free for clarity.
 // CONTRACT: cs.privValidator is not nil.
 func (cs *State) createProposalBlock() (block *types.Block, blockParts *types.PartSet) {
-	// dt := time.Now()
-	// fmt.Println("Create proposal block - time is: ", dt.String())
-
 	if cs.privValidator == nil {
 		panic("entered createProposalBlock with privValidator being nil")
 	}
@@ -1265,9 +1241,6 @@ func (cs *State) createProposalBlock() (block *types.Block, blockParts *types.Pa
 // Prevote for LockedBlock if we're locked, or ProposalBlock if valid.
 // Otherwise vote nil.
 func (cs *State) enterPrevote(height int64, round int32) {
-	// dt := time.Now()
-	// fmt.Println("Enter prevote - time is: ", dt.String())
-
 	logger := cs.Logger.With("height", height, "round", round)
 
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cstypes.RoundStepPrevote <= cs.Step) {
@@ -1294,9 +1267,6 @@ func (cs *State) enterPrevote(height int64, round int32) {
 }
 
 func (cs *State) defaultDoPrevote(height int64, round int32) {
-	// dt := time.Now()
-	// fmt.Println("Default oo prevote - time is: ", dt.String())
-
 	logger := cs.Logger.With("height", height, "round", round)
 
 	// If a block is locked, prevote that.
@@ -1531,9 +1501,6 @@ func (cs *State) enterCommit(height int64, commitRound int32) {
 		return
 	}
 
-	// dt := time.Now()
-	// fmt.Println("Entering commit step - time is: ", dt.String())
-
 	defer func() {
 		// Done enterCommit:
 		// keep cs.Round the same, commitRound points to the right Precommits set.
@@ -1744,7 +1711,7 @@ func (cs *State) finalizeCommit(height int64) {
 				
 				err := cs.privValidator.SignQrn(qrn)
 				if err != nil {
-					fmt.Println("Can't sign qrn", "err", err)
+					logger.Error("Can't sign qrn", "err", err)
 				} else {
 					cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
 				}
@@ -1771,7 +1738,6 @@ func (cs *State) finalizeCommit(height int64) {
 				if vrf.Verify() == false {
 					cs.Logger.Error("Invalid vrf sign")
 				} else {
-					fmt.Println("Send Vrf", address, height, vrf.SteeringMemberCandidatePubKey.Address(), vrf)
 					cs.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
 				}
 			}
@@ -1788,7 +1754,7 @@ func (cs *State) finalizeCommit(height int64) {
 
 					err := cs.privValidator.SignSettingSteeringMember(settingSteeringMember)
 					if err != nil {
-						fmt.Println("Can't sign settingSteeringMember", "err", err)
+						cs.Logger.Error("Can't sign settingSteeringMember", "err", err)
 					} else {
 						cs.sendInternalMessage(msgInfo{&SettingSteeringMemberMessage{settingSteeringMember}, ""})
 					}
@@ -1914,8 +1880,6 @@ func (cs *State) recordMetrics(height int64, block *types.Block) {
 //-----------------------------------------------------------------------------
 
 func (cs *State) defaultSetProposal(proposal *types.Proposal) error {
-	// dt := time.Now()
-	// fmt.Println("Set Proposal - time is: ", dt.String())
 	// Already have one
 	// TODO: possibly catch double proposals
 	if cs.Proposal != nil {
@@ -1958,8 +1922,6 @@ func (cs *State) defaultSetProposal(proposal *types.Proposal) error {
 // Asynchronously triggers either enterPrevote (before we timeout of propose) or tryFinalizeCommit,
 // once we have the full block.
 func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (added bool, err error) {
-	// dt := time.Now()
-	// fmt.Println("Add proposal blockart - time is: ", dt.String())
 	height, round, part := msg.Height, msg.Round, msg.Part
 
 	// Blocks might be reused, so round mismatch is OK
