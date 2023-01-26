@@ -5,12 +5,14 @@ import (
 	"reflect"
 	"time"
 
+	bc "github.com/reapchain/reapchain-core/blockchain"
 	cstypes "github.com/reapchain/reapchain-core/consensus/types"
 	"github.com/reapchain/reapchain-core/libs/bits"
 	tmevents "github.com/reapchain/reapchain-core/libs/events"
 	"github.com/reapchain/reapchain-core/libs/log"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	"github.com/reapchain/reapchain-core/p2p"
+	bcproto "github.com/reapchain/reapchain-core/proto/reapchain-core/blockchain"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"
@@ -24,6 +26,7 @@ const (
 	QrnChannel                   = byte(0x24)
 	VrfChannel                   = byte(0x25)
 	SettingSteeringMemberChannel = byte(0x26)
+	CatchUpChannel = byte(0x27)
 
 	maxMsgSize = 1048576 // 1MB; NOTE/TODO: keep in sync with types.PartSet sizes.
 
@@ -45,6 +48,7 @@ type Reactor struct {
 
 	Metrics *Metrics
 
+	stateStore sm.Store
 	CatchupQrnMessages []*QrnMessage
 	CatchupVrfMessages []*VrfMessage
 	CatchupSettingSteeringMemberMessage *SettingSteeringMemberMessage
@@ -54,9 +58,10 @@ type ReactorOption func(*Reactor)
 
 // NewReactor returns a new Reactor with the given
 // consensusState.
-func NewReactor(consensusState *State, waitSync bool, options ...ReactorOption) *Reactor {
+func NewReactor(consensusState *State, stateStore sm.Store, waitSync bool, options ...ReactorOption) *Reactor {
 	conR := &Reactor{
 		conS:     consensusState,
+		stateStore: stateStore,
 		waitSync: waitSync,
 		Metrics:  NopMetrics(),
 		CatchupQrnMessages: make([]*QrnMessage, 0),
@@ -206,6 +211,13 @@ func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 			RecvBufferCapacity:  50 * 4096,
 			RecvMessageCapacity: maxMsgSize,
 		},
+				{
+			ID:                  CatchUpChannel,
+			Priority:            10,
+			SendQueueCapacity:   100,
+			RecvBufferCapacity:  50 * 4096,
+			RecvMessageCapacity: maxMsgSize,
+		},
 	}
 }
 
@@ -267,6 +279,28 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 	if !conR.IsRunning() {
 		conR.Logger.Debug("Receive", "src", src, "chId", chID, "bytes", msgBytes)
 		return
+	}
+
+	switch chID {
+	case CatchUpChannel:
+		msg, _ := bc.DecodeMsg(msgBytes)
+		switch msg := msg.(type) {
+		case *bcproto.StateResponse:
+			state, err := sm.SyncStateFromProto(msg.State)
+
+			if err != nil {
+				conR.Logger.Error("State content is invalid", "err", err)
+				return
+			}
+			
+			for _, catchupState := range conR.conS.CatchupStates {
+				if (catchupState.LastBlockHeight == state.LastBlockHeight){
+					return
+				}
+			}
+			conR.conS.CatchupStates = append(conR.conS.CatchupStates, state)
+		}
+		return		
 	}
 
 	msg, err := decodeMsg(msgBytes)
@@ -703,6 +737,12 @@ func (conR *Reactor) gossipDataRoutine(peer p2p.Peer, ps *PeerState) {
 					// continue the loop since prs is a copy and not effected by this initialization
 					continue OUTER_LOOP
 				}
+
+				// if the peer is on syncying
+				if ( prs.Height < rs.Height - 1) {
+					conR.respondStateToPeer(prs.Height, peer)
+				}
+
 				conR.gossipDataForCatchup(heightLogger, rs, prs, ps, peer)
 				continue OUTER_LOOP
 			}

@@ -110,6 +110,8 @@ type State struct {
 	internalMsgQueue chan msgInfo
 	timeoutTicker    TimeoutTicker
 
+	CatchupStates []*sm.State
+
 	// information about about added votes and block parts are written on this channel
 	// so statistics can be computed by reactor
 	statsMsgQueue chan msgInfo
@@ -1656,6 +1658,28 @@ func (cs *State) finalizeCommit(height int64) {
 
 	// Create a copy of the state for staging and an event cache for txs.
 	stateCopy := cs.state.Copy()
+
+	if(len(cs.CatchupStates) != 0) {
+		for i := 0; i < (len(cs.CatchupStates) - 1); {
+			cs.CatchupStates = append(cs.CatchupStates[:i], cs.CatchupStates[i+1:]...)
+
+			if (block.Height == cs.CatchupStates[i].LastBlockHeight) {
+				for j :=0; j < (len(cs.CatchupStates[i].NextQrnSet.Qrns)); j++ {
+					stateCopy.NextQrnSet.AddQrn(cs.CatchupStates[i].NextQrnSet.Qrns[j])
+				}
+
+				for j :=0; j < (len(cs.CatchupStates[i].NextVrfSet.Vrfs)); j++ {
+					stateCopy.NextVrfSet.AddVrf(cs.CatchupStates[i].NextVrfSet.Vrfs[j])
+				}
+				
+				if cs.CatchupStates[i].SettingSteeringMember != nil {
+					stateCopy.SettingSteeringMember = cs.CatchupStates[i].SettingSteeringMember.Copy()
+				}
+
+				break;
+			}
+    }
+	}
 
 	// Execute and commit the block, update and save the state, and update the mempool.
 	// NOTE The block.AppHash wont reflect these txs until the next block.

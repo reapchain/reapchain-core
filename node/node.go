@@ -434,6 +434,7 @@ func createConsensusReactor(config *cfg.Config,
 	state sm.State,
 	blockExec *sm.BlockExecutor,
 	blockStore sm.BlockStore,
+	stateStore sm.Store,
 	mempool *mempl.CListMempool,
 	evidencePool *evidence.Pool,
 	privValidator types.PrivValidator,
@@ -455,7 +456,7 @@ func createConsensusReactor(config *cfg.Config,
 	if privValidator != nil {
 		consensusState.SetPrivValidator(privValidator)
 	}
-	consensusReactor := cs.NewReactor(consensusState, waitSync, cs.ReactorMetrics(csMetrics))
+	consensusReactor := cs.NewReactor(consensusState, stateStore, waitSync, cs.ReactorMetrics(csMetrics))
 	consensusReactor.SetLogger(consensusLogger)
 	// services which will be publishing and/or subscribing for messages (events)
 	// consensusReactor will set it on consensusState and blockExecutor
@@ -793,7 +794,7 @@ func NewNode(config *cfg.Config,
 		csMetrics.FastSyncing.Set(1)
 	}
 	consensusReactor, consensusState := createConsensusReactor(
-		config, state, blockExec, blockStore, mempool, evidencePool,
+		config, state, blockExec, blockStore, stateStore, mempool, evidencePool,
 		privValidator, csMetrics, stateSync || fastSync, eventBus, consensusLogger,
 	)
 
@@ -1328,6 +1329,7 @@ func makeNodeInfo(
 			cs.QrnChannel,
 			cs.VrfChannel,
 			cs.SettingSteeringMemberChannel,
+			cs.CatchUpChannel,
 			mempl.MempoolChannel,
 			evidence.EvidenceChannel,
 			statesync.SnapshotChannel,
