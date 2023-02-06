@@ -492,7 +492,9 @@ func updateState(
 	// Update the validator set with the latest abciResponses.
 	lastHeightValsChanged := state.LastHeightValidatorsChanged 
 
+	// Copy the standing member set so we can apply changes from EndBlock and update s.StandingMemberSet.
 	standingMemberSet := state.StandingMemberSet.Copy()
+	// Update the standing member set with the latest abciResponses.
 	lastHeightStandingMembersChanged := state.LastHeightStandingMembersChanged
 	
 	if len(standingMemberUpdates) > 0 { // add or remove standing members
@@ -506,9 +508,12 @@ func updateState(
 		state.LastHeightNextQrnChanged = header.Height + 1
 	}
 
+	// Copy the steering member candidate set so we can apply changes from EndBlock and update s.StandingMemberCandidateSet.
 	steeringMemberCandidateSet := state.SteeringMemberCandidateSet.Copy()
+	// Update the steering member candidate set with the latest abciResponses.
 	lastHeightSteeringMemberCandidatesChanged := state.LastHeightSteeringMemberCandidatesChanged
-	if len(steeringMemberCandidateUpdates) > 0 {
+
+	if len(steeringMemberCandidateUpdates) > 0 {// add or remove steering member candiates
 		err := steeringMemberCandidateSet.UpdateWithChangeSet(steeringMemberCandidateUpdates)
 		if err != nil {
 			return state, fmt.Errorf("error changing steering member candidate set: %v", err)
@@ -519,8 +524,9 @@ func updateState(
 		state.LastHeightNextVrfChanged = header.Height + 1
 	}
 
+	// if it has any update about the stanidng members or steering member candiates,
+	// update the validator set information (because the validator is added or removed)
 	if len(standingMemberUpdates) > 0 || len(steeringMemberCandidateUpdates) > 0 {
-
 		validators := make([]*types.Validator, 0, len(state.Validators.Validators))
 
 		currentNumberofSteeringMembers := 0
@@ -562,6 +568,7 @@ func updateState(
 		lastHeightParamsChanged = header.Height + 1
 	}
 
+	// Update the consensus round with the latest abciResponses.
 	currentConsensusRound := state.ConsensusRound
 	lastHeightConsensusRoundChanged := state.LastHeightConsensusRoundChanged
 	if abciResponses.EndBlock.ConsensusRoundUpdates != nil {
@@ -603,6 +610,8 @@ func updateState(
 		lastHeightConsensusRoundChanged = header.Height + 1
 	}
 
+	// if the currentConsensusRound's consensus start block height is current block height -2,
+	// it setting next Validator (for next consensus round)
 	if currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period) - 2 == header.Height {
 		validatorSize := len(standingMemberSet.StandingMembers)
 
@@ -630,7 +639,6 @@ func updateState(
 					break
 				}
 			}
-			// lastHeightSettingSteeringMemberChanged = header.Height + 1
 		}
 		
 		nValSet = types.NewValidatorSet(validators)
@@ -642,21 +650,26 @@ func updateState(
 
 	nextVersion := state.Version
 
+	// for store only the qrn period, it check the block height (in the qrn qeriod, it store the qrn information)
 	if (currentConsensusRound.ConsensusStartBlockHeight <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod)) {
 		state.LastHeightNextQrnChanged = header.Height + 1
 	}
 
+	// for store only the vrf period, it check the block height (in the vrf qeriod, it store the vrf information)
 	if (currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) + int64(currentConsensusRound.VrfPeriod)) {
 		state.LastHeightNextVrfChanged = header.Height + 1
 	}
 
+	// for store only the setting steering member period, it check the block height (in the setting steering member qeriod, it store the setting steering member information)
 	if (currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) + int64(currentConsensusRound.VrfPeriod) <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period)) {
 		state.LastHeightSettingSteeringMemberChanged = header.Height + 1
 	}
 
+	// update cordinator with qrns
 	standingMemberSet.SetCoordinator(state.QrnSet)
 	_, proposer := nValSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
 	nValSet.Proposer = proposer
+	
 	nValSet.UpdateTotalVotingPower()
 
 	// NOTE: the AppHash has not been populated.

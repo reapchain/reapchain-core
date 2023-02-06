@@ -7,6 +7,7 @@ import (
 	sm "github.com/reapchain/reapchain-core/state"
 )
 
+// When consensus sync is performed, the required state is delivered to the peer.
 func (bcR *BlockchainReactor) respondStateToPeer(msg *bcproto.StateRequest,
 	src p2p.Peer) (queued bool) {
 	settingSteeringMember, err := bcR.stateStore.LoadSettingSteeringMember(msg.Height+1)

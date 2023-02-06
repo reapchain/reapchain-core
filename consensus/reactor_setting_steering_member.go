@@ -7,6 +7,7 @@ import (
 	"github.com/reapchain/reapchain-core/p2p"
 )
 
+// Send the setting sttering members information
 func (conR *Reactor) gossipSettingSteeringMemberRoutine(peer p2p.Peer, ps *PeerState) {
 	logger := conR.Logger.With("peer", peer)
 
@@ -36,11 +37,11 @@ OUTER_LOOP:
 	}
 }
 
+// Receive handler that apply the catchup setting steering members information 
 func (conR *Reactor) tryAddCatchupSettingSteeringMemberMessage(settingSteeringMemberMessage *SettingSteeringMemberMessage) (error) {
 	if settingSteeringMemberMessage.SettingSteeringMember.VerifySign() == false {
 		return fmt.Errorf("Invalid seeting steering member sign")
 	}
-
 	
 	if conR.CatchupSettingSteeringMemberMessage == nil || 
 		 conR.CatchupSettingSteeringMemberMessage.SettingSteeringMember.Height < settingSteeringMemberMessage.SettingSteeringMember.Height {

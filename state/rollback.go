@@ -13,6 +13,7 @@ func Rollback(bs BlockStore, ss Store) (int64, []byte, error) {
 	if err != nil {
 		return -1, nil, err
 	}
+	
 	if rollbackState.IsEmpty() {
 		return -1, nil, errors.New("no state found")
 	}
@@ -24,11 +25,7 @@ func Rollback(bs BlockStore, ss Store) (int64, []byte, error) {
 		return -1, nil, fmt.Errorf("failed to save rolled back state: %w", err)
 	}
 
-
 	bs.SaveRollbackBlock(rollbackState.LastBlockHeight)
-	// bs.saveState()
-
-	// SaveBlockStoreState(&bss, bs.db)
 
 	return rollbackState.LastBlockHeight, rollbackState.AppHash, nil
 }

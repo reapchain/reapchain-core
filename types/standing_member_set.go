@@ -8,14 +8,23 @@ import (
 	"sort"
 
 	"github.com/reapchain/reapchain-core/crypto/merkle"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
+// It manages standing member list and cordinator
 type StandingMemberSet struct {
 	StandingMembers           []*StandingMember `json:"standing_members"`
 	Coordinator               *StandingMember   `json:"coordinator"`
-	CurrentCoordinatorRanking int64             `json:"current_coordinator_ranking"`
+	CurrentCoordinatorRanking int64             `json:"current_coordinator_ranking"` // current cordinator index
 }
+
+type QrnHash struct {
+	Address   Address `json:"address"`
+	HashValue uint64  `json:"hash_value"`
+}
+
+type QrnHashsByValue []*QrnHash
 
 func NewStandingMemberSet(standingMembers []*StandingMember) *StandingMemberSet {
 	standingMemberSet := &StandingMemberSet{}
@@ -29,6 +38,43 @@ func NewStandingMemberSet(standingMembers []*StandingMember) *StandingMemberSet 
 
 func (standingMemberSet *StandingMemberSet) UpdateWithChangeSet(standingMembers []*StandingMember) error {
 	return standingMemberSet.updateWithChangeSet(standingMembers)
+}
+
+// update the standing member set, when a SDK sends the changed standing member information and initialize.
+// It adds or removes the standing member from the managed list
+func (standingMemberSet *StandingMemberSet) updateWithChangeSet(changes []*StandingMember) error {
+	if len(changes) == 0 {
+		return nil
+	}
+
+	sort.Sort(SortedStandingMembers(changes))
+	
+	removals := make([]*StandingMember, 0, len(changes))
+	updates := make([]*StandingMember, 0, len(changes))
+	
+	var prevAddr Address
+	for _, standingMember := range changes {
+		if bytes.Equal(standingMember.Address, prevAddr) {
+			err := fmt.Errorf("duplicate entry %v in %v", standingMember, standingMember)
+			return err
+		}
+
+		if standingMember.VotingPower != 0 {
+			// add
+			updates = append(updates, standingMember)
+		} else {
+			// remove
+			removals = append(removals, standingMember)
+		}
+		prevAddr = standingMember.Address
+	}
+
+	standingMemberSet.applyUpdates(updates)
+	standingMemberSet.applyRemovals(removals)
+
+	sort.Sort(SortedStandingMembers(standingMemberSet.StandingMembers))
+
+	return nil
 }
 
 func (standingMemberSet *StandingMemberSet) ValidateBasic() error {
@@ -49,16 +95,12 @@ func (standingMemberSet *StandingMemberSet) IsNilOrEmpty() bool {
 	return standingMemberSet == nil || len(standingMemberSet.StandingMembers) == 0
 }
 
-func (standingMemberSet *StandingMemberSet) HasAddress(address []byte) bool {
-	for _, standingMember := range standingMemberSet.StandingMembers {
-		if bytes.Equal(standingMember.Address, address) {
-			return true
-		}
-	}
-	return false
-}
-
+// Make standing member set hash to validate and be included in the block header 
 func (standingMemberSet *StandingMemberSet) Hash() []byte {
+	if standingMemberSet == nil {
+		return tmhash.Sum([]byte{})
+	}
+	
 	bytesArray := make([][]byte, len(standingMemberSet.StandingMembers))
 	for idx, standingMember := range standingMemberSet.StandingMembers {
 		bytesArray[idx] = standingMember.Bytes()
@@ -66,60 +108,7 @@ func (standingMemberSet *StandingMemberSet) Hash() []byte {
 	return merkle.HashFromByteSlices(bytesArray)
 }
 
-type QrnHash struct {
-	Address   Address `json:"address"`
-	HashValue uint64  `json:"hash_value"`
-}
-
-type QrnHashsByValue []*QrnHash
-
-func (qrnHash QrnHashsByValue) Len() int { return len(qrnHash) }
-
-func (qrnHash QrnHashsByValue) Less(i, j int) bool {
-	return qrnHash[i].HashValue > qrnHash[j].HashValue
-}
-
-func (qrnHash QrnHashsByValue) Swap(i, j int) {
-	qrnHash[i], qrnHash[j] = qrnHash[j], qrnHash[i]
-}
-
-func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
-	standingMemberSet.Coordinator = nil
-
-	qrnHashs := make([]*QrnHash, qrnSet.Size())
-	qrnSetHash := qrnSet.Hash()
-
-	for i, qrn := range qrnSet.Qrns {
-		qrnHash := make([][]byte, 2)
-		qrnHash[0] = qrnSetHash
-		qrnHash[1] = qrn.GetQrnBytes()
-
-		address := qrn.StandingMemberPubKey.Address()
-		index, _ := standingMemberSet.GetStandingMemberByAddress(address)
-
-		qrnHashs[i] = &QrnHash{
-			Address:   qrn.StandingMemberPubKey.Address(),
-			HashValue: 0,
-		}
-
-		if index != -1 && qrn.Signature != nil {
-			qrnHashs[i].HashValue = encoding_binary.LittleEndian.Uint64(merkle.HashFromByteSlices(qrnHash))
-		}
-	}
-	
-	sort.Sort(QrnHashsByValue(qrnHashs))
-	_, standingMember := standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
-
-	for standingMember == nil {
-		standingMemberSet.CurrentCoordinatorRanking++
-		if standingMemberSet.CurrentCoordinatorRanking == int64(qrnSet.Size()) {
-			standingMemberSet.CurrentCoordinatorRanking = 0
-		}
-		_, standingMember = standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
-	}
-	standingMemberSet.Coordinator = standingMember
-}
-
+// Convert the standing member set's proto puffer type to this type to apply the reapchain-core
 func StandingMemberSetFromProto(standingMemberSetProto *tmproto.StandingMemberSet) (*StandingMemberSet, error) {
 	if standingMemberSetProto == nil {
 		return nil, errors.New("nil standing member set")
@@ -142,6 +131,7 @@ func StandingMemberSetFromProto(standingMemberSetProto *tmproto.StandingMemberSe
 	return standingMemberSet, standingMemberSet.ValidateBasic()
 }
 
+// Convert the type to proto puffer type to send the type to other peer or SDK
 func (standingMemberSet *StandingMemberSet) ToProto() (*tmproto.StandingMemberSet, error) {
 	if standingMemberSet.IsNilOrEmpty() == true {
 		return &tmproto.StandingMemberSet{}, nil
@@ -189,40 +179,14 @@ func (standingMemberSet *StandingMemberSet) Size() int {
 	}
 	return len(standingMemberSet.StandingMembers)
 }
-
-func (standingMemberSet *StandingMemberSet) updateWithChangeSet(changes []*StandingMember) error {
-	if len(changes) == 0 {
-		return nil
-	}
-
-	sort.Sort(SortedStandingMembers(changes))
-	
-	removals := make([]*StandingMember, 0, len(changes))
-	updates := make([]*StandingMember, 0, len(changes))
-	
-	var prevAddr Address
-	for _, standingMember := range changes {
-		if bytes.Equal(standingMember.Address, prevAddr) {
-			err := fmt.Errorf("duplicate entry %v in %v", standingMember, standingMember)
-			return err
+// Check whether the standing member's address is included in the standing member set
+func (standingMemberSet *StandingMemberSet) HasAddress(address []byte) bool {
+	for _, standingMember := range standingMemberSet.StandingMembers {
+		if bytes.Equal(standingMember.Address, address) {
+			return true
 		}
-
-		if standingMember.VotingPower != 0 {
-			// add
-			updates = append(updates, standingMember)
-		} else {
-			// remove
-			removals = append(removals, standingMember)
-		}
-		prevAddr = standingMember.Address
 	}
-
-	standingMemberSet.applyUpdates(updates)
-	standingMemberSet.applyRemovals(removals)
-
-	sort.Sort(SortedStandingMembers(standingMemberSet.StandingMembers))
-
-	return nil
+	return false
 }
 
 func (standingMemberSet *StandingMemberSet) GetStandingMemberByIdx(idx int32) (address []byte, standingMember *StandingMember) {
@@ -245,6 +209,9 @@ func (standingMemberSet *StandingMemberSet) GetStandingMemberByAddress(address [
 	return -1, nil
 }
 
+// Merges the standing member list with the updates list.
+// When two elements with same address are seen, the one from updates is selected.
+// Expects updates to be a list of updates sorted by address with no duplicates or errors.
 func (standingMemberSet *StandingMemberSet) applyUpdates(updates []*StandingMember) {
 	existing := standingMemberSet.StandingMembers
 	sort.Sort(SortedStandingMembers(existing))
@@ -282,6 +249,9 @@ func (standingMemberSet *StandingMemberSet) applyUpdates(updates []*StandingMemb
 	standingMemberSet.StandingMembers = merged[:i]
 }
 
+// Removes the standing member specified in 'deletes'.
+// Should not fail as verification has been done before.
+// Expects vals to be sorted by address (done by applyUpdates).
 func (standingMemberSet *StandingMemberSet) applyRemovals(deletes []*StandingMember) {
 	existing := standingMemberSet.StandingMembers
 	merged := make([]*StandingMember, 0, len(existing))
@@ -326,4 +296,55 @@ func StandingMemberSetFromExistingStandingMembers(standingMembers []*StandingMem
 	}
 	
 	return standingMemberSet, nil
+}
+
+// ---- Sorting with qrn hash ----
+func (qrnHash QrnHashsByValue) Len() int { return len(qrnHash) }
+
+func (qrnHash QrnHashsByValue) Less(i, j int) bool {
+	return qrnHash[i].HashValue > qrnHash[j].HashValue
+}
+
+func (qrnHash QrnHashsByValue) Swap(i, j int) {
+	qrnHash[i], qrnHash[j] = qrnHash[j], qrnHash[i]
+}
+// --------------------------------
+
+
+// Set the cordinator with qrnSet
+func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
+	standingMemberSet.Coordinator = nil
+
+	qrnHashs := make([]*QrnHash, qrnSet.Size())
+	qrnSetHash := qrnSet.Hash()
+
+	for i, qrn := range qrnSet.Qrns {
+		qrnHash := make([][]byte, 2)
+		qrnHash[0] = qrnSetHash
+		qrnHash[1] = qrn.GetQrnBytes()
+
+		address := qrn.StandingMemberPubKey.Address()
+		index, _ := standingMemberSet.GetStandingMemberByAddress(address)
+
+		qrnHashs[i] = &QrnHash{
+			Address:   qrn.StandingMemberPubKey.Address(),
+			HashValue: 0,
+		}
+
+		if index != -1 && qrn.Signature != nil {
+			qrnHashs[i].HashValue = encoding_binary.LittleEndian.Uint64(merkle.HashFromByteSlices(qrnHash))
+		}
+	}
+	
+	sort.Sort(QrnHashsByValue(qrnHashs))
+	_, standingMember := standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
+
+	for standingMember == nil {
+		standingMemberSet.CurrentCoordinatorRanking++
+		if standingMemberSet.CurrentCoordinatorRanking == int64(qrnSet.Size()) {
+			standingMemberSet.CurrentCoordinatorRanking = 0
+		}
+		_, standingMember = standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
+	}
+	standingMemberSet.Coordinator = standingMember
 }

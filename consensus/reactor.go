@@ -399,6 +399,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 		}
 
 	case QrnChannel:
+		// if fast sync the message is added in catchup state
 		if conR.WaitSync() {
 			switch msg := msg.(type) {
 				case *QrnMessage:
@@ -412,6 +413,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 		switch msg := msg.(type) {
 		case *HasQrnMessage:
 			ps.ApplyHasQrnMessage(msg)
+			
 		case *QrnMessage:
 			cs := conR.conS
 			cs.mtx.RLock()
@@ -428,6 +430,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 		}
 
 	case VrfChannel:
+		// if fast sync the message is added in catchup state
 		if conR.WaitSync() {
 			switch msg := msg.(type) {
 				case *VrfMessage:
@@ -456,6 +459,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 		}
 
 	case SettingSteeringMemberChannel:
+		// if fast sync the message is added in catchup state
 		if conR.WaitSync() {
 			switch msg := msg.(type) {
 				case *SettingSteeringMemberMessage:

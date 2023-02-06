@@ -8,13 +8,11 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto/merkle"
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
-	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
+// It manages steering member candidate list
 type SteeringMemberCandidateSet struct {
-	mtx     tmsync.Mutex
-	
 	SteeringMemberCandidates []*SteeringMemberCandidate `json:"steering_member_candidates"`
 }
 
@@ -29,11 +27,51 @@ func NewSteeringMemberCandidateSet(steeringMemberCandidates []*SteeringMemberCan
 	return steeringMemberCandidateSet
 }
 
+func (steeringMemberCandidateSet *SteeringMemberCandidateSet) UpdateWithChangeSet(standingMemberCandiates []*SteeringMemberCandidate) error {
+	return steeringMemberCandidateSet.updateWithChangeSet(standingMemberCandiates)
+}
+
+// update the steering member candiate set, when a SDK sends the changed steering member candiate information and initialize.
+// It adds or removes the steering member candiate from the managed list
+func (steeringMemberCandidateSet *SteeringMemberCandidateSet) updateWithChangeSet(changes []*SteeringMemberCandidate) error {
+	if len(changes) == 0 {
+		return nil
+	}
+
+	sort.Sort(SortedSteeringMemberCandidates(changes))
+	
+	removals := make([]*SteeringMemberCandidate, 0, len(changes))
+	updates := make([]*SteeringMemberCandidate, 0, len(changes))
+	
+	var prevAddr Address
+	for _, steeringMemberCandidate := range changes {
+		if bytes.Equal(steeringMemberCandidate.Address, prevAddr) {
+			err := fmt.Errorf("duplicate entry %v in %v", steeringMemberCandidate, steeringMemberCandidate)
+			return err
+		}
+
+		if steeringMemberCandidate.VotingPower != 0 {
+			// add
+			updates = append(updates, steeringMemberCandidate)
+		} else {
+			// remove
+			removals = append(removals, steeringMemberCandidate)
+		}
+		prevAddr = steeringMemberCandidate.Address
+	}
+
+	steeringMemberCandidateSet.applyUpdates(updates)
+	steeringMemberCandidateSet.applyRemovals(removals)
+
+	sort.Sort(SortedSteeringMemberCandidates(steeringMemberCandidateSet.SteeringMemberCandidates))
+
+	return nil
+}
+
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) ValidateBasic() error {
-	// if steeringMemberCandidateSet.IsNilOrEmpty() {
-	// 	return errors.New("steering member candidate set is nil or empty")
-	// 	// return nil
-	// }
+	if steeringMemberCandidateSet.IsNilOrEmpty() {
+		return errors.New("steering member candidate set is nil or empty")
+	}
 
 	for idx, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
 		if err := steeringMemberCandidate.ValidateBasic(); err != nil {
@@ -48,6 +86,7 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) IsNilOrEmpty() boo
 	return steeringMemberCandidateSet == nil || len(steeringMemberCandidateSet.SteeringMemberCandidates) == 0
 }
 
+// Make steering member candiate set hash to validate and be included in the block header
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) Hash() []byte {
 	if steeringMemberCandidateSet == nil {
 		return tmhash.Sum([]byte{})
@@ -60,6 +99,28 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) Hash() []byte {
 	return merkle.HashFromByteSlices(bytesArray)
 }
 
+// Convert the steering member candiate set's proto puffer type to this type to apply the reapchain-core
+func SteeringMemberCandidateSetFromProto(steeringMemberCandidateSetProto *tmproto.SteeringMemberCandidateSet) (*SteeringMemberCandidateSet, error) {
+	steeringMemberCandidateSet := new(SteeringMemberCandidateSet)
+	if steeringMemberCandidateSetProto == nil {
+		return steeringMemberCandidateSet, nil
+	}
+
+	steeringMemberCandidates := make([]*SteeringMemberCandidate, len(steeringMemberCandidateSetProto.SteeringMemberCandidates))
+	for i := 0; i < len(steeringMemberCandidateSetProto.SteeringMemberCandidates); i++ {
+		steeringMemberCandidate, err := SteeringMemberCandidateFromProto(steeringMemberCandidateSetProto.SteeringMemberCandidates[i])
+		if err != nil {
+			return nil, err
+		}
+		steeringMemberCandidates[i] = steeringMemberCandidate
+	}
+
+	steeringMemberCandidateSet.SteeringMemberCandidates = steeringMemberCandidates
+
+	return steeringMemberCandidateSet, steeringMemberCandidateSet.ValidateBasic()
+}
+
+// Convert the type to proto puffer type to send the type to other peer or SDK
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) ToProto() (*tmproto.SteeringMemberCandidateSet, error) {
 	if steeringMemberCandidateSet.IsNilOrEmpty() == true {
 		return &tmproto.SteeringMemberCandidateSet{}, nil
@@ -109,44 +170,7 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) Size() int {
 	return len(steeringMemberCandidateSet.SteeringMemberCandidates)
 }
 
-func (steeringMemberCandidateSet *SteeringMemberCandidateSet) UpdateWithChangeSet(changes []*SteeringMemberCandidate) error {
-	steeringMemberCandidateSet.mtx.Lock()
-	defer steeringMemberCandidateSet.mtx.Unlock()
-	
-	if len(changes) == 0 {
-		return nil
-	}
-
-	sort.Sort(SortedSteeringMemberCandidates(changes))
-	
-	removals := make([]*SteeringMemberCandidate, 0, len(changes))
-	updates := make([]*SteeringMemberCandidate, 0, len(changes))
-	
-	var prevAddr Address
-	for _, steeringMemberCandidate := range changes {
-		if bytes.Equal(steeringMemberCandidate.Address, prevAddr) {
-			err := fmt.Errorf("duplicate entry %v in %v", steeringMemberCandidate, steeringMemberCandidate)
-			return err
-		}
-
-		if steeringMemberCandidate.VotingPower != 0 {
-			// add
-			updates = append(updates, steeringMemberCandidate)
-		} else {
-			// remove
-			removals = append(removals, steeringMemberCandidate)
-		}
-		prevAddr = steeringMemberCandidate.Address
-	}
-
-	steeringMemberCandidateSet.applyUpdates(updates)
-	steeringMemberCandidateSet.applyRemovals(removals)
-
-	sort.Sort(SortedSteeringMemberCandidates(steeringMemberCandidateSet.SteeringMemberCandidates))
-
-	return nil
-}
-
+// Check whether the steering member candiate's address is included in the steering member candidate set
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) HasAddress(address []byte) bool {
 	for _, steeringMemberCandidate := range steeringMemberCandidateSet.SteeringMemberCandidates {
 		if bytes.Equal(steeringMemberCandidate.Address, address) {
@@ -176,26 +200,9 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) GetSteeringMemberC
 	return -1, nil
 }
 
-func SteeringMemberCandidateSetFromProto(steeringMemberCandidateSetProto *tmproto.SteeringMemberCandidateSet) (*SteeringMemberCandidateSet, error) {
-	steeringMemberCandidateSet := new(SteeringMemberCandidateSet)
-	if steeringMemberCandidateSetProto == nil {
-		return steeringMemberCandidateSet, nil
-	}
-
-	steeringMemberCandidates := make([]*SteeringMemberCandidate, len(steeringMemberCandidateSetProto.SteeringMemberCandidates))
-	for i := 0; i < len(steeringMemberCandidateSetProto.SteeringMemberCandidates); i++ {
-		steeringMemberCandidate, err := SteeringMemberCandidateFromProto(steeringMemberCandidateSetProto.SteeringMemberCandidates[i])
-		if err != nil {
-			return nil, err
-		}
-		steeringMemberCandidates[i] = steeringMemberCandidate
-	}
-
-	steeringMemberCandidateSet.SteeringMemberCandidates = steeringMemberCandidates
-
-	return steeringMemberCandidateSet, steeringMemberCandidateSet.ValidateBasic()
-}
-
+// Merges the steering member candidate list with the updates list.
+// When two elements with same address are seen, the one from updates is selected.
+// Expects updates to be a list of updates sorted by address with no duplicates or errors.
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyUpdates(updates []*SteeringMemberCandidate) {
 	existing := steeringMemberCandidateSet.SteeringMemberCandidates
 	sort.Sort(SortedSteeringMemberCandidates(existing))
@@ -233,6 +240,9 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyUpdates(updat
 	steeringMemberCandidateSet.SteeringMemberCandidates = merged[:i]
 }
 
+// Removes the steering member candiate specified in 'deletes'.
+// Should not fail as verification has been done before.
+// Expects vals to be sorted by address (done by applyUpdates).
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyRemovals(deletes []*SteeringMemberCandidate) {
 	existing := steeringMemberCandidateSet.SteeringMemberCandidates	
 	merged := make([]*SteeringMemberCandidate, 0, len(existing))
@@ -259,6 +269,8 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) applyRemovals(dele
 	steeringMemberCandidateSet.SteeringMemberCandidates = merged[:i]
 }
 
+// It replace the steering member candiate with new steering member candate list,
+// and return the new steering member candidate set.
 func SteeringMemberCandidateSetFromExistingSteeringMemberCandidates(steeringMemberCandidates []*SteeringMemberCandidate) (*SteeringMemberCandidateSet, error) {
 	if len(steeringMemberCandidates) == 0 {
 		return nil, errors.New("steering member candidate set is empty")

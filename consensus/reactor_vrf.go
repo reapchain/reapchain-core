@@ -36,7 +36,6 @@ OUTER_LOOP:
 	}
 }
 
-
 func (conR *Reactor) tryAddCatchupVrfMessage(vrfMessage *VrfMessage) (error) {
 	if vrfMessage == nil {
 		return fmt.Errorf("VrfMessage is nil")
