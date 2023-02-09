@@ -123,7 +123,7 @@ message Message {
     SignVrfRequest        sign_vrf_request        = 13;
     SignedVrfResponse     signed_vrf_response     = 14;
     
-    SignSettingSteeringMemberRequest signed_setting_steering_member_request = 15;
+    SignSettingSteeringMemberRequest sign_setting_steering_member_request = 15;
     SignedSettingSteeringMemberResponse     signed_setting_steering_member_response     = 16;
     
   }
