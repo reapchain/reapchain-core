@@ -14,12 +14,12 @@ const (
 	nilSettingSteeringMembertr string = "nil-SettingSteeringMember"
 )
 
-// It manages steering member information which are generated via cordinator
+// It manages steering member information which are generated via coordinator
 type SettingSteeringMember struct {
 	Height                int64         `json:"height"`
 	Timestamp             time.Time     `json:"timestamp"`
 	CoordinatorPubKey     crypto.PubKey `json:"coordinator_pub_key"`
-	SteeringMemberAddresses [][]byte       `json:"steering_member_indexes"`
+	SteeringMemberAddresses [][]byte       `json:"steering_member_addresses"`
 	Signature             []byte        `json:"signature"`
 }
 
@@ -38,7 +38,7 @@ func (settingSteeringMember *SettingSteeringMember) ValidateBasic() error {
 		return errors.New("negative Height")
 	}
 
-	// check cordinator address
+	// check coordinator address
 	coordinatorAddress := settingSteeringMember.CoordinatorPubKey.Address()
 	if len(coordinatorAddress) != crypto.AddressSize {
 		return fmt.Errorf("expected StandingMemberAddress size to be %d bytes, got %d bytes",
@@ -58,7 +58,7 @@ func (settingSteeringMember *SettingSteeringMember) Copy() *SettingSteeringMembe
 	return &settingSteeringMemberCopy
 }
 
-// It is called via cordinator for signing the steering members who are selected as validator next round.
+// It is called via coordinator for signing the steering members who are selected as validator next round.
 // It returns the bytes of the steering members
 func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberBytesForSign() []byte {
 	if settingSteeringMember == nil {
@@ -109,7 +109,7 @@ func (settingSteeringMember *SettingSteeringMember) GetBytesForSign() []byte {
 	return SettingSteeringMemberignBytes
 }
 
-// Validate the cordinator sign.
+// Validate the coordinator sign.
 // Each node gets own cornidator information and checks the settingSteeringMember is valid with the signature which is included the type
 func (settingSteeringMember *SettingSteeringMember) VerifySign() bool {
 	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign()
