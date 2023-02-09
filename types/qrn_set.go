@@ -13,6 +13,7 @@ import (
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
+// It manages QRN list of consensus round
 type QrnSet struct {
 	Height            int64
 	mtx               tmsync.Mutex
@@ -36,28 +37,7 @@ func NewQrnSet(height int64, standingMemberSet *StandingMemberSet, qrns []*Qrn) 
 	}
 }
 
-func QrnSetFromProto(qrnSetProto *tmproto.QrnSet) (*QrnSet, error) {
-	if qrnSetProto == nil {
-		return nil, errors.New("nil qrn set")
-	}
-
-	qrnSet := new(QrnSet)
-	qrns := make([]*Qrn, len(qrnSetProto.Qrns))
-
-	for i, qrnProto := range qrnSetProto.Qrns {
-		qrn := QrnFromProto(qrnProto)
-		if qrn == nil {
-			return nil, errors.New(nilQrnStr)
-		}
-		qrns[i] = qrn
-	}
-	qrnSet.Height = qrnSetProto.Height
-	qrnSet.QrnsBitArray = bits.NewBitArray(len(qrns))
-	qrnSet.Qrns = qrns
-
-	return qrnSet, qrnSet.ValidateBasic()
-}
-
+// Validate all QRNs in the set
 func (qrnSet *QrnSet) ValidateBasic() error {
 	if qrnSet == nil || len(qrnSet.Qrns) == 0 {
 		return errors.New("qrn set is nil or empty")
@@ -72,6 +52,7 @@ func (qrnSet *QrnSet) ValidateBasic() error {
 	return nil
 }
 
+// Return the current consensus round height of QRN set
 func (qrnSet *QrnSet) GetHeight() int64 {
 	if qrnSet == nil {
 		return 0
@@ -91,6 +72,8 @@ func (qrnSet *QrnSet) IsNilOrEmpty() bool {
 	return qrnSet == nil || len(qrnSet.Qrns) == 0
 }
 
+// For get seed number, it returns the max qrn hash value in the qrn set
+// the qrn hash value is calculated by Hash(qrnListHash, qrn[i])
 func (qrnSet *QrnSet) GetMaxValue() uint64 {
 	maxValue := uint64(0)
 	qrnSetHash := qrnSet.Hash()
@@ -109,18 +92,17 @@ func (qrnSet *QrnSet) GetMaxValue() uint64 {
 	return maxValue
 }
 
+// Add qrn in the set
 func (qrnSet *QrnSet) AddQrn(qrn *Qrn) bool {
 	qrnSet.mtx.Lock()
 	defer qrnSet.mtx.Unlock()
 
 	if qrn == nil {
-		// return fmt.Errorf("Qrn is nil")
 		return false
 	}
 	
 	if qrn.Value != 0 {
 		if qrn.VerifySign() == false {
-			// return fmt.Errorf("Invalid qrn sign")
 			return false
 		}
 	
@@ -132,7 +114,6 @@ func (qrnSet *QrnSet) AddQrn(qrn *Qrn) bool {
 	qrnIndex := qrnSet.GetQrnIndexByAddress(qrn.StandingMemberPubKey.Address())
 
 	if qrnIndex == -1 {
-		// return fmt.Errorf("Not exist standing member of qrn: %v", qrn.StandingMemberPubKey.Address())
 		return false
 	}
 
@@ -145,6 +126,7 @@ func (qrnSet *QrnSet) AddQrn(qrn *Qrn) bool {
 	return false
 }
 
+// Get qrn with standing member public key
 func (qrnSet *QrnSet) GetQrn(standingMemberPubKey crypto.PubKey) (qrn *Qrn) {
 	qrnIndex := qrnSet.GetQrnIndexByAddress(standingMemberPubKey.Address())
 
@@ -155,6 +137,7 @@ func (qrnSet *QrnSet) GetQrn(standingMemberPubKey crypto.PubKey) (qrn *Qrn) {
 	return nil
 }
 
+// Generate qrn list hash
 func (qrnSet *QrnSet) Hash() []byte {
 	qrnBytesArray := make([][]byte, len(qrnSet.Qrns))
 	for i, qrn := range qrnSet.Qrns {
@@ -184,6 +167,28 @@ func (qrnSet *QrnSet) ToProto() (*tmproto.QrnSet, error) {
 	return qrnSetProto, nil
 }
 
+func QrnSetFromProto(qrnSetProto *tmproto.QrnSet) (*QrnSet, error) {
+	if qrnSetProto == nil {
+		return nil, errors.New("nil qrn set")
+	}
+
+	qrnSet := new(QrnSet)
+	qrns := make([]*Qrn, len(qrnSetProto.Qrns))
+
+	for i, qrnProto := range qrnSetProto.Qrns {
+		qrn := QrnFromProto(qrnProto)
+		if qrn == nil {
+			return nil, errors.New(nilQrnStr)
+		}
+		qrns[i] = qrn
+	}
+	qrnSet.Height = qrnSetProto.Height
+	qrnSet.QrnsBitArray = bits.NewBitArray(len(qrns))
+	qrnSet.Qrns = qrns
+
+	return qrnSet, qrnSet.ValidateBasic()
+}
+
 func (qrnSet *QrnSet) Copy() *QrnSet {
 	if qrnSet == nil {
 		return nil
@@ -211,6 +216,18 @@ func (qrnSet *QrnSet) GetByIndex(qrnIndex int32) *Qrn {
 	return qrnSet.Qrns[qrnIndex]
 }
 
+func (qrnSet *QrnSet) GetQrnIndexByAddress(address []byte) (int32) {
+	if qrnSet == nil {
+		return -1
+	}
+	for idx, qrn := range qrnSet.Qrns {
+		if bytes.Equal(qrn.StandingMemberPubKey.Address(), address) {
+			return int32(idx)
+		}
+	}
+	return -1
+}
+
 func (qrnSet *QrnSet) BitArray() *bits.BitArray {
 	if qrnSet == nil {
 		return nil
@@ -228,6 +245,8 @@ type QrnSetReader interface {
 	GetByIndex(int32) *Qrn
 }
 
+// update the qrn set, when a SDK sends the changed standing member information and initialize.
+// It adds or removes the qrn from the managed list
 func (qrnSet *QrnSet) UpdateWithChangeSet(standingMemberSet *StandingMemberSet) error {
 	qrnSet.mtx.Lock()
 	defer qrnSet.mtx.Unlock()
@@ -255,18 +274,8 @@ func (qrnSet *QrnSet) UpdateWithChangeSet(standingMemberSet *StandingMemberSet) 
 	return nil
 }
 
-func (qrnSet *QrnSet) GetQrnIndexByAddress(address []byte) (int32) {
-	if qrnSet == nil {
-		return -1
-	}
-	for idx, qrn := range qrnSet.Qrns {
-		if bytes.Equal(qrn.StandingMemberPubKey.Address(), address) {
-			return int32(idx)
-		}
-	}
-	return -1
-}
-
+// Check an address is included in qrn set at the consensus round.
+// It means that the address is whether it is standing member or not standing member.
 func (qrnSet *QrnSet) HasAddress(address []byte) (bool) {
 	if qrnSet == nil {
 		return false

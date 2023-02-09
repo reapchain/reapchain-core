@@ -47,6 +47,7 @@ var Routes = map[string]*rpc.RPCFunc{
 	// evidence API
 	"broadcast_evidence": rpc.NewRPCFunc(BroadcastEvidence, "evidence"),
 
+	// consensus API
 	"standing_members": rpc.NewRPCFunc(StandingMembers, "height"),
 	"qrns":             rpc.NewRPCFunc(Qrns, "height"),
 	"vrfs":             rpc.NewRPCFunc(Vrfs, "height"),

@@ -422,6 +422,7 @@ FOR_LOOP:
 				continue FOR_LOOP
 			}
 
+			// See if there are any states to sync.
 			firstState, secondState := bcR.statePool.PeekTwoStates()
 			if firstState == nil || secondState == nil {
 				didProcessCh <- struct{}{}

@@ -328,6 +328,7 @@ func execBlockOnProxyApp(
 		return nil, errors.New("nil header")
 	}
 
+	// Generate check list whether steering member candidates sent VRF in consensus round.
 	vrfCheckList := types.GetVrfCheckList(vrfSet)
 
 	// Send block information
@@ -665,7 +666,7 @@ func updateState(
 		state.LastHeightSettingSteeringMemberChanged = header.Height + 1
 	}
 
-	// update cordinator with qrns
+	// update coordinator with qrns
 	standingMemberSet.SetCoordinator(state.QrnSet)
 	_, proposer := nValSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
 	nValSet.Proposer = proposer

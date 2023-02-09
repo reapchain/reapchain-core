@@ -5,13 +5,7 @@ import (
 	"github.com/reapchain/reapchain-core/types"
 )
 
-func (ps *PeerState) setHasQrn(height int64, index int32) {
-	psQrns := ps.getQrnBitArray(height)
-	if psQrns != nil {
-		psQrns.SetIndex(int(index), true)
-	}
-}
-
+// Set a flag that the peer has a qrn
 func (ps *PeerState) SetHasQrn(qrn *types.Qrn) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
@@ -19,8 +13,16 @@ func (ps *PeerState) SetHasQrn(qrn *types.Qrn) {
 	ps.setHasQrn(qrn.Height, qrn.QrnIndex)
 }
 
+func (ps *PeerState) setHasQrn(height int64, index int32) {
+	psQrns := ps.getQrnBitArray(height)
+	if psQrns != nil {
+		psQrns.SetIndex(int(index), true)
+	}
+}
+
+// Select a random qrn which is not sent to the peer, and send the qrn to the peer
 func (ps *PeerState) PickSendQrn(qrnSet types.QrnSetReader) bool {
-	if qrn, ok := ps.PickQrnToSend(qrnSet); ok {
+	if qrn, ok := ps.pickQrnToSend(qrnSet); ok {
 		msg := &QrnMessage{qrn}
 
 		if ps.peer.Send(QrnChannel, MustEncode(msg)) {
@@ -32,7 +34,8 @@ func (ps *PeerState) PickSendQrn(qrnSet types.QrnSetReader) bool {
 	return false
 }
 
-func (ps *PeerState) PickQrnToSend(qrnSet types.QrnSetReader) (qrn *types.Qrn, ok bool) {
+// Select a random qrn which is not sent to the peer.
+func (ps *PeerState) pickQrnToSend(qrnSet types.QrnSetReader) (qrn *types.Qrn, ok bool) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
 
@@ -62,6 +65,8 @@ func (ps *PeerState) PickQrnToSend(qrnSet types.QrnSetReader) (qrn *types.Qrn, o
 	return nil, false
 }
 
+// Check a bit array whether the bit array exists or not exists in the next consensus round of the peer. 
+// After that, if the bit array does not exist, generate the bit array with a size of standing member count.
 func (ps *PeerState) EnsureQrnBitArrays(height int64, numStandingMembers int) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
@@ -76,6 +81,7 @@ func (ps *PeerState) ensureQrnBitArrays(height int64, numStandingMembers int) {
 	}
 }
 
+// Get a bit array of the consensus round hight.
 func (ps *PeerState) getQrnBitArray(height int64) *bits.BitArray {
 	if ps.NextConsensusStartBlockHeight == height {
 		return ps.QrnsBitArray

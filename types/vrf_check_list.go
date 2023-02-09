@@ -4,7 +4,8 @@ import (
 	abci "github.com/reapchain/reapchain-core/abci/types"
 )
 
-
+// It communicates with SDK.
+// It represents whether the steering member candidate sent a VRF in the consensus round (VRF set).
 func NewVrfCheck(vrf *Vrf) *abci.VrfCheck {
 	if vrf == nil {
 		return nil
@@ -21,6 +22,8 @@ func NewVrfCheck(vrf *Vrf) *abci.VrfCheck {
 
 	return vrfCheck
 }
+
+// Generate checklist for each steering member candidate whether the steering member candidate sent a VRF in the consensus round (VRF set).
 func GetVrfCheckList(vrfSet *VrfSet) abci.VrfCheckList {
 
 	vrfCheckList := make([]*abci.VrfCheck, vrfSet.Size())

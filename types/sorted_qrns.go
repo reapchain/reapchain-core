@@ -1,5 +1,6 @@
 package types
 
+// For sorting qrns with vlaue
 type SortedQrns []*Qrn
 
 func (sms SortedQrns) Len() int { return len(sms) }

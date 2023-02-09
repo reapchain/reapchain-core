@@ -1726,14 +1726,16 @@ func (cs *State) finalizeCommit(height int64) {
 		logger.Error("failed to get private validator pubkey", "err", err)
 	}
 
-	if cs.state.ConsensusRound.ConsensusStartBlockHeight-1 == height || 1 == height {
+	// When the qrnPeriod, if the node is a standing member, generate qrn information and send the qrn message to the internal message.
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight - 1 == height || 1 == height {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
+			// Check whether the node is standing member
 			if cs.state.NextQrnSet.HasAddress(address) == true {
 				qrnValue := tmrand.Uint64()
 				qrn := types.NewQrn(cs.state.NextQrnSet.GetHeight(), cs.privValidatorPubKey, qrnValue)
-				
 				err := cs.privValidator.SignQrn(qrn)
+
 				if err != nil {
 					logger.Error("Can't sign qrn", "err", err)
 				} else {
@@ -1741,9 +1743,12 @@ func (cs *State) finalizeCommit(height int64) {
 				}
 			}
 		}
-	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod)-1 == height {
+	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.QrnPeriod) - 1 == height {
+		// When the vrfPeriod, if the node is a steering member candidate, generate vrf information and send the vrf message to the internal message.
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
+			
+			// Check whether the node is steering member candidate
 			if cs.state.NextVrfSet.HasAddress(address) == true {
 				isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
 
@@ -1766,9 +1771,12 @@ func (cs *State) finalizeCommit(height int64) {
 				}
 			}
 		}
-	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod+cs.state.ConsensusRound.VrfPeriod)-1 == height {
+	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.QrnPeriod + cs.state.ConsensusRound.VrfPeriod) - 1 == height {
+		// When the validatorPeriod, if the node is a coordinator in a standing member set, select steering member based on VRF and send the message to the internal message.
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
+			
+			// Check whether the node is coordinator
 			if cs.isProposer(address) {
 				settingSteeringMember := cs.state.NextVrfSet.GetSteeringMemberAddresses()
 

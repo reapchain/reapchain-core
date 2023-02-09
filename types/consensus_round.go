@@ -14,6 +14,10 @@ const (
 	DefaultConsensusRoundPeriod          = 12
 )
 
+// It manages the consensus round period
+// QrnPeriod (4): it it period that standing members generate QRN and broadcast the QRN to all nodes
+// VrfPeriod (4): it is period that steering member candidates generate VRF with seed (qrn) and broadcast the VRF to all nodes
+// ValidatorPeriod (4): it is period that coordinator sends the steering member who are elected via VRF and set the steering members at each node 
 type ConsensusRound struct {
 	ConsensusStartBlockHeight int64  `json:"consensus_start_block_height"`
 	Period                    uint64 `json:"period"`
@@ -53,26 +57,6 @@ func (consensusRoundInfo ConsensusRound) ValidateBasic() error {
 	return nil
 }
 
-func (consensusRound *ConsensusRound) ToProto() tmproto.ConsensusRound {
-	return tmproto.ConsensusRound{
-		ConsensusStartBlockHeight: consensusRound.ConsensusStartBlockHeight,
-		QrnPeriod:                 consensusRound.QrnPeriod,
-		VrfPeriod:                 consensusRound.VrfPeriod,
-		ValidatorPeriod:           consensusRound.ValidatorPeriod,
-		Period:                    consensusRound.Period,
-	}
-}
-
-func ConsensusRoundFromProto(consensusRoundProto tmproto.ConsensusRound) (ConsensusRound, error) {
-	return ConsensusRound{
-		ConsensusStartBlockHeight: consensusRoundProto.ConsensusStartBlockHeight,
-		QrnPeriod:                 consensusRoundProto.QrnPeriod,
-		VrfPeriod:                 consensusRoundProto.VrfPeriod,
-		ValidatorPeriod:           consensusRoundProto.ValidatorPeriod,
-		Period:                    consensusRoundProto.Period,
-	}, nil
-}
-
 func ValidateConsensusRound(consensusRound tmproto.ConsensusRound, height int64) error {
 	if consensusRound.ConsensusStartBlockHeight >= height {
 		return fmt.Errorf("QrnPeriod must be greater than height. Got %d, height %d",
@@ -103,6 +87,7 @@ func ValidateConsensusRound(consensusRound tmproto.ConsensusRound, height int64)
 	return nil
 }
 
+// update the consensus round info, when a SDK sends the changed steering member candidate information and initialize.
 func UpdateConsensusRound(currentConsensusRound tmproto.ConsensusRound, nextConsensusRound *abci.ConsensusRound) tmproto.ConsensusRound {
 	res := currentConsensusRound // explicit copy
 
@@ -116,4 +101,24 @@ func UpdateConsensusRound(currentConsensusRound tmproto.ConsensusRound, nextCons
 	res.Period = nextConsensusRound.Period
 
 	return res
+}
+
+func (consensusRound *ConsensusRound) ToProto() tmproto.ConsensusRound {
+	return tmproto.ConsensusRound{
+		ConsensusStartBlockHeight: consensusRound.ConsensusStartBlockHeight,
+		QrnPeriod:                 consensusRound.QrnPeriod,
+		VrfPeriod:                 consensusRound.VrfPeriod,
+		ValidatorPeriod:           consensusRound.ValidatorPeriod,
+		Period:                    consensusRound.Period,
+	}
+}
+
+func ConsensusRoundFromProto(consensusRoundProto tmproto.ConsensusRound) (ConsensusRound, error) {
+	return ConsensusRound{
+		ConsensusStartBlockHeight: consensusRoundProto.ConsensusStartBlockHeight,
+		QrnPeriod:                 consensusRoundProto.QrnPeriod,
+		VrfPeriod:                 consensusRoundProto.VrfPeriod,
+		ValidatorPeriod:           consensusRoundProto.ValidatorPeriod,
+		Period:                    consensusRoundProto.Period,
+	}, nil
 }

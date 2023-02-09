@@ -21,7 +21,7 @@ type VrfSet struct {
 
 	mtx          tmsync.Mutex
 	Vrfs         []*Vrf
-	VrfsBitArray *bits.BitArray
+	VrfsBitArray *bits.BitArray // It is used to check existings of VRF 
 }
 
 func NewVrfSet(height int64, steeringMemberCandidateSet *SteeringMemberCandidateSet, vrfs []*Vrf) *VrfSet {
@@ -40,30 +40,6 @@ func NewVrfSet(height int64, steeringMemberCandidateSet *SteeringMemberCandidate
 		Vrfs:                       vrfs,
 	}
 }
-
-// Function to transform from ProtocolBuffer to the corresponding type
-func VrfSetFromProto(vrfSetProto *tmproto.VrfSet) (*VrfSet, error) {
-	if vrfSetProto == nil {
-		return nil, errors.New("nil vrf set")
-	}
-
-	vrfSet := new(VrfSet)
-	vrfs := make([]*Vrf, len(vrfSetProto.Vrfs))
-
-	for i, vrfProto := range vrfSetProto.Vrfs {
-		vrf := VrfFromProto(vrfProto)
-		if vrf == nil {
-			return nil, errors.New(nilVrfStr)
-		}
-		vrfs[i] = vrf
-	}
-	vrfSet.Height = vrfSetProto.Height
-	vrfSet.VrfsBitArray = bits.NewBitArray(len(vrfs))
-	vrfSet.Vrfs = vrfs
-
-	return vrfSet, vrfSet.ValidateBasic()
-}
-
 // Check all vrfs in the VRF list
 func (vrfSet *VrfSet) ValidateBasic() error {
 	for idx, vrf := range vrfSet.Vrfs {
@@ -96,6 +72,30 @@ func (vrfSet *VrfSet) IsNilOrEmpty() bool {
 	return vrfSet == nil || len(vrfSet.Vrfs) == 0
 }
 
+// Function to transform from ProtocolBuffer to the corresponding type
+func VrfSetFromProto(vrfSetProto *tmproto.VrfSet) (*VrfSet, error) {
+	if vrfSetProto == nil {
+		return nil, errors.New("nil vrf set")
+	}
+
+	vrfSet := new(VrfSet)
+	vrfs := make([]*Vrf, len(vrfSetProto.Vrfs))
+
+	for i, vrfProto := range vrfSetProto.Vrfs {
+		vrf := VrfFromProto(vrfProto)
+		if vrf == nil {
+			return nil, errors.New(nilVrfStr)
+		}
+		vrfs[i] = vrf
+	}
+	vrfSet.Height = vrfSetProto.Height
+	vrfSet.VrfsBitArray = bits.NewBitArray(len(vrfs))
+	vrfSet.Vrfs = vrfs
+
+	return vrfSet, vrfSet.ValidateBasic()
+}
+
+// Add vrf in the set
 func (vrfSet *VrfSet) AddVrf(vrf *Vrf) bool {
 	vrfSet.mtx.Lock()
 	defer func() {
@@ -117,7 +117,6 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) bool {
 		}
 	}
 
-
 	vrfIndex := vrfSet.GetVrfIndexByAddress(vrf.SteeringMemberCandidatePubKey.Address())
 	
 	if vrfIndex == -1 {
@@ -127,6 +126,8 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) bool {
 	if vrfSet.VrfsBitArray.GetIndex(int(vrfIndex)) == false {
 		vrf.VrfIndex = vrfIndex
 		vrfSet.Vrfs[vrfIndex] = vrf.Copy()
+		
+		// Set the vrf flag (true == existing)
 		vrfSet.VrfsBitArray.SetIndex(int(vrfIndex), true)
 		return true
 	}
@@ -134,6 +135,7 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) bool {
 	return false
 }
 
+// Get vrf with steering member candidate public key
 func (vrfSet *VrfSet) GetVrf(steeringMemberCandidatePubKey crypto.PubKey) (vrf *Vrf) {
 	vrfIndex := vrfSet.GetVrfIndexByAddress(steeringMemberCandidatePubKey.Address())
 
@@ -202,6 +204,18 @@ func (vrfSet *VrfSet) GetByIndex(vrfIndex int32) *Vrf {
 	return vrfSet.Vrfs[vrfIndex]
 }
 
+func (vrfSet *VrfSet) GetVrfIndexByAddress(address []byte) (int32) {
+	if vrfSet == nil {
+		return -1
+	}
+	for idx, vrf := range vrfSet.Vrfs {
+		if bytes.Equal(vrf.SteeringMemberCandidatePubKey.Address(), address) {
+			return int32(idx)
+		}
+	}
+	return -1
+}
+
 func (vrfSet *VrfSet) BitArray() *bits.BitArray {
 	if vrfSet == nil {
 		return nil
@@ -222,6 +236,8 @@ type VrfSetReader interface {
 	GetByIndex(int32) *Vrf
 }
 
+// update the vrf set, when a SDK sends the changed steering member candidate information and initialize.
+// It adds or removes the vrf from the managed list
 func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
 	vrfSet.mtx.Lock()
 	defer func() {
@@ -251,18 +267,8 @@ func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMe
 	return nil
 }
 
-func (vrfSet *VrfSet) GetVrfIndexByAddress(address []byte) (int32) {
-	if vrfSet == nil {
-		return -1
-	}
-	for idx, vrf := range vrfSet.Vrfs {
-		if bytes.Equal(vrf.SteeringMemberCandidatePubKey.Address(), address) {
-			return int32(idx)
-		}
-	}
-	return -1
-}
-
+// Check an address is included in vrf set at the consensus round.
+// It means that the address is whether it is steering member candidate or not steering member candidate.
 func (vrfSet *VrfSet) HasAddress(address []byte) (bool) {
 	if vrfSet == nil {
 		return false
@@ -275,6 +281,7 @@ func (vrfSet *VrfSet) HasAddress(address []byte) (bool) {
 	return false
 }
 
+// Get steering member addresses selected as validators for the next consensus round.
 func (vrfSet *VrfSet) GetSteeringMemberAddresses() *SettingSteeringMember {
 	if len(vrfSet.Vrfs) != 0 {
 		sort.Sort(SortedVrfs(vrfSet.Vrfs))

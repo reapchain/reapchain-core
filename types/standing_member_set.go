@@ -12,11 +12,11 @@ import (
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
-// It manages standing member list and cordinator
+// It manages standing member list and coordinator
 type StandingMemberSet struct {
 	StandingMembers           []*StandingMember `json:"standing_members"`
 	Coordinator               *StandingMember   `json:"coordinator"`
-	CurrentCoordinatorRanking int64             `json:"current_coordinator_ranking"` // current cordinator index
+	CurrentCoordinatorRanking int64             `json:"current_coordinator_ranking"` // current coordinator index
 }
 
 type QrnHash struct {
@@ -311,7 +311,7 @@ func (qrnHash QrnHashsByValue) Swap(i, j int) {
 // --------------------------------
 
 
-// Set the cordinator with qrnSet
+// Set the coordinator with qrnSet
 func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 	standingMemberSet.Coordinator = nil
 

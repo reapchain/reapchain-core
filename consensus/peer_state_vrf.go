@@ -5,13 +5,7 @@ import (
 	"github.com/reapchain/reapchain-core/types"
 )
 
-func (ps *PeerState) setHasVrf(height int64, index int32) {
-	psVrfs := ps.getVrfBitArray(height)
-	if psVrfs != nil {
-		psVrfs.SetIndex(int(index), true)
-	}
-}
-
+// Set a flag that the peer has a vrf
 func (ps *PeerState) SetHasVrf(vrf *types.Vrf) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
@@ -19,6 +13,14 @@ func (ps *PeerState) SetHasVrf(vrf *types.Vrf) {
 	ps.setHasVrf(vrf.Height, vrf.VrfIndex)
 }
 
+func (ps *PeerState) setHasVrf(height int64, index int32) {
+	psVrfs := ps.getVrfBitArray(height)
+	if psVrfs != nil {
+		psVrfs.SetIndex(int(index), true)
+	}
+}
+
+// Select a random vrf which is not sent to the peer, and send the vrf to the peer
 func (ps *PeerState) PickSendVrf(vrfSet types.VrfSetReader) bool {
 	if vrf, ok := ps.PickVrfToSend(vrfSet); ok {
 		msg := &VrfMessage{vrf}
@@ -33,6 +35,7 @@ func (ps *PeerState) PickSendVrf(vrfSet types.VrfSetReader) bool {
 	return false
 }
 
+// Select a random vrf which is not sent to the peer.
 func (ps *PeerState) PickVrfToSend(vrfSet types.VrfSetReader) (vrf *types.Vrf, ok bool) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
@@ -63,6 +66,8 @@ func (ps *PeerState) PickVrfToSend(vrfSet types.VrfSetReader) (vrf *types.Vrf, o
 	return nil, false
 }
 
+// Check a bit array whether the bit array exists or not exists in the next consensus round of the peer. 
+// After that, if the bit array does not exist, generate the bit array with a size of steering member candidate count.
 func (ps *PeerState) EnsureVrfBitArrays(height int64, numSteeringMemberCandidates int) {
 	ps.mtx.Lock()
 	defer ps.mtx.Unlock()
@@ -77,6 +82,7 @@ func (ps *PeerState) ensureVrfBitArrays(height int64, numSteeringMemberCandidate
 	}
 }
 
+// Get a bit array of the consensus round hight.
 func (ps *PeerState) getVrfBitArray(height int64) *bits.BitArray {
 	if ps.NextConsensusStartBlockHeight == height {
 		return ps.VrfsBitArray

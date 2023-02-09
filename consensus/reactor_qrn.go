@@ -8,6 +8,8 @@ import (
 	"github.com/reapchain/reapchain-core/p2p"
 )
 
+// It plays the role of passing the QRN information
+// it has to other peers while running in an infinite loop.
 func (conR *Reactor) gossipQrnsRoutine(peer p2p.Peer, ps *PeerState) {
 	logger := conR.Logger.With("peer", peer)
 
@@ -26,6 +28,8 @@ OUTER_LOOP:
 			roundPeriod := rs.LockedBlock.ConsensusRound.Period
 
 			if consensusStartBlockHeight <= prs.Height && prs.Height < consensusStartBlockHeight + int64(roundPeriod) {
+				// Random select peer for sending qrn.
+				// If the qrn is already sent to a peer, the peer is not selected.
 				if ps.PickSendQrn(conR.conS.state.NextQrnSet) {
 					continue OUTER_LOOP
 				}
@@ -36,6 +40,8 @@ OUTER_LOOP:
 	}
 }
 
+// Try add the qrn which are from other peers.
+// It only works, when the node is syncying.
 func (conR *Reactor) tryAddCatchupQrnMessage(qrnMessage *QrnMessage) (error) {
 	if qrnMessage == nil {
 		return fmt.Errorf("QrnMessage is nil")

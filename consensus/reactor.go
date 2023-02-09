@@ -118,15 +118,18 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 	if state.LastBlockHeight > 0 {
 		conR.conS.reconstructLastCommit(state)
 	}
-
-	for _, currentVrfMessage := range conR.CatchupVrfMessages {
-		state.NextVrfSet.AddVrf(currentVrfMessage.Vrf)
-	}
-
+	
+	// if we have CatchupQrnMessages, add the qrns
 	for _, currentQrnMessage := range conR.CatchupQrnMessages {
 		state.NextQrnSet.AddQrn(currentQrnMessage.Qrn)
 	}
+
+	// if we have CatchupVrfMessages, add the vrfs
+	for _, currentVrfMessage := range conR.CatchupVrfMessages {
+		state.NextVrfSet.AddVrf(currentVrfMessage.Vrf)
+	}
 	
+	// if we have CatchupSettingSteeringMemberMessage, and it is releated current consensus round, we replace the steering member
 	if (conR.CatchupSettingSteeringMemberMessage != nil) {
 		if (state.ConsensusRound.ConsensusStartBlockHeight + int64(state.ConsensusRound.Period) == conR.CatchupSettingSteeringMemberMessage.SettingSteeringMember.Height)  {
 			state.SettingSteeringMember = conR.CatchupSettingSteeringMemberMessage.SettingSteeringMember
