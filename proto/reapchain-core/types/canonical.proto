@@ -5,6 +5,7 @@ option go_package = "github.com/reapchain/reapchain-core/proto/reapchain-core/ty
 
 import "gogoproto/gogo.proto";
 import "reapchain-core/types/types.proto";
+import "reapchain-core/crypto/keys.proto";
 import "google/protobuf/timestamp.proto";
 
 message CanonicalBlockID {
@@ -33,5 +34,34 @@ message CanonicalVote {
   sfixed64                  round     = 3;  // canonicalization requires fixed size encoding here
   CanonicalBlockID          block_id  = 4 [(gogoproto.customname) = "BlockID"];
   google.protobuf.Timestamp timestamp = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string                    chain_id  = 6 [(gogoproto.customname) = "ChainID"];
+}
+
+// 
+message CanonicalQrn {
+  int64 height = 1;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  reapchain.crypto.PublicKey standing_member_pub_key           = 3 [(gogoproto.nullable) = false];
+  uint64 value = 4;
+  string                    chain_id  = 5 [(gogoproto.customname) = "ChainID"];
+}
+
+message CanonicalVrf {
+  int64 height = 1;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  reapchain.crypto.PublicKey steering_member_candidate_pub_key           = 3 [(gogoproto.nullable) = false];
+  bytes value = 4;
+  bytes proof         = 5;
+  int32 vrf_index         = 6;
+  bytes seed = 7;
+  string                    chain_id  = 8 [(gogoproto.customname) = "ChainID"];
+}
+
+message CanonicalSettingSteeringMember {
+  int64 height = 1;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  reapchain.crypto.PublicKey coordinator_pub_key           = 3 [(gogoproto.nullable) = false];
+  repeated bytes steering_member_addresses = 4;
+  bytes signature         = 5;
   string                    chain_id  = 6 [(gogoproto.customname) = "ChainID"];
 }

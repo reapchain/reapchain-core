@@ -10,6 +10,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/gogo/protobuf/types"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	crypto "github.com/reapchain/reapchain-core/proto/reapchain-core/crypto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -308,11 +309,291 @@ func (m *CanonicalVote) GetChainID() string {
 	return ""
 }
 
+//
+type CanonicalQrn struct {
+	Height               int64            `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
+	Timestamp            time.Time        `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
+	StandingMemberPubKey crypto.PublicKey `protobuf:"bytes,3,opt,name=standing_member_pub_key,json=standingMemberPubKey,proto3" json:"standing_member_pub_key"`
+	Value                uint64           `protobuf:"varint,4,opt,name=value,proto3" json:"value,omitempty"`
+	Signature            []byte           `protobuf:"bytes,5,opt,name=signature,proto3" json:"signature,omitempty"`
+	QrnIndex             int32            `protobuf:"varint,6,opt,name=qrn_index,json=qrnIndex,proto3" json:"qrn_index,omitempty"`
+	ChainID              string           `protobuf:"bytes,7,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+}
+
+func (m *CanonicalQrn) Reset()         { *m = CanonicalQrn{} }
+func (m *CanonicalQrn) String() string { return proto.CompactTextString(m) }
+func (*CanonicalQrn) ProtoMessage()    {}
+func (*CanonicalQrn) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e6e2ee40e1affed0, []int{4}
+}
+func (m *CanonicalQrn) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CanonicalQrn) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CanonicalQrn.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CanonicalQrn) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CanonicalQrn.Merge(m, src)
+}
+func (m *CanonicalQrn) XXX_Size() int {
+	return m.Size()
+}
+func (m *CanonicalQrn) XXX_DiscardUnknown() {
+	xxx_messageInfo_CanonicalQrn.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CanonicalQrn proto.InternalMessageInfo
+
+func (m *CanonicalQrn) GetHeight() int64 {
+	if m != nil {
+		return m.Height
+	}
+	return 0
+}
+
+func (m *CanonicalQrn) GetTimestamp() time.Time {
+	if m != nil {
+		return m.Timestamp
+	}
+	return time.Time{}
+}
+
+func (m *CanonicalQrn) GetStandingMemberPubKey() crypto.PublicKey {
+	if m != nil {
+		return m.StandingMemberPubKey
+	}
+	return crypto.PublicKey{}
+}
+
+func (m *CanonicalQrn) GetValue() uint64 {
+	if m != nil {
+		return m.Value
+	}
+	return 0
+}
+
+func (m *CanonicalQrn) GetSignature() []byte {
+	if m != nil {
+		return m.Signature
+	}
+	return nil
+}
+
+func (m *CanonicalQrn) GetQrnIndex() int32 {
+	if m != nil {
+		return m.QrnIndex
+	}
+	return 0
+}
+
+func (m *CanonicalQrn) GetChainID() string {
+	if m != nil {
+		return m.ChainID
+	}
+	return ""
+}
+
+type CanonicalVrf struct {
+	Height                        int64            `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
+	Timestamp                     time.Time        `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
+	SteeringMemberCandidatePubKey crypto.PublicKey `protobuf:"bytes,3,opt,name=steering_member_candidate_pub_key,json=steeringMemberCandidatePubKey,proto3" json:"steering_member_candidate_pub_key"`
+	Value                         []byte           `protobuf:"bytes,4,opt,name=value,proto3" json:"value,omitempty"`
+	Proof                         []byte           `protobuf:"bytes,5,opt,name=proof,proto3" json:"proof,omitempty"`
+	VrfIndex                      int32            `protobuf:"varint,6,opt,name=vrf_index,json=vrfIndex,proto3" json:"vrf_index,omitempty"`
+	Seed                          []byte           `protobuf:"bytes,7,opt,name=seed,proto3" json:"seed,omitempty"`
+	ChainID                       string           `protobuf:"bytes,8,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+}
+
+func (m *CanonicalVrf) Reset()         { *m = CanonicalVrf{} }
+func (m *CanonicalVrf) String() string { return proto.CompactTextString(m) }
+func (*CanonicalVrf) ProtoMessage()    {}
+func (*CanonicalVrf) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e6e2ee40e1affed0, []int{5}
+}
+func (m *CanonicalVrf) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CanonicalVrf) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CanonicalVrf.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CanonicalVrf) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CanonicalVrf.Merge(m, src)
+}
+func (m *CanonicalVrf) XXX_Size() int {
+	return m.Size()
+}
+func (m *CanonicalVrf) XXX_DiscardUnknown() {
+	xxx_messageInfo_CanonicalVrf.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CanonicalVrf proto.InternalMessageInfo
+
+func (m *CanonicalVrf) GetHeight() int64 {
+	if m != nil {
+		return m.Height
+	}
+	return 0
+}
+
+func (m *CanonicalVrf) GetTimestamp() time.Time {
+	if m != nil {
+		return m.Timestamp
+	}
+	return time.Time{}
+}
+
+func (m *CanonicalVrf) GetSteeringMemberCandidatePubKey() crypto.PublicKey {
+	if m != nil {
+		return m.SteeringMemberCandidatePubKey
+	}
+	return crypto.PublicKey{}
+}
+
+func (m *CanonicalVrf) GetValue() []byte {
+	if m != nil {
+		return m.Value
+	}
+	return nil
+}
+
+func (m *CanonicalVrf) GetProof() []byte {
+	if m != nil {
+		return m.Proof
+	}
+	return nil
+}
+
+func (m *CanonicalVrf) GetVrfIndex() int32 {
+	if m != nil {
+		return m.VrfIndex
+	}
+	return 0
+}
+
+func (m *CanonicalVrf) GetSeed() []byte {
+	if m != nil {
+		return m.Seed
+	}
+	return nil
+}
+
+func (m *CanonicalVrf) GetChainID() string {
+	if m != nil {
+		return m.ChainID
+	}
+	return ""
+}
+
+type CanonicalSettingSteeringMember struct {
+	Height                  int64            `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
+	Timestamp               time.Time        `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
+	CoordinatorPubKey       crypto.PublicKey `protobuf:"bytes,3,opt,name=coordinator_pub_key,json=coordinatorPubKey,proto3" json:"coordinator_pub_key"`
+	SteeringMemberAddresses [][]byte         `protobuf:"bytes,4,rep,name=steering_member_addresses,json=steeringMemberAddresses,proto3" json:"steering_member_addresses,omitempty"`
+	Signature               []byte           `protobuf:"bytes,5,opt,name=signature,proto3" json:"signature,omitempty"`
+	ChainID                 string           `protobuf:"bytes,6,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+}
+
+func (m *CanonicalSettingSteeringMember) Reset()         { *m = CanonicalSettingSteeringMember{} }
+func (m *CanonicalSettingSteeringMember) String() string { return proto.CompactTextString(m) }
+func (*CanonicalSettingSteeringMember) ProtoMessage()    {}
+func (*CanonicalSettingSteeringMember) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e6e2ee40e1affed0, []int{6}
+}
+func (m *CanonicalSettingSteeringMember) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CanonicalSettingSteeringMember) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CanonicalSettingSteeringMember.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CanonicalSettingSteeringMember) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CanonicalSettingSteeringMember.Merge(m, src)
+}
+func (m *CanonicalSettingSteeringMember) XXX_Size() int {
+	return m.Size()
+}
+func (m *CanonicalSettingSteeringMember) XXX_DiscardUnknown() {
+	xxx_messageInfo_CanonicalSettingSteeringMember.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CanonicalSettingSteeringMember proto.InternalMessageInfo
+
+func (m *CanonicalSettingSteeringMember) GetHeight() int64 {
+	if m != nil {
+		return m.Height
+	}
+	return 0
+}
+
+func (m *CanonicalSettingSteeringMember) GetTimestamp() time.Time {
+	if m != nil {
+		return m.Timestamp
+	}
+	return time.Time{}
+}
+
+func (m *CanonicalSettingSteeringMember) GetCoordinatorPubKey() crypto.PublicKey {
+	if m != nil {
+		return m.CoordinatorPubKey
+	}
+	return crypto.PublicKey{}
+}
+
+func (m *CanonicalSettingSteeringMember) GetSteeringMemberAddresses() [][]byte {
+	if m != nil {
+		return m.SteeringMemberAddresses
+	}
+	return nil
+}
+
+func (m *CanonicalSettingSteeringMember) GetSignature() []byte {
+	if m != nil {
+		return m.Signature
+	}
+	return nil
+}
+
+func (m *CanonicalSettingSteeringMember) GetChainID() string {
+	if m != nil {
+		return m.ChainID
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*CanonicalBlockID)(nil), "reapchain.types.CanonicalBlockID")
 	proto.RegisterType((*CanonicalPartSetHeader)(nil), "reapchain.types.CanonicalPartSetHeader")
 	proto.RegisterType((*CanonicalProposal)(nil), "reapchain.types.CanonicalProposal")
 	proto.RegisterType((*CanonicalVote)(nil), "reapchain.types.CanonicalVote")
+	proto.RegisterType((*CanonicalQrn)(nil), "reapchain.types.CanonicalQrn")
+	proto.RegisterType((*CanonicalVrf)(nil), "reapchain.types.CanonicalVrf")
+	proto.RegisterType((*CanonicalSettingSteeringMember)(nil), "reapchain.types.CanonicalSettingSteeringMember")
 }
 
 func init() {
@@ -320,38 +601,56 @@ func init() {
 }
 
 var fileDescriptor_e6e2ee40e1affed0 = []byte{
-	// 491 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x53, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0xce, 0xa6, 0xf9, 0x71, 0xb6, 0x0d, 0x2d, 0xab, 0xaa, 0xb2, 0x72, 0xb0, 0x4d, 0x84, 0x20,
-	0x1c, 0xb0, 0xa5, 0x70, 0xe7, 0xe0, 0x72, 0x20, 0x12, 0x88, 0x6a, 0x5b, 0x10, 0xe2, 0x12, 0x6d,
-	0xec, 0xc5, 0xb6, 0x70, 0xbc, 0x2b, 0x7b, 0x73, 0xe8, 0x81, 0x77, 0xe8, 0x63, 0xf0, 0x28, 0x3d,
-	0xf6, 0x06, 0xa7, 0x80, 0x9c, 0x17, 0x41, 0x3b, 0x4e, 0x9c, 0xaa, 0xa4, 0x27, 0x10, 0x17, 0x6b,
-	0x67, 0xe6, 0x9b, 0x6f, 0x3e, 0x7f, 0xa3, 0xc1, 0x8f, 0x73, 0xce, 0x64, 0x10, 0xb3, 0x24, 0x7b,
-	0x1e, 0x88, 0x9c, 0x7b, 0xea, 0x52, 0xf2, 0xc2, 0x0b, 0x58, 0x26, 0xb2, 0x24, 0x60, 0xa9, 0x2b,
-	0x73, 0xa1, 0x04, 0x39, 0xac, 0x51, 0x2e, 0x00, 0x06, 0xc7, 0x91, 0x88, 0x04, 0xd4, 0x3c, 0xfd,
-	0xaa, 0x60, 0x03, 0x67, 0x27, 0x19, 0x7c, 0xd7, 0x08, 0x3b, 0x12, 0x22, 0x4a, 0xb9, 0x07, 0xd1,
-	0x6c, 0xf1, 0xd9, 0x53, 0xc9, 0x9c, 0x17, 0x8a, 0xcd, 0x65, 0x05, 0x18, 0x7e, 0xc5, 0x47, 0xa7,
-	0x9b, 0xe1, 0x7e, 0x2a, 0x82, 0x2f, 0x93, 0x57, 0x84, 0xe0, 0x56, 0xcc, 0x8a, 0xd8, 0x44, 0x0e,
-	0x1a, 0x1d, 0x50, 0x78, 0x93, 0xf7, 0xf8, 0x50, 0xb2, 0x5c, 0x4d, 0x0b, 0xae, 0xa6, 0x31, 0x67,
-	0x21, 0xcf, 0xcd, 0xa6, 0x83, 0x46, 0xfb, 0xe3, 0xa7, 0xee, 0x1d, 0xad, 0x6e, 0xcd, 0x77, 0xc6,
-	0x72, 0x75, 0xce, 0xd5, 0x6b, 0x80, 0xfb, 0xad, 0xeb, 0xa5, 0xdd, 0xa0, 0x7d, 0x79, 0x3b, 0x39,
-	0xf4, 0xf1, 0xc9, 0x6e, 0x38, 0x39, 0xc6, 0x6d, 0x25, 0x14, 0x4b, 0x41, 0x45, 0x9f, 0x56, 0x41,
-	0x2d, 0xad, 0xb9, 0x95, 0x36, 0xfc, 0xde, 0xc4, 0x0f, 0xb7, 0x24, 0xb9, 0x90, 0xa2, 0x60, 0x29,
-	0x19, 0xe3, 0x96, 0x96, 0x03, 0xed, 0x0f, 0xc6, 0xd6, 0x1f, 0x2a, 0xcf, 0x93, 0x28, 0xe3, 0xe1,
-	0xdb, 0x22, 0xba, 0xb8, 0x94, 0x9c, 0x02, 0x96, 0x9c, 0xe0, 0x4e, 0xcc, 0x93, 0x28, 0x56, 0xc0,
-	0x7f, 0x44, 0xd7, 0x91, 0xd6, 0x92, 0x8b, 0x45, 0x16, 0x9a, 0x7b, 0x90, 0xae, 0x02, 0xf2, 0x0c,
-	0xf7, 0xa4, 0x48, 0xa7, 0x55, 0xa5, 0xe5, 0xa0, 0xd1, 0x9e, 0x7f, 0x50, 0x2e, 0x6d, 0xe3, 0xec,
-	0xdd, 0x1b, 0xaa, 0x73, 0xd4, 0x90, 0x22, 0x85, 0x17, 0x99, 0x60, 0x63, 0xa6, 0xcd, 0x9d, 0x26,
-	0xa1, 0xd9, 0x06, 0xdb, 0x1e, 0xdd, 0x6f, 0xdb, 0x7a, 0x0d, 0xfe, 0x7e, 0xb9, 0xb4, 0xbb, 0xeb,
-	0x80, 0x76, 0xa1, 0x7f, 0x12, 0x12, 0x1f, 0xf7, 0xea, 0x1d, 0x9a, 0x1d, 0xe0, 0x1a, 0xb8, 0xd5,
-	0x96, 0xdd, 0xcd, 0x96, 0xdd, 0x8b, 0x0d, 0xc2, 0x37, 0xb4, 0xeb, 0x57, 0x3f, 0x6d, 0x44, 0xb7,
-	0x6d, 0xe4, 0x09, 0x36, 0x60, 0xb2, 0x96, 0xd3, 0x75, 0xd0, 0xa8, 0x57, 0xcd, 0x3a, 0xd5, 0x39,
-	0x3d, 0x0b, 0x8a, 0x93, 0x70, 0xf8, 0xad, 0x89, 0xfb, 0xb5, 0xac, 0x0f, 0x42, 0xf1, 0xff, 0xe0,
-	0xea, 0x6d, 0xab, 0x5a, 0xff, 0xd0, 0xaa, 0xf6, 0xdf, 0x5b, 0xd5, 0xb9, 0xdf, 0x2a, 0xff, 0xe3,
-	0x75, 0x69, 0xa1, 0x9b, 0xd2, 0x42, 0xbf, 0x4a, 0x0b, 0x5d, 0xad, 0xac, 0xc6, 0xcd, 0xca, 0x6a,
-	0xfc, 0x58, 0x59, 0x8d, 0x4f, 0x2f, 0xa3, 0x44, 0xc5, 0x8b, 0x99, 0x1b, 0x88, 0xb9, 0x57, 0xff,
-	0x88, 0x77, 0xe7, 0x72, 0xab, 0xd3, 0xde, 0x75, 0xce, 0xb3, 0x0e, 0xd4, 0x5e, 0xfc, 0x0e, 0x00,
-	0x00, 0xff, 0xff, 0x2d, 0x67, 0xd1, 0x85, 0x3a, 0x04, 0x00, 0x00,
+	// 772 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x95, 0xc1, 0x6e, 0xd3, 0x4a,
+	0x14, 0x86, 0xe3, 0xc4, 0x49, 0x93, 0x69, 0x7a, 0xdb, 0xfa, 0x46, 0x6d, 0x6e, 0x7b, 0xaf, 0x93,
+	0x46, 0x57, 0x10, 0x16, 0xd8, 0x52, 0xd8, 0xb1, 0x40, 0xc2, 0x65, 0x41, 0x54, 0x2a, 0x52, 0xa7,
+	0x54, 0x15, 0x1b, 0x6b, 0x6c, 0x4f, 0x1c, 0x2b, 0x8e, 0xc7, 0x1d, 0x8f, 0x2b, 0xb2, 0xe0, 0x1d,
+	0xfa, 0x18, 0xbc, 0x04, 0xfb, 0x2e, 0xcb, 0x0a, 0x16, 0xa8, 0xa0, 0xf4, 0x45, 0x90, 0xc7, 0xb1,
+	0xe3, 0x94, 0xb4, 0x94, 0x42, 0xd9, 0x44, 0x73, 0xe6, 0xfc, 0x73, 0xe6, 0x9f, 0xef, 0x8c, 0x33,
+	0xe0, 0x7f, 0x82, 0xa0, 0x67, 0xf4, 0xa1, 0xed, 0x3e, 0x34, 0x30, 0x41, 0x32, 0x1d, 0x79, 0xc8,
+	0x97, 0x0d, 0xe8, 0x62, 0xd7, 0x36, 0xa0, 0x23, 0x79, 0x04, 0x53, 0x2c, 0x2c, 0x27, 0x2a, 0x89,
+	0x09, 0x36, 0x2a, 0x16, 0xb6, 0x30, 0xcb, 0xc9, 0xe1, 0x28, 0x92, 0x6d, 0xd4, 0xe7, 0x16, 0x63,
+	0xbf, 0x57, 0x28, 0x0c, 0x32, 0xf2, 0x28, 0x96, 0x07, 0x68, 0x14, 0x2b, 0x6a, 0x16, 0xc6, 0x96,
+	0x83, 0x64, 0x16, 0xe9, 0x41, 0x4f, 0xa6, 0xf6, 0x10, 0xf9, 0x14, 0x0e, 0xbd, 0x48, 0xd0, 0x78,
+	0x0b, 0x56, 0xb6, 0x63, 0x7b, 0x8a, 0x83, 0x8d, 0x41, 0xfb, 0x99, 0x20, 0x00, 0xbe, 0x0f, 0xfd,
+	0x7e, 0x95, 0xab, 0x73, 0xcd, 0xb2, 0xca, 0xc6, 0xc2, 0x2b, 0xb0, 0xec, 0x41, 0x42, 0x35, 0x1f,
+	0x51, 0xad, 0x8f, 0xa0, 0x89, 0x48, 0x35, 0x5b, 0xe7, 0x9a, 0x8b, 0xad, 0xfb, 0xd2, 0xa5, 0xd3,
+	0x48, 0x49, 0xbd, 0x0e, 0x24, 0xb4, 0x8b, 0xe8, 0x73, 0x26, 0x57, 0xf8, 0xd3, 0xf3, 0x5a, 0x46,
+	0x5d, 0xf2, 0xd2, 0x93, 0x0d, 0x05, 0xac, 0xcd, 0x97, 0x0b, 0x15, 0x90, 0xa7, 0x98, 0x42, 0x87,
+	0xb9, 0x58, 0x52, 0xa3, 0x20, 0xb1, 0x96, 0x9d, 0x5a, 0x6b, 0x7c, 0xcc, 0x82, 0xd5, 0x69, 0x11,
+	0x82, 0x3d, 0xec, 0x43, 0x47, 0x68, 0x01, 0x3e, 0xb4, 0xc3, 0x96, 0xff, 0xd5, 0x12, 0xbf, 0x73,
+	0xd9, 0xb5, 0x2d, 0x17, 0x99, 0xbb, 0xbe, 0xb5, 0x3f, 0xf2, 0x90, 0xca, 0xb4, 0xc2, 0x1a, 0x28,
+	0xf4, 0x91, 0x6d, 0xf5, 0x29, 0xab, 0xbf, 0xa2, 0x4e, 0xa2, 0xd0, 0x0b, 0xc1, 0x81, 0x6b, 0x56,
+	0x73, 0x6c, 0x3a, 0x0a, 0x84, 0x07, 0xa0, 0xe4, 0x61, 0x47, 0x8b, 0x32, 0x7c, 0x9d, 0x6b, 0xe6,
+	0x94, 0xf2, 0xf8, 0xbc, 0x56, 0xec, 0xbc, 0x7c, 0xa1, 0x86, 0x73, 0x6a, 0xd1, 0xc3, 0x0e, 0x1b,
+	0x09, 0x6d, 0x50, 0xd4, 0x43, 0xb8, 0x9a, 0x6d, 0x56, 0xf3, 0x0c, 0xdb, 0xd6, 0xd5, 0xd8, 0x26,
+	0x6d, 0x50, 0x16, 0xc7, 0xe7, 0xb5, 0x85, 0x49, 0xa0, 0x2e, 0xb0, 0xf5, 0x6d, 0x53, 0x50, 0x40,
+	0x29, 0xe9, 0x61, 0xb5, 0xc0, 0x6a, 0x6d, 0x48, 0x51, 0x97, 0xa5, 0xb8, 0xcb, 0xd2, 0x7e, 0xac,
+	0x50, 0x8a, 0x21, 0xf5, 0x93, 0x2f, 0x35, 0x4e, 0x9d, 0x2e, 0x13, 0xee, 0x81, 0x22, 0xdb, 0x39,
+	0xb4, 0xb3, 0x50, 0xe7, 0x9a, 0xa5, 0x68, 0xaf, 0xed, 0x70, 0x2e, 0xdc, 0x8b, 0x25, 0xdb, 0x66,
+	0xe3, 0x5d, 0x16, 0x2c, 0x25, 0xb6, 0x0e, 0x30, 0x45, 0x7f, 0x80, 0x6a, 0x1a, 0x15, 0xff, 0x1b,
+	0x51, 0xe5, 0x7f, 0x1d, 0x55, 0xe1, 0x1a, 0x54, 0xef, 0xb3, 0xa0, 0x9c, 0xd8, 0xda, 0x23, 0x6e,
+	0xea, 0xd4, 0x21, 0xab, 0x5c, 0x72, 0xea, 0x19, 0x53, 0xd9, 0xdb, 0x99, 0x3a, 0x04, 0xeb, 0x3e,
+	0x85, 0xae, 0x69, 0xbb, 0x96, 0x36, 0x44, 0x43, 0x1d, 0x11, 0xcd, 0x0b, 0x74, 0x6d, 0x80, 0x46,
+	0x8c, 0xe5, 0x62, 0x6b, 0x33, 0x85, 0x2c, 0xfa, 0x53, 0x90, 0x3a, 0x81, 0xee, 0xd8, 0xc6, 0x0e,
+	0x1a, 0x4d, 0x3e, 0xc4, 0x4a, 0x5c, 0x61, 0x97, 0x15, 0xe8, 0x04, 0xfa, 0x0e, 0x1a, 0x85, 0x3d,
+	0x39, 0x86, 0x4e, 0x80, 0x18, 0x7a, 0x5e, 0x8d, 0x02, 0xe1, 0x5f, 0x50, 0xf2, 0x6d, 0xcb, 0x85,
+	0x34, 0x20, 0x88, 0x81, 0x2c, 0xab, 0xd3, 0x09, 0x61, 0x13, 0x94, 0x8e, 0x88, 0xab, 0xd9, 0xae,
+	0x89, 0xde, 0x30, 0x46, 0x79, 0xb5, 0x78, 0x44, 0xdc, 0x76, 0x18, 0xdf, 0xf8, 0xaa, 0x7d, 0x4e,
+	0xf3, 0x3b, 0x20, 0xbd, 0x3b, 0xe5, 0x37, 0x00, 0x5b, 0x3e, 0x45, 0x88, 0xa4, 0xf8, 0x19, 0x21,
+	0x0c, 0x13, 0x52, 0xf4, 0xf3, 0x24, 0xff, 0x8b, 0x6b, 0x45, 0x24, 0xb7, 0xe3, 0x4a, 0xf3, 0x90,
+	0x96, 0x63, 0xa4, 0x15, 0x90, 0xf7, 0x08, 0xc6, 0xbd, 0x09, 0xce, 0x28, 0x08, 0x51, 0x1e, 0x93,
+	0xde, 0x2c, 0xca, 0x63, 0xd2, 0x8b, 0x50, 0x0a, 0x80, 0xf7, 0x11, 0x8a, 0x30, 0x96, 0x55, 0x36,
+	0x9e, 0xc1, 0x5b, 0xbc, 0x06, 0xef, 0x87, 0x2c, 0x10, 0x13, 0xbc, 0x5d, 0x44, 0xa9, 0xed, 0x5a,
+	0xdd, 0x19, 0xdb, 0x77, 0x0a, 0x7c, 0x0f, 0xfc, 0x6d, 0x60, 0x4c, 0x4c, 0xdb, 0x85, 0x14, 0xdf,
+	0xe2, 0xb2, 0xae, 0xa6, 0x56, 0x4f, 0xb0, 0x3e, 0x06, 0xff, 0x5c, 0xee, 0x21, 0x34, 0x4d, 0x82,
+	0x7c, 0x1f, 0xf9, 0x55, 0xbe, 0x9e, 0x6b, 0x96, 0xd5, 0xf5, 0xd9, 0xc6, 0x3c, 0x8d, 0xd3, 0x3f,
+	0xb8, 0xcf, 0x37, 0xfc, 0xe4, 0x95, 0xc3, 0xd3, 0xb1, 0xc8, 0x9d, 0x8d, 0x45, 0xee, 0xeb, 0x58,
+	0xe4, 0x4e, 0x2e, 0xc4, 0xcc, 0xd9, 0x85, 0x98, 0xf9, 0x74, 0x21, 0x66, 0x5e, 0x3f, 0xb1, 0x6c,
+	0xda, 0x0f, 0x74, 0xc9, 0xc0, 0x43, 0x39, 0x39, 0x9b, 0x7c, 0xe9, 0xb1, 0x8e, 0xde, 0xfb, 0x79,
+	0x6f, 0xbc, 0x5e, 0x60, 0xb9, 0x47, 0xdf, 0x02, 0x00, 0x00, 0xff, 0xff, 0x84, 0x47, 0xdf, 0x0d,
+	0x4f, 0x08, 0x00, 0x00,
 }
 
 func (m *CanonicalBlockID) Marshal() (dAtA []byte, err error) {
@@ -568,6 +867,224 @@ func (m *CanonicalVote) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *CanonicalQrn) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CanonicalQrn) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CanonicalQrn) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ChainID) > 0 {
+		i -= len(m.ChainID)
+		copy(dAtA[i:], m.ChainID)
+		i = encodeVarintCanonical(dAtA, i, uint64(len(m.ChainID)))
+		i--
+		dAtA[i] = 0x3a
+	}
+	if m.QrnIndex != 0 {
+		i = encodeVarintCanonical(dAtA, i, uint64(m.QrnIndex))
+		i--
+		dAtA[i] = 0x30
+	}
+	if len(m.Signature) > 0 {
+		i -= len(m.Signature)
+		copy(dAtA[i:], m.Signature)
+		i = encodeVarintCanonical(dAtA, i, uint64(len(m.Signature)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if m.Value != 0 {
+		i = encodeVarintCanonical(dAtA, i, uint64(m.Value))
+		i--
+		dAtA[i] = 0x20
+	}
+	{
+		size, err := m.StandingMemberPubKey.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintCanonical(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	n7, err7 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp):])
+	if err7 != nil {
+		return 0, err7
+	}
+	i -= n7
+	i = encodeVarintCanonical(dAtA, i, uint64(n7))
+	i--
+	dAtA[i] = 0x12
+	if m.Height != 0 {
+		i = encodeVarintCanonical(dAtA, i, uint64(m.Height))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *CanonicalVrf) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CanonicalVrf) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CanonicalVrf) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ChainID) > 0 {
+		i -= len(m.ChainID)
+		copy(dAtA[i:], m.ChainID)
+		i = encodeVarintCanonical(dAtA, i, uint64(len(m.ChainID)))
+		i--
+		dAtA[i] = 0x42
+	}
+	if len(m.Seed) > 0 {
+		i -= len(m.Seed)
+		copy(dAtA[i:], m.Seed)
+		i = encodeVarintCanonical(dAtA, i, uint64(len(m.Seed)))
+		i--
+		dAtA[i] = 0x3a
+	}
+	if m.VrfIndex != 0 {
+		i = encodeVarintCanonical(dAtA, i, uint64(m.VrfIndex))
+		i--
+		dAtA[i] = 0x30
+	}
+	if len(m.Proof) > 0 {
+		i -= len(m.Proof)
+		copy(dAtA[i:], m.Proof)
+		i = encodeVarintCanonical(dAtA, i, uint64(len(m.Proof)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Value) > 0 {
+		i -= len(m.Value)
+		copy(dAtA[i:], m.Value)
+		i = encodeVarintCanonical(dAtA, i, uint64(len(m.Value)))
+		i--
+		dAtA[i] = 0x22
+	}
+	{
+		size, err := m.SteeringMemberCandidatePubKey.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintCanonical(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	n9, err9 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp):])
+	if err9 != nil {
+		return 0, err9
+	}
+	i -= n9
+	i = encodeVarintCanonical(dAtA, i, uint64(n9))
+	i--
+	dAtA[i] = 0x12
+	if m.Height != 0 {
+		i = encodeVarintCanonical(dAtA, i, uint64(m.Height))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *CanonicalSettingSteeringMember) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CanonicalSettingSteeringMember) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CanonicalSettingSteeringMember) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ChainID) > 0 {
+		i -= len(m.ChainID)
+		copy(dAtA[i:], m.ChainID)
+		i = encodeVarintCanonical(dAtA, i, uint64(len(m.ChainID)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.Signature) > 0 {
+		i -= len(m.Signature)
+		copy(dAtA[i:], m.Signature)
+		i = encodeVarintCanonical(dAtA, i, uint64(len(m.Signature)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.SteeringMemberAddresses) > 0 {
+		for iNdEx := len(m.SteeringMemberAddresses) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.SteeringMemberAddresses[iNdEx])
+			copy(dAtA[i:], m.SteeringMemberAddresses[iNdEx])
+			i = encodeVarintCanonical(dAtA, i, uint64(len(m.SteeringMemberAddresses[iNdEx])))
+			i--
+			dAtA[i] = 0x22
+		}
+	}
+	{
+		size, err := m.CoordinatorPubKey.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintCanonical(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	n11, err11 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp):])
+	if err11 != nil {
+		return 0, err11
+	}
+	i -= n11
+	i = encodeVarintCanonical(dAtA, i, uint64(n11))
+	i--
+	dAtA[i] = 0x12
+	if m.Height != 0 {
+		i = encodeVarintCanonical(dAtA, i, uint64(m.Height))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintCanonical(dAtA []byte, offset int, v uint64) int {
 	offset -= sovCanonical(v)
 	base := offset
@@ -662,6 +1179,101 @@ func (m *CanonicalVote) Size() (n int) {
 	}
 	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp)
 	n += 1 + l + sovCanonical(uint64(l))
+	l = len(m.ChainID)
+	if l > 0 {
+		n += 1 + l + sovCanonical(uint64(l))
+	}
+	return n
+}
+
+func (m *CanonicalQrn) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Height != 0 {
+		n += 1 + sovCanonical(uint64(m.Height))
+	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp)
+	n += 1 + l + sovCanonical(uint64(l))
+	l = m.StandingMemberPubKey.Size()
+	n += 1 + l + sovCanonical(uint64(l))
+	if m.Value != 0 {
+		n += 1 + sovCanonical(uint64(m.Value))
+	}
+	l = len(m.Signature)
+	if l > 0 {
+		n += 1 + l + sovCanonical(uint64(l))
+	}
+	if m.QrnIndex != 0 {
+		n += 1 + sovCanonical(uint64(m.QrnIndex))
+	}
+	l = len(m.ChainID)
+	if l > 0 {
+		n += 1 + l + sovCanonical(uint64(l))
+	}
+	return n
+}
+
+func (m *CanonicalVrf) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Height != 0 {
+		n += 1 + sovCanonical(uint64(m.Height))
+	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp)
+	n += 1 + l + sovCanonical(uint64(l))
+	l = m.SteeringMemberCandidatePubKey.Size()
+	n += 1 + l + sovCanonical(uint64(l))
+	l = len(m.Value)
+	if l > 0 {
+		n += 1 + l + sovCanonical(uint64(l))
+	}
+	l = len(m.Proof)
+	if l > 0 {
+		n += 1 + l + sovCanonical(uint64(l))
+	}
+	if m.VrfIndex != 0 {
+		n += 1 + sovCanonical(uint64(m.VrfIndex))
+	}
+	l = len(m.Seed)
+	if l > 0 {
+		n += 1 + l + sovCanonical(uint64(l))
+	}
+	l = len(m.ChainID)
+	if l > 0 {
+		n += 1 + l + sovCanonical(uint64(l))
+	}
+	return n
+}
+
+func (m *CanonicalSettingSteeringMember) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Height != 0 {
+		n += 1 + sovCanonical(uint64(m.Height))
+	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp)
+	n += 1 + l + sovCanonical(uint64(l))
+	l = m.CoordinatorPubKey.Size()
+	n += 1 + l + sovCanonical(uint64(l))
+	if len(m.SteeringMemberAddresses) > 0 {
+		for _, b := range m.SteeringMemberAddresses {
+			l = len(b)
+			n += 1 + l + sovCanonical(uint64(l))
+		}
+	}
+	l = len(m.Signature)
+	if l > 0 {
+		n += 1 + l + sovCanonical(uint64(l))
+	}
 	l = len(m.ChainID)
 	if l > 0 {
 		n += 1 + l + sovCanonical(uint64(l))
@@ -1239,6 +1851,766 @@ func (m *CanonicalVote) Unmarshal(dAtA []byte) error {
 			}
 			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ChainID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCanonical(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CanonicalQrn) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCanonical
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CanonicalQrn: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CanonicalQrn: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+			}
+			m.Height = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Height |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StandingMemberPubKey", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.StandingMemberPubKey.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Value", wireType)
+			}
+			m.Value = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Value |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signature", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signature = append(m.Signature[:0], dAtA[iNdEx:postIndex]...)
+			if m.Signature == nil {
+				m.Signature = []byte{}
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field QrnIndex", wireType)
+			}
+			m.QrnIndex = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.QrnIndex |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ChainID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCanonical(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CanonicalVrf) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCanonical
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CanonicalVrf: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CanonicalVrf: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+			}
+			m.Height = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Height |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SteeringMemberCandidatePubKey", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.SteeringMemberCandidatePubKey.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Value", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Value = append(m.Value[:0], dAtA[iNdEx:postIndex]...)
+			if m.Value == nil {
+				m.Value = []byte{}
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Proof", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Proof = append(m.Proof[:0], dAtA[iNdEx:postIndex]...)
+			if m.Proof == nil {
+				m.Proof = []byte{}
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VrfIndex", wireType)
+			}
+			m.VrfIndex = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.VrfIndex |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Seed", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Seed = append(m.Seed[:0], dAtA[iNdEx:postIndex]...)
+			if m.Seed == nil {
+				m.Seed = []byte{}
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ChainID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ChainID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCanonical(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CanonicalSettingSteeringMember) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCanonical
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CanonicalSettingSteeringMember: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CanonicalSettingSteeringMember: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Height", wireType)
+			}
+			m.Height = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Height |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CoordinatorPubKey", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.CoordinatorPubKey.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SteeringMemberAddresses", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SteeringMemberAddresses = append(m.SteeringMemberAddresses, make([]byte, postIndex-iNdEx))
+			copy(m.SteeringMemberAddresses[len(m.SteeringMemberAddresses)-1], dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Signature", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCanonical
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthCanonical
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Signature = append(m.Signature[:0], dAtA[iNdEx:postIndex]...)
+			if m.Signature == nil {
+				m.Signature = []byte{}
 			}
 			iNdEx = postIndex
 		case 6:

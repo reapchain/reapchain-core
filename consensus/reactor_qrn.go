@@ -42,12 +42,12 @@ OUTER_LOOP:
 
 // Try add the qrn which are from other peers.
 // It only works, when the node is syncying.
-func (conR *Reactor) tryAddCatchupQrnMessage(qrnMessage *QrnMessage) (error) {
+func (conR *Reactor) tryAddCatchupQrnMessage(chainID string, qrnMessage *QrnMessage) (error) {
 	if qrnMessage == nil {
 		return fmt.Errorf("QrnMessage is nil")
 	}
 
-	if qrnMessage.Qrn.VerifySign() == false {
+	if qrnMessage.Qrn.VerifySign(chainID) == false {
 		return fmt.Errorf("Invalid qrn sign")
 	}
 

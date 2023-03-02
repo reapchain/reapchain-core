@@ -1665,7 +1665,7 @@ func (cs *State) finalizeCommit(height int64) {
 
 			if (block.Height == cs.CatchupStates[i].LastBlockHeight) {
 				for j :=0; j < (len(cs.CatchupStates[i].NextQrnSet.Qrns)); j++ {
-					stateCopy.NextQrnSet.AddQrn(cs.CatchupStates[i].NextQrnSet.Qrns[j])
+					stateCopy.NextQrnSet.AddQrn(cs.state.ChainID, cs.CatchupStates[i].NextQrnSet.Qrns[j])
 				}
 
 				for j :=0; j < (len(cs.CatchupStates[i].NextVrfSet.Vrfs)); j++ {
@@ -1733,8 +1733,9 @@ func (cs *State) finalizeCommit(height int64) {
 			// Check whether the node is standing member
 			if cs.state.NextQrnSet.HasAddress(address) == true {
 				qrnValue := tmrand.Uint64()
+				
 				qrn := types.NewQrn(cs.state.NextQrnSet.GetHeight(), cs.privValidatorPubKey, qrnValue)
-				err := cs.privValidator.SignQrn(qrn)
+				err := cs.privValidator.SignQrn(cs.state.ChainID, qrn)
 
 				if err != nil {
 					logger.Error("Can't sign qrn", "err", err)

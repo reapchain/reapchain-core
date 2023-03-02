@@ -9,6 +9,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto"
 	ce "github.com/reapchain/reapchain-core/crypto/encoding"
 	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
+	"github.com/reapchain/reapchain-core/libs/protoio"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
@@ -86,7 +87,7 @@ func (qrn *Qrn) String() string {
 }
 
 // Make QRN bytes for sign including height, timestamp, standing member public key, and value 
-func (qrn *Qrn) GetQrnBytesForSign() []byte {
+func (qrn *Qrn) GetQrnBytesForSign(chainID string) []byte {
 	if qrn == nil {
 		return nil
 	}
@@ -103,10 +104,12 @@ func (qrn *Qrn) GetQrnBytesForSign() []byte {
 		Value:                qrn.Value,
 	}
 
-	QrnSignBytes, err := qrnProto.Marshal()
+	pb := CanonicalizeQrn(chainID, &qrnProto)
+	QrnSignBytes, err := protoio.MarshalDelimited(&pb)
 	if err != nil {
 		panic(err)
 	}
+
 	return QrnSignBytes
 }
 
@@ -137,8 +140,8 @@ func (qrn *Qrn) GetQrnBytes() []byte {
 }
 
 // Verify of qrn
-func (qrn *Qrn) VerifySign() bool {
-	signBytes := qrn.GetQrnBytesForSign()
+func (qrn *Qrn) VerifySign(chainID string) bool {
+	signBytes := qrn.GetQrnBytesForSign(chainID)
 	if signBytes == nil {
 		return false
 	}

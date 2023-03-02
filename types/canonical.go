@@ -71,3 +71,41 @@ func CanonicalTime(t time.Time) string {
 	// signatures match
 	return tmtime.Canonical(t).Format(TimeFormat)
 }
+
+// CanonicalizeQrn transforms the given Qrn to a CanonicalQrn
+func CanonicalizeQrn(chainID string, qrn *tmproto.Qrn) tmproto.CanonicalQrn {
+	return tmproto.CanonicalQrn{
+		Height:    qrn.Height,
+		Timestamp: qrn.Timestamp,
+		StandingMemberPubKey:     qrn.StandingMemberPubKey,
+		Value:     qrn.Value,
+		ChainID:   chainID,
+	}
+}
+
+// CanonicalizeVrf transforms the given Vrf to a CanonicalVrf
+func CanonicalizeVrf(chainID string, vrf *tmproto.Vrf) tmproto.CanonicalVrf {
+	return tmproto.CanonicalVrf{
+		Height:    vrf.Height,
+		Timestamp: vrf.Timestamp,
+		SteeringMemberCandidatePubKey:     vrf.SteeringMemberCandidatePubKey,
+		Value:     vrf.Value,
+		Proof:     vrf.Proof,
+		VrfIndex:     vrf.VrfIndex,
+		Seed:     vrf.Seed,
+		ChainID:   chainID,
+	}
+}
+
+// CanonicalizeSettingSteeringMember transforms the given SettingSteeringMember to a CanonicalSettingSteeringMember
+func CanonicalizeSettingSteeringMember(chainID string, settingSteeringMember *tmproto.SettingSteeringMember) tmproto.CanonicalSettingSteeringMember {
+	return tmproto.CanonicalSettingSteeringMember{
+		Height:    settingSteeringMember.Height,
+		Timestamp: settingSteeringMember.Timestamp,
+		CoordinatorPubKey:     settingSteeringMember.CoordinatorPubKey,
+		SteeringMemberAddresses:     settingSteeringMember.SteeringMemberAddresses,
+		Signature:     settingSteeringMember.Signature,
+		ChainID:   chainID,
+	}
+}
+

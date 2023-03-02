@@ -442,8 +442,8 @@ func checkProposalsOnlyDifferByTimestamp(lastSignBytes, newSignBytes []byte) (ti
 	return lastTime, proto.Equal(&newProposal, &lastProposal)
 }
 
-func (pv *FilePV) SignQrn(qrn *types.Qrn) error {
-	signBytes := qrn.GetQrnBytesForSign()
+func (pv *FilePV) SignQrn(chainID string, qrn *types.Qrn) error {
+	signBytes := qrn.GetQrnBytesForSign(chainID)
 	if signBytes == nil {
 		return fmt.Errorf("error signing qrn: qrn is nil")
 	}

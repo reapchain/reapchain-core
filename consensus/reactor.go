@@ -40,6 +40,7 @@ const (
 type Reactor struct {
 	p2p.BaseReactor // BaseService + p2p.Switch
 
+	chainID string
 	conS *State
 
 	mtx      tmsync.RWMutex
@@ -58,9 +59,10 @@ type ReactorOption func(*Reactor)
 
 // NewReactor returns a new Reactor with the given
 // consensusState.
-func NewReactor(consensusState *State, stateStore sm.Store, waitSync bool, options ...ReactorOption) *Reactor {
+func NewReactor(chainID string, consensusState *State, stateStore sm.Store, waitSync bool, options ...ReactorOption) *Reactor {
 	conR := &Reactor{
 		conS:     consensusState,
+		chainID: chainID,
 		stateStore: stateStore,
 		waitSync: waitSync,
 		Metrics:  NopMetrics(),
@@ -121,7 +123,7 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 	
 	// if we have CatchupQrnMessages, add the qrns
 	for _, currentQrnMessage := range conR.CatchupQrnMessages {
-		state.NextQrnSet.AddQrn(currentQrnMessage.Qrn)
+		state.NextQrnSet.AddQrn(state.ChainID, currentQrnMessage.Qrn)
 	}
 
 	// if we have CatchupVrfMessages, add the vrfs
@@ -407,7 +409,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			switch msg := msg.(type) {
 				case *QrnMessage:
 					conR.mtx.Lock()
-					conR.tryAddCatchupQrnMessage(msg)
+					conR.tryAddCatchupQrnMessage(conR.chainID, msg)
 					conR.mtx.Unlock()
 			}
 			

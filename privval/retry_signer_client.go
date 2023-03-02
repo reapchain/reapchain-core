@@ -99,10 +99,10 @@ func (sc *RetrySignerClient) SignVote(chainID string, vote *tmproto.Vote) error 
 	return fmt.Errorf("exhausted all attempts to sign vote: %w", err)
 }
 
-func (sc *RetrySignerClient) SignQrn(qrn *types.Qrn) error {
+func (sc *RetrySignerClient) SignQrn(chainID string, qrn *types.Qrn) error {
 	var err error
 	for i := 0; i < sc.retries || sc.retries == 0; i++ {
-		err = sc.next.SignQrn(qrn)
+		err = sc.next.SignQrn(chainID, qrn)
 		if err == nil {
 			return nil
 		}
