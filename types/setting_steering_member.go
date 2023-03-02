@@ -7,6 +7,7 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto"
 	ce "github.com/reapchain/reapchain-core/crypto/encoding"
+	"github.com/reapchain/reapchain-core/libs/protoio"
 	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
@@ -60,32 +61,7 @@ func (settingSteeringMember *SettingSteeringMember) Copy() *SettingSteeringMembe
 
 // It is called via coordinator for signing the steering members who are selected as validator next round.
 // It returns the bytes of the steering members
-func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberBytesForSign() []byte {
-	if settingSteeringMember == nil {
-		return nil
-	}
-
-	pubKeyProto, err := ce.PubKeyToProto(settingSteeringMember.CoordinatorPubKey)
-	if err != nil {
-		panic(err)
-	}
-
-
-	settingSteeringMemberProto := tmproto.SettingSteeringMember{
-		Height:                settingSteeringMember.Height,
-		Timestamp:             settingSteeringMember.Timestamp,
-		CoordinatorPubKey:     pubKeyProto,
-		SteeringMemberAddresses: settingSteeringMember.SteeringMemberAddresses,
-	}
-
-	SettingSteeringMemberignBytes, err := settingSteeringMemberProto.Marshal()
-	if err != nil {
-		panic(err)
-	}
-	return SettingSteeringMemberignBytes
-}
-
-func (settingSteeringMember *SettingSteeringMember) GetBytesForSign() []byte {
+func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberBytesForSign(chainID string) []byte {
 	if settingSteeringMember == nil {
 		return nil
 	}
@@ -102,17 +78,21 @@ func (settingSteeringMember *SettingSteeringMember) GetBytesForSign() []byte {
 		SteeringMemberAddresses: settingSteeringMember.SteeringMemberAddresses,
 	}
 
-	SettingSteeringMemberignBytes, err := settingSteeringMemberProto.Marshal()
+
+	pb := CanonicalizeSettingSteeringMember(chainID, &settingSteeringMemberProto)
+	SettingSteeringMemberignBytes, err := protoio.MarshalDelimited(&pb)
 	if err != nil {
 		panic(err)
 	}
+
 	return SettingSteeringMemberignBytes
+
 }
 
 // Validate the coordinator sign.
 // Each node gets own cornidator information and checks the settingSteeringMember is valid with the signature which is included the type
-func (settingSteeringMember *SettingSteeringMember) VerifySign() bool {
-	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign()
+func (settingSteeringMember *SettingSteeringMember) VerifySign(chainID string) bool {
+	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign(chainID)
 	if signBytes == nil {
 		return false
 	}

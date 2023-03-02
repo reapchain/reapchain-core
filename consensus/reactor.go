@@ -469,7 +469,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			switch msg := msg.(type) {
 				case *SettingSteeringMemberMessage:
 					conR.mtx.Lock()
-					conR.tryAddCatchupSettingSteeringMemberMessage(msg)
+					conR.tryAddCatchupSettingSteeringMemberMessage(conR.chainID, msg)
 					conR.mtx.Unlock()
 			}
 			return

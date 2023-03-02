@@ -466,8 +466,8 @@ func (pv *FilePV) ProveVrf(vrf *types.Vrf) error {
 	return nil
 }
 
-func (pv *FilePV) SignSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) error {
-	signBytes := settingSteeringMember.GetBytesForSign()
+func (pv *FilePV) SignSettingSteeringMember(chainID string, settingSteeringMember *types.SettingSteeringMember) error {
+	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign(chainID)
 	if signBytes == nil {
 		return fmt.Errorf("error signing settingSteeringMember: settingSteeringMember is nil")
 	}

@@ -38,8 +38,8 @@ OUTER_LOOP:
 }
 
 // Receive handler that apply the catchup setting steering members information 
-func (conR *Reactor) tryAddCatchupSettingSteeringMemberMessage(settingSteeringMemberMessage *SettingSteeringMemberMessage) (error) {
-	if settingSteeringMemberMessage.SettingSteeringMember.VerifySign() == false {
+func (conR *Reactor) tryAddCatchupSettingSteeringMemberMessage(chainID string, settingSteeringMemberMessage *SettingSteeringMemberMessage) (error) {
+	if settingSteeringMemberMessage.SettingSteeringMember.VerifySign(chainID) == false {
 		return fmt.Errorf("Invalid seeting steering member sign")
 	}
 	

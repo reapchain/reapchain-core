@@ -46,22 +46,11 @@ message CanonicalQrn {
   string                    chain_id  = 5 [(gogoproto.customname) = "ChainID"];
 }
 
-message CanonicalVrf {
-  int64 height = 1;
-  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  reapchain.crypto.PublicKey steering_member_candidate_pub_key           = 3 [(gogoproto.nullable) = false];
-  bytes value = 4;
-  bytes proof         = 5;
-  int32 vrf_index         = 6;
-  bytes seed = 7;
-  string                    chain_id  = 8 [(gogoproto.customname) = "ChainID"];
-}
 
 message CanonicalSettingSteeringMember {
   int64 height = 1;
   google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   reapchain.crypto.PublicKey coordinator_pub_key           = 3 [(gogoproto.nullable) = false];
   repeated bytes steering_member_addresses = 4;
-  bytes signature         = 5;
-  string                    chain_id  = 6 [(gogoproto.customname) = "ChainID"];
+  string                    chain_id  = 5 [(gogoproto.customname) = "ChainID"];
 }

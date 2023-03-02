@@ -21,8 +21,8 @@ type PrivValidator interface {
 	SignProposal(chainID string, proposal *tmproto.Proposal) error
 
 	SignQrn(chainID string, qrn *Qrn) error
+	SignSettingSteeringMember(chainID string, vrf *SettingSteeringMember) error
 	ProveVrf(vrf *Vrf) error
-	SignSettingSteeringMember(vrf *SettingSteeringMember) error
 }
 
 type PrivValidatorsByAddress []PrivValidator
@@ -107,8 +107,8 @@ func (pv MockPV) SignQrn(chainID string, qrn *Qrn) error {
 	return nil
 }
 
-func (pv MockPV) SignSettingSteeringMember(settingSteeringMember *SettingSteeringMember) error {
-	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign()
+func (pv MockPV) SignSettingSteeringMember(chainID string, settingSteeringMember *SettingSteeringMember) error {
+	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign(chainID)
 	sig, err := pv.PrivKey.Sign(signBytes)
 	if err != nil {
 		return err

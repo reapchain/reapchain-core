@@ -131,10 +131,10 @@ func (sc *RetrySignerClient) ProveVrf(vrf *types.Vrf) error {
 	return fmt.Errorf("exhausted all attempts to sign vote: %w", err)
 }
 
-func (sc *RetrySignerClient) SignSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) error {
+func (sc *RetrySignerClient) SignSettingSteeringMember(chainID string, settingSteeringMember *types.SettingSteeringMember) error {
 	var err error
 	for i := 0; i < sc.retries || sc.retries == 0; i++ {
-		err = sc.next.SignSettingSteeringMember(settingSteeringMember)
+		err = sc.next.SignSettingSteeringMember(chainID, settingSteeringMember)
 		if err == nil {
 			return nil
 		}

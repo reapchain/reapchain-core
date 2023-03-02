@@ -149,7 +149,7 @@ func (sc *SignerClient) SignQrn(chainID string, qrn *types.Qrn) error {
 	return nil
 }
 
-func (sc *SignerClient) SignSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) error {
+func (sc *SignerClient) SignSettingSteeringMember(chainID string, settingSteeringMember *types.SettingSteeringMember) error {
 	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignSettingSteeringMemberRequest{SettingSteeringMember: settingSteeringMember.ToProto()}))
 	if err != nil {
 		return err
