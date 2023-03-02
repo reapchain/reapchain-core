@@ -421,6 +421,12 @@ timeout_commit = "{{ .Consensus.TimeoutCommit }}"
 # So, validators should stop the state machine, wait for some blocks, and then restart the state machine to avoid panic.
 double_sign_check_height = {{ .Consensus.DoubleSignCheckHeight }}
 
+# The mechanism of how to generate QRN (default = os / qrng)
+# os is using OS random number
+# qrng is using Quentum Random Number Generator
+qrn_generation_mechanism = "{{ .Consensus.QrnGenerationMechanism }}"
+qrn_generator_file_path = "{{ .Consensus.QrnGeneratorFilePath }}"
+
 # Make progress as soon as we have all the precommits (as if TimeoutCommit = 0)
 skip_timeout_commit = {{ .Consensus.SkipTimeoutCommit }}
 

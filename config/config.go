@@ -869,6 +869,9 @@ type ConsensusConfig struct {
 	PeerQueryMaj23SleepDuration time.Duration `mapstructure:"peer_query_maj23_sleep_duration"`
 
 	DoubleSignCheckHeight int64 `mapstructure:"double_sign_check_height"`
+
+	QrnGenerationMechanism string `mapstructure:"qrn_generation_mechanism"`
+	QrnGeneratorFilePath string `mapstructure:"qrn_generator_file_path"`
 }
 
 // DefaultConsensusConfig returns a default configuration for the consensus service
@@ -888,6 +891,8 @@ func DefaultConsensusConfig() *ConsensusConfig {
 		PeerGossipSleepDuration:     100 * time.Millisecond,
 		PeerQueryMaj23SleepDuration: 2000 * time.Millisecond,
 		DoubleSignCheckHeight:       int64(0),
+		QrnGenerationMechanism: 		 "os",
+		QrnGeneratorFilePath: 			 "",
 	}
 }
 
@@ -906,6 +911,8 @@ func TestConsensusConfig() *ConsensusConfig {
 	cfg.PeerGossipSleepDuration = 5 * time.Millisecond
 	cfg.PeerQueryMaj23SleepDuration = 250 * time.Millisecond
 	cfg.DoubleSignCheckHeight = int64(0)
+	cfg.QrnGenerationMechanism = "os"
+	cfg.QrnGeneratorFilePath = ""
 	return cfg
 }
 
@@ -989,6 +996,14 @@ func (cfg *ConsensusConfig) ValidateBasic() error {
 	}
 	if cfg.DoubleSignCheckHeight < 0 {
 		return errors.New("double_sign_check_height can't be negative")
+	}
+
+	if cfg.QrnGenerationMechanism != "os" && cfg.QrnGenerationMechanism != "qrng" {
+		return errors.New("qrn_generation_mechanism must be os or qrng")
+	}
+
+	if cfg.QrnGenerationMechanism == "qrng" && cfg.QrnGeneratorFilePath == "" {
+		return errors.New("qrn_generator_file_path must exist in qrng mode")
 	}
 	return nil
 }

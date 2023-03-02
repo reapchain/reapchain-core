@@ -29,6 +29,8 @@ import (
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+
+	qrnfunc "github.com/reapchain/reapchain-core/qrnfunc"
 )
 
 // Consensus sentinel errors
@@ -1732,7 +1734,13 @@ func (cs *State) finalizeCommit(height int64) {
 			address := cs.privValidatorPubKey.Address()
 			// Check whether the node is standing member
 			if cs.state.NextQrnSet.HasAddress(address) == true {
-				qrnValue := tmrand.Uint64()
+				var qrnValue uint64
+				
+				if cs.config.QrnGenerationMechanism == "qrng" {
+					qrnValue = qrnfunc.GenerateQrnValue(cs.config.QrnGeneratorFilePath)
+				} else {
+					qrnValue = tmrand.Uint64()
+				}
 				
 				qrn := types.NewQrn(cs.state.NextQrnSet.GetHeight(), cs.privValidatorPubKey, qrnValue)
 				err := cs.privValidator.SignQrn(cs.state.ChainID, qrn)
@@ -1785,7 +1793,7 @@ func (cs *State) finalizeCommit(height int64) {
 					settingSteeringMember.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Period)
 					settingSteeringMember.CoordinatorPubKey = cs.privValidatorPubKey
 
-					err := cs.privValidator.SignSettingSteeringMember(settingSteeringMember)
+					err := cs.privValidator.SignSettingSteeringMember(cs.state.ChainID, settingSteeringMember)
 					if err != nil {
 						cs.Logger.Error("Can't sign settingSteeringMember", "err", err)
 					} else {
@@ -2464,7 +2472,7 @@ func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeri
 		return fmt.Errorf("Miss match coordinator")
 	}
 
-	if settingSteeringMember.VerifySign() == false {
+	if settingSteeringMember.VerifySign(cs.state.ChainID) == false {
 		return fmt.Errorf("Invalid seeting steering member sign")
 	}
 

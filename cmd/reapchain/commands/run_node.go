@@ -41,6 +41,12 @@ func AddNodeFlags(cmd *cobra.Command) {
 		"how many blocks to look back to check existence of the node's "+
 			"consensus votes before joining consensus")
 
+	cmd.Flags().String("consensus.qrn_generation_mechanism", config.Consensus.QrnGenerationMechanism,
+		"Select qrn generate mechanism: os / qrng(Quentum Random Number Generator)")
+	
+	cmd.Flags().String("consensus.qrn_generator_file_path", config.Consensus.QrnGeneratorFilePath,
+		"qrng(Quentum Random Number Generator) path")
+
 	// abci flags
 	cmd.Flags().String(
 		"proxy_app",

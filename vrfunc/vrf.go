@@ -22,10 +22,8 @@ import (
 	"crypto/sha512"
 	"errors"
 
-	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/edwards25519"
 	"github.com/reapchain/reapchain-core/crypto/extra25519"
-	"github.com/reapchain/reapchain-core/crypto/tmhash"
 
 	"golang.org/x/crypto/ed25519"
 )
@@ -45,20 +43,6 @@ var (
 type PrivateKey []byte
 type PublicKey []byte
 
-func (publicKey PublicKey) Address() crypto.Address {
-	if len(publicKey) != PublicKeySize {
-		panic("pubkey is incorrect size")
-	}
-	return crypto.Address(tmhash.SumTruncated(publicKey))
-}
-
-// Public extracts the public VRF key from the underlying private-key
-// and returns a boolean indicating if the operation was successful.
-func (sk PrivateKey) Public() (PublicKey, bool) {
-	pk, ok := ed25519.PrivateKey(sk).Public().(ed25519.PublicKey)
-	return PublicKey(pk), ok
-}
-
 func (sk PrivateKey) expandSecret() (x, skhr *[32]byte) {
 	x, skhr = new([32]byte), new([32]byte)
 	skh := sha512.Sum512(sk[:32])
@@ -68,21 +52,6 @@ func (sk PrivateKey) expandSecret() (x, skhr *[32]byte) {
 	x[31] &= 127
 	x[31] |= 64
 	return
-}
-
-// Compute generates the vrf value for the byte slice m using the
-// underlying private key sk.
-func (sk PrivateKey) Compute(m []byte) []byte {
-	x, _ := sk.expandSecret()
-	var ii edwards25519.ExtendedGroupElement
-	var iiB [32]byte
-	edwards25519.GeScalarMult(&ii, x, hashToCurve(m))
-	ii.ToBytes(&iiB)
-
-	vrf := sha512.New()
-	vrf.Write(iiB[:]) // const length: Size
-	vrf.Write(m)
-	return vrf.Sum(nil)[:32]
 }
 
 func hashToCurve(m []byte) *edwards25519.ExtendedGroupElement {
