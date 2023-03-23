@@ -4,19 +4,19 @@ order: 1
 
 # Getting Started
 
-## First Tendermint App
+## First ReapchainCore App
 
-As a general purpose blockchain engine, Tendermint is agnostic to the
+As a general purpose blockchain engine, ReapchainCore is agnostic to the
 application you want to run. So, to run a complete blockchain that does
-something useful, you must start two programs: one is Tendermint Core,
+something useful, you must start two programs: one is ReapchainCore Core,
 the other is your application, which can be written in any programming
 language. Recall from [the intro to
-ABCI](../introduction/what-is-tendermint.md#abci-overview) that Tendermint Core handles all the p2p and consensus stuff, and just forwards transactions to the
+ABCI](../introduction/what-is-reapchain-core.md#abci-overview) that ReapchainCore Core handles all the p2p and consensus stuff, and just forwards transactions to the
 application when they need to be validated, or when they're ready to be
 committed to a block.
 
 In this guide, we show you some examples of how to run an application
-using Tendermint.
+using ReapchainCore.
 
 ### Install
 
@@ -32,8 +32,8 @@ echo export PATH=\"\$PATH:\$GOPATH/bin\" >> ~/.bash_profile
 Then run
 
 ```sh
-go get github.com/tendermint/tendermint
-cd $GOPATH/src/github.com/tendermint/tendermint
+go get github.com/reapchain/reapchain-core
+cd $GOPATH/src/github.com/reapchain/reapchain-core
 make install_abci
 ```
 
@@ -57,23 +57,23 @@ Let's start a kvstore application.
 abci-cli kvstore
 ```
 
-In another terminal, we can start Tendermint. You should already have the
-Tendermint binary installed. If not, follow the steps from
-[here](../introduction/install.md). If you have never run Tendermint
+In another terminal, we can start ReapchainCore. You should already have the
+ReapchainCore binary installed. If not, follow the steps from
+[here](../introduction/install.md). If you have never run ReapchainCore
 before, use:
 
 ```sh
-tendermint init
-tendermint node
+reapchain-core init
+reapchain-core node
 ```
 
-If you have used Tendermint, you may want to reset the data for a new
-blockchain by running `tendermint unsafe_reset_all`. Then you can run
-`tendermint node` to start Tendermint, and connect to the app. For more
-details, see [the guide on using Tendermint](../tendermint-core/using-tendermint.md).
+If you have used ReapchainCore, you may want to reset the data for a new
+blockchain by running `reapchain-core unsafe_reset_all`. Then you can run
+`reapchain-core node` to start ReapchainCore, and connect to the app. For more
+details, see [the guide on using ReapchainCore](../reapchain-core-core/using-reapchain-core.md).
 
-You should see Tendermint making blocks! We can get the status of our
-Tendermint node as follows:
+You should see ReapchainCore making blocks! We can get the status of our
+ReapchainCore node as follows:
 
 ```sh
 curl -s localhost:26657/status
@@ -147,7 +147,7 @@ of the ASCII of `abcd`. You can verify this in a python 2 shell by
 running `"YWJjZA==".decode('base64')` or in python 3 shell by running
 `import codecs; codecs.decode(b"YWJjZA==", 'base64').decode('ascii')`.
 Stay tuned for a future release that [makes this output more
-human-readable](https://github.com/tendermint/tendermint/issues/1794).
+human-readable](https://github.com/reapchain/reapchain-core/issues/1794).
 
 Now let's try setting a different key and value:
 
@@ -190,7 +190,7 @@ In this instance of the counter app, with `serial=on`, `CheckTx` only
 allows transactions whose integer is greater than the last committed
 one.
 
-Let's kill the previous instance of `tendermint` and the `kvstore`
+Let's kill the previous instance of `reapchain-core` and the `kvstore`
 application, and start the counter app. We can enable `serial=on` with a
 flag:
 
@@ -198,11 +198,11 @@ flag:
 abci-cli counter --serial
 ```
 
-In another window, reset then start Tendermint:
+In another window, reset then start ReapchainCore:
 
 ```sh
-tendermint unsafe_reset_all
-tendermint node
+reapchain-core unsafe_reset_all
+reapchain-core node
 ```
 
 Once again, you can see the blocks streaming by. Let's send some
@@ -250,7 +250,7 @@ But if we send a `1`, it works again:
 ```
 
 For more details on the `broadcast_tx` API, see [the guide on using
-Tendermint](../tendermint-core/using-tendermint.md).
+ReapchainCore](../reapchain-core-core/using-reapchain-core.md).
 
 ## CounterJS - Example in Another Language
 
@@ -259,25 +259,25 @@ we'll run a Javascript version of the `counter`. To run it, you'll need
 to [install node](https://nodejs.org/en/download/).
 
 You'll also need to fetch the relevant repository, from
-[here](https://github.com/tendermint/js-abci), then install it:
+[here](https://github.com/reapchain-core/js-abci), then install it:
 
 ```sh
-git clone https://github.com/tendermint/js-abci.git
+git clone https://github.com/reapchain-core/js-abci.git
 cd js-abci
 npm install abci
 ```
 
-Kill the previous `counter` and `tendermint` processes. Now run the app:
+Kill the previous `counter` and `reapchain-core` processes. Now run the app:
 
 ```sh
 node example/counter.js
 ```
 
-In another window, reset and start `tendermint`:
+In another window, reset and start `reapchain-core`:
 
 ```sh
-tendermint unsafe_reset_all
-tendermint node
+reapchain-core unsafe_reset_all
+reapchain-core node
 ```
 
 Once again, you should see blocks streaming by - but now, our

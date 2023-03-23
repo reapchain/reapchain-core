@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tendermint/tendermint/light"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/light"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // verify verifies the evidence fully by checking:

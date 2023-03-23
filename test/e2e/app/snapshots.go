@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
 )
 
 const (

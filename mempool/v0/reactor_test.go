@@ -13,17 +13,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/abci/example/kvstore"
-	abci "github.com/tendermint/tendermint/abci/types"
-	cfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/libs/log"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	"github.com/tendermint/tendermint/mempool"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/p2p/mock"
-	memproto "github.com/tendermint/tendermint/proto/tendermint/mempool"
-	"github.com/tendermint/tendermint/proxy"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	"github.com/reapchain/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/p2p/mock"
+	memproto "github.com/reapchain/reapchain-core/proto/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/proxy"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (
@@ -66,7 +66,7 @@ func TestReactorBroadcastTxsMessage(t *testing.T) {
 	waitForTxsOnReactors(t, txs, reactors)
 }
 
-// regression test for https://github.com/tendermint/tendermint/issues/5408
+// regression test for https://github.com/reapchain/reapchain-core/issues/5408
 func TestReactorConcurrency(t *testing.T) {
 	config := cfg.TestConfig()
 	const N = 2

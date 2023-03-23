@@ -1,3 +1,3 @@
-killall tendermint
+killall reapchain-core
 killall abci-cli
-rm -rf ~/.tendermint_app
+rm -rf ~/.reapchain-core_app

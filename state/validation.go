@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 //-----------------------------------------------------
@@ -108,6 +108,27 @@ func validateBlock(state State, block *types.Block) error {
 	if !state.Validators.HasAddress(block.ProposerAddress) {
 		return fmt.Errorf("block.Header.ProposerAddress %X is not a validator",
 			block.ProposerAddress,
+		)
+	}
+	if !state.StandingMemberSet.HasAddress(block.ProposerAddress) {
+		return fmt.Errorf("block.Header.ProposerAddress %X is not a standing member",
+			block.ProposerAddress,
+		)
+	}
+
+	// validate standing members
+	if !bytes.Equal(block.StandingMembersHash, state.StandingMemberSet.Hash()) {
+		return fmt.Errorf("wrong Block.Header.StandingMembersHash.  Expected %X, got %v",
+			state.StandingMemberSet.Hash(),
+			block.StandingMembersHash,
+		)
+	}
+
+	// validate steering member candidates
+	if !bytes.Equal(block.SteeringMemberCandidatesHash, state.SteeringMemberCandidateSet.Hash()) {
+		return fmt.Errorf("wrong Block.Header.SteeringMemberCandidatesHash.  Expected %X, got %v",
+			state.SteeringMemberCandidateSet.Hash(),
+			block.SteeringMemberCandidatesHash,
 		)
 	}
 

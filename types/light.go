@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 // LightBlock is a SignedHeader and a ValidatorSet.
@@ -13,6 +13,16 @@ import (
 type LightBlock struct {
 	*SignedHeader `json:"signed_header"`
 	ValidatorSet  *ValidatorSet `json:"validator_set"`
+	StandingMemberSet          *StandingMemberSet          `json:"standing_member_set"`
+	SteeringMemberCandidateSet *SteeringMemberCandidateSet `json:"steering_member_candidate_set"`
+	QrnSet                     *QrnSet                     `json:"qrn_set"`
+	VrfSet                     *VrfSet                     `json:"vrf_set"`
+
+	NextQrnSet *QrnSet `json:"next_qrn_set"`
+	NextVrfSet *VrfSet `json:"next_vrf_set"`
+
+	SettingSteeringMember *SettingSteeringMember `json:"setting_steering_member"`
+
 }
 
 // ValidateBasic checks that the data is correct and consistent
@@ -26,11 +36,27 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 		return errors.New("missing validator set")
 	}
 
+	if lb.StandingMemberSet == nil {
+		return errors.New("missing standing member set")
+	}
+
+	if lb.QrnSet == nil {
+		return errors.New("missing qrn set")
+	}
+
 	if err := lb.SignedHeader.ValidateBasic(chainID); err != nil {
 		return fmt.Errorf("invalid signed header: %w", err)
 	}
 	if err := lb.ValidatorSet.ValidateBasic(); err != nil {
 		return fmt.Errorf("invalid validator set: %w", err)
+	}
+
+	if err := lb.StandingMemberSet.ValidateBasic(); err != nil {
+		return fmt.Errorf("invalid standing member set: %w", err)
+	}
+
+	if err := lb.QrnSet.ValidateBasic(); err != nil {
+		return fmt.Errorf("invalid qrn set: %w", err)
 	}
 
 	// make sure the validator set is consistent with the header
@@ -39,6 +65,31 @@ func (lb LightBlock) ValidateBasic(chainID string) error {
 			lb.SignedHeader.ValidatorsHash, valSetHash,
 		)
 	}
+
+	if steeringMemberCandidateSetHash := lb.SteeringMemberCandidateSet.Hash(); !bytes.Equal(lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash) {
+		return fmt.Errorf("expected sttering member candidate hash of header to match sttering member candidate set hash (%X != %X)",
+			lb.SignedHeader.SteeringMemberCandidatesHash, steeringMemberCandidateSetHash,
+		)
+	}
+
+	if standingMemberSetHash := lb.StandingMemberSet.Hash(); !bytes.Equal(lb.SignedHeader.StandingMembersHash, standingMemberSetHash) {
+		return fmt.Errorf("expected standing member hash of header to match standing member set hash (%X != %X)",
+			lb.SignedHeader.StandingMembersHash, standingMemberSetHash,
+		)
+	}
+
+	if qrnSetHash := lb.QrnSet.Hash(); !bytes.Equal(lb.SignedHeader.QrnsHash, qrnSetHash) {
+		return fmt.Errorf("expected qrn hash of header to match qrn set hash (%X != %X)",
+			lb.SignedHeader.QrnsHash, qrnSetHash,
+		)
+	}
+
+	if vrfSetHash := lb.VrfSet.Hash(); !bytes.Equal(lb.SignedHeader.VrfsHash, vrfSetHash) {
+		return fmt.Errorf("expected vrf hash of header to match vrf set hash (%X != %X)",
+			lb.SignedHeader.VrfsHash, vrfSetHash,
+		)
+	}
+	
 
 	return nil
 }
@@ -80,6 +131,53 @@ func (lb *LightBlock) ToProto() (*tmproto.LightBlock, error) {
 		}
 	}
 
+	if lb.StandingMemberSet != nil {
+		lbp.StandingMemberSet, err = lb.StandingMemberSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.SteeringMemberCandidateSet != nil {
+		lbp.SteeringMemberCandidateSet, err = lb.SteeringMemberCandidateSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.QrnSet != nil {
+		lbp.QrnSet, err = lb.QrnSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.VrfSet != nil {
+		lbp.VrfSet, err = lb.VrfSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.NextQrnSet != nil {
+		lbp.NextQrnSet, err = lb.NextQrnSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.NextVrfSet != nil {
+		lbp.NextVrfSet, err = lb.NextVrfSet.ToProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if lb.SettingSteeringMember != nil {
+		lbp.SettingSteeringMember = lb.SettingSteeringMember.ToProto()
+	}
+
+
 	return lbp, nil
 }
 
@@ -106,6 +204,58 @@ func LightBlockFromProto(pb *tmproto.LightBlock) (*LightBlock, error) {
 			return nil, err
 		}
 		lb.ValidatorSet = vals
+	}
+
+	if pb.StandingMemberSet != nil {
+		standingMemberSet, err := StandingMemberSetFromProto(pb.StandingMemberSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.StandingMemberSet = standingMemberSet
+	}
+
+	if pb.SteeringMemberCandidateSet != nil {
+		steeringMemberCandidateSet, err := SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidateSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.SteeringMemberCandidateSet = steeringMemberCandidateSet
+	}
+
+	if pb.QrnSet != nil {
+		qrnSet, err := QrnSetFromProto(pb.QrnSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.QrnSet = qrnSet
+	}
+
+	if pb.NextQrnSet != nil {
+		nextQrnSet, err := QrnSetFromProto(pb.NextQrnSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.NextQrnSet = nextQrnSet
+	}
+
+	if pb.VrfSet != nil {
+		vrfSet, err := VrfSetFromProto(pb.VrfSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.VrfSet = vrfSet
+	}
+
+	if pb.NextVrfSet != nil {
+		nextVrfSet, err := VrfSetFromProto(pb.NextVrfSet)
+		if err != nil {
+			return nil, err
+		}
+		lb.NextVrfSet = nextVrfSet
+	}
+
+	if pb.SettingSteeringMember != nil {
+		lb.SettingSteeringMember = SettingSteeringMemberFromProto(pb.SettingSteeringMember)
 	}
 
 	return lb, nil

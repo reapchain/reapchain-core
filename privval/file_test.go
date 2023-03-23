@@ -11,13 +11,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
 func TestGenLoadValidator(t *testing.T) {
@@ -132,11 +132,11 @@ func TestUnmarshalValidatorKey(t *testing.T) {
 	serialized := fmt.Sprintf(`{
   "address": "%s",
   "pub_key": {
-    "type": "tendermint/PubKeyEd25519",
+    "type": "reapchain/PubKeyEd25519",
     "value": "%s"
   },
   "priv_key": {
-    "type": "tendermint/PrivKeyEd25519",
+    "type": "reapchain/PrivKeyEd25519",
     "value": "%s"
   }
 }`, addr, pubB64, privB64)

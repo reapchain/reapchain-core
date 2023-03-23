@@ -17,10 +17,10 @@ import (
 	"context"
 	"errors"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/pubsub/query"
-	"github.com/tendermint/tendermint/state/txindex"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
+	"github.com/reapchain/reapchain-core/state/txindex"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (
@@ -28,7 +28,7 @@ const (
 	eventTypeEndBlock   = "end_block"
 )
 
-// TxIndexer returns a bridge from es to the Tendermint v0.34 transaction indexer.
+// TxIndexer returns a bridge from es to the ReapchainCore v0.34 transaction indexer.
 func (es *EventSink) TxIndexer() BackportTxIndexer {
 	return BackportTxIndexer{psql: es}
 }
@@ -59,7 +59,7 @@ func (BackportTxIndexer) Search(context.Context, *query.Query) ([]*abci.TxResult
 	return nil, errors.New("the TxIndexer.Search method is not supported")
 }
 
-// BlockIndexer returns a bridge that implements the Tendermint v0.34 block
+// BlockIndexer returns a bridge that implements the ReapchainCore v0.34 block
 // indexer interface, using the Postgres event sink as a backing store.
 func (es *EventSink) BlockIndexer() BackportBlockIndexer {
 	return BackportBlockIndexer{psql: es}

@@ -8,18 +8,18 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/tendermint/tendermint/libs/log"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/light"
-	lightprovider "github.com/tendermint/tendermint/light/provider"
-	lighthttp "github.com/tendermint/tendermint/light/provider/http"
-	lightrpc "github.com/tendermint/tendermint/light/rpc"
-	lightdb "github.com/tendermint/tendermint/light/store/db"
-	tmstate "github.com/tendermint/tendermint/proto/tendermint/state"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
-	"github.com/tendermint/tendermint/version"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/light"
+	lightprovider "github.com/reapchain/reapchain-core/light/provider"
+	lighthttp "github.com/reapchain/reapchain-core/light/provider/http"
+	lightrpc "github.com/reapchain/reapchain-core/light/rpc"
+	lightdb "github.com/reapchain/reapchain-core/light/store/db"
+	tmstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
+	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/version"
 )
 
 //go:generate mockery --case underscore --name StateProvider
@@ -168,7 +168,28 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 	state.LastValidators = lastLightBlock.ValidatorSet
 	state.Validators = currentLightBlock.ValidatorSet
 	state.NextValidators = nextLightBlock.ValidatorSet
+
+	state.VrfSet = currentLightBlock.VrfSet
+	state.NextVrfSet = currentLightBlock.NextVrfSet
+
+	state.QrnSet = currentLightBlock.QrnSet
+	state.NextQrnSet = currentLightBlock.QrnSet
+
+	state.StandingMemberSet = currentLightBlock.StandingMemberSet
+	state.SteeringMemberCandidateSet = currentLightBlock.SteeringMemberCandidateSet
+
+	state.SettingSteeringMember = currentLightBlock.SettingSteeringMember
+
+	state.StandingMemberSet = currentLightBlock.StandingMemberSet
+
+	state.SteeringMemberCandidateSet = currentLightBlock.SteeringMemberCandidateSet
+
+	state.ConsensusRound = lastLightBlock.ConsensusRound.ToProto()
+
 	state.LastHeightValidatorsChanged = nextLightBlock.Height
+	state.LastHeightStandingMembersChanged = nextLightBlock.Height
+	state.LastHeightConsensusRoundChanged = nextLightBlock.Height
+	state.LastHeightSteeringMemberCandidatesChanged = nextLightBlock.Height
 
 	// We'll also need to fetch consensus params via RPC, using light client verification.
 	primaryURL, ok := s.providers[s.lc.Primary()]
@@ -187,6 +208,15 @@ func (s *lightClientStateProvider) State(ctx context.Context, height uint64) (sm
 	}
 	state.ConsensusParams = result.ConsensusParams
 	state.LastHeightConsensusParamsChanged = currentLightBlock.Height
+
+	state.LastHeightStandingMembersChanged = nextLightBlock.Height
+	state.LastHeightSteeringMemberCandidatesChanged = nextLightBlock.Height
+	state.LastHeightConsensusRoundChanged = currentLightBlock.Height
+	state.LastHeightQrnChanged = currentLightBlock.Height
+	state.LastHeightNextQrnChanged = currentLightBlock.Height
+	state.LastHeightVrfChanged = currentLightBlock.Height
+	state.LastHeightNextVrfChanged = currentLightBlock.Height
+	state.LastHeightSettingSteeringMemberChanged = currentLightBlock.Height
 
 	return state, nil
 }

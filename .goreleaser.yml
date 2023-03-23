@@ -1,14 +1,14 @@
-project_name: tendermint
+project_name: reapchain-core
 
 env:
   # Require use of Go modules.
   - GO111MODULE=on
 
 builds:
-  - id: "Tendermint"
-    main: ./cmd/tendermint/main.go
+  - id: "ReapchainCore"
+    main: ./cmd/reapchain/main.go
     ldflags:
-      - -s -w -X github.com/tendermint/tendermint/version.TMCoreSemVer={{ .Version }}
+      - -s -w -X github.com/reapchain/reapchain-core/version.TMCoreSemVer={{ .Version }}
     env:
       - CGO_ENABLED=0
     goos:

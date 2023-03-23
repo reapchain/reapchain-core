@@ -8,17 +8,17 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto/tmhash"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
 
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/state"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/privval"
+	"github.com/reapchain/reapchain-core/state"
 
-	"github.com/tendermint/tendermint/libs/log"
-	tmnet "github.com/tendermint/tendermint/libs/net"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // Test harness error codes (which act as exit codes when the test harness fails).
@@ -49,7 +49,7 @@ type TestHarnessError struct {
 var _ error = (*TestHarnessError)(nil)
 
 // TestHarness allows for testing of a remote signer to ensure compatibility
-// with this version of Tendermint.
+// with this version of ReapchainCore.
 type TestHarness struct {
 	addr             string
 	signerClient     *privval.SignerClient
@@ -85,7 +85,7 @@ type timeoutError interface {
 	Timeout() bool
 }
 
-// NewTestHarness will load Tendermint data from the given files (including
+// NewTestHarness will load ReapchainCore data from the given files (including
 // validator public/private keypairs and chain details) and create a new
 // harness.
 func NewTestHarness(logger log.Logger, cfg TestHarnessConfig) (*TestHarness, error) {
@@ -189,7 +189,7 @@ func (th *TestHarness) Run() {
 
 // TestPublicKey just validates that we can (1) fetch the public key from the
 // remote signer, and (2) it matches the public key we've configured for our
-// local Tendermint version.
+// local ReapchainCore version.
 func (th *TestHarness) TestPublicKey() error {
 	th.logger.Info("TEST: Public key of remote signer")
 	fpvk, err := th.fpv.GetPubKey()

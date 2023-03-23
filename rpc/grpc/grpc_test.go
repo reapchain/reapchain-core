@@ -7,20 +7,20 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/abci/example/kvstore"
-	core_grpc "github.com/tendermint/tendermint/rpc/grpc"
-	rpctest "github.com/tendermint/tendermint/rpc/test"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	core_grpc "github.com/reapchain/reapchain-core/rpc/grpc"
+	rpctest "github.com/reapchain/reapchain-core/rpc/test"
 )
 
 func TestMain(m *testing.M) {
-	// start a tendermint node in the background to test against
+	// start a reapchain-core node in the background to test against
 	app := kvstore.NewApplication()
-	node := rpctest.StartTendermint(app)
+	node := rpctest.StartReapchainCore(app)
 
 	code := m.Run()
 
 	// and shut down proper at the end
-	rpctest.StopTendermint(node)
+	rpctest.StopReapchainCore(node)
 	os.Exit(code)
 }
 

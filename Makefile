@@ -1,7 +1,7 @@
 PACKAGES=$(shell go list ./...)
-OUTPUT?=build/tendermint
+OUTPUT?=build/reapchain-core
 
-BUILD_TAGS?=tendermint
+BUILD_TAGS?=reapchain-core
 
 # If building a release, please checkout the version tag to get the correct version setting
 ifneq ($(shell git symbolic-ref -q --short HEAD),)
@@ -10,42 +10,42 @@ else
 VERSION := $(shell git describe)
 endif
 
-LD_FLAGS = -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(VERSION)
+LD_FLAGS = -X github.com/reapchain/reapchain-core/version.TMCoreSemVer=$(VERSION)
 BUILD_FLAGS = -mod=readonly -ldflags "$(LD_FLAGS)"
-HTTPS_GIT := https://github.com/tendermint/tendermint.git
+HTTPS_GIT := https://github.com/reapchain/reapchain-core.git
 CGO_ENABLED ?= 0
 
 # handle nostrip
-ifeq (,$(findstring nostrip,$(TENDERMINT_BUILD_OPTIONS)))
+ifeq (,$(findstring nostrip,$(REAPCHAIN_BUILD_OPTIONS)))
   BUILD_FLAGS += -trimpath
   LD_FLAGS += -s -w
 endif
 
 # handle race
-ifeq (race,$(findstring race,$(TENDERMINT_BUILD_OPTIONS)))
+ifeq (race,$(findstring race,$(REAPCHAIN_BUILD_OPTIONS)))
   CGO_ENABLED=1
   BUILD_FLAGS += -race
 endif
 
 # handle cleveldb
-ifeq (cleveldb,$(findstring cleveldb,$(TENDERMINT_BUILD_OPTIONS)))
+ifeq (cleveldb,$(findstring cleveldb,$(REAPCHAIN_BUILD_OPTIONS)))
   CGO_ENABLED=1
   BUILD_TAGS += cleveldb
 endif
 
 # handle badgerdb
-ifeq (badgerdb,$(findstring badgerdb,$(TENDERMINT_BUILD_OPTIONS)))
+ifeq (badgerdb,$(findstring badgerdb,$(REAPCHAIN_BUILD_OPTIONS)))
   BUILD_TAGS += badgerdb
 endif
 
 # handle rocksdb
-ifeq (rocksdb,$(findstring rocksdb,$(TENDERMINT_BUILD_OPTIONS)))
+ifeq (rocksdb,$(findstring rocksdb,$(REAPCHAIN_BUILD_OPTIONS)))
   CGO_ENABLED=1
   BUILD_TAGS += rocksdb
 endif
 
 # handle boltdb
-ifeq (boltdb,$(findstring boltdb,$(TENDERMINT_BUILD_OPTIONS)))
+ifeq (boltdb,$(findstring boltdb,$(REAPCHAIN_BUILD_OPTIONS)))
   BUILD_TAGS += boltdb
 endif
 
@@ -58,15 +58,15 @@ all: check build test install
 include tests.mk
 
 ###############################################################################
-###                                Build Tendermint                        ###
+###                                Build ReapchainCore                        ###
 ###############################################################################
 
 build:
-	CGO_ENABLED=$(CGO_ENABLED) go build $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' -o $(OUTPUT) ./cmd/tendermint/
+	CGO_ENABLED=$(CGO_ENABLED) go build $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' -o $(OUTPUT) ./cmd/reapchain/
 .PHONY: build
 
 install:
-	CGO_ENABLED=$(CGO_ENABLED) go install $(BUILD_FLAGS) -tags $(BUILD_TAGS) ./cmd/tendermint
+	CGO_ENABLED=$(CGO_ENABLED) go install $(BUILD_FLAGS) -tags $(BUILD_TAGS) ./cmd/reapchain
 .PHONY: install
 
 
@@ -97,7 +97,7 @@ endif
 proto-gen: check-proto-deps
 	@echo "Generating Protobuf files"
 	@go run github.com/bufbuild/buf/cmd/buf generate
-	@mv ./proto/tendermint/abci/types.pb.go ./abci/types/
+	@mv ./proto/reapchain-core/abci/types.pb.go ./abci/types/
 .PHONY: proto-gen
 
 # These targets are provided for convenience and are intended for local
@@ -159,12 +159,12 @@ go.sum: go.mod
 draw_deps:
 	@# requires brew install graphviz or apt-get install graphviz
 	go get github.com/RobotsAndPencils/goviz
-	@goviz -i github.com/tendermint/tendermint/cmd/tendermint -d 3 | dot -Tpng -o dependency-graph.png
+	@goviz -i github.com/reapchain/reapchain-core/cmd/reapchain -d 3 | dot -Tpng -o dependency-graph.png
 .PHONY: draw_deps
 
 get_deps_bin_size:
 	@# Copy of build recipe with additional flags to perform binary size analysis
-	$(eval $(shell go build -work -a $(BUILD_FLAGS) -tags $(BUILD_TAGS) -o $(OUTPUT) ./cmd/tendermint/ 2>&1))
+	$(eval $(shell go build -work -a $(BUILD_FLAGS) -tags $(BUILD_TAGS) -o $(OUTPUT) ./cmd/reapchain/ 2>&1))
 	@find $(WORK) -type f -name "*.a" | xargs -I{} du -hxs "{}" | sort -rh | sed -e s:${WORK}/::g > deps_bin_size.log
 	@echo "Results can be found here: $(CURDIR)/deps_bin_size.log"
 .PHONY: get_deps_bin_size
@@ -175,9 +175,9 @@ get_deps_bin_size:
 
 # generates certificates for TLS testing in remotedb and RPC server
 gen_certs: clean_certs
-	certstrap init --common-name "tendermint.com" --passphrase ""
+	certstrap init --common-name "reapchain-core.com" --passphrase ""
 	certstrap request-cert --common-name "server" -ip "127.0.0.1" --passphrase ""
-	certstrap sign "server" --CA "tendermint.com" --passphrase ""
+	certstrap sign "server" --CA "reapchain-core.com" --passphrase ""
 	mv out/server.crt rpc/jsonrpc/server/test.crt
 	mv out/server.key rpc/jsonrpc/server/test.key
 	rm -rf out
@@ -195,7 +195,7 @@ clean_certs:
 
 format:
 	find . -name '*.go' -type f -not -path "*.git*" -not -name '*.pb.go' -not -name '*pb_test.go' | xargs gofmt -w -s
-	find . -name '*.go' -type f -not -path "*.git*"  -not -name '*.pb.go' -not -name '*pb_test.go' | xargs goimports -w -local github.com/tendermint/tendermint
+	find . -name '*.go' -type f -not -path "*.git*"  -not -name '*.pb.go' -not -name '*pb_test.go' | xargs goimports -w -local github.com/reapchain/reapchain-core
 .PHONY: format
 
 lint:
@@ -232,9 +232,9 @@ sync-docs:
 ###############################################################################
 
 build-docker: build-linux
-	cp $(OUTPUT) DOCKER/tendermint
-	docker build --label=tendermint --tag="tendermint/tendermint" DOCKER
-	rm -rf DOCKER/tendermint
+	cp $(OUTPUT) DOCKER/reapchain-core
+	docker build --label=reapchain-core --tag="reapchain/reapchain-core" DOCKER
+	rm -rf DOCKER/reapchain-core
 .PHONY: build-docker
 
 ###############################################################################
@@ -250,17 +250,17 @@ build-docker-localnode:
 	@cd networks/local && make
 .PHONY: build-docker-localnode
 
-# Runs `make build TENDERMINT_BUILD_OPTIONS=cleveldb` from within an Amazon
+# Runs `make build REAPCHAIN_BUILD_OPTIONS=cleveldb` from within an Amazon
 # Linux (v2)-based Docker build container in order to build an Amazon
-# Linux-compatible binary. Produces a compatible binary at ./build/tendermint
+# Linux-compatible binary. Produces a compatible binary at ./build/reapchain-core
 build_c-amazonlinux:
 	$(MAKE) -C ./DOCKER build_amazonlinux_buildimage
-	docker run --rm -it -v `pwd`:/tendermint tendermint/tendermint:build_c-amazonlinux
+	docker run --rm -it -v `pwd`:/reapchain-core reapchain/reapchain-core:build_c-amazonlinux
 .PHONY: build_c-amazonlinux
 
 # Run a 4-node testnet locally
 localnet-start: localnet-stop build-docker-localnode
-	@if ! [ -f build/node0/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/tendermint:Z tendermint/localnode testnet --config /etc/tendermint/config-template.toml --o . --starting-ip-address 192.167.10.2; fi
+	@if ! [ -f build/node0/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/reapchain-core:Z reapchain-core/localnode testnet --config /etc/reapchain-core/config-template.toml --o . --starting-ip-address 192.167.10.2; fi
 	docker-compose up
 .PHONY: localnet-start
 

@@ -1,7 +1,7 @@
 package core
 
 import (
-	rpc "github.com/tendermint/tendermint/rpc/jsonrpc/server"
+	rpc "github.com/reapchain/reapchain-core/rpc/jsonrpc/server"
 )
 
 // TODO: better system than "unsafe" prefix
@@ -46,6 +46,18 @@ var Routes = map[string]*rpc.RPCFunc{
 
 	// evidence API
 	"broadcast_evidence": rpc.NewRPCFunc(BroadcastEvidence, "evidence"),
+
+	// consensus API
+	"standing_members": rpc.NewRPCFunc(StandingMembers, "height"),
+	"qrns":             rpc.NewRPCFunc(Qrns, "height"),
+	"vrfs":             rpc.NewRPCFunc(Vrfs, "height"),
+
+	"next_qrns": rpc.NewRPCFunc(NextQrns, "height"),
+	"next_vrfs": rpc.NewRPCFunc(NextVrfs, "height"),
+
+	"steering_member_candidates": rpc.NewRPCFunc(SteeringMemberCandidates, "height"),
+	"setting_steering_member": rpc.NewRPCFunc(SettingSteeringMember, "height"),
+
 }
 
 // AddUnsafeRoutes adds unsafe routes.

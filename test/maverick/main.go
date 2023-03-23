@@ -8,19 +8,19 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	cmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
-	"github.com/tendermint/tendermint/cmd/tendermint/commands/debug"
-	cfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/libs/cli"
-	tmflags "github.com/tendermint/tendermint/libs/cli/flags"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	"github.com/tendermint/tendermint/p2p"
-	cs "github.com/tendermint/tendermint/test/maverick/consensus"
-	nd "github.com/tendermint/tendermint/test/maverick/node"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	cmd "github.com/reapchain/reapchain-core/cmd/reapchain/commands"
+	"github.com/reapchain/reapchain-core/cmd/reapchain/commands/debug"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/cli"
+	tmflags "github.com/reapchain/reapchain-core/libs/cli/flags"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	"github.com/reapchain/reapchain-core/p2p"
+	cs "github.com/reapchain/reapchain-core/test/maverick/consensus"
+	nd "github.com/reapchain/reapchain-core/test/maverick/node"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
 var (
@@ -51,11 +51,11 @@ func ParseConfig() (*cfg.Config, error) {
 	return conf, err
 }
 
-// RootCmd is the root command for Tendermint core.
+// RootCmd is the root command for ReapchainCore core.
 var RootCmd = &cobra.Command{
 	Use:   "maverick",
-	Short: "Tendermint Maverick Node",
-	Long: "Tendermint Maverick Node for testing with faulty consensus misbehaviors in a testnet. Contains " +
+	Short: "ReapchainCore Maverick Node",
+	Long: "ReapchainCore Maverick Node for testing with faulty consensus misbehaviors in a testnet. Contains " +
 		"all the functionality of a normal node but custom misbehaviors can be injected when running the node " +
 		"through a flag. See maverick node --help for how the misbehavior flag is constructured",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -125,7 +125,7 @@ func main() {
 			"e.g. --misbehaviors double-prevote,3\n"+
 			"You can also have multiple misbehaviors: e.g. double-prevote,3,no-vote,5")
 
-	cmd := cli.PrepareBaseCmd(rootCmd, "TM", os.ExpandEnv(filepath.Join("$HOME", cfg.DefaultTendermintDir)))
+	cmd := cli.PrepareBaseCmd(rootCmd, "TM", os.ExpandEnv(filepath.Join("$HOME", cfg.DefaultReapchainCoreDir)))
 	if err := cmd.Execute(); err != nil {
 		panic(err)
 	}
@@ -163,7 +163,7 @@ func startNode(config *cfg.Config, logger log.Logger, misbehaviorFlag string) er
 
 var InitFilesCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize Tendermint",
+	Short: "Initialize ReapchainCore",
 	RunE:  initFiles,
 }
 

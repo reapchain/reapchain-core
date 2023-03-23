@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"reflect"
 
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmstrings "github.com/tendermint/tendermint/libs/strings"
-	tmp2p "github.com/tendermint/tendermint/proto/tendermint/p2p"
-	"github.com/tendermint/tendermint/version"
+	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
+	tmstrings "github.com/reapchain/reapchain-core/libs/strings"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/version"
 )
 
 const (
@@ -75,7 +75,7 @@ func NewProtocolVersion(p2p, block, app uint64) ProtocolVersion {
 var _ NodeInfo = DefaultNodeInfo{}
 
 // DefaultNodeInfo is the basic node information exchanged
-// between two peers during the Tendermint P2P handshake.
+// between two peers during the ReapchainCore P2P handshake.
 type DefaultNodeInfo struct {
 	ProtocolVersion ProtocolVersion `json:"protocol_version"`
 

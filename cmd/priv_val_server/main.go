@@ -5,12 +5,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/libs/log"
-	tmnet "github.com/tendermint/tendermint/libs/net"
-	tmos "github.com/tendermint/tendermint/libs/os"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
 
-	"github.com/tendermint/tendermint/privval"
+	"github.com/reapchain/reapchain-core/privval"
 )
 
 func main() {

@@ -11,18 +11,18 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/tendermint/tendermint/abci/example/kvstore"
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/light"
-	"github.com/tendermint/tendermint/light/provider"
-	httpp "github.com/tendermint/tendermint/light/provider/http"
-	dbs "github.com/tendermint/tendermint/light/store/db"
-	rpctest "github.com/tendermint/tendermint/rpc/test"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/light"
+	"github.com/reapchain/reapchain-core/light/provider"
+	httpp "github.com/reapchain/reapchain-core/light/provider/http"
+	dbs "github.com/reapchain/reapchain-core/light/store/db"
+	rpctest "github.com/reapchain/reapchain-core/rpc/test"
 )
 
 // Automatically getting new headers and verifying them.
 func ExampleClient_Update() {
-	// give Tendermint time to generate some blocks
+	// give ReapchainCore time to generate some blocks
 	time.Sleep(5 * time.Second)
 
 	dbDir, err := ioutil.TempDir("", "light-client-example")
@@ -90,7 +90,7 @@ func ExampleClient_Update() {
 
 // Manually getting light blocks and verifying them.
 func ExampleClient_VerifyLightBlockAtHeight() {
-	// give Tendermint time to generate some blocks
+	// give ReapchainCore time to generate some blocks
 	time.Sleep(5 * time.Second)
 
 	dbDir, err := ioutil.TempDir("", "light-client-example")
@@ -156,13 +156,13 @@ func ExampleClient_VerifyLightBlockAtHeight() {
 }
 
 func TestMain(m *testing.M) {
-	// start a tendermint node (and kvstore) in the background to test against
+	// start a reapchain-core node (and kvstore) in the background to test against
 	app := kvstore.NewApplication()
-	node := rpctest.StartTendermint(app, rpctest.SuppressStdout)
+	node := rpctest.StartReapchainCore(app, rpctest.SuppressStdout)
 
 	code := m.Run()
 
 	// and shut down proper at the end
-	rpctest.StopTendermint(node)
+	rpctest.StopReapchainCore(node)
 	os.Exit(code)
 }

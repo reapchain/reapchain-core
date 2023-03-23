@@ -4,8 +4,8 @@ package events
 import (
 	"fmt"
 
-	"github.com/tendermint/tendermint/libs/service"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 )
 
 // ErrListenerWasRemoved is returned by AddEvent if the listener was removed.
@@ -19,7 +19,7 @@ func (e ErrListenerWasRemoved) Error() string {
 }
 
 // EventData is a generic event data can be typed and registered with
-// tendermint/go-amino via concrete implementation of this interface.
+// reapchain-core/go-amino via concrete implementation of this interface.
 type EventData interface{}
 
 // Eventable is the interface reactors and other modules must export to become

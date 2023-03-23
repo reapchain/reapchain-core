@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	clist "github.com/tendermint/tendermint/libs/clist"
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/p2p"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tendermint/tendermint/types"
+	clist "github.com/reapchain/reapchain-core/libs/clist"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/p2p"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (

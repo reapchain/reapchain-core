@@ -5,7 +5,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	privvalproto "github.com/tendermint/tendermint/proto/tendermint/privval"
+	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain-core/privval"
 )
 
 // TODO: Add ChainIDRequest
@@ -18,6 +18,8 @@ func mustWrapMsg(pb proto.Message) privvalproto.Message {
 		msg = *pb
 	case *privvalproto.PubKeyRequest:
 		msg.Sum = &privvalproto.Message_PubKeyRequest{PubKeyRequest: pb}
+	case *privvalproto.TypeRequest:
+		msg.Sum = &privvalproto.Message_TypeRequest{TypeRequest: pb}
 	case *privvalproto.PubKeyResponse:
 		msg.Sum = &privvalproto.Message_PubKeyResponse{PubKeyResponse: pb}
 	case *privvalproto.SignVoteRequest:
@@ -32,6 +34,21 @@ func mustWrapMsg(pb proto.Message) privvalproto.Message {
 		msg.Sum = &privvalproto.Message_PingRequest{PingRequest: pb}
 	case *privvalproto.PingResponse:
 		msg.Sum = &privvalproto.Message_PingResponse{PingResponse: pb}
+
+	case *privvalproto.SignQrnRequest:
+		msg.Sum = &privvalproto.Message_SignQrnRequest{SignQrnRequest: pb}
+	case *privvalproto.SignedQrnResponse:
+		msg.Sum = &privvalproto.Message_SignedQrnResponse{SignedQrnResponse: pb}
+
+	case *privvalproto.SignSettingSteeringMemberRequest:
+		msg.Sum = &privvalproto.Message_SignSettingSteeringMemberRequest{SignSettingSteeringMemberRequest: pb}
+	case *privvalproto.SignedSettingSteeringMemberResponse:
+		msg.Sum = &privvalproto.Message_SignedSettingSteeringMemberResponse{SignedSettingSteeringMemberResponse: pb}
+
+	case *privvalproto.SignVrfRequest:
+		msg.Sum = &privvalproto.Message_SignVrfRequest{SignVrfRequest: pb}
+	case *privvalproto.SignedVrfResponse:
+		msg.Sum = &privvalproto.Message_SignedVrfResponse{SignedVrfResponse: pb}
 	default:
 		panic(fmt.Errorf("unknown message type %T", pb))
 	}

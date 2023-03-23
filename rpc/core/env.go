@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"time"
 
-	cfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/consensus"
-	"github.com/tendermint/tendermint/crypto"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	mempl "github.com/tendermint/tendermint/mempool"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/proxy"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/state/indexer"
-	"github.com/tendermint/tendermint/state/txindex"
-	"github.com/tendermint/tendermint/types"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/consensus"
+	"github.com/reapchain/reapchain-core/crypto"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	"github.com/reapchain/reapchain-core/libs/log"
+	mempl "github.com/reapchain/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/proxy"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/state/indexer"
+	"github.com/reapchain/reapchain-core/state/txindex"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (
@@ -53,6 +53,8 @@ type Consensus interface {
 	GetLastHeight() int64
 	GetRoundStateJSON() ([]byte, error)
 	GetRoundStateSimpleJSON() ([]byte, error)
+
+	GetStandingMembers() (int64, []*types.StandingMember)
 }
 
 type transport interface {

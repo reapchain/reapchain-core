@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // RetrySignerClient wraps SignerClient adding retry for each operation (except
@@ -63,6 +63,26 @@ func (sc *RetrySignerClient) GetPubKey() (crypto.PubKey, error) {
 	return nil, fmt.Errorf("exhausted all attempts to get pubkey: %w", err)
 }
 
+func (sc *RetrySignerClient) GetType() (string, error) {
+	var (
+		validatorType  string
+		err error
+	)
+	for i := 0; i < sc.retries || sc.retries == 0; i++ {
+		validatorType, err = sc.next.GetType()
+		if err == nil {
+			return validatorType, nil
+		}
+		// If remote signer errors, we don't retry.
+		if _, ok := err.(*RemoteSignerError); ok {
+			return "", err
+		}
+		time.Sleep(sc.timeout)
+	}
+	return "", fmt.Errorf("exhausted all attempts to get type: %w", err)
+}
+
+
 func (sc *RetrySignerClient) SignVote(chainID string, vote *tmproto.Vote) error {
 	var err error
 	for i := 0; i < sc.retries || sc.retries == 0; i++ {
@@ -78,6 +98,55 @@ func (sc *RetrySignerClient) SignVote(chainID string, vote *tmproto.Vote) error 
 	}
 	return fmt.Errorf("exhausted all attempts to sign vote: %w", err)
 }
+
+func (sc *RetrySignerClient) SignQrn(chainID string, qrn *types.Qrn) error {
+	var err error
+	for i := 0; i < sc.retries || sc.retries == 0; i++ {
+		err = sc.next.SignQrn(chainID, qrn)
+		if err == nil {
+			return nil
+		}
+		// If remote signer errors, we don't retry.
+		if _, ok := err.(*RemoteSignerError); ok {
+			return err
+		}
+		time.Sleep(sc.timeout)
+	}
+	return fmt.Errorf("exhausted all attempts to sign vote: %w", err)
+}
+
+func (sc *RetrySignerClient) ProveVrf(vrf *types.Vrf) error {
+	var err error
+	for i := 0; i < sc.retries || sc.retries == 0; i++ {
+		err = sc.next.ProveVrf(vrf)
+		if err == nil {
+			return nil
+		}
+		// If remote signer errors, we don't retry.
+		if _, ok := err.(*RemoteSignerError); ok {
+			return err
+		}
+		time.Sleep(sc.timeout)
+	}
+	return fmt.Errorf("exhausted all attempts to sign vote: %w", err)
+}
+
+func (sc *RetrySignerClient) SignSettingSteeringMember(chainID string, settingSteeringMember *types.SettingSteeringMember) error {
+	var err error
+	for i := 0; i < sc.retries || sc.retries == 0; i++ {
+		err = sc.next.SignSettingSteeringMember(chainID, settingSteeringMember)
+		if err == nil {
+			return nil
+		}
+		// If remote signer errors, we don't retry.
+		if _, ok := err.(*RemoteSignerError); ok {
+			return err
+		}
+		time.Sleep(sc.timeout)
+	}
+	return fmt.Errorf("exhausted all attempts to sign vote: %w", err)
+}
+
 
 func (sc *RetrySignerClient) SignProposal(chainID string, proposal *tmproto.Proposal) error {
 	var err error

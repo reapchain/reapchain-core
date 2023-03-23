@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tendermint/tendermint/p2p"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	rpctypes "github.com/tendermint/tendermint/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/p2p"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 // NetInfo returns network info.
-// More: https://docs.tendermint.com/master/rpc/#/Info/net_info
+// More: https://docs.reapchain-core.com/master/rpc/#/Info/net_info
 func NetInfo(ctx *rpctypes.Context) (*ctypes.ResultNetInfo, error) {
 	peersList := env.P2PPeers.Peers().List()
 	peers := make([]ctypes.Peer, 0, len(peersList))
@@ -92,7 +92,7 @@ func UnsafeDialPeers(ctx *rpctypes.Context, peers []string, persistent, uncondit
 }
 
 // Genesis returns genesis file.
-// More: https://docs.tendermint.com/master/rpc/#/Info/genesis
+// More: https://docs.reapchain-core.com/master/rpc/#/Info/genesis
 func Genesis(ctx *rpctypes.Context) (*ctypes.ResultGenesis, error) {
 	if len(env.genChunks) > 1 {
 		return nil, errors.New("genesis response is large, please use the genesis_chunked API instead")

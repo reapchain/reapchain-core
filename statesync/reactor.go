@@ -5,14 +5,14 @@ import (
 	"sort"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/config"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/p2p"
-	ssproto "github.com/tendermint/tendermint/proto/tendermint/statesync"
-	"github.com/tendermint/tendermint/proxy"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/config"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/p2p"
+	ssproto "github.com/reapchain/reapchain-core/proto/reapchain-core/statesync"
+	"github.com/reapchain/reapchain-core/proxy"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (
@@ -123,6 +123,7 @@ func (r *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 		switch msg := msg.(type) {
 		case *ssproto.SnapshotsRequest:
 			snapshots, err := r.recentSnapshots(recentSnapshots)
+			// TODO: We may want to consider punishing the peer for certain errors
 			if err != nil {
 				r.Logger.Error("Failed to fetch snapshots", "err", err)
 				return
@@ -264,6 +265,7 @@ func (r *Reactor) Sync(stateProvider StateProvider, discoveryTime time.Duration)
 		return sm.State{}, nil, errors.New("a state sync is already in progress")
 	}
 	r.syncer = newSyncer(r.cfg, r.Logger, r.conn, r.connQuery, stateProvider, r.tempDir)
+	
 	r.mtx.Unlock()
 
 	hook := func() {

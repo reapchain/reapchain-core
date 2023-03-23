@@ -12,11 +12,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
-	mcs "github.com/tendermint/tendermint/test/maverick/consensus"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/crypto/secp256k1"
+	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
+	mcs "github.com/reapchain/reapchain-core/test/maverick/consensus"
 )
 
 const (
@@ -63,7 +63,7 @@ type Testnet struct {
 	ABCIProtocol     string
 }
 
-// Node represents a Tendermint node in a testnet.
+// Node represents a ReapchainCore node in a testnet.
 type Node struct {
 	Name             string
 	Testnet          *Testnet

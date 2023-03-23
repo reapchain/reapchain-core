@@ -8,10 +8,10 @@ import (
 	"math"
 	"time"
 
-	"github.com/tendermint/tendermint/libs/log"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
-	e2e "github.com/tendermint/tendermint/test/e2e/pkg"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/libs/log"
+	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
+	e2e "github.com/reapchain/reapchain-core/test/e2e/pkg"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // Load generates transactions against the network until the given context is

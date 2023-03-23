@@ -9,16 +9,17 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	"github.com/tendermint/tendermint/libs/protoio"
-	"github.com/tendermint/tendermint/libs/tempfile"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	"github.com/reapchain/reapchain-core/libs/protoio"
+	"github.com/reapchain/reapchain-core/libs/tempfile"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
+	"github.com/reapchain/reapchain-core/vrfunc"
 )
 
 // TODO: type ?
@@ -249,6 +250,10 @@ func (pv *FilePV) GetPubKey() (crypto.PubKey, error) {
 	return pv.Key.PubKey, nil
 }
 
+func (pv *FilePV) GetType() (string, error) {
+	return "standing", nil
+}
+
 // SignVote signs a canonical representation of the vote, along with the
 // chainID. Implements PrivValidator.
 func (pv *FilePV) SignVote(chainID string, vote *tmproto.Vote) error {
@@ -434,4 +439,44 @@ func checkProposalsOnlyDifferByTimestamp(lastSignBytes, newSignBytes []byte) (ti
 	newProposal.Timestamp = now
 
 	return lastTime, proto.Equal(&newProposal, &lastProposal)
+}
+
+
+func (pv *FilePV) SignQrn(chainID string, qrn *types.Qrn) error {
+	signBytes := qrn.GetQrnBytesForSign(chainID)
+	if signBytes == nil {
+		return fmt.Errorf("error signing qrn: qrn is nil")
+	}
+
+	sig, err := pv.Key.PrivKey.Sign(signBytes)
+	if err != nil {
+		return err
+	}
+
+	qrn.Signature = sig
+	return nil
+}
+
+func (pv *FilePV) ProveVrf(vrf *types.Vrf) error {
+	privateKey := vrfunc.PrivateKey(pv.Key.PrivKey.Bytes())
+	value, proof := privateKey.Prove(vrf.Seed)
+	vrf.Value = value
+	vrf.Proof = proof
+
+	return nil
+}
+
+func (pv *FilePV) SignSettingSteeringMember(chainID string, settingSteeringMember *types.SettingSteeringMember) error {
+	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign(chainID)
+	if signBytes == nil {
+		return fmt.Errorf("error signing settingSteeringMember: settingSteeringMember is nil")
+	}
+
+	sig, err := pv.Key.PrivKey.Sign(signBytes)
+	if err != nil {
+		return err
+	}
+
+	settingSteeringMember.Signature = sig
+	return nil
 }

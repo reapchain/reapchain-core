@@ -1,4 +1,4 @@
-module github.com/tendermint/tendermint
+module github.com/reapchain/reapchain-core
 
 go 1.16
 

@@ -3,12 +3,12 @@ package privval
 import (
 	"fmt"
 
-	"github.com/tendermint/tendermint/crypto"
-	cryptoenc "github.com/tendermint/tendermint/crypto/encoding"
-	cryptoproto "github.com/tendermint/tendermint/proto/tendermint/crypto"
-	privvalproto "github.com/tendermint/tendermint/proto/tendermint/privval"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
+	cryptoproto "github.com/reapchain/reapchain-core/proto/reapchain-core/crypto"
+	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain-core/privval"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 func DefaultValidationRequestHandler(
@@ -46,6 +46,21 @@ func DefaultValidationRequestHandler(
 		} else {
 			res = mustWrapMsg(&privvalproto.PubKeyResponse{PubKey: pk, Error: nil})
 		}
+
+	case *privvalproto.Message_TypeRequest:
+		if r.TypeRequest.GetChainId() != chainID {
+			res = mustWrapMsg(&privvalproto.TypeResponse{
+				Type: "", Error: &privvalproto.RemoteSignerError{
+					Code: 0, Description: "unable to provide type"}})
+			return res, fmt.Errorf("want chainID: %s, got chainID: %s", r.TypeRequest.GetChainId(), chainID)
+		}
+
+		validatorType, err := privVal.GetType()
+		if err != nil {
+			return res, err
+		}
+
+		res = mustWrapMsg(&privvalproto.TypeResponse{Type: validatorType, Error: nil})
 
 	case *privvalproto.Message_SignVoteRequest:
 		if r.SignVoteRequest.ChainId != chainID {

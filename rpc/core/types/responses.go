@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/libs/bytes"
-	"github.com/tendermint/tendermint/p2p"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/libs/bytes"
+	"github.com/reapchain/reapchain-core/p2p"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // List of blocks
@@ -141,6 +141,45 @@ type ResultValidators struct {
 	// Total number of validators
 	Total int `json:"total"`
 }
+
+// StandingMembers for a height.
+type ResultStandingMembers struct {
+	BlockHeight               int64                   `json:"block_height"`
+	StandingMembers           []*types.StandingMember `json:"standing_members"`
+	CurrentCoordinatorRanking int64                   `json:"current_coordinator_ranking"`
+	// Count of actual validators in this result
+	Count int `json:"count"`
+}
+
+type ResultSteeringMemberCandidates struct {
+	BlockHeight              int64                            `json:"block_height"`
+	SteeringMemberCandidates []*types.SteeringMemberCandidate `json:"steering_member_candidates"`
+	// Count of actual validators in this result
+	Count int `json:"count"`
+}
+
+type ResultQrns struct {
+	BlockHeight int64        `json:"block_height"`
+	Qrns        []*types.Qrn `json:"qrns"`
+	Count int `json:"count"`
+	QrnHash []byte `json:"qrn_hash"`
+}
+
+type ResultSettingSteeringMember struct {
+	BlockHeight           int64          `json:"block_height"`
+	Height                int64          `json:"height"`
+	SteeringMemberAddresses [][]byte        `json:"steering_member_addresses"`
+	Timestamp             time.Time      `json:"timestamp"`
+	Address               bytes.HexBytes `json:"address"`
+}
+type ResultVrfs struct {
+	BlockHeight int64        `json:"block_height"`
+	Vrfs        []*types.Vrf `json:"vrfs"`
+	// Count of actual validators in this result
+	Count int `json:"count"`
+	VrfHash []byte `json:"vrf_hash"`
+}
+
 
 // ConsensusParams for given height
 type ResultConsensusParams struct {

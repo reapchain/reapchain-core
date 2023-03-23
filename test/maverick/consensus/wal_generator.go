@@ -11,16 +11,16 @@ import (
 
 	db "github.com/tendermint/tm-db"
 
-	"github.com/tendermint/tendermint/abci/example/kvstore"
-	cfg "github.com/tendermint/tendermint/config"
-	tmcon "github.com/tendermint/tendermint/consensus"
-	"github.com/tendermint/tendermint/libs/log"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	"github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/proxy"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/store"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	cfg "github.com/reapchain/reapchain-core/config"
+	tmcon "github.com/reapchain/reapchain-core/consensus"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	"github.com/reapchain/reapchain-core/privval"
+	"github.com/reapchain/reapchain-core/proxy"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/store"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // WALGenerateNBlocks generates a consensus WAL. It does this by spinning up a
@@ -119,7 +119,7 @@ func WALGenerateNBlocks(t *testing.T, wr io.Writer, numBlocks int) (err error) {
 		if err := consensusState.Stop(); err != nil {
 			t.Error(err)
 		}
-		return fmt.Errorf("waited too long for tendermint to produce %d blocks (grep logs for `wal_generator`)", numBlocks)
+		return fmt.Errorf("waited too long for reapchain-core to produce %d blocks (grep logs for `wal_generator`)", numBlocks)
 	}
 }
 

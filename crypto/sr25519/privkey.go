@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/tendermint/tendermint/crypto"
+	"github.com/reapchain/reapchain-core/crypto"
 
 	schnorrkel "github.com/ChainSafe/go-schnorrkel"
 )
@@ -75,7 +75,7 @@ func (privKey PrivKey) Type() string {
 
 // GenPrivKey generates a new sr25519 private key.
 // It uses OS randomness in conjunction with the current global random seed
-// in tendermint/libs/common to generate the private key.
+// in reapchain-core/libs/common to generate the private key.
 func GenPrivKey() PrivKey {
 	return genPrivKey(crypto.CReader())
 }

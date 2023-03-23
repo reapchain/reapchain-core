@@ -5,14 +5,14 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/tendermint/tendermint/behaviour"
-	bc "github.com/tendermint/tendermint/blockchain"
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/p2p"
-	bcproto "github.com/tendermint/tendermint/proto/tendermint/blockchain"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/store"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/behaviour"
+	bc "github.com/reapchain/reapchain-core/blockchain"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/p2p"
+	bcproto "github.com/reapchain/reapchain-core/proto/reapchain-core/blockchain"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/store"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (

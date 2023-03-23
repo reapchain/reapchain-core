@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/tendermint/tendermint/libs/pubsub/query"
-	"github.com/tendermint/tendermint/state/indexer"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
+	"github.com/reapchain/reapchain-core/state/indexer"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 var _ indexer.BlockIndexer = (*BlockerIndexer)(nil)

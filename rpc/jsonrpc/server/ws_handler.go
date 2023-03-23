@@ -12,9 +12,9 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/libs/service"
-	types "github.com/tendermint/tendermint/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/libs/service"
+	types "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
 )
 
 // WebSocket handler
@@ -52,7 +52,7 @@ func NewWebsocketManager(
 				// The default behaviour would be relevant to browser-based clients,
 				// afaik. I suppose having a pass-through is a workaround for allowing
 				// for more complex security schemes, shifting the burden of
-				// AuthN/AuthZ outside the Tendermint RPC.
+				// AuthN/AuthZ outside the ReapchainCore RPC.
 				// I can't think of other uses right now that would warrant a TODO
 				// though. The real backstory of this TODO shall remain shrouded in
 				// mystery
@@ -446,7 +446,7 @@ func (wsc *wsConnection) writeRoutine() {
 
 // All writes to the websocket must (re)set the write deadline.
 // If some writes don't set it while others do, they may timeout incorrectly
-// (https://github.com/tendermint/tendermint/issues/553)
+// (https://github.com/reapchain/reapchain-core/issues/553)
 func (wsc *wsConnection) writeMessageWithDeadline(msgType int, msg []byte) error {
 	if err := wsc.baseConn.SetWriteDeadline(time.Now().Add(wsc.writeWait)); err != nil {
 		return err

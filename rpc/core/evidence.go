@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	rpctypes "github.com/tendermint/tendermint/rpc/jsonrpc/types"
-	"github.com/tendermint/tendermint/types"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // BroadcastEvidence broadcasts evidence of the misbehavior.
-// More: https://docs.tendermint.com/master/rpc/#/Info/broadcast_evidence
+// More: https://docs.reapchain-core.com/master/rpc/#/Info/broadcast_evidence
 func BroadcastEvidence(ctx *rpctypes.Context, ev types.Evidence) (*ctypes.ResultBroadcastEvidence, error) {
 	if ev == nil {
 		return nil, errors.New("no evidence was provided")

@@ -6,16 +6,16 @@ import (
 	"sync"
 	"sync/atomic"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/libs/clist"
-	"github.com/tendermint/tendermint/libs/log"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/mempool"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/proxy"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/clist"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/proxy"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // CListMempool is an ordered in-memory pool for transactions before they are
@@ -610,7 +610,7 @@ func (mem *CListMempool) Update(
 		//   101 -> 102
 		// Mempool after:
 		//   100
-		// https://github.com/tendermint/tendermint/issues/3322.
+		// https://github.com/reapchain/reapchain-core/issues/3322.
 		if e, ok := mem.txsMap.Load(tx.Key()); ok {
 			mem.removeTx(tx, e.(*clist.CElement), false)
 		}

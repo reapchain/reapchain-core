@@ -1,6 +1,6 @@
 module.exports = {
   theme: 'cosmos',
-  title: 'Tendermint Core',
+  title: 'ReapchainCore Core',
   // locales: {
   //   "/": {
   //     lang: "en-US"
@@ -11,15 +11,15 @@ module.exports = {
   // },
   base: process.env.VUEPRESS_BASE,
   themeConfig: {
-    repo: 'tendermint/tendermint',
-    docsRepo: 'tendermint/tendermint',
+    repo: 'reapchain/reapchain-core',
+    docsRepo: 'reapchain/reapchain-core',
     docsDir: 'docs',
     editLinks: true,
     label: 'core',
     algolia: {
       id: "BH4D9OD16A",
       key: "59f0e2deb984aa9cdf2b3a5fd24ac501",
-      index: "tendermint"
+      index: "reapchain-core"
     },
     versions: [
       {
@@ -46,9 +46,9 @@ module.exports = {
           children: [
             {
               // TODO(creachadair): Figure out how to make this per-branch.
-              // See: https://github.com/tendermint/tendermint/issues/7908
+              // See: https://github.com/reapchain/reapchain-core/issues/7908
               title: 'RPC',
-              path: 'https://docs.tendermint.com/v0.35/rpc/',
+              path: 'https://docs.reapchain-core.com/v0.35/rpc/',
               static: true
             },
           ]
@@ -59,11 +59,11 @@ module.exports = {
       title: 'Help & Support',
       editLink: true,
       forum: {
-        title: 'Tendermint Forum',
-        text: 'Join the Tendermint forum to learn more',
-        url: 'https://forum.cosmos.network/c/tendermint',
+        title: 'ReapchainCore Forum',
+        text: 'Join the ReapchainCore forum to learn more',
+        url: 'https://forum.cosmos.network/c/reapchain-core',
         bg: '#0B7E0B',
-        logo: 'tendermint'
+        logo: 'reapchain-core'
       },
       github: {
         title: 'Found an Issue?',
@@ -72,25 +72,25 @@ module.exports = {
     },
     footer: {
       question: {
-        text: 'Chat with Tendermint developers in <a href=\'https://discord.gg/vcExX9T\' target=\'_blank\'>Discord</a> or reach out on the <a href=\'https://forum.cosmos.network/c/tendermint\' target=\'_blank\'>Tendermint Forum</a> to learn more.'
+        text: 'Chat with ReapchainCore developers in <a href=\'https://discord.gg/vcExX9T\' target=\'_blank\'>Discord</a> or reach out on the <a href=\'https://forum.cosmos.network/c/reapchain-core\' target=\'_blank\'>ReapchainCore Forum</a> to learn more.'
       },
       logo: '/logo-bw.svg',
       textLink: {
-        text: 'tendermint.com',
-        url: 'https://tendermint.com'
+        text: 'reapchain-core.com',
+        url: 'https://reapchain-core.com'
       },
       services: [
         {
           service: 'medium',
-          url: 'https://medium.com/@tendermint'
+          url: 'https://medium.com/@reapchain-core'
         },
         {
           service: 'twitter',
-          url: 'https://twitter.com/tendermint_team'
+          url: 'https://twitter.com/reapchain-core_team'
         },
         {
           service: 'linkedin',
-          url: 'https://www.linkedin.com/company/tendermint/'
+          url: 'https://www.linkedin.com/company/reapchain-core/'
         },
         {
           service: 'reddit',
@@ -106,7 +106,7 @@ module.exports = {
         }
       ],
       smallprint:
-        'The development of Tendermint Core is led primarily by [Interchain GmbH](https://interchain.berlin/). Funding for this development comes primarily from the Interchain Foundation, a Swiss non-profit. The Tendermint trademark is owned by Tendermint Inc, the for-profit entity that also maintains this website.',
+        'The development of ReapchainCore Core is led primarily by [Interchain GmbH](https://interchain.berlin/). Funding for this development comes primarily from the Interchain Foundation, a Swiss non-profit. The ReapchainCore trademark is owned by ReapchainCore Inc, the for-profit entity that also maintains this website.',
       links: [
         {
           title: 'Documentation',
@@ -125,12 +125,12 @@ module.exports = {
           title: 'Community',
           children: [
             {
-              title: 'Tendermint blog',
-              url: 'https://medium.com/@tendermint'
+              title: 'ReapchainCore blog',
+              url: 'https://medium.com/@reapchain-core'
             },
             {
               title: 'Forum',
-              url: 'https://forum.cosmos.network/c/tendermint'
+              url: 'https://forum.cosmos.network/c/reapchain-core'
             }
           ]
         },
@@ -139,15 +139,15 @@ module.exports = {
           children: [
             {
               title: 'Contributing to the docs',
-              url: 'https://github.com/tendermint/tendermint'
+              url: 'https://github.com/reapchain/reapchain-core'
             },
             {
               title: 'Source code on GitHub',
-              url: 'https://github.com/tendermint/tendermint'
+              url: 'https://github.com/reapchain/reapchain-core'
             },
             {
-              title: 'Careers at Tendermint',
-              url: 'https://tendermint.com/careers'
+              title: 'Careers at ReapchainCore',
+              url: 'https://reapchain-core.com/careers'
             }
           ]
         }

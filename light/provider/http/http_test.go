@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/abci/example/kvstore"
-	"github.com/tendermint/tendermint/light/provider"
-	lighthttp "github.com/tendermint/tendermint/light/provider/http"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
-	rpctest "github.com/tendermint/tendermint/rpc/test"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	"github.com/reapchain/reapchain-core/light/provider"
+	lighthttp "github.com/reapchain/reapchain-core/light/provider/http"
+	rpcclient "github.com/reapchain/reapchain-core/rpc/client"
+	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
+	rpctest "github.com/reapchain/reapchain-core/rpc/test"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 func TestNewProvider(t *testing.T) {
@@ -36,7 +36,7 @@ func TestNewProvider(t *testing.T) {
 func TestProvider(t *testing.T) {
 	app := kvstore.NewApplication()
 	app.RetainBlocks = 10
-	node := rpctest.StartTendermint(app)
+	node := rpctest.StartReapchainCore(app)
 
 	cfg := rpctest.GetConfig()
 	defer os.RemoveAll(cfg.RootDir)
@@ -83,7 +83,7 @@ func TestProvider(t *testing.T) {
 	assert.Equal(t, provider.ErrLightBlockNotFound, err)
 
 	// stop the full node and check that a no response error is returned
-	rpctest.StopTendermint(node)
+	rpctest.StopReapchainCore(node)
 	time.Sleep(10 * time.Second)
 	lb, err = p.LightBlock(context.Background(), lower+2)
 	// we should see a connection refused

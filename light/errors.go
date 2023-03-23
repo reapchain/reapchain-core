@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // ErrOldHeaderExpired means the old (trusted) header has expired according to
@@ -23,7 +23,7 @@ func (e ErrOldHeaderExpired) Error() string {
 // ErrNewValSetCantBeTrusted means the new validator set cannot be trusted
 // because < 1/3rd (+trustLevel+) of the old validator set has signed.
 type ErrNewValSetCantBeTrusted struct {
-	Reason types.ErrNotEnoughVotingPowerSigned
+	Reason types.ErrNotEnoughVotingCountSigned
 }
 
 func (e ErrNewValSetCantBeTrusted) Error() string {

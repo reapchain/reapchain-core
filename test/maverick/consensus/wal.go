@@ -11,14 +11,14 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	// tmjson "github.com/tendermint/tendermint/libs/json"
-	tmcon "github.com/tendermint/tendermint/consensus"
-	auto "github.com/tendermint/tendermint/libs/autofile"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	"github.com/tendermint/tendermint/libs/service"
-	tmcons "github.com/tendermint/tendermint/proto/tendermint/consensus"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	// tmjson "github.com/reapchain/reapchain-core/libs/json"
+	tmcon "github.com/reapchain/reapchain-core/consensus"
+	auto "github.com/reapchain/reapchain-core/libs/autofile"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain-core/consensus"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
 const (
@@ -32,9 +32,9 @@ const (
 //--------------------------------------------------------
 // types and functions for savings consensus messages
 // func init() {
-// 	tmjson.RegisterType(msgInfo{}, "tendermint/wal/MsgInfo")
-// 	tmjson.RegisterType(timeoutInfo{}, "tendermint/wal/TimeoutInfo")
-// 	tmjson.RegisterType(tmcon.EndHeightMessage  {}, "tendermint/wal/EndHeightMessage  ")
+// 	tmjson.RegisterType(msgInfo{}, "reapchain-core/wal/MsgInfo")
+// 	tmjson.RegisterType(timeoutInfo{}, "reapchain-core/wal/TimeoutInfo")
+// 	tmjson.RegisterType(tmcon.EndHeightMessage  {}, "reapchain-core/wal/EndHeightMessage  ")
 // }
 
 // Write ahead logger writes msgs to disk before they are processed.

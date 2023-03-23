@@ -11,9 +11,9 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/pubsub/query"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (
@@ -81,7 +81,7 @@ func queryWithID(tx *sql.Tx, query string, args ...interface{}) (uint32, error) 
 // insertEvents inserts a slice of events and any indexed attributes of those
 // events into the database associated with dbtx.
 //
-// If txID > 0, the event is attributed to the Tendermint transaction with that
+// If txID > 0, the event is attributed to the ReapchainCore transaction with that
 // ID; otherwise it is recorded as a block event.
 func insertEvents(dbtx *sql.Tx, blockID, txID uint32, evts []abci.Event) error {
 	// Populate the transaction ID field iff one is defined (> 0).

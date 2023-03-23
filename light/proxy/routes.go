@@ -1,13 +1,13 @@
 package proxy
 
 import (
-	"github.com/tendermint/tendermint/libs/bytes"
-	lrpc "github.com/tendermint/tendermint/light/rpc"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	rpcserver "github.com/tendermint/tendermint/rpc/jsonrpc/server"
-	rpctypes "github.com/tendermint/tendermint/rpc/jsonrpc/types"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/libs/bytes"
+	lrpc "github.com/reapchain/reapchain-core/light/rpc"
+	rpcclient "github.com/reapchain/reapchain-core/rpc/client"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpcserver "github.com/reapchain/reapchain-core/rpc/jsonrpc/server"
+	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 func RPCRoutes(c *lrpc.Client) map[string]*rpcserver.RPCFunc {
@@ -49,6 +49,13 @@ func RPCRoutes(c *lrpc.Client) map[string]*rpcserver.RPCFunc {
 
 		// evidence API
 		"broadcast_evidence": rpcserver.NewRPCFunc(makeBroadcastEvidenceFunc(c), "evidence"),
+
+		"standing_members":           rpcserver.NewRPCFunc(makeStandingMembersFunc(c), "height"),
+		"qrns":                       rpcserver.NewRPCFunc(makeQrnsFunc(c), "height"),
+		"steering_member_candidates": rpcserver.NewRPCFunc(makeSteeringMemberCandidatesFunc(c), "height"),
+
+		"setting_steering_member": rpcserver.NewRPCFunc(makeSettringSteeringMemberFunc(c), "height"),
+	
 	}
 }
 
@@ -189,6 +196,54 @@ func makeValidatorsFunc(c *lrpc.Client) rpcValidatorsFunc {
 		return c.Validators(ctx.Context(), height, page, perPage)
 	}
 }
+
+
+type rpcStandingMembersFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultStandingMembers, error)
+
+func makeStandingMembersFunc(c *lrpc.Client) rpcStandingMembersFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultStandingMembers, error) {
+		return c.StandingMembers(ctx.Context(), height)
+	}
+}
+
+type rpcSteeringMemberCandidatesFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultSteeringMemberCandidates, error)
+
+func makeSteeringMemberCandidatesFunc(c *lrpc.Client) rpcSteeringMemberCandidatesFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultSteeringMemberCandidates, error) {
+		return c.SteeringMemberCandidates(ctx.Context(), height)
+	}
+}
+
+func makeSettringSteeringMemberFunc(c *lrpc.Client) rpcSettingSteeringMemberFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
+		return c.SettingSteeringMember(ctx.Context(), height)
+	}
+}
+
+type rpcQrnsFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultQrns, error)
+
+func makeQrnsFunc(c *lrpc.Client) rpcQrnsFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultQrns, error) {
+		return c.Qrns(ctx.Context(), height)
+	}
+}
+
+type rpcSettingSteeringMemberFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error)
+
+func makeSettingSteeringMemberFunc(c *lrpc.Client) rpcSettingSteeringMemberFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
+		return c.SettingSteeringMember(ctx.Context(), height)
+	}
+}
+
+type rpcVrfsFunc func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultVrfs, error)
+
+func makeVrfsFunc(c *lrpc.Client) rpcVrfsFunc {
+	return func(ctx *rpctypes.Context, height *int64) (*ctypes.ResultVrfs, error) {
+		return c.Vrfs(ctx.Context(), height)
+	}
+}
+
 
 type rpcDumpConsensusStateFunc func(ctx *rpctypes.Context) (*ctypes.ResultDumpConsensusState, error)
 

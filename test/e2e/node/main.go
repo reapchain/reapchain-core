@@ -13,25 +13,25 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/tendermint/tendermint/abci/server"
-	"github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmflags "github.com/tendermint/tendermint/libs/cli/flags"
-	"github.com/tendermint/tendermint/libs/log"
-	tmnet "github.com/tendermint/tendermint/libs/net"
-	"github.com/tendermint/tendermint/light"
-	lproxy "github.com/tendermint/tendermint/light/proxy"
-	lrpc "github.com/tendermint/tendermint/light/rpc"
-	dbs "github.com/tendermint/tendermint/light/store/db"
-	"github.com/tendermint/tendermint/node"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/proxy"
-	rpcserver "github.com/tendermint/tendermint/rpc/jsonrpc/server"
-	"github.com/tendermint/tendermint/test/e2e/app"
-	e2e "github.com/tendermint/tendermint/test/e2e/pkg"
-	mcs "github.com/tendermint/tendermint/test/maverick/consensus"
-	maverick "github.com/tendermint/tendermint/test/maverick/node"
+	"github.com/reapchain/reapchain-core/abci/server"
+	"github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	tmflags "github.com/reapchain/reapchain-core/libs/cli/flags"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	"github.com/reapchain/reapchain-core/light"
+	lproxy "github.com/reapchain/reapchain-core/light/proxy"
+	lrpc "github.com/reapchain/reapchain-core/light/rpc"
+	dbs "github.com/reapchain/reapchain-core/light/store/db"
+	"github.com/reapchain/reapchain-core/node"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/privval"
+	"github.com/reapchain/reapchain-core/proxy"
+	rpcserver "github.com/reapchain/reapchain-core/rpc/jsonrpc/server"
+	"github.com/reapchain/reapchain-core/test/e2e/app"
+	e2e "github.com/reapchain/reapchain-core/test/e2e/pkg"
+	mcs "github.com/reapchain/reapchain-core/test/maverick/consensus"
+	maverick "github.com/reapchain/reapchain-core/test/maverick/node"
 )
 
 var logger = log.NewTMLogger(log.NewSyncWriter(os.Stdout))
@@ -97,7 +97,7 @@ func run(configFile string) error {
 	}
 }
 
-// startApp starts the application server, listening for connections from Tendermint.
+// startApp starts the application server, listening for connections from ReapchainCore.
 func startApp(cfg *Config) error {
 	app, err := app.NewApplication(cfg.App())
 	if err != nil {
@@ -115,8 +115,8 @@ func startApp(cfg *Config) error {
 	return nil
 }
 
-// startNode starts a Tendermint node running the application directly. It assumes the Tendermint
-// configuration is in $TMHOME/config/tendermint.toml.
+// startNode starts a ReapchainCore node running the application directly. It assumes the ReapchainCore
+// configuration is in $TMHOME/config/reapchain-core.toml.
 //
 // FIXME There is no way to simply load the configuration from a file, so we need to pull in Viper.
 func startNode(cfg *Config) error {
@@ -182,7 +182,7 @@ func startLightClient(cfg *Config) error {
 	rpccfg.MaxOpenConnections = tmcfg.RPC.MaxOpenConnections
 	// If necessary adjust global WriteTimeout to ensure it's greater than
 	// TimeoutBroadcastTxCommit.
-	// See https://github.com/tendermint/tendermint/issues/3435
+	// See https://github.com/reapchain/reapchain-core/issues/3435
 	if rpccfg.WriteTimeout <= tmcfg.RPC.TimeoutBroadcastTxCommit {
 		rpccfg.WriteTimeout = tmcfg.RPC.TimeoutBroadcastTxCommit + 1*time.Second
 	}
@@ -203,8 +203,8 @@ func startLightClient(cfg *Config) error {
 }
 
 // FIXME: Temporarily disconnected maverick until it is redesigned
-// startMaverick starts a Maverick node that runs the application directly. It assumes the Tendermint
-// configuration is in $TMHOME/config/tendermint.toml.
+// startMaverick starts a Maverick node that runs the application directly. It assumes the ReapchainCore
+// configuration is in $TMHOME/config/reapchain-core.toml.
 func startMaverick(cfg *Config) error {
 	app, err := app.NewApplication(cfg.App())
 	if err != nil {

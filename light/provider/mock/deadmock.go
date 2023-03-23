@@ -3,8 +3,8 @@ package mock
 import (
 	"context"
 
-	"github.com/tendermint/tendermint/light/provider"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/light/provider"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 type deadMock struct {

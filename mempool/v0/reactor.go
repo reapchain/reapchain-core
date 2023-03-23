@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	cfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/libs/clist"
-	"github.com/tendermint/tendermint/libs/log"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/mempool"
-	"github.com/tendermint/tendermint/p2p"
-	protomem "github.com/tendermint/tendermint/proto/tendermint/mempool"
-	"github.com/tendermint/tendermint/types"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/clist"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/p2p"
+	protomem "github.com/reapchain/reapchain-core/proto/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // Reactor handles mempool tx broadcasting amongst peers.
@@ -231,7 +231,7 @@ func (memR *Reactor) broadcastTxRoutine(peer p2p.Peer) {
 		}
 
 		// NOTE: Transaction batching was disabled due to
-		// https://github.com/tendermint/tendermint/issues/5796
+		// https://github.com/reapchain/reapchain-core/issues/5796
 
 		if _, ok := memTx.senders.Load(peerID); !ok {
 			msg := protomem.Message{

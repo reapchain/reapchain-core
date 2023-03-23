@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	"github.com/tendermint/tendermint/types"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 var (
@@ -58,7 +58,7 @@ func VerifyNonAdjacent(
 	err := trustedVals.VerifyCommitLightTrusting(trustedHeader.ChainID, untrustedHeader.Commit, trustLevel)
 	if err != nil {
 		switch e := err.(type) {
-		case types.ErrNotEnoughVotingPowerSigned:
+		case types.ErrNotEnoughVotingCountSigned:
 			return ErrNewValSetCantBeTrusted{e}
 		default:
 			return e

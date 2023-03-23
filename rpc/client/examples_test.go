@@ -6,17 +6,17 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/tendermint/tendermint/abci/example/kvstore"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	rpctest "github.com/tendermint/tendermint/rpc/test"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
+	rpchttp "github.com/reapchain/reapchain-core/rpc/client/http"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpctest "github.com/reapchain/reapchain-core/rpc/test"
 )
 
 func ExampleHTTP_simple() {
-	// Start a tendermint node (and kvstore) in the background to test against
+	// Start a reapchain-core node (and kvstore) in the background to test against
 	app := kvstore.NewApplication()
-	node := rpctest.StartTendermint(app, rpctest.SuppressStdout, rpctest.RecreateConfig)
-	defer rpctest.StopTendermint(node)
+	node := rpctest.StartReapchainCore(app, rpctest.SuppressStdout, rpctest.RecreateConfig)
+	defer rpctest.StopReapchainCore(node)
 
 	// Create our RPC client
 	rpcAddr := rpctest.GetConfig().RPC.ListenAddress
@@ -66,9 +66,9 @@ func ExampleHTTP_simple() {
 }
 
 func ExampleHTTP_batching() {
-	// Start a tendermint node (and kvstore) in the background to test against
+	// Start a reapchain-core node (and kvstore) in the background to test against
 	app := kvstore.NewApplication()
-	node := rpctest.StartTendermint(app, rpctest.SuppressStdout, rpctest.RecreateConfig)
+	node := rpctest.StartReapchainCore(app, rpctest.SuppressStdout, rpctest.RecreateConfig)
 
 	// Create our RPC client
 	rpcAddr := rpctest.GetConfig().RPC.ListenAddress
@@ -77,7 +77,7 @@ func ExampleHTTP_batching() {
 		log.Fatal(err)
 	}
 
-	defer rpctest.StopTendermint(node)
+	defer rpctest.StopReapchainCore(node)
 
 	// Create our two transactions
 	k1 := []byte("firstName")

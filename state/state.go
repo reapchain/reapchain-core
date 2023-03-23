@@ -9,17 +9,22 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	tmstate "github.com/tendermint/tendermint/proto/tendermint/state"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
-	"github.com/tendermint/tendermint/version"
+	tmstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain-core/version"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
+	"github.com/reapchain/reapchain-core/version"
 )
 
 // database keys
 var (
 	stateKey = []byte("stateKey")
+)
+
+// rollback state key
+var (
+	rollbackStateKey = []byte("rollbackStateKey")
 )
 
 //-----------------------------------------------------------------------------
@@ -38,7 +43,7 @@ var InitStateVersion = tmstate.Version{
 
 //-----------------------------------------------------------------------------
 
-// State is a short description of the latest committed block of the Tendermint consensus.
+// State is a short description of the latest committed block of the ReapchainCore consensus.
 // It keeps all information necessary to validate new blocks,
 // including the last validator set and the consensus params.
 // All fields are exposed so the struct can be easily serialized,
@@ -78,6 +83,32 @@ type State struct {
 
 	// the latest AppHash we've received from calling abci.Commit()
 	AppHash []byte
+
+	StandingMemberSet                *types.StandingMemberSet
+	LastHeightStandingMembersChanged int64
+
+	SteeringMemberCandidateSet                *types.SteeringMemberCandidateSet
+	LastHeightSteeringMemberCandidatesChanged int64
+
+	ConsensusRound                  tmproto.ConsensusRound
+	LastHeightConsensusRoundChanged int64
+
+	QrnSet     *types.QrnSet
+	LastHeightQrnChanged int64
+
+	NextQrnSet *types.QrnSet
+	LastHeightNextQrnChanged int64
+
+	VrfSet     *types.VrfSet
+	LastHeightVrfChanged int64
+
+	NextVrfSet *types.VrfSet
+	LastHeightNextVrfChanged int64
+
+	SettingSteeringMember *types.SettingSteeringMember
+	LastHeightSettingSteeringMemberChanged int64
+	
+	IsSetSteeringMember   bool
 }
 
 // Copy makes a copy of the State for mutating.
@@ -103,6 +134,31 @@ func (state State) Copy() State {
 		AppHash: state.AppHash,
 
 		LastResultsHash: state.LastResultsHash,
+
+		StandingMemberSet:                state.StandingMemberSet.Copy(),
+		LastHeightStandingMembersChanged: state.LastHeightStandingMembersChanged,
+		SteeringMemberCandidateSet:                state.SteeringMemberCandidateSet.Copy(),
+		LastHeightSteeringMemberCandidatesChanged: state.LastHeightSteeringMemberCandidatesChanged,
+		ConsensusRound:                  state.ConsensusRound,
+		LastHeightConsensusRoundChanged: state.LastHeightConsensusRoundChanged,
+		
+		QrnSet:     state.QrnSet.Copy(),
+		LastHeightQrnChanged: state.LastHeightQrnChanged,
+
+		NextQrnSet: state.NextQrnSet.Copy(),
+		LastHeightNextQrnChanged: state.LastHeightNextQrnChanged,
+
+		VrfSet:     state.VrfSet.Copy(),
+		LastHeightVrfChanged: state.LastHeightVrfChanged,
+		
+		NextVrfSet: state.NextVrfSet.Copy(),
+		LastHeightNextVrfChanged: state.LastHeightNextVrfChanged,
+		
+		SettingSteeringMember: state.SettingSteeringMember.Copy(),
+		LastHeightSettingSteeringMemberChanged: state.LastHeightSettingSteeringMemberChanged,
+		
+		IsSetSteeringMember:   state.IsSetSteeringMember,
+	
 	}
 }
 
@@ -172,10 +228,62 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	sm.LastResultsHash = state.LastResultsHash
 	sm.AppHash = state.AppHash
 
+	standingMemberSetProto, err := state.StandingMemberSet.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.StandingMemberSet = standingMemberSetProto
+	sm.LastHeightStandingMembersChanged = state.LastHeightStandingMembersChanged
+
+	steeringMemberCandidateProto, err := state.SteeringMemberCandidateSet.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.SteeringMemberCandidateSet = steeringMemberCandidateProto
+	sm.LastHeightSteeringMemberCandidatesChanged = state.LastHeightSteeringMemberCandidatesChanged
+
+	sm.ConsensusRound = state.ConsensusRound
+	sm.LastHeightConsensusRoundChanged = state.LastHeightConsensusRoundChanged
+
+	qrnSetProto, err := state.QrnSet.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.QrnSet = qrnSetProto
+	sm.LastHeightQrnChanged = state.LastHeightQrnChanged
+
+	nextQrnSetProto, err := state.NextQrnSet.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.NextQrnSet = nextQrnSetProto
+	sm.LastHeightNextQrnChanged = state.LastHeightNextQrnChanged
+
+	vrfSetProto, err := state.VrfSet.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.VrfSet = vrfSetProto
+	sm.LastHeightVrfChanged = state.LastHeightVrfChanged
+
+	nextVrfSetProto, err := state.NextVrfSet.ToProto()
+	if err != nil {
+		return nil, err
+	}
+	sm.NextVrfSet = nextVrfSetProto
+	sm.LastHeightNextVrfChanged = state.LastHeightNextVrfChanged
+
+	sm.SettingSteeringMember = state.SettingSteeringMember.ToProto()
+	sm.LastHeightSettingSteeringMemberChanged = state.LastHeightSettingSteeringMemberChanged
+	
+	sm.IsSetSteeringMember = state.IsSetSteeringMember
+
+
 	return sm, nil
 }
 
 // FromProto takes a state proto message & returns the local state type
+//StateFromProto
 func FromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	if pb == nil {
 		return nil, errors.New("nil State")
@@ -223,8 +331,93 @@ func FromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	state.LastResultsHash = pb.LastResultsHash
 	state.AppHash = pb.AppHash
 
+	standingMemberSet, err := types.StandingMemberSetFromProto(pb.StandingMemberSet)
+	if err != nil {
+		return nil, err
+	}
+	state.StandingMemberSet = standingMemberSet
+	state.LastHeightStandingMembersChanged = pb.LastHeightStandingMembersChanged
+
+	steeringMemberCandidateSet, err := types.SteeringMemberCandidateSetFromProto(pb.SteeringMemberCandidateSet)
+	if err != nil {
+		return nil, err
+	}
+	state.SteeringMemberCandidateSet = steeringMemberCandidateSet
+	state.LastHeightSteeringMemberCandidatesChanged = pb.LastHeightSteeringMemberCandidatesChanged
+
+	state.ConsensusRound = pb.ConsensusRound
+	state.LastHeightConsensusRoundChanged = pb.LastHeightConsensusRoundChanged
+
+	qrnSet, err := types.QrnSetFromProto(pb.QrnSet)
+	if err != nil {
+		return nil, err
+	}
+	state.QrnSet = qrnSet
+	state.LastHeightQrnChanged = pb.LastHeightQrnChanged
+
+	nextQrnSet, err := types.QrnSetFromProto(pb.NextQrnSet)
+	if err != nil {
+		return nil, err
+	}
+	state.NextQrnSet = nextQrnSet
+	state.LastHeightNextQrnChanged = pb.LastHeightNextQrnChanged
+
+	vrfSet, err := types.VrfSetFromProto(pb.VrfSet)
+	if err != nil {
+		return nil, err
+	}
+	state.VrfSet = vrfSet
+	state.LastHeightVrfChanged = pb.LastHeightVrfChanged
+
+	nextVrfSet, err := types.VrfSetFromProto(pb.NextVrfSet)
+	if err != nil {
+		return nil, err
+	}
+	state.NextVrfSet = nextVrfSet
+	state.LastHeightNextVrfChanged = pb.LastHeightNextVrfChanged
+
+	state.SettingSteeringMember = types.SettingSteeringMemberFromProto(pb.SettingSteeringMember)
+	state.LastHeightSettingSteeringMemberChanged = pb.LastHeightSettingSteeringMemberChanged
+
+	state.IsSetSteeringMember = pb.IsSetSteeringMember
+
+
 	return state, nil
 }
+
+
+func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
+	if pb == nil {
+		return nil, errors.New("nil State")
+	}
+
+	state := new(State)
+	state.LastBlockHeight = pb.LastBlockHeight
+
+	if pb.NextQrnSet != nil {
+		nextQrnSet, err := types.QrnSetFromProto(pb.NextQrnSet)
+		if err != nil {
+			return nil, err
+		}
+		state.NextQrnSet = nextQrnSet
+	}
+	state.LastHeightNextQrnChanged = pb.LastHeightNextQrnChanged
+
+	if pb.NextVrfSet != nil {
+		nextVrfSet, err := types.VrfSetFromProto(pb.NextVrfSet)
+		if err != nil {
+			return nil, err
+		}
+		state.NextVrfSet = nextVrfSet
+	}
+	state.LastHeightNextVrfChanged = pb.LastHeightNextVrfChanged
+
+	state.SettingSteeringMember = types.SettingSteeringMemberFromProto(pb.SettingSteeringMember)
+	state.LastHeightSettingSteeringMemberChanged = pb.LastHeightSettingSteeringMemberChanged
+
+	return state, nil
+}
+
 
 //------------------------------------------------------------------------
 // Create a block from the latest state
@@ -251,13 +444,21 @@ func (state State) MakeBlock(
 		timestamp = MedianTime(commit, state.LastValidators)
 	}
 
+	consensusRound, _ := types.ConsensusRoundFromProto(state.ConsensusRound)
+
 	// Fill rest of header with state data.
 	block.Header.Populate(
 		state.Version.Consensus, state.ChainID,
 		timestamp, state.LastBlockID,
-		state.Validators.Hash(), state.NextValidators.Hash(),
+		state.Validators.Hash(), 
+		state.NextValidators.Hash(),
 		types.HashConsensusParams(state.ConsensusParams), state.AppHash, state.LastResultsHash,
 		proposerAddress,
+		state.StandingMemberSet.Hash(),
+		state.SteeringMemberCandidateSet.Hash(),
+		consensusRound,
+		state.QrnSet.Hash(),
+		state.VrfSet.Hash(),
 	)
 
 	return block, block.MakePartSet(types.BlockPartSizeBytes)
@@ -328,11 +529,63 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 	} else {
 		validators := make([]*types.Validator, len(genDoc.Validators))
 		for i, val := range genDoc.Validators {
-			validators[i] = types.NewValidator(val.PubKey, val.Power)
+			validators[i] = types.NewValidator(val.PubKey, val.Power, val.Type)
 		}
 		validatorSet = types.NewValidatorSet(validators)
 		nextValidatorSet = types.NewValidatorSet(validators).CopyIncrementProposerPriority(1)
 	}
+
+	var standingMemberSet *types.StandingMemberSet
+	if genDoc.StandingMembers == nil {
+		standingMemberSet = types.NewStandingMemberSet(nil)
+	} else {
+		standingMembers := make([]*types.StandingMember, len(genDoc.StandingMembers))
+		for i, standingMember := range genDoc.StandingMembers {
+			standingMembers[i] = types.NewStandingMember(standingMember.PubKey, standingMember.Power)
+		}
+		standingMemberSet = types.NewStandingMemberSet(standingMembers)
+	}
+
+	var steeringMemberCandidateSet *types.SteeringMemberCandidateSet
+	if genDoc.SteeringMemberCandidates == nil {
+		steeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(nil)
+	} else {
+		steeringMemberCandidates := make([]*types.SteeringMemberCandidate, len(genDoc.SteeringMemberCandidates))
+		for i, steeringMemberCandidate := range genDoc.SteeringMemberCandidates {
+			steeringMemberCandidates[i] = types.NewSteeringMemberCandidate(steeringMemberCandidate.PubKey, steeringMemberCandidate.Power)
+		}
+		steeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
+	}
+
+	var qrnSet, nextQrnSet *types.QrnSet
+	if genDoc.Qrns == nil {
+		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, nil)
+		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), standingMemberSet, nil)
+	} else {
+		qrns := make([]*types.Qrn, len(genDoc.Qrns))
+		for i, qrn := range genDoc.Qrns {
+			qrns[i] = qrn.Copy()
+		}
+		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, qrns)
+		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), standingMemberSet, nil)
+	}
+
+	var vrfSet, nextVrfSet *types.VrfSet
+	if genDoc.Vrfs == nil {
+		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, nil)
+		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), steeringMemberCandidateSet, nil)
+	} else {
+		vrfs := make([]*types.Vrf, len(genDoc.Vrfs))
+		for i, vrf := range genDoc.Vrfs {
+			vrfs[i] = vrf.Copy()
+		}
+		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
+		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), steeringMemberCandidateSet, vrfs)
+	}
+
+	standingMemberSet.SetCoordinator(qrnSet)
+	_, proposer := validatorSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
+	validatorSet.Proposer = proposer
 
 	return State{
 		Version:       InitStateVersion,
@@ -352,5 +605,26 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 		LastHeightConsensusParamsChanged: genDoc.InitialHeight,
 
 		AppHash: genDoc.AppHash,
+
+		StandingMemberSet:                standingMemberSet,
+		LastHeightStandingMembersChanged: genDoc.InitialHeight,
+
+		SteeringMemberCandidateSet:                steeringMemberCandidateSet,
+		LastHeightSteeringMemberCandidatesChanged: genDoc.InitialHeight,
+
+		ConsensusRound:                  genDoc.ConsensusRound.ToProto(),
+		LastHeightConsensusRoundChanged: genDoc.InitialHeight,
+
+		QrnSet:     qrnSet,
+		NextQrnSet: nextQrnSet,
+
+		VrfSet:     vrfSet,
+		NextVrfSet: nextVrfSet,
+
+		LastHeightQrnChanged: genDoc.InitialHeight,
+		LastHeightNextQrnChanged: genDoc.InitialHeight,
+		LastHeightVrfChanged: genDoc.InitialHeight,
+		LastHeightNextVrfChanged: genDoc.InitialHeight,
+		LastHeightSettingSteeringMemberChanged: genDoc.InitialHeight,
 	}, nil
 }

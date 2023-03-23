@@ -10,16 +10,16 @@ import (
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/merkle"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	"github.com/tendermint/tendermint/libs/bits"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
-	"github.com/tendermint/tendermint/version"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/merkle"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	"github.com/reapchain/reapchain-core/libs/bits"
+	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain-core/version"
+	"github.com/reapchain/reapchain-core/version"
 )
 
 const (
@@ -39,7 +39,7 @@ const (
 	MaxOverheadForBlock int64 = 11
 )
 
-// Block defines the atomic unit of a Tendermint blockchain.
+// Block defines the atomic unit of a ReapchainCore blockchain.
 type Block struct {
 	mtx tmsync.Mutex
 
@@ -317,11 +317,11 @@ func MaxDataBytesNoEvidence(maxBytes int64, valsCount int) int64 {
 
 //-----------------------------------------------------------------------------
 
-// Header defines the structure of a Tendermint block header.
+// Header defines the structure of a ReapchainCore block header.
 // NOTE: changes to the Header should be duplicated in:
 // - header.Hash()
 // - abci.Header
-// - https://github.com/tendermint/spec/blob/master/spec/blockchain/blockchain.md
+// - https://github.com/reapchain-core/spec/blob/master/spec/blockchain/blockchain.md
 type Header struct {
 	// basic block info
 	Version tmversion.Consensus `json:"version"`
@@ -348,6 +348,14 @@ type Header struct {
 	// consensus info
 	EvidenceHash    tmbytes.HexBytes `json:"evidence_hash"`    // evidence included in the block
 	ProposerAddress Address          `json:"proposer_address"` // original proposer of the block
+
+	StandingMembersHash tmbytes.HexBytes `json:"standing_members_hash"`
+	SteeringMemberCandidatesHash tmbytes.HexBytes `json:"steering_member_candidates_hash"`
+
+	QrnsHash tmbytes.HexBytes `json:"qrns_hash"`
+	VrfsHash tmbytes.HexBytes `json:"vrfs_hash"`
+
+	ConsensusRound      ConsensusRound   `json:"consensus_round"`
 }
 
 // Populate the Header with state-derived data.
@@ -358,6 +366,11 @@ func (h *Header) Populate(
 	valHash, nextValHash []byte,
 	consensusHash, appHash, lastResultsHash []byte,
 	proposerAddress Address,
+	standingMembersHash []byte,
+	steeringMemberCandidatesHash []byte,
+	consensusRound ConsensusRound,
+	qrnsHash []byte,
+	vrfsHash []byte,
 ) {
 	h.Version = version
 	h.ChainID = chainID
@@ -369,6 +382,12 @@ func (h *Header) Populate(
 	h.AppHash = appHash
 	h.LastResultsHash = lastResultsHash
 	h.ProposerAddress = proposerAddress
+	h.StandingMembersHash = standingMembersHash
+	h.SteeringMemberCandidatesHash = steeringMemberCandidatesHash
+	h.ConsensusRound = consensusRound
+
+	h.QrnsHash = qrnsHash
+	h.VrfsHash = vrfsHash
 }
 
 // ValidateBasic performs stateless validation on a Header returning an error
@@ -387,6 +406,10 @@ func (h Header) ValidateBasic() error {
 		return errors.New("negative Height")
 	} else if h.Height == 0 {
 		return errors.New("zero Height")
+	}
+
+	if h.Height < h.ConsensusRound.ConsensusStartBlockHeight {
+		return errors.New("ConsensusStartBlockHeight can not greater than block height")
 	}
 
 	if err := h.LastBlockID.ValidateBasic(); err != nil {
@@ -428,6 +451,27 @@ func (h Header) ValidateBasic() error {
 		return fmt.Errorf("wrong LastResultsHash: %v", err)
 	}
 
+	if err := ValidateHash(h.StandingMembersHash); err != nil {
+		return fmt.Errorf("wrong StandingMembersHash: %v", err)
+	}
+
+	if err := ValidateHash(h.SteeringMemberCandidatesHash); err != nil {
+		return fmt.Errorf("wrong SteeringMemberCandidatesHash: %v", err)
+	}
+
+	if err := h.ConsensusRound.ValidateBasic(); err != nil {
+		return fmt.Errorf("wrong ConsensusRound: %w", err)
+	}
+
+	if err := ValidateHash(h.QrnsHash); err != nil {
+		return fmt.Errorf("wrong QrnsHash: %v", err)
+	}
+
+	if err := ValidateHash(h.VrfsHash); err != nil {
+		return fmt.Errorf("wrong VrfsHash: %v", err)
+	}
+
+
 	return nil
 }
 
@@ -441,6 +485,23 @@ func (h *Header) Hash() tmbytes.HexBytes {
 	if h == nil || len(h.ValidatorsHash) == 0 {
 		return nil
 	}
+
+	if h == nil || len(h.SteeringMemberCandidatesHash) == 0 {
+		return nil
+	}
+
+	if h == nil || len(h.StandingMembersHash) == 0 {
+		return nil
+	}
+
+	if h == nil || len(h.QrnsHash) == 0 {
+		return nil
+	}
+
+	if h == nil || len(h.VrfsHash) == 0 {
+		return nil
+	}
+
 	hbz, err := h.Version.Marshal()
 	if err != nil {
 		return nil
@@ -456,6 +517,13 @@ func (h *Header) Hash() tmbytes.HexBytes {
 	if err != nil {
 		return nil
 	}
+
+	crbi := h.ConsensusRound.ToProto()
+	crbz, err := crbi.Marshal()
+	if err != nil {
+		return nil
+	}
+
 	return merkle.HashFromByteSlices([][]byte{
 		hbz,
 		cdcEncode(h.ChainID),
@@ -471,6 +539,12 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		cdcEncode(h.LastResultsHash),
 		cdcEncode(h.EvidenceHash),
 		cdcEncode(h.ProposerAddress),
+		cdcEncode(h.StandingMembersHash), //
+		cdcEncode(h.ConsensusRound),
+		cdcEncode(h.QrnsHash), //
+		cdcEncode(h.VrfsHash), //
+		cdcEncode(h.SteeringMemberCandidatesHash), // 
+		crbz,
 	})
 }
 
@@ -494,6 +568,11 @@ func (h *Header) StringIndented(indent string) string {
 %s  Results:        %v
 %s  Evidence:       %v
 %s  Proposer:       %v
+%s  StandingMembers:       %v
+%s  ConsensusRound:       %v
+%s  QrnsRound:       %v
+%s  VrfsRound:       %v
+%s  SteeringMemberCandidates:       %v
 %s}#%v`,
 		indent, h.Version,
 		indent, h.ChainID,
@@ -509,6 +588,11 @@ func (h *Header) StringIndented(indent string) string {
 		indent, h.LastResultsHash,
 		indent, h.EvidenceHash,
 		indent, h.ProposerAddress,
+		indent, h.StandingMembersHash,
+		indent, h.ConsensusRound,
+		indent, h.QrnsHash,
+		indent, h.VrfsHash,
+		indent, h.SteeringMemberCandidatesHash,
 		indent, h.Hash())
 }
 
@@ -533,6 +617,11 @@ func (h *Header) ToProto() *tmproto.Header {
 		LastResultsHash:    h.LastResultsHash,
 		LastCommitHash:     h.LastCommitHash,
 		ProposerAddress:    h.ProposerAddress,
+		StandingMembersHash:          h.StandingMembersHash,
+		ConsensusRound:               h.ConsensusRound.ToProto(),
+		QrnsHash:                     h.QrnsHash,
+		VrfsHash:                     h.VrfsHash,
+		SteeringMemberCandidatesHash: h.SteeringMemberCandidatesHash,
 	}
 }
 
@@ -546,6 +635,11 @@ func HeaderFromProto(ph *tmproto.Header) (Header, error) {
 	h := new(Header)
 
 	bi, err := BlockIDFromProto(&ph.LastBlockId)
+	if err != nil {
+		return Header{}, err
+	}
+
+	consensusRound, err := ConsensusRoundFromProto(ph.ConsensusRound)
 	if err != nil {
 		return Header{}, err
 	}
@@ -565,6 +659,12 @@ func HeaderFromProto(ph *tmproto.Header) (Header, error) {
 	h.LastResultsHash = ph.LastResultsHash
 	h.LastCommitHash = ph.LastCommitHash
 	h.ProposerAddress = ph.ProposerAddress
+	h.StandingMembersHash = ph.StandingMembersHash
+	h.SteeringMemberCandidatesHash = ph.SteeringMemberCandidatesHash
+	h.ConsensusRound = consensusRound
+	h.QrnsHash = ph.QrnsHash
+	h.VrfsHash = ph.VrfsHash
+
 
 	return *h, h.ValidateBasic()
 }
@@ -676,9 +776,9 @@ func (cs CommitSig) ValidateBasic() error {
 
 	switch cs.BlockIDFlag {
 	case BlockIDFlagAbsent:
-		if len(cs.ValidatorAddress) != 0 {
-			return errors.New("validator address is present")
-		}
+		//if len(cs.ValidatorAddress) != 0 {
+		//	return errors.New("validator address is present")
+	//	}
 		if !cs.Timestamp.IsZero() {
 			return errors.New("time is present")
 		}

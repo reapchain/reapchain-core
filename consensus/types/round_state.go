@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tendermint/tendermint/libs/bytes"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/libs/bytes"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 //-----------------------------------------------------------------------------
@@ -91,6 +91,9 @@ type RoundState struct {
 	LastCommit                *types.VoteSet      `json:"last_commit"`  // Last precommits at Height-1
 	LastValidators            *types.ValidatorSet `json:"last_validators"`
 	TriggeredTimeoutPrecommit bool                `json:"triggered_timeout_precommit"`
+
+	StandingMemberSet          *types.StandingMemberSet          `json:"standing_member_set"`
+	SteeringMemberCandidateSet *types.SteeringMemberCandidateSet `json:"steering_member_candidate_set"`
 }
 
 // Compressed version of the RoundState for use in RPC

@@ -10,15 +10,15 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto/merkle"
-	tmbytes "github.com/tendermint/tendermint/libs/bytes"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	service "github.com/tendermint/tendermint/libs/service"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	rpctypes "github.com/tendermint/tendermint/rpc/jsonrpc/types"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/crypto/merkle"
+	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	service "github.com/reapchain/reapchain-core/libs/service"
+	rpcclient "github.com/reapchain/reapchain-core/rpc/client"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 var errNegOrZeroHeight = errors.New("negative or zero height")
@@ -526,6 +526,103 @@ func (c *Client) Validators(
 		Count:       len(v),
 		Total:       totalCount}, nil
 }
+
+func (c *Client) StandingMembers(ctx context.Context, height *int64) (*ctypes.ResultStandingMembers, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultStandingMembers{
+		BlockHeight:               l.Height,
+		StandingMembers:           l.StandingMemberSet.StandingMembers[:],
+		CurrentCoordinatorRanking: l.StandingMemberSet.CurrentCoordinatorRanking,
+		Count:                     l.StandingMemberSet.Size(),
+	}, nil
+}
+
+func (c *Client) SteeringMemberCandidates(ctx context.Context, height *int64) (*ctypes.ResultSteeringMemberCandidates, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultSteeringMemberCandidates{
+		BlockHeight:              l.Height,
+		SteeringMemberCandidates: l.SteeringMemberCandidateSet.SteeringMemberCandidates[:],
+		Count:                    l.SteeringMemberCandidateSet.Size(),
+	}, nil
+}
+
+func (c *Client) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultQrns{
+		BlockHeight: l.Height,
+		Qrns:        l.QrnSet.Qrns[:],
+		Count:       l.QrnSet.Size(),
+	}, nil
+}
+
+// NextQrns implements client.Client
+func (c *Client) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultQrns{
+		BlockHeight: l.Height,
+		Qrns:        l.NextQrnSet.Qrns[:],
+		Count:       l.NextQrnSet.Size(),
+	}, nil
+}
+
+func (c *Client) SettingSteeringMember(ctx context.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultSettingSteeringMember{
+		BlockHeight:             l.Height,
+		Height:                  l.SettingSteeringMember.Height,
+		SteeringMemberAddresses: l.SettingSteeringMember.SteeringMemberAddresses,
+		Timestamp:               l.SettingSteeringMember.Timestamp,
+		Address:                 l.SettingSteeringMember.CoordinatorPubKey.Address(),
+	}, nil
+}
+
+func (c *Client) Vrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultVrfs{
+		BlockHeight: l.Height,
+		Vrfs:        l.VrfSet.Vrfs[:],
+		Count:       l.VrfSet.Size(),
+	}, nil
+}
+
+// NextVrfs implements client.Client
+func (c *Client) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	l, err := c.updateLightClientIfNeededTo(ctx, height)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ctypes.ResultVrfs{
+		BlockHeight: l.Height,
+		Vrfs:        l.NextVrfSet.Vrfs[:],
+		Count:       l.NextVrfSet.Size(),
+	}, nil
+}
+
 
 func (c *Client) BroadcastEvidence(ctx context.Context, ev types.Evidence) (*ctypes.ResultBroadcastEvidence, error) {
 	return c.next.BroadcastEvidence(ctx, ev)

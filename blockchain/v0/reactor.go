@@ -5,13 +5,13 @@ import (
 	"reflect"
 	"time"
 
-	bc "github.com/tendermint/tendermint/blockchain"
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/p2p"
-	bcproto "github.com/tendermint/tendermint/proto/tendermint/blockchain"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/store"
-	"github.com/tendermint/tendermint/types"
+	bc "github.com/reapchain/reapchain-core/blockchain"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/p2p"
+	bcproto "github.com/reapchain/reapchain-core/proto/reapchain-core/blockchain"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/store"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (
@@ -36,15 +36,6 @@ type consensusReactor interface {
 	SwitchToConsensus(state sm.State, skipWAL bool)
 }
 
-type peerError struct {
-	err    error
-	peerID p2p.ID
-}
-
-func (e peerError) Error() string {
-	return fmt.Sprintf("error with peer %v: %s", e.peerID, e.err.Error())
-}
-
 // BlockchainReactor handles long-term catchup syncing.
 type BlockchainReactor struct {
 	p2p.BaseReactor
@@ -54,15 +45,18 @@ type BlockchainReactor struct {
 
 	blockExec *sm.BlockExecutor
 	store     *store.BlockStore
-	pool      *BlockPool
+	stateStore sm.Store
+	blockPool  *BlockPool
+	statePool  *StatePool
 	fastSync  bool
 
 	requestsCh <-chan BlockRequest
+	stateRequestsCh <-chan BlockRequest
 	errorsCh   <-chan peerError
 }
 
 // NewBlockchainReactor returns new reactor instance.
-func NewBlockchainReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore,
+func NewBlockchainReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore, stateStore sm.Store,
 	fastSync bool) *BlockchainReactor {
 
 	if state.LastBlockHeight != store.Height() {
@@ -71,6 +65,7 @@ func NewBlockchainReactor(state sm.State, blockExec *sm.BlockExecutor, store *st
 	}
 
 	requestsCh := make(chan BlockRequest, maxTotalRequesters)
+	stateRequestsCh := make(chan BlockRequest, maxTotalRequesters)
 
 	const capacity = 1000                      // must be bigger than peers count
 	errorsCh := make(chan peerError, capacity) // so we don't block in #Receive#pool.AddBlock
@@ -79,15 +74,19 @@ func NewBlockchainReactor(state sm.State, blockExec *sm.BlockExecutor, store *st
 	if startHeight == 1 {
 		startHeight = state.InitialHeight
 	}
-	pool := NewBlockPool(startHeight, requestsCh, errorsCh)
+	blockPool := NewBlockPool(startHeight, requestsCh, errorsCh)
+	statePool := NewStatePool(startHeight, stateRequestsCh, errorsCh)
 
 	bcR := &BlockchainReactor{
 		initialState: state,
 		blockExec:    blockExec,
 		store:        store,
-		pool:         pool,
+		stateStore:   stateStore,
+		blockPool:    blockPool,
+		statePool:    statePool,
 		fastSync:     fastSync,
 		requestsCh:   requestsCh,
+		stateRequestsCh: stateRequestsCh,
 		errorsCh:     errorsCh,
 	}
 	bcR.BaseReactor = *p2p.NewBaseReactor("BlockchainReactor", bcR)
@@ -97,16 +96,23 @@ func NewBlockchainReactor(state sm.State, blockExec *sm.BlockExecutor, store *st
 // SetLogger implements service.Service by setting the logger on reactor and pool.
 func (bcR *BlockchainReactor) SetLogger(l log.Logger) {
 	bcR.BaseService.Logger = l
-	bcR.pool.Logger = l
+	bcR.blockPool.Logger = l
+	bcR.statePool.Logger = l
 }
 
 // OnStart implements service.Service.
 func (bcR *BlockchainReactor) OnStart() error {
 	if bcR.fastSync {
-		err := bcR.pool.Start()
+		err := bcR.blockPool.Start()
 		if err != nil {
 			return err
 		}
+
+		err = bcR.statePool.Start()
+		if err != nil {
+			return err
+		}
+
 		go bcR.poolRoutine(false)
 	}
 	return nil
@@ -117,11 +123,19 @@ func (bcR *BlockchainReactor) SwitchToFastSync(state sm.State) error {
 	bcR.fastSync = true
 	bcR.initialState = state
 
-	bcR.pool.height = state.LastBlockHeight + 1
-	err := bcR.pool.Start()
+	bcR.blockPool.height = state.LastBlockHeight + 1
+	bcR.statePool.height = state.LastBlockHeight + 1
+	
+	err := bcR.blockPool.Start()
 	if err != nil {
 		return err
 	}
+
+	err = bcR.statePool.Start()
+	if err != nil {
+		return err
+	}
+
 	go bcR.poolRoutine(true)
 	return nil
 }
@@ -129,7 +143,11 @@ func (bcR *BlockchainReactor) SwitchToFastSync(state sm.State) error {
 // OnStop implements service.Service.
 func (bcR *BlockchainReactor) OnStop() {
 	if bcR.fastSync {
-		if err := bcR.pool.Stop(); err != nil {
+		if err := bcR.blockPool.Stop(); err != nil {
+			bcR.Logger.Error("Error stopping pool", "err", err)
+		}
+
+		if err := bcR.statePool.Stop(); err != nil {
 			bcR.Logger.Error("Error stopping pool", "err", err)
 		}
 	}
@@ -167,7 +185,8 @@ func (bcR *BlockchainReactor) AddPeer(peer p2p.Peer) {
 
 // RemovePeer implements Reactor by removing peer from the pool.
 func (bcR *BlockchainReactor) RemovePeer(peer p2p.Peer, reason interface{}) {
-	bcR.pool.RemovePeer(peer.ID())
+	bcR.blockPool.RemovePeer(peer.ID())
+	bcR.statePool.RemovePeer(peer.ID())
 }
 
 // respondToPeer loads a block and sends it to the requesting peer,
@@ -218,18 +237,34 @@ func (bcR *BlockchainReactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) 
 		return
 	}
 
-	bcR.Logger.Debug("Receive", "src", src, "chID", chID, "msg", msg)
+	//bcR.Logger.Debug("Receive", "src", src, "chID", chID, "msg", msg)
 
 	switch msg := msg.(type) {
+
 	case *bcproto.BlockRequest:
 		bcR.respondToPeer(msg, src)
+
 	case *bcproto.BlockResponse:
 		bi, err := types.BlockFromProto(msg.Block)
 		if err != nil {
 			bcR.Logger.Error("Block content is invalid", "err", err)
 			return
 		}
-		bcR.pool.AddBlock(src.ID(), bi, len(msgBytes))
+		bcR.blockPool.AddBlock(src.ID(), bi, len(msgBytes))
+
+	case *bcproto.StateRequest:
+		bcR.respondStateToPeer(msg, src)
+
+	case *bcproto.StateResponse:
+		state, err := sm.SyncStateFromProto(msg.State)
+
+		if err != nil {
+			bcR.Logger.Error("State content is invalid", "err", err)
+			return
+		}
+		bcR.statePool.AddState(src.ID(), state, len(msgBytes))
+
+
 	case *bcproto.StatusRequest:
 		// Send peer our state.
 		msgBytes, err := bc.EncodeMsg(&bcproto.StatusResponse{
@@ -243,7 +278,7 @@ func (bcR *BlockchainReactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) 
 		src.TrySend(BlockchainChannel, msgBytes)
 	case *bcproto.StatusResponse:
 		// Got a peer status. Unverified.
-		bcR.pool.SetPeerRange(src.ID(), msg.Base, msg.Height)
+		bcR.blockPool.SetPeerRange(src.ID(), msg.Base, msg.Height)
 	case *bcproto.NoBlockResponse:
 		bcR.Logger.Debug("Peer does not have requested block", "peer", src, "height", msg.Height)
 	default:
@@ -279,7 +314,7 @@ func (bcR *BlockchainReactor) poolRoutine(stateSynced bool) {
 			select {
 			case <-bcR.Quit():
 				return
-			case <-bcR.pool.Quit():
+			case <-bcR.blockPool.Quit():
 				return
 			case request := <-bcR.requestsCh:
 				peer := bcR.Switch.Peers().Get(request.PeerID)
@@ -296,6 +331,23 @@ func (bcR *BlockchainReactor) poolRoutine(stateSynced bool) {
 				if !queued {
 					bcR.Logger.Debug("Send queue is full, drop block request", "peer", peer.ID(), "height", request.Height)
 				}
+/*
+			case request := <-bcR.stateRequestsCh:
+				peer := bcR.Switch.Peers().Get(request.PeerID)
+				if peer == nil {
+					continue
+				}
+				msgBytes, err := bc.EncodeMsg(&bcproto.StateRequest{Height: request.Height})
+				if err != nil {
+					bcR.Logger.Error("could not convert msg to proto", "err", err)
+					continue
+				}
+
+				queued := peer.TrySend(BlockchainChannel, msgBytes)
+				if !queued {
+					bcR.Logger.Debug("Send queue is full, drop block request", "peer", peer.ID(), "height", request.Height)
+				}
+*/
 			case err := <-bcR.errorsCh:
 				peer := bcR.Switch.Peers().Get(err.peerID)
 				if peer != nil {
@@ -314,13 +366,16 @@ FOR_LOOP:
 	for {
 		select {
 		case <-switchToConsensusTicker.C:
-			height, numPending, lenRequesters := bcR.pool.GetStatus()
+			height, numPending, lenRequesters := bcR.blockPool.GetStatus()
+			_, numStatePending, lenStateRequesters := bcR.statePool.GetStatus()
+
 			outbound, inbound, _ := bcR.Switch.NumPeers()
-			bcR.Logger.Debug("Consensus ticker", "numPending", numPending, "total", lenRequesters,
+			bcR.Logger.Debug("Consensus ticker", "numPending", numPending, "numStatePending", numStatePending, "total", lenRequesters, "lenStateRequesters", lenStateRequesters,
 				"outbound", outbound, "inbound", inbound)
-			if bcR.pool.IsCaughtUp() {
+
+			if bcR.blockPool.IsCaughtUp() {
 				bcR.Logger.Info("Time to switch to consensus reactor!", "height", height)
-				if err := bcR.pool.Stop(); err != nil {
+				if err := bcR.blockPool.Stop(); err != nil {
 					bcR.Logger.Error("Error stopping pool", "err", err)
 				}
 				conR, ok := bcR.Switch.Reactor("CONSENSUS").(consensusReactor)
@@ -333,6 +388,20 @@ FOR_LOOP:
 
 				break FOR_LOOP
 			}
+
+			if bcR.statePool.IsCaughtUp() {
+				bcR.Logger.Info("Time to switch to consensus reactor!", "height", height)
+				if err := bcR.statePool.Stop(); err != nil {
+					bcR.Logger.Error("Error stopping pool", "err", err)
+				}
+				conR, ok := bcR.Switch.Reactor("CONSENSUS").(consensusReactor)
+				if ok {
+					conR.SwitchToConsensus(state, blocksSynced > 0 || stateSynced)
+				}
+
+				break FOR_LOOP
+			}
+
 
 		case <-trySyncTicker.C: // chan time
 			select {
@@ -350,14 +419,18 @@ FOR_LOOP:
 			// routine.
 
 			// See if there are any blocks to sync.
-			first, second := bcR.pool.PeekTwoBlocks()
+			first, second := bcR.blockPool.PeekTwoBlocks()
 			// bcR.Logger.Info("TrySync peeked", "first", first, "second", second)
 			if first == nil || second == nil {
 				// We need both to sync the first block.
-				continue FOR_LOOP
-			} else {
-				// Try again quickly next loop.
 				didProcessCh <- struct{}{}
+				continue FOR_LOOP
+			}
+
+			firstState, secondState := bcR.statePool.PeekTwoStates()
+			if firstState == nil || secondState == nil {
+				didProcessCh <- struct{}{}
+				continue FOR_LOOP
 			}
 
 			firstParts := first.MakePartSet(types.BlockPartSizeBytes)
@@ -377,14 +450,14 @@ FOR_LOOP:
 
 			if err != nil {
 				bcR.Logger.Error("Error in validation", "err", err)
-				peerID := bcR.pool.RedoRequest(first.Height)
+				peerID := bcR.blockPool.RedoRequest(first.Height)
 				peer := bcR.Switch.Peers().Get(peerID)
 				if peer != nil {
 					// NOTE: we've already removed the peer's request, but we
 					// still need to clean up the rest.
 					bcR.Switch.StopPeerForError(peer, fmt.Errorf("blockchainReactor validation error: %v", err))
 				}
-				peerID2 := bcR.pool.RedoRequest(second.Height)
+				peerID2 := bcR.blockPool.RedoRequest(second.Height)
 				peer2 := bcR.Switch.Peers().Get(peerID2)
 				if peer2 != nil && peer2 != peer {
 					// NOTE: we've already removed the peer's request, but we
@@ -394,13 +467,19 @@ FOR_LOOP:
 				continue FOR_LOOP
 			}
 
-			bcR.pool.PopRequest()
+			bcR.blockPool.PopRequest()
+			bcR.statePool.PopRequest()
 
 			// TODO: batch saves so we dont persist to disk every block
 			bcR.store.SaveBlock(first, firstParts, second.LastCommit)
 
 			// TODO: same thing for app - but we would need a way to
 			// get the hash without persisting the state
+			
+			state.SettingSteeringMember = firstState.SettingSteeringMember.Copy()
+			state.NextQrnSet = firstState.NextQrnSet.Copy()
+			state.NextVrfSet = firstState.NextVrfSet.Copy()
+			
 			state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
 			if err != nil {
 				// TODO This is bad, are we zombie?
@@ -410,8 +489,8 @@ FOR_LOOP:
 
 			if blocksSynced%100 == 0 {
 				lastRate = 0.9*lastRate + 0.1*(100/time.Since(lastHundred).Seconds())
-				bcR.Logger.Info("Fast Sync Rate", "height", bcR.pool.height,
-					"max_peer_height", bcR.pool.MaxPeerHeight(), "blocks/s", lastRate)
+				bcR.Logger.Info("Fast Sync Rate", "height", bcR.blockPool.height,
+					"max_peer_height", bcR.blockPool.MaxPeerHeight(), "blocks/s", lastRate)
 				lastHundred = time.Now()
 			}
 

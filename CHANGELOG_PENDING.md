@@ -4,7 +4,7 @@
 
 Special thanks to external contributors on this release:
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/tendermint).
+Friendly reminder, we have a [bug bounty program](https://hackerone.com/reapchain-core).
 
 ### BREAKING CHANGES
 

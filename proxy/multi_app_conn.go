@@ -3,10 +3,10 @@ package proxy
 import (
 	"fmt"
 
-	abcicli "github.com/tendermint/tendermint/abci/client"
-	tmlog "github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	"github.com/tendermint/tendermint/libs/service"
+	abcicli "github.com/reapchain/reapchain-core/abci/client"
+	tmlog "github.com/reapchain/reapchain-core/libs/log"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	"github.com/reapchain/reapchain-core/libs/service"
 )
 
 const (
@@ -16,7 +16,7 @@ const (
 	connSnapshot  = "snapshot"
 )
 
-// AppConns is the Tendermint's interface to the application that consists of
+// AppConns is the ReapchainCore's interface to the application that consists of
 // multiple connections.
 type AppConns interface {
 	service.Service
@@ -114,7 +114,7 @@ func (app *multiAppConn) OnStart() error {
 	app.consensusConnClient = c
 	app.consensusConn = NewAppConnConsensus(c)
 
-	// Kill Tendermint if the ABCI application crashes.
+	// Kill ReapchainCore if the ABCI application crashes.
 	go app.killTMOnClientError()
 
 	return nil
@@ -127,7 +127,7 @@ func (app *multiAppConn) OnStop() {
 func (app *multiAppConn) killTMOnClientError() {
 	killFn := func(conn string, err error, logger tmlog.Logger) {
 		logger.Error(
-			fmt.Sprintf("%s connection terminated. Did the application crash? Please restart tendermint", conn),
+			fmt.Sprintf("%s connection terminated. Did the application crash? Please restart reapchain-core", conn),
 			"err", err)
 		killErr := tmos.Kill()
 		if killErr != nil {

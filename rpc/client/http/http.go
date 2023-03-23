@@ -7,29 +7,29 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tendermint/tendermint/libs/bytes"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmpubsub "github.com/tendermint/tendermint/libs/pubsub"
-	"github.com/tendermint/tendermint/libs/service"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	jsonrpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/libs/bytes"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmpubsub "github.com/reapchain/reapchain-core/libs/pubsub"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	rpcclient "github.com/reapchain/reapchain-core/rpc/client"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	jsonrpcclient "github.com/reapchain/reapchain-core/rpc/jsonrpc/client"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 /*
-HTTP is a Client implementation that communicates with a Tendermint node over
+HTTP is a Client implementation that communicates with a ReapchainCore node over
 JSON RPC and WebSockets.
 
 This is the main implementation you probably want to use in production code.
-There are other implementations when calling the Tendermint node in-process
+There are other implementations when calling the ReapchainCore node in-process
 (Local), or when you want to mock out the server for test code (mock).
 
-You can subscribe for any event published by Tendermint using Subscribe method.
+You can subscribe for any event published by ReapchainCore using Subscribe method.
 Note delivery is best-effort. If you don't read events fast enough or network is
-slow, Tendermint might cancel the subscription. The client will attempt to
+slow, ReapchainCore might cancel the subscription. The client will attempt to
 resubscribe (you don't need to do anything). It will keep trying every second
 indefinitely until successful.
 
@@ -80,6 +80,37 @@ type BatchHTTP struct {
 	rpcBatch *jsonrpcclient.RequestBatch
 	*baseRPCClient
 }
+
+// NextQrns implements rpcClient
+func (c *BatchHTTP) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	result := new(ctypes.ResultQrns)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_qrns", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// NextVrfs implements rpcClient
+func (c *BatchHTTP) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	result := new(ctypes.ResultVrfs)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_vrfs", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 
 // rpcClient is an internal interface to which our RPC clients (batch and
 // non-batch) must conform. Acts as an additional code-level sanity check to
@@ -553,6 +584,120 @@ func (c *baseRPCClient) Validators(
 	return result, nil
 }
 
+func (c *baseRPCClient) StandingMembers(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultStandingMembers, error) {
+	result := new(ctypes.ResultStandingMembers)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "standing_members", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (c *baseRPCClient) SteeringMemberCandidates(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultSteeringMemberCandidates, error) {
+	result := new(ctypes.ResultSteeringMemberCandidates)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "steering_member_candidates", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (c *baseRPCClient) Qrns(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultQrns, error) {
+	result := new(ctypes.ResultQrns)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "qrns", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+// NextQrns implements rpcClient
+func (c *baseRPCClient) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	result := new(ctypes.ResultQrns)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_qrns", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (c *baseRPCClient) SettingSteeringMember(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultSettingSteeringMember, error) {
+	result := new(ctypes.ResultSettingSteeringMember)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "setting_steering_member", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (c *baseRPCClient) Vrfs(
+	ctx context.Context,
+	height *int64,
+) (*ctypes.ResultVrfs, error) {
+	result := new(ctypes.ResultVrfs)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "vrfs", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// NextVrfs implements rpcClient
+func (c *baseRPCClient) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	result := new(ctypes.ResultVrfs)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_vrfs", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *baseRPCClient) BroadcastEvidence(
 	ctx context.Context,
 	ev types.Evidence,
@@ -564,6 +709,37 @@ func (c *baseRPCClient) BroadcastEvidence(
 	}
 	return result, nil
 }
+
+// NextQrns implements client.RemoteClient
+func (c *HTTP) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	result := new(ctypes.ResultQrns)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_qrns", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// NextVrfs implements client.RemoteClient
+func (c *HTTP) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	result := new(ctypes.ResultVrfs)
+	params := make(map[string]interface{})
+
+	if height != nil {
+		params["height"] = height
+	}
+	_, err := c.caller.Call(ctx, "next_vrfs", params, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 
 //-----------------------------------------------------------------------------
 // WSEvents
@@ -645,7 +821,7 @@ func (w *WSEvents) Subscribe(ctx context.Context, subscriber, query string,
 
 	outc := make(chan ctypes.ResultEvent, outCap)
 	w.mtx.Lock()
-	// subscriber param is ignored because Tendermint will override it with
+	// subscriber param is ignored because ReapchainCore will override it with
 	// remote IP anyway.
 	w.subscriptions[query] = outc
 	w.mtx.Unlock()
@@ -726,11 +902,11 @@ func (w *WSEvents) eventListener() {
 			if resp.Error != nil {
 				w.Logger.Error("WS error", "err", resp.Error.Error())
 				// Error can be ErrAlreadySubscribed or max client (subscriptions per
-				// client) reached or Tendermint exited.
+				// client) reached or ReapchainCore exited.
 				// We can ignore ErrAlreadySubscribed, but need to retry in other
 				// cases.
 				if !isErrAlreadySubscribed(resp.Error) {
-					// Resubscribe after 1 second to give Tendermint time to restart (if
+					// Resubscribe after 1 second to give ReapchainCore time to restart (if
 					// crashed).
 					w.redoSubscriptionsAfter(1 * time.Second)
 				}

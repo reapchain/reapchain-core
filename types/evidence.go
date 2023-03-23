@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto/merkle"
-	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/crypto/merkle"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 // Evidence represents any provable malicious activity by a validator.
@@ -186,7 +186,7 @@ func DuplicateVoteEvidenceFromProto(pb *tmproto.DuplicateVoteEvidence) (*Duplica
 // a light client such that a full node can verify, propose and commit the evidence on-chain for
 // punishment of the malicious validators. There are three forms of attacks: Lunatic, Equivocation
 // and Amnesia. These attacks are exhaustive. You can find a more detailed overview of this at
-// tendermint/docs/architecture/adr-047-handling-evidence-from-light-client.md
+// reapchain-core/docs/architecture/adr-047-handling-evidence-from-light-client.md
 type LightClientAttackEvidence struct {
 	ConflictingBlock *LightBlock
 	CommonHeight     int64
@@ -287,8 +287,9 @@ func (l *LightClientAttackEvidence) ConflictingHeaderIsInvalid(trustedHeader *He
 		!bytes.Equal(trustedHeader.NextValidatorsHash, l.ConflictingBlock.NextValidatorsHash) ||
 		!bytes.Equal(trustedHeader.ConsensusHash, l.ConflictingBlock.ConsensusHash) ||
 		!bytes.Equal(trustedHeader.AppHash, l.ConflictingBlock.AppHash) ||
-		!bytes.Equal(trustedHeader.LastResultsHash, l.ConflictingBlock.LastResultsHash)
-
+		!bytes.Equal(trustedHeader.LastResultsHash, l.ConflictingBlock.LastResultsHash) ||
+		!bytes.Equal(trustedHeader.StandingMembersHash, l.ConflictingBlock.StandingMembersHash) ||
+		!bytes.Equal(trustedHeader.SteeringMemberCandidatesHash, l.ConflictingBlock.SteeringMemberCandidatesHash)
 }
 
 // Hash returns the hash of the header and the commonHeight. This is designed to cause hash collisions
@@ -511,8 +512,8 @@ func EvidenceFromProto(evidence *tmproto.Evidence) (Evidence, error) {
 }
 
 func init() {
-	tmjson.RegisterType(&DuplicateVoteEvidence{}, "tendermint/DuplicateVoteEvidence")
-	tmjson.RegisterType(&LightClientAttackEvidence{}, "tendermint/LightClientAttackEvidence")
+	tmjson.RegisterType(&DuplicateVoteEvidence{}, "reapchain-core/DuplicateVoteEvidence")
+	tmjson.RegisterType(&LightClientAttackEvidence{}, "reapchain-core/LightClientAttackEvidence")
 }
 
 //-------------------------------------------- ERRORS --------------------------------------
@@ -563,7 +564,9 @@ func NewMockDuplicateVoteEvidence(height int64, time time.Time, chainID string) 
 func NewMockDuplicateVoteEvidenceWithValidator(height int64, time time.Time,
 	pv PrivValidator, chainID string) *DuplicateVoteEvidence {
 	pubKey, _ := pv.GetPubKey()
-	val := NewValidator(pubKey, 10)
+	validatorType, _ := pv.GetType()
+	
+	val := NewValidator(pubKey, 10, validatorType)
 	voteA := makeMockVote(height, 0, 0, pubKey.Address(), randBlockID(), time)
 	vA := voteA.ToProto()
 	_ = pv.SignVote(chainID, vA)
@@ -574,6 +577,7 @@ func NewMockDuplicateVoteEvidenceWithValidator(height int64, time time.Time,
 	voteB.Signature = vB.Signature
 	return NewDuplicateVoteEvidence(voteA, voteB, time, NewValidatorSet([]*Validator{val}))
 }
+
 
 func makeMockVote(height int64, round, index int32, addr Address,
 	blockID BlockID, time time.Time) *Vote {

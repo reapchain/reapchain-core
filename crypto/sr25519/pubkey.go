@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/tmhash"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/tmhash"
 
 	schnorrkel "github.com/ChainSafe/go-schnorrkel"
 )
@@ -55,7 +55,13 @@ func (pubKey PubKey) VerifySignature(msg []byte, sig []byte) bool {
 		return false
 	}
 
-	return publicKey.Verify(signature, signingContext)
+	isValid, err := publicKey.Verify(signature, signingContext)
+
+	if err != nil {
+		return false
+	}
+
+	return isValid
 }
 
 func (pubKey PubKey) String() string {

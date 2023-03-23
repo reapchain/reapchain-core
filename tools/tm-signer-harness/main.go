@@ -8,17 +8,17 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/tools/tm-signer-harness/internal"
-	"github.com/tendermint/tendermint/version"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/privval"
+	"github.com/reapchain/reapchain-core/tools/tm-signer-harness/internal"
+	"github.com/reapchain/reapchain-core/version"
 )
 
 const (
 	defaultAcceptRetries    = 100
 	defaultBindAddr         = "tcp://127.0.0.1:0"
-	defaultTMHome           = "~/.tendermint"
+	defaultTMHome           = "~/.reapchain-core"
 	defaultAcceptDeadline   = 1
 	defaultConnDeadline     = 3
 	defaultExtractKeyOutput = "./signing.key"
@@ -45,13 +45,13 @@ var (
 func init() {
 	rootCmd = flag.NewFlagSet("root", flag.ExitOnError)
 	rootCmd.Usage = func() {
-		fmt.Println(`Remote signer test harness for Tendermint.
+		fmt.Println(`Remote signer test harness for ReapchainCore.
 
 Usage:
   tm-signer-harness <command> [flags]
 
 Available Commands:
-  extract_key        Extracts a signing key from a local Tendermint instance
+  extract_key        Extracts a signing key from a local ReapchainCore instance
   help               Help on the available commands
   run                Runs the test harness
   version            Display version information and exit
@@ -66,9 +66,9 @@ Use "tm-signer-harness help <command>" for more information about that command.`
 		defaultAcceptRetries,
 		"The number of attempts to listen for incoming connections")
 	runCmd.StringVar(&flagBindAddr, "addr", defaultBindAddr, "Bind to this address for the testing")
-	runCmd.StringVar(&flagTMHome, "tmhome", defaultTMHome, "Path to the Tendermint home directory")
+	runCmd.StringVar(&flagTMHome, "tmhome", defaultTMHome, "Path to the ReapchainCore home directory")
 	runCmd.Usage = func() {
-		fmt.Println(`Runs the remote signer test harness for Tendermint.
+		fmt.Println(`Runs the remote signer test harness for ReapchainCore.
 
 Usage:
   tm-signer-harness run [flags]
@@ -83,9 +83,9 @@ Flags:`)
 		"output",
 		defaultExtractKeyOutput,
 		"Path to which signing key should be written")
-	extractKeyCmd.StringVar(&flagTMHome, "tmhome", defaultTMHome, "Path to the Tendermint home directory")
+	extractKeyCmd.StringVar(&flagTMHome, "tmhome", defaultTMHome, "Path to the ReapchainCore home directory")
 	extractKeyCmd.Usage = func() {
-		fmt.Println(`Extracts a signing key from a local Tendermint instance for use in the remote
+		fmt.Println(`Extracts a signing key from a local ReapchainCore instance for use in the remote
 signer under test.
 
 Usage:
@@ -99,7 +99,7 @@ Flags:`)
 	versionCmd = flag.NewFlagSet("version", flag.ExitOnError)
 	versionCmd.Usage = func() {
 		fmt.Println(`
-Prints the Tendermint version for which this remote signer harness was built.
+Prints the ReapchainCore version for which this remote signer harness was built.
 
 Usage:
   tm-signer-harness version`)

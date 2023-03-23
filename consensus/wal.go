@@ -11,13 +11,13 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	auto "github.com/tendermint/tendermint/libs/autofile"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	"github.com/tendermint/tendermint/libs/service"
-	tmcons "github.com/tendermint/tendermint/proto/tendermint/consensus"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	auto "github.com/reapchain/reapchain-core/libs/autofile"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain-core/consensus"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
 const (
@@ -46,9 +46,9 @@ type EndHeightMessage struct {
 type WALMessage interface{}
 
 func init() {
-	tmjson.RegisterType(msgInfo{}, "tendermint/wal/MsgInfo")
-	tmjson.RegisterType(timeoutInfo{}, "tendermint/wal/TimeoutInfo")
-	tmjson.RegisterType(EndHeightMessage{}, "tendermint/wal/EndHeightMessage")
+	tmjson.RegisterType(msgInfo{}, "reapchain-core/wal/MsgInfo")
+	tmjson.RegisterType(timeoutInfo{}, "reapchain-core/wal/TimeoutInfo")
+	tmjson.RegisterType(EndHeightMessage{}, "reapchain-core/wal/EndHeightMessage")
 }
 
 //--------------------------------------------------------

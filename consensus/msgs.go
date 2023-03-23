@@ -6,13 +6,13 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	cstypes "github.com/tendermint/tendermint/consensus/types"
-	"github.com/tendermint/tendermint/libs/bits"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	"github.com/tendermint/tendermint/p2p"
-	tmcons "github.com/tendermint/tendermint/proto/tendermint/consensus"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tendermint/tendermint/types"
+	cstypes "github.com/reapchain/reapchain-core/consensus/types"
+	"github.com/reapchain/reapchain-core/libs/bits"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	"github.com/reapchain/reapchain-core/p2p"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain-core/consensus"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // MsgToProto takes a consensus message type and returns the proto defined consensus message
@@ -83,6 +83,65 @@ func MsgToProto(msg Message) (*tmcons.Message, error) {
 				},
 			},
 		}
+
+	case *SettingSteeringMemberMessage:
+		settingSteeringMember := msg.SettingSteeringMember.ToProto()
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_SettingSteeringMember{
+				SettingSteeringMember: &tmcons.SettingSteeringMember{
+					SettingSteeringMember: settingSteeringMember,
+				},
+			},
+		}
+
+	case *QrnMessage:
+		qrn := msg.Qrn.ToProto()
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_Qrn{
+				Qrn: &tmcons.Qrn{
+					Qrn: qrn,
+				},
+			},
+		}
+
+	case *HasQrnMessage:
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_HasQrn{
+				HasQrn: &tmcons.HasQrn{
+					Height: msg.Height,
+					Index:  msg.Index,
+				},
+			},
+		}
+	case *VrfMessage:
+		vrf := msg.Vrf.ToProto()
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_Vrf{
+				Vrf: &tmcons.Vrf{
+					Vrf: vrf,
+				},
+			},
+		}
+
+	case *HasVrfMessage:
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_HasVrf{
+				HasVrf: &tmcons.HasVrf{
+					Height: msg.Height,
+					Index:  msg.Index,
+				},
+			},
+		}
+
+	case *HasSettingSteeringMemberMessage:
+		pb = tmcons.Message{
+			Sum: &tmcons.Message_HasSettingSteeringMember{
+				HasSettingSteeringMember: &tmcons.HasSettingSteeringMember{
+					Height: msg.Height,
+				},
+			},
+		}
+
 	case *VoteMessage:
 		vote := msg.Vote.ToProto()
 		pb = tmcons.Message{
@@ -206,6 +265,47 @@ func MsgFromProto(msg *tmcons.Message) (Message, error) {
 			Height: msg.BlockPart.Height,
 			Round:  msg.BlockPart.Round,
 			Part:   parts,
+		}
+	case *tmcons.Message_SettingSteeringMember:
+		settingSteeringMember := types.SettingSteeringMemberFromProto(msg.SettingSteeringMember.SettingSteeringMember)
+		if settingSteeringMember == nil {
+			return nil, fmt.Errorf("settingSteeringMember msg to proto error")
+		}
+
+		pb = &SettingSteeringMemberMessage{
+			SettingSteeringMember: settingSteeringMember,
+		}
+	case *tmcons.Message_Qrn:
+		qrn := types.QrnFromProto(msg.Qrn.Qrn)
+		if qrn == nil {
+			return nil, fmt.Errorf("qrn msg to proto error")
+		}
+
+		pb = &QrnMessage{
+			Qrn: qrn,
+		}
+	case *tmcons.Message_HasQrn:
+		pb = &HasQrnMessage{
+			Height: msg.HasQrn.Height,
+			Index:  msg.HasQrn.Index,
+		}
+	case *tmcons.Message_Vrf:
+		vrf := types.VrfFromProto(msg.Vrf.Vrf)
+		if vrf == nil {
+			return nil, fmt.Errorf("vrf msg to proto error")
+		}
+
+		pb = &VrfMessage{
+			Vrf: vrf,
+		}
+	case *tmcons.Message_HasVrf:
+		pb = &HasVrfMessage{
+			Height: msg.HasVrf.Height,
+			Index:  msg.HasVrf.Index,
+		}
+	case *tmcons.Message_HasSettingSteeringMember:
+		pb = &HasSettingSteeringMemberMessage{
+			Height: msg.HasSettingSteeringMember.Height,
 		}
 	case *tmcons.Message_Vote:
 		vote, err := types.VoteFromProto(msg.Vote.Vote)

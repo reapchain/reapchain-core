@@ -7,16 +7,16 @@ import (
 	"fmt"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/libs/log"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/light"
-	"github.com/tendermint/tendermint/p2p"
-	ssproto "github.com/tendermint/tendermint/proto/tendermint/statesync"
-	"github.com/tendermint/tendermint/proxy"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/light"
+	"github.com/reapchain/reapchain-core/p2p"
+	ssproto "github.com/reapchain/reapchain-core/proto/reapchain-core/statesync"
+	"github.com/reapchain/reapchain-core/proxy"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (
@@ -165,6 +165,7 @@ func (s *syncer) SyncAny(discoveryTime time.Duration, retryHook func()) (sm.Stat
 			if discoveryTime == 0 {
 				return sm.State{}, nil, errNoSnapshots
 			}
+
 			retryHook()
 			s.logger.Info("sync any", "msg", log.NewLazySprintf("Discovering snapshots for %v", discoveryTime))
 			time.Sleep(discoveryTime)
@@ -213,7 +214,6 @@ func (s *syncer) SyncAny(discoveryTime time.Duration, retryHook func()) (sm.Stat
 				s.snapshots.RejectPeer(peer.ID())
 				s.logger.Info("Snapshot sender rejected", "peer", peer.ID())
 			}
-
 		case errors.Is(err, context.DeadlineExceeded):
 			s.logger.Info("Timed out validating snapshot, rejecting", "height", snapshot.Height, "err", err)
 			s.snapshots.Reject(snapshot)
@@ -280,7 +280,7 @@ func (s *syncer) Sync(snapshot *snapshot, chunks *chunkQueue) (sm.State, *types.
 	// Optimistically build new state, so we don't discover any light client failures at the end.
 	state, err := s.stateProvider.State(pctx, snapshot.Height)
 	if err != nil {
-		s.logger.Info("failed to fetch and verify tendermint state", "err", err)
+		s.logger.Info("failed to fetch and verify reapchain-core state", "err", err)
 		if err == light.ErrNoWitnesses {
 			return sm.State{}, nil, err
 		}
@@ -438,6 +438,7 @@ func (s *syncer) fetchChunks(ctx context.Context, snapshot *snapshot, chunks *ch
 			"format", snapshot.Format, "chunk", index, "total", chunks.Size())
 
 		ticker := time.NewTicker(s.retryTimeout)
+		
 		defer ticker.Stop()
 
 		s.requestChunk(snapshot, index)

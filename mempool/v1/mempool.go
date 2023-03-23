@@ -8,13 +8,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/libs/clist"
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/mempool"
-	"github.com/tendermint/tendermint/proxy"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/libs/clist"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/proxy"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 var _ mempool.Mempool = (*TxMempool)(nil)

@@ -3,10 +3,10 @@ package txindex
 import (
 	"context"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/service"
-	"github.com/tendermint/tendermint/state/indexer"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/libs/service"
+	"github.com/reapchain/reapchain-core/state/indexer"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // XXX/TODO: These types should be moved to the indexer package.

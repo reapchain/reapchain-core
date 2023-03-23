@@ -15,43 +15,43 @@ import (
 	"github.com/rs/cors"
 	dbm "github.com/tendermint/tm-db"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	bcv0 "github.com/tendermint/tendermint/blockchain/v0"
-	bcv1 "github.com/tendermint/tendermint/blockchain/v1"
-	bcv2 "github.com/tendermint/tendermint/blockchain/v2"
-	cfg "github.com/tendermint/tendermint/config"
-	cs "github.com/tendermint/tendermint/consensus"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/evidence"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	bcv0 "github.com/reapchain/reapchain-core/blockchain/v0"
+	bcv1 "github.com/reapchain/reapchain-core/blockchain/v1"
+	bcv2 "github.com/reapchain/reapchain-core/blockchain/v2"
+	cfg "github.com/reapchain/reapchain-core/config"
+	cs "github.com/reapchain/reapchain-core/consensus"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/evidence"
 
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmpubsub "github.com/tendermint/tendermint/libs/pubsub"
-	"github.com/tendermint/tendermint/libs/service"
-	"github.com/tendermint/tendermint/light"
-	mempl "github.com/tendermint/tendermint/mempool"
-	mempoolv0 "github.com/tendermint/tendermint/mempool/v0"
-	mempoolv1 "github.com/tendermint/tendermint/mempool/v1"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/p2p/pex"
-	"github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/proxy"
-	rpccore "github.com/tendermint/tendermint/rpc/core"
-	grpccore "github.com/tendermint/tendermint/rpc/grpc"
-	rpcserver "github.com/tendermint/tendermint/rpc/jsonrpc/server"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/state/indexer"
-	blockidxkv "github.com/tendermint/tendermint/state/indexer/block/kv"
-	blockidxnull "github.com/tendermint/tendermint/state/indexer/block/null"
-	"github.com/tendermint/tendermint/state/indexer/sink/psql"
-	"github.com/tendermint/tendermint/state/txindex"
-	"github.com/tendermint/tendermint/state/txindex/kv"
-	"github.com/tendermint/tendermint/state/txindex/null"
-	"github.com/tendermint/tendermint/statesync"
-	"github.com/tendermint/tendermint/store"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
-	"github.com/tendermint/tendermint/version"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmpubsub "github.com/reapchain/reapchain-core/libs/pubsub"
+	"github.com/reapchain/reapchain-core/libs/service"
+	"github.com/reapchain/reapchain-core/light"
+	mempl "github.com/reapchain/reapchain-core/mempool"
+	mempoolv0 "github.com/reapchain/reapchain-core/mempool/v0"
+	mempoolv1 "github.com/reapchain/reapchain-core/mempool/v1"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/p2p/pex"
+	"github.com/reapchain/reapchain-core/privval"
+	"github.com/reapchain/reapchain-core/proxy"
+	rpccore "github.com/reapchain/reapchain-core/rpc/core"
+	grpccore "github.com/reapchain/reapchain-core/rpc/grpc"
+	rpcserver "github.com/reapchain/reapchain-core/rpc/jsonrpc/server"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/state/indexer"
+	blockidxkv "github.com/reapchain/reapchain-core/state/indexer/block/kv"
+	blockidxnull "github.com/reapchain/reapchain-core/state/indexer/block/null"
+	"github.com/reapchain/reapchain-core/state/indexer/sink/psql"
+	"github.com/reapchain/reapchain-core/state/txindex"
+	"github.com/reapchain/reapchain-core/state/txindex/kv"
+	"github.com/reapchain/reapchain-core/state/txindex/null"
+	"github.com/reapchain/reapchain-core/statesync"
+	"github.com/reapchain/reapchain-core/store"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
+	"github.com/reapchain/reapchain-core/version"
 
 	_ "net/http/pprof" // nolint: gosec // securely exposed on separate, optional port
 
@@ -92,7 +92,7 @@ func DefaultGenesisDocProviderFunc(config *cfg.Config) GenesisDocProvider {
 // Provider takes a config and a logger and returns a ready to go Node.
 type Provider func(*cfg.Config, log.Logger) (*Node, error)
 
-// DefaultNewNode returns a Tendermint node with default settings for the
+// DefaultNewNode returns a ReapchainCore node with default settings for the
 // PrivValidator, ClientCreator, GenesisDoc, and DBProvider.
 // It implements NodeProvider.
 func DefaultNewNode(config *cfg.Config, logger log.Logger) (*Node, error) {
@@ -133,7 +133,7 @@ func DefaultMetricsProvider(config *cfg.InstrumentationConfig) MetricsProvider {
 type Option func(*Node)
 
 // Temporary interface for switching to fast sync, we should get rid of v0 and v1 reactors.
-// See: https://github.com/tendermint/tendermint/issues/4595
+// See: https://github.com/reapchain/reapchain-core/issues/4595
 type fastSyncReactor interface {
 	SwitchToFastSync(sm.State) error
 }
@@ -189,7 +189,7 @@ func StateProvider(stateProvider statesync.StateProvider) Option {
 
 //------------------------------------------------------------------------------
 
-// Node is the highest level interface to a full Tendermint node.
+// Node is the highest level interface to a full ReapchainCore node.
 // It includes all configuration information and running services.
 type Node struct {
 	service.BaseService
@@ -334,7 +334,7 @@ func doHandshake(
 func logNodeStartupInfo(state sm.State, pubKey crypto.PubKey, logger, consensusLogger log.Logger) {
 	// Log the version info.
 	logger.Info("Version info",
-		"tendermint_version", version.TMCoreSemVer,
+		"reapchain-core_version", version.TMCoreSemVer,
 		"block", version.BlockProtocol,
 		"p2p", version.P2PProtocol,
 	)
@@ -350,9 +350,21 @@ func logNodeStartupInfo(state sm.State, pubKey crypto.PubKey, logger, consensusL
 	addr := pubKey.Address()
 	// Log whether this node is a validator or an observer
 	if state.Validators.HasAddress(addr) {
-		consensusLogger.Info("This node is a validator", "addr", addr, "pubKey", pubKey)
+		logger.Info("This node is a validator", "addr", addr, "pubKey", pubKey)
 	} else {
-		consensusLogger.Info("This node is not a validator", "addr", addr, "pubKey", pubKey)
+		logger.Info("This node is not a validator", "addr", addr, "pubKey", pubKey)
+	}
+
+	if state.StandingMemberSet.HasAddress(addr) {
+		logger.Info("This node is a standing member", "addr", addr, "pubKey", pubKey)
+	} else {
+		logger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
+	}
+
+	if state.SteeringMemberCandidateSet.HasAddress(addr) {
+		logger.Info("This node is a steering member candidate", "addr", addr, "pubKey", pubKey)
+	} else {
+		logger.Info("This node is not a steering member candidate", "addr", addr, "pubKey", pubKey)
 	}
 }
 
@@ -442,12 +454,13 @@ func createBlockchainReactor(config *cfg.Config,
 	state sm.State,
 	blockExec *sm.BlockExecutor,
 	blockStore *store.BlockStore,
+	stateStore sm.Store,
 	fastSync bool,
 	logger log.Logger) (bcReactor p2p.Reactor, err error) {
 
 	switch config.FastSync.Version {
 	case "v0":
-		bcReactor = bcv0.NewBlockchainReactor(state.Copy(), blockExec, blockStore, fastSync)
+		bcReactor = bcv0.NewBlockchainReactor(state.Copy(), blockExec, blockStore, stateStore, fastSync)
 	case "v1":
 		bcReactor = bcv1.NewBlockchainReactor(state.Copy(), blockExec, blockStore, fastSync)
 	case "v2":
@@ -464,6 +477,7 @@ func createConsensusReactor(config *cfg.Config,
 	state sm.State,
 	blockExec *sm.BlockExecutor,
 	blockStore sm.BlockStore,
+	stateStore sm.Store,
 	mempool mempl.Mempool,
 	evidencePool *evidence.Pool,
 	privValidator types.PrivValidator,
@@ -471,7 +485,6 @@ func createConsensusReactor(config *cfg.Config,
 	waitSync bool,
 	eventBus *types.EventBus,
 	consensusLogger log.Logger) (*cs.Reactor, *cs.State) {
-
 	consensusState := cs.NewState(
 		config.Consensus,
 		state.Copy(),
@@ -485,7 +498,7 @@ func createConsensusReactor(config *cfg.Config,
 	if privValidator != nil {
 		consensusState.SetPrivValidator(privValidator)
 	}
-	consensusReactor := cs.NewReactor(consensusState, waitSync, cs.ReactorMetrics(csMetrics))
+	consensusReactor := cs.NewReactor(consensusState, stateStore, waitSync, cs.ReactorMetrics(csMetrics))
 	consensusReactor.SetLogger(consensusLogger)
 	// services which will be publishing and/or subscribing for messages (events)
 	// consensusReactor will set it on consensusState and blockExecutor
@@ -634,7 +647,7 @@ func createPEXReactorAndAddToSwitch(addrBook pex.AddrBook, config *cfg.Config,
 			// blocks assuming 10s blocks ~ 28 hours.
 			// TODO (melekes): make it dynamic based on the actual block latencies
 			// from the live network.
-			// https://github.com/tendermint/tendermint/issues/3523
+			// https://github.com/reapchain/reapchain-core/issues/3523
 			SeedDisconnectWaitPeriod:     28 * time.Hour,
 			PersistentPeersMaxDialPeriod: config.P2P.PersistentPeersMaxDialPeriod,
 		})
@@ -699,7 +712,7 @@ func startStateSync(ssR *statesync.Reactor, bcR fastSyncReactor, conR *cs.Reacto
 	return nil
 }
 
-// NewNode returns a new, ready to go, Tendermint Node.
+// NewNode returns a new, ready to go, ReapchainCore Node.
 func NewNode(config *cfg.Config,
 	privValidator types.PrivValidator,
 	nodeKey *p2p.NodeKey,
@@ -739,6 +752,7 @@ func NewNode(config *cfg.Config,
 
 	indexerService, txIndexer, blockIndexer, err := createAndStartIndexerService(config,
 		genDoc.ChainID, dbProvider, eventBus, logger)
+
 	if err != nil {
 		return nil, err
 	}
@@ -766,7 +780,7 @@ func NewNode(config *cfg.Config,
 	}
 
 	// Create the handshaker, which calls RequestInfo, sets the AppVersion on the state,
-	// and replays any blocks as necessary to sync tendermint with the app.
+	// and replays any blocks as necessary to sync reapchain-core with the app.
 	consensusLogger := logger.With("module", "consensus")
 	if !stateSync {
 		if err := doHandshake(stateStore, state, blockStore, genDoc, eventBus, proxyApp, consensusLogger); err != nil {
@@ -810,7 +824,7 @@ func NewNode(config *cfg.Config,
 	)
 
 	// Make BlockchainReactor. Don't start fast sync if we're doing a state sync first.
-	bcReactor, err := createBlockchainReactor(config, state, blockExec, blockStore, fastSync && !stateSync, logger)
+	bcReactor, err := createBlockchainReactor(config, state, blockExec, blockStore, stateStore, fastSync && !stateSync, logger)
 	if err != nil {
 		return nil, fmt.Errorf("could not create blockchain reactor: %w", err)
 	}
@@ -823,20 +837,21 @@ func NewNode(config *cfg.Config,
 		csMetrics.FastSyncing.Set(1)
 	}
 	consensusReactor, consensusState := createConsensusReactor(
-		config, state, blockExec, blockStore, mempool, evidencePool,
+		config, state, blockExec, blockStore, stateStore, mempool, evidencePool,
 		privValidator, csMetrics, stateSync || fastSync, eventBus, consensusLogger,
 	)
 
 	// Set up state sync reactor, and schedule a sync if requested.
 	// FIXME The way we do phased startups (e.g. replay -> fast sync -> consensus) is very messy,
 	// we should clean this whole thing up. See:
-	// https://github.com/tendermint/tendermint/issues/4644
+	// https://github.com/reapchain/reapchain-core/issues/4644
 	stateSyncReactor := statesync.NewReactor(
 		*config.StateSync,
 		proxyApp.Snapshot(),
 		proxyApp.Query(),
 		config.StateSync.TempDir,
 	)
+
 	stateSyncReactor.SetLogger(logger.With("module", "statesync"))
 
 	nodeInfo, err := makeNodeInfo(config, nodeKey, txIndexer, genDoc, state)
@@ -1042,16 +1057,6 @@ func (n *Node) OnStop() {
 			n.Logger.Error("Prometheus HTTP server Shutdown", "err", err)
 		}
 	}
-	if n.blockStore != nil {
-		if err := n.blockStore.Close(); err != nil {
-			n.Logger.Error("problem closing blockstore", "err", err)
-		}
-	}
-	if n.stateStore != nil {
-		if err := n.stateStore.Close(); err != nil {
-			n.Logger.Error("problem closing statestore", "err", err)
-		}
-	}
 }
 
 // ConfigureRPC makes sure RPC has all the objects it needs to operate.
@@ -1108,7 +1113,7 @@ func (n *Node) startRPC() ([]net.Listener, error) {
 	config.MaxOpenConnections = n.config.RPC.MaxOpenConnections
 	// If necessary adjust global WriteTimeout to ensure it's greater than
 	// TimeoutBroadcastTxCommit.
-	// See https://github.com/tendermint/tendermint/issues/3435
+	// See https://github.com/reapchain/reapchain-core/issues/3435
 	if config.WriteTimeout <= n.config.RPC.TimeoutBroadcastTxCommit {
 		config.WriteTimeout = n.config.RPC.TimeoutBroadcastTxCommit + 1*time.Second
 	}
@@ -1188,7 +1193,7 @@ func (n *Node) startRPC() ([]net.Listener, error) {
 		config.MaxOpenConnections = n.config.RPC.GRPCMaxOpenConnections
 		// If necessary adjust global WriteTimeout to ensure it's greater than
 		// TimeoutBroadcastTxCommit.
-		// See https://github.com/tendermint/tendermint/issues/3435
+		// See https://github.com/reapchain/reapchain-core/issues/3435
 		if config.WriteTimeout <= n.config.RPC.TimeoutBroadcastTxCommit {
 			config.WriteTimeout = n.config.RPC.TimeoutBroadcastTxCommit + 1*time.Second
 		}
@@ -1320,6 +1325,7 @@ func makeNodeInfo(
 	genDoc *types.GenesisDoc,
 	state sm.State,
 ) (p2p.DefaultNodeInfo, error) {
+	
 	txIndexerStatus := "on"
 	if _, ok := txIndexer.(*null.TxIndex); ok {
 		txIndexerStatus = "off"
@@ -1348,10 +1354,18 @@ func makeNodeInfo(
 		Version:       version.TMCoreSemVer,
 		Channels: []byte{
 			bcChannel,
-			cs.StateChannel, cs.DataChannel, cs.VoteChannel, cs.VoteSetBitsChannel,
+			cs.StateChannel,
+			cs.DataChannel,
+			cs.VoteChannel,
+			cs.VoteSetBitsChannel,
+			cs.QrnChannel,
+			cs.VrfChannel,
+			cs.SettingSteeringMemberChannel,
+			cs.CatchUpChannel,
 			mempl.MempoolChannel,
 			evidence.EvidenceChannel,
-			statesync.SnapshotChannel, statesync.ChunkChannel,
+			statesync.SnapshotChannel,
+			statesync.ChunkChannel,
 		},
 		Moniker: config.Moniker,
 		Other: p2p.DefaultNodeInfoOther{

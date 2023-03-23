@@ -8,12 +8,12 @@ import (
 	"reflect"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto/merkle"
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/proxy"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/crypto/merkle"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/proxy"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 var crc32c = crc32.MakeTable(crc32.Castagnoli)
@@ -76,6 +76,14 @@ func (cs *State) readReplayMessage(msg *TimedWALMessage, newStepSub types.Subscr
 			v := msg.Vote
 			cs.Logger.Info("Replay: Vote", "height", v.Height, "round", v.Round, "type", v.Type,
 				"blockID", v.BlockID, "peer", peerID)
+		case *QrnMessage:
+			qrn := msg.Qrn
+			cs.Logger.Info("Replay: Qrn", "height", qrn.Height, "timestamp", qrn.Timestamp,
+				"value", qrn.Value, "standing_member_address", qrn.StandingMemberPubKey.Address(), "peer", peerID)
+		case *VrfMessage:
+			vrf := msg.Vrf
+			cs.Logger.Info("Replay: Vrf", "height", vrf.Height, "timestamp", vrf.Timestamp,
+				"value", vrf.Value, "standing_member_address", vrf.SteeringMemberCandidatePubKey.Address(), "peer", peerID)
 		}
 
 		cs.handleMsg(m)
@@ -239,7 +247,6 @@ func (h *Handshaker) NBlocks() int {
 
 // TODO: retry the handshake/replay if it fails ?
 func (h *Handshaker) Handshake(proxyApp proxy.AppConns) error {
-
 	// Handshake is done via ABCI Info on the query conn.
 	res, err := proxyApp.Query().InfoSync(proxy.RequestInfo)
 	if err != nil {
@@ -265,12 +272,13 @@ func (h *Handshaker) Handshake(proxyApp proxy.AppConns) error {
 	}
 
 	// Replay blocks up to the latest in the blockstore.
+
 	_, err = h.ReplayBlocks(h.initialState, appHash, blockHeight, proxyApp)
 	if err != nil {
 		return fmt.Errorf("error on replay: %v", err)
 	}
 
-	h.logger.Info("Completed ABCI Handshake - Tendermint and App are synced",
+	h.logger.Info("Completed ABCI Handshake - Reapchain and App are synced",
 		"appHeight", blockHeight, "appHash", appHash)
 
 	// TODO: (on restart) replay mempool
@@ -303,18 +311,61 @@ func (h *Handshaker) ReplayBlocks(
 	if appBlockHeight == 0 {
 		validators := make([]*types.Validator, len(h.genDoc.Validators))
 		for i, val := range h.genDoc.Validators {
-			validators[i] = types.NewValidator(val.PubKey, val.Power)
+			validators[i] = types.NewValidator(val.PubKey, val.Power, val.Type)
 		}
 		validatorSet := types.NewValidatorSet(validators)
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
+
+		standingMembers := make([]*types.StandingMember, len(h.genDoc.StandingMembers))
+		for i, val := range h.genDoc.StandingMembers {
+			standingMembers[i] = types.NewStandingMember(val.PubKey, val.Power)
+		}
+		standingMemberSet := types.NewStandingMemberSet(standingMembers)
+		standingMemberUpdates := types.TM2PB.StandingMemberSetUpdate(standingMemberSet)
+
+		steeringMemberCandidates := make([]*types.SteeringMemberCandidate, len(h.genDoc.SteeringMemberCandidates))
+		for i, val := range h.genDoc.SteeringMemberCandidates {
+			steeringMemberCandidates[i] = types.NewSteeringMemberCandidate(val.PubKey, val.Power)
+		}
+		steeringMemberCandidateSet := types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
+		steeringMemberCandidateUpdates := types.TM2PB.SteeringMemberCandidateSetUpdate(steeringMemberCandidateSet)
+
 		csParams := types.TM2PB.ConsensusParams(h.genDoc.ConsensusParams)
+
+		consensusRoundProto := h.genDoc.ConsensusRound.ToProto()
+		consensudRoundAbci := types.TM2PB.ConsensusRound(&consensusRoundProto)
+
+		qrns := make([]*types.Qrn, len(h.genDoc.Qrns))
+		for i, qrn := range h.genDoc.Qrns {
+			qrns[i] = &qrn
+		}
+
+		qrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, qrns)
+		standingMemberSet.SetCoordinator(qrnSet)
+		_, proposer := validatorSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
+		validatorSet.Proposer = proposer
+		qrnUpdates := types.TM2PB.QrnSetUpdate(qrnSet)
+
+		vrfs := make([]*types.Vrf, len(h.genDoc.Vrfs))
+		for i, vrf := range h.genDoc.Vrfs {
+			vrfs[i] = &vrf
+		}
+		vrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
+		vrfUpdates := types.TM2PB.VrfSetUpdate(vrfSet)
+
+
 		req := abci.RequestInitChain{
-			Time:            h.genDoc.GenesisTime,
-			ChainId:         h.genDoc.ChainID,
-			InitialHeight:   h.genDoc.InitialHeight,
-			ConsensusParams: csParams,
-			Validators:      nextVals,
-			AppStateBytes:   h.genDoc.AppState,
+			Time:                           h.genDoc.GenesisTime,
+			ChainId:                        h.genDoc.ChainID,
+			InitialHeight:                  h.genDoc.InitialHeight,
+			ConsensusParams:                csParams,
+			Validators:                     nextVals,
+			AppStateBytes:                  h.genDoc.AppState,
+			StandingMemberUpdates:          standingMemberUpdates,
+			SteeringMemberCandidateUpdates: steeringMemberCandidateUpdates,
+			ConsensusRound:                 consensudRoundAbci,
+			QrnUpdates:                     qrnUpdates,
+			VrfUpdates:                     vrfUpdates,
 		}
 		res, err := proxyApp.Consensus().InitChainSync(req)
 		if err != nil {
@@ -337,10 +388,83 @@ func (h *Handshaker) ReplayBlocks(
 					return nil, err
 				}
 				state.Validators = types.NewValidatorSet(vals)
-				state.NextValidators = types.NewValidatorSet(vals).CopyIncrementProposerPriority(1)
+				state.NextValidators = types.NewValidatorSet(vals).Copy()
+
+				standingMembers, err := types.PB2TM.StandingMemberUpdates(res.Validators)
+				if err != nil {
+					return nil, err
+				}
+
+				state.StandingMemberSet = types.NewStandingMemberSet(standingMembers)
+
+				steeringMemberCandidates, err := types.PB2TM.SteeringMemberCandidateUpdates(res.Validators)
+
+				if err != nil {
+					return nil, err
+				}
+
+				state.SteeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
 			} else if len(h.genDoc.Validators) == 0 {
 				// If validator set is not set in genesis and still empty after InitChain, exit.
 				return nil, fmt.Errorf("validator set is nil in genesis and still empty after InitChain")
+			}
+
+			if len(res.StandingMemberUpdates) > 0 {
+				standingMembers, err := types.PB2TM.StandingMemberUpdates(res.Validators)
+				if err != nil {
+					return nil, err
+				}
+				fmt.Println("jbjb")
+
+				state.StandingMemberSet = types.NewStandingMemberSet(standingMembers)
+			} else if len(h.genDoc.StandingMembers) == 0 {
+				return nil, fmt.Errorf("standing member set is nil in genesis and still empty after InitChain")
+			}
+
+			if len(res.SteeringMemberCandidateUpdates) > 0 {
+				steeringMemberCandidates, err := types.PB2TM.SteeringMemberCandidateUpdates(res.Validators)
+				
+				if err != nil {
+					return nil, err
+				}
+
+				state.SteeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(steeringMemberCandidates)
+			} else if len(h.genDoc.SteeringMemberCandidates) == 0 {
+				state.SteeringMemberCandidateSet = types.NewSteeringMemberCandidateSet(nil)
+				// return nil, fmt.Errorf("steering member candidate set is nil in genesis and still empty after InitChain")
+			}
+
+			if res.ConsensusRound != nil {
+				consensusRound := types.NewConsensusRound(res.ConsensusRound.ConsensusStartBlockHeight, res.ConsensusRound.QrnPeriod, res.ConsensusRound.VrfPeriod, res.ConsensusRound.ValidatorPeriod)
+				state.ConsensusRound = consensusRound.ToProto()
+			}
+
+			if len(res.QrnUpdates) > 0 {
+				qrns, err := types.PB2TM.QrnUpdates(res.QrnUpdates)
+				if err != nil {
+					return nil, err
+				}
+				state.QrnSet = types.NewQrnSet(h.genDoc.InitialHeight, state.StandingMemberSet, qrns)
+				state.NextQrnSet = types.NewQrnSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.StandingMemberSet, nil).Copy()
+
+				state.StandingMemberSet.SetCoordinator(state.QrnSet)
+				_, proposer := state.Validators.GetByAddress(state.StandingMemberSet.Coordinator.PubKey.Address())
+				state.Validators.Proposer = proposer
+			} else if len(h.genDoc.Qrns) == 0 {
+				// If qrn set is not set in genesis and still empty after InitChain, exit.
+				return nil, fmt.Errorf("qrn set is nil in genesis and still empty after InitChain")
+			}
+
+			if len(res.VrfUpdates) > 0 {
+				vrfs, err := types.PB2TM.VrfUpdates(res.VrfUpdates)
+				if err != nil {
+					return nil, err
+				}
+				state.VrfSet = types.NewVrfSet(h.genDoc.InitialHeight, state.SteeringMemberCandidateSet, vrfs)
+				state.NextVrfSet = types.NewVrfSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.SteeringMemberCandidateSet, vrfs).Copy()
+			} else if len(h.genDoc.Vrfs) == 0 {
+				state.VrfSet = types.NewVrfSet(h.genDoc.InitialHeight, state.SteeringMemberCandidateSet, nil)
+				state.NextVrfSet = types.NewVrfSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.SteeringMemberCandidateSet, nil).Copy()
 			}
 
 			if res.ConsensusParams != nil {
@@ -374,11 +498,11 @@ func (h *Handshaker) ReplayBlocks(
 		return appHash, sm.ErrAppBlockHeightTooHigh{CoreHeight: storeBlockHeight, AppHeight: appBlockHeight}
 
 	case storeBlockHeight < stateBlockHeight:
-		// the state should never be ahead of the store (this is under tendermint's control)
+		// the state should never be ahead of the store (this is under reapchain's control)
 		panic(fmt.Sprintf("StateBlockHeight (%d) > StoreBlockHeight (%d)", stateBlockHeight, storeBlockHeight))
 
 	case storeBlockHeight > stateBlockHeight+1:
-		// store should be at most one ahead of the state (this is under tendermint's control)
+		// store should be at most one ahead of the state (this is under reapchain's control)
 		panic(fmt.Sprintf("StoreBlockHeight (%d) > StateBlockHeight + 1 (%d)", storeBlockHeight, stateBlockHeight+1))
 	}
 
@@ -386,7 +510,7 @@ func (h *Handshaker) ReplayBlocks(
 	// Now either store is equal to state, or one ahead.
 	// For each, consider all cases of where the app could be, given app <= store
 	if storeBlockHeight == stateBlockHeight {
-		// Tendermint ran Commit and saved the state.
+		// Reapchain ran Commit and saved the state.
 		// Either the app is asking for replay, or we're all synced up.
 		if appBlockHeight < storeBlockHeight {
 			// the app is behind, so replay blocks, but no need to go through WAL (state is already synced to store)
@@ -468,7 +592,7 @@ func (h *Handshaker) replayBlocks(
 			assertAppHashEqualsOneFromBlock(appHash, block)
 		}
 
-		appHash, err = sm.ExecCommitBlock(proxyApp.Consensus(), block, h.logger, h.stateStore, h.genDoc.InitialHeight)
+		appHash, err = sm.ExecCommitBlock(proxyApp.Consensus(), block, h.logger, h.stateStore, h.genDoc.InitialHeight, state)
 		if err != nil {
 			return nil, err
 		}
@@ -527,7 +651,7 @@ func assertAppHashEqualsOneFromState(appHash []byte, state sm.State) {
 
 State: %v
 
-Did you reset Tendermint without resetting your application's data?`,
+Did you reset Reapchain without resetting your application's data?`,
 			appHash, state.AppHash, state))
 	}
 }

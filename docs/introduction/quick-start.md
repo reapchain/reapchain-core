@@ -6,14 +6,14 @@ order: 2
 
 ## Overview
 
-This is a quick start guide. If you have a vague idea about how Tendermint
+This is a quick start guide. If you have a vague idea about how ReapchainCore
 works and want to get started right away, continue.
 
 ## Install
 
 ### Quick Install
 
-To quickly get Tendermint installed on a fresh
+To quickly get ReapchainCore installed on a fresh
 Ubuntu 16.04 machine, use [this script](https://git.io/fFfOR).
 
 > :warning: Do not copy scripts to run on your machine without knowing what they do.
@@ -34,19 +34,19 @@ For manual installation, see the [install instructions](install.md)
 Running:
 
 ```sh
-tendermint init
+reapchain-core init
 ```
 
 will create the required files for a single, local node.
 
-These files are found in `$HOME/.tendermint`:
+These files are found in `$HOME/.reapchain-core`:
 
 ```sh
-$ ls $HOME/.tendermint
+$ ls $HOME/.reapchain-core
 
 config  data
 
-$ ls $HOME/.tendermint/config/
+$ ls $HOME/.reapchain-core/config/
 
 config.toml  genesis.json  node_key.json  priv_validator.json
 ```
@@ -56,10 +56,10 @@ Configuring a cluster is covered further below.
 
 ## Local Node
 
-Start Tendermint with a simple in-process application:
+Start ReapchainCore with a simple in-process application:
 
 ```sh
-tendermint node --proxy_app=kvstore
+reapchain-core node --proxy_app=kvstore
 ```
 
 > Note: `kvstore` is a non persistent app, if you would like to run an application with persistence run `--proxy_app=persistent_kvstore`
@@ -118,30 +118,30 @@ curl -L https://git.io/fFfOR | bash
 source ~/.profile
 ```
 
-This will install `go` and other dependencies, get the Tendermint source code, then compile the `tendermint` binary.
+This will install `go` and other dependencies, get the ReapchainCore source code, then compile the `reapchain-core` binary.
 
-Next, use the `tendermint testnet` command to create four directories of config files (found in `./mytestnet`) and copy each directory to the relevant machine in the cloud, so that each machine has `$HOME/mytestnet/node[0-3]` directory.
+Next, use the `reapchain-core testnet` command to create four directories of config files (found in `./mytestnet`) and copy each directory to the relevant machine in the cloud, so that each machine has `$HOME/mytestnet/node[0-3]` directory.
 
 Before you can start the network, you'll need peers identifiers (IPs are not enough and can change). We'll refer to them as ID1, ID2, ID3, ID4.
 
 ```sh
-tendermint show_node_id --home ./mytestnet/node0
-tendermint show_node_id --home ./mytestnet/node1
-tendermint show_node_id --home ./mytestnet/node2
-tendermint show_node_id --home ./mytestnet/node3
+reapchain-core show_node_id --home ./mytestnet/node0
+reapchain-core show_node_id --home ./mytestnet/node1
+reapchain-core show_node_id --home ./mytestnet/node2
+reapchain-core show_node_id --home ./mytestnet/node3
 ```
 
 Finally, from each machine, run:
 
 ```sh
-tendermint node --home ./mytestnet/node0 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
-tendermint node --home ./mytestnet/node1 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
-tendermint node --home ./mytestnet/node2 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
-tendermint node --home ./mytestnet/node3 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
+reapchain-core node --home ./mytestnet/node0 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
+reapchain-core node --home ./mytestnet/node1 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
+reapchain-core node --home ./mytestnet/node2 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
+reapchain-core node --home ./mytestnet/node3 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
 ```
 
 Note that after the third node is started, blocks will start to stream in
 because >2/3 of validators (defined in the `genesis.json`) have come online.
-Persistent peers can also be specified in the `config.toml`. See [here](../tendermint-core/configuration.md) for more information about configuration options.
+Persistent peers can also be specified in the `config.toml`. See [here](../reapchain-core-core/configuration.md) for more information about configuration options.
 
 Transactions can then be sent as covered in the single, local node example above.

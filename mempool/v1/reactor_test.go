@@ -11,16 +11,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tendermint/tendermint/abci/example/kvstore"
+	"github.com/reapchain/reapchain-core/abci/example/kvstore"
 
-	cfg "github.com/tendermint/tendermint/config"
+	cfg "github.com/reapchain/reapchain-core/config"
 
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/mempool"
-	"github.com/tendermint/tendermint/p2p"
-	memproto "github.com/tendermint/tendermint/proto/tendermint/mempool"
-	"github.com/tendermint/tendermint/proxy"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/libs/log"
+	"github.com/reapchain/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/p2p"
+	memproto "github.com/reapchain/reapchain-core/proto/reapchain-core/mempool"
+	"github.com/reapchain/reapchain-core/proxy"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 const (

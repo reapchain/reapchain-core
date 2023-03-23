@@ -3,10 +3,10 @@ package types
 import (
 	"fmt"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmpubsub "github.com/tendermint/tendermint/libs/pubsub"
-	tmquery "github.com/tendermint/tendermint/libs/pubsub/query"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	tmpubsub "github.com/reapchain/reapchain-core/libs/pubsub"
+	tmquery "github.com/reapchain/reapchain-core/libs/pubsub/query"
 )
 
 // Reserved event types (alphabetically sorted).
@@ -21,6 +21,9 @@ const (
 	EventNewEvidence         = "NewEvidence"
 	EventTx                  = "Tx"
 	EventValidatorSetUpdates = "ValidatorSetUpdates"
+	EventSteeringMemberCandidateSetUpdates = "SteeringMemberCandidateSetUpdates"
+	EventStandingMemberSetUpdates          = "StandingMemberSetUpdates"
+
 
 	// Internal consensus events.
 	// These are used for testing the consensus state machine.
@@ -36,6 +39,10 @@ const (
 	EventUnlock           = "Unlock"
 	EventValidBlock       = "ValidBlock"
 	EventVote             = "Vote"
+
+	EventQrn             					= "Qrn"
+	EventVrf             					= "Vrf"
+	EventSettingSteeringMember    = "SettingSteeringMember"
 )
 
 // ENCODING / DECODING
@@ -46,16 +53,22 @@ type TMEventData interface {
 }
 
 func init() {
-	tmjson.RegisterType(EventDataNewBlock{}, "tendermint/event/NewBlock")
-	tmjson.RegisterType(EventDataNewBlockHeader{}, "tendermint/event/NewBlockHeader")
-	tmjson.RegisterType(EventDataNewEvidence{}, "tendermint/event/NewEvidence")
-	tmjson.RegisterType(EventDataTx{}, "tendermint/event/Tx")
-	tmjson.RegisterType(EventDataRoundState{}, "tendermint/event/RoundState")
-	tmjson.RegisterType(EventDataNewRound{}, "tendermint/event/NewRound")
-	tmjson.RegisterType(EventDataCompleteProposal{}, "tendermint/event/CompleteProposal")
-	tmjson.RegisterType(EventDataVote{}, "tendermint/event/Vote")
-	tmjson.RegisterType(EventDataValidatorSetUpdates{}, "tendermint/event/ValidatorSetUpdates")
-	tmjson.RegisterType(EventDataString(""), "tendermint/event/ProposalString")
+	tmjson.RegisterType(EventDataNewBlock{}, "reapchain-core/event/NewBlock")
+	tmjson.RegisterType(EventDataNewBlockHeader{}, "reapchain-core/event/NewBlockHeader")
+	tmjson.RegisterType(EventDataNewEvidence{}, "reapchain-core/event/NewEvidence")
+	tmjson.RegisterType(EventDataTx{}, "reapchain-core/event/Tx")
+	tmjson.RegisterType(EventDataRoundState{}, "reapchain-core/event/RoundState")
+	tmjson.RegisterType(EventDataNewRound{}, "reapchain-core/event/NewRound")
+	tmjson.RegisterType(EventDataCompleteProposal{}, "reapchain-core/event/CompleteProposal")
+	tmjson.RegisterType(EventDataVote{}, "reapchain-core/event/Vote")
+	tmjson.RegisterType(EventDataSteeringMemberCandidateSetUpdates{}, "reapchain/event/SteeringMemberCandidateSetUpdates")
+	tmjson.RegisterType(EventDataStandingMemberSetUpdates{}, "reapchain/event/StandingMemberSetUpdates")
+	tmjson.RegisterType(EventDataString(""), "reapchain-core/event/ProposalString")
+
+	tmjson.RegisterType(EventDataQrn{}, "reapchain/event/Qrn")
+	tmjson.RegisterType(EventDataVrf{}, "reapchain/event/Vrf")
+	tmjson.RegisterType(EventDataSettingSteeringMember{}, "reapchain/event/SetEventDataSettingSteeringMember")
+
 }
 
 // Most event messages are basic types (a block, a transaction)
@@ -66,6 +79,7 @@ type EventDataNewBlock struct {
 
 	ResultBeginBlock abci.ResponseBeginBlock `json:"result_begin_block"`
 	ResultEndBlock   abci.ResponseEndBlock   `json:"result_end_block"`
+	ConsensusInfo 	 abci.ConsensusInfo 	 `json:"consensus_info"`
 }
 
 type EventDataNewBlockHeader struct {
@@ -119,10 +133,28 @@ type EventDataVote struct {
 	Vote *Vote
 }
 
+// Add event
+type EventDataQrn struct {
+	Qrn *Qrn
+}
+
+type EventDataVrf struct {
+	Vrf *Vrf
+}
+
+type EventDataSettingSteeringMember struct {
+	SettingSteeringMember *SettingSteeringMember
+}
+
+
 type EventDataString string
 
-type EventDataValidatorSetUpdates struct {
-	ValidatorUpdates []*Validator `json:"validator_updates"`
+type EventDataSteeringMemberCandidateSetUpdates struct {
+	SteeringMemberCandidateUpdates []*SteeringMemberCandidate `json:"steering_member_candidate_updates"`
+}
+
+type EventDataStandingMemberSetUpdates struct {
+	StandingMemberUpdates []*StandingMember `json:"standing_member_updates"`
 }
 
 // PUBSUB
@@ -156,9 +188,15 @@ var (
 	EventQueryTimeoutWait         = QueryForEvent(EventTimeoutWait)
 	EventQueryTx                  = QueryForEvent(EventTx)
 	EventQueryUnlock              = QueryForEvent(EventUnlock)
-	EventQueryValidatorSetUpdates = QueryForEvent(EventValidatorSetUpdates)
+	EventQuerySteeringMemberCandidateSetUpdates = QueryForEvent(EventSteeringMemberCandidateSetUpdates)
+	EventQueryStandingMemberSetUpdates          = QueryForEvent(EventStandingMemberSetUpdates)
 	EventQueryValidBlock          = QueryForEvent(EventValidBlock)
 	EventQueryVote                = QueryForEvent(EventVote)
+
+	EventQueryQrn                              = QueryForEvent(EventQrn)
+	EventQueryVrf                              = QueryForEvent(EventVrf)
+	EventQuerySettingSteeringMember						 = QueryForEvent(EventSettingSteeringMember)
+
 )
 
 func EventQueryTxFor(tx Tx) tmpubsub.Query {
@@ -175,7 +213,8 @@ type BlockEventPublisher interface {
 	PublishEventNewBlockHeader(header EventDataNewBlockHeader) error
 	PublishEventNewEvidence(evidence EventDataNewEvidence) error
 	PublishEventTx(EventDataTx) error
-	PublishEventValidatorSetUpdates(EventDataValidatorSetUpdates) error
+	PublishEventSteeringMemberCandidateSetUpdates(EventDataSteeringMemberCandidateSetUpdates) error
+	PublishEventStandingMemberSetUpdates(EventDataStandingMemberSetUpdates) error
 }
 
 type TxEventPublisher interface {

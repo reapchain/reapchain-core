@@ -3,7 +3,7 @@ package indexer
 import (
 	"time"
 
-	"github.com/tendermint/tendermint/libs/pubsub/query"
+	"github.com/reapchain/reapchain-core/libs/pubsub/query"
 )
 
 // QueryRanges defines a mapping between a composite event key and a QueryRange.

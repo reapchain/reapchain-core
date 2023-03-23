@@ -2,10 +2,10 @@
 order: 4
 ---
 
-# What is Tendermint
+# What is ReapchainCore
 
-Tendermint is software for securely and consistently replicating an
-application on many machines. By securely, we mean that Tendermint works
+ReapchainCore is software for securely and consistently replicating an
+application on many machines. By securely, we mean that ReapchainCore works
 even if up to 1/3 of machines fail in arbitrary ways. By consistently,
 we mean that every non-faulty machine sees the same transaction log and
 computes the same state. Secure and consistent replication is a
@@ -25,24 +25,24 @@ block contains a cryptographic hash of the previous one, forming a
 chain. In practice, the blockchain data structure actually optimizes BFT
 design.
 
-Tendermint consists of two chief technical components: a blockchain
+ReapchainCore consists of two chief technical components: a blockchain
 consensus engine and a generic application interface. The consensus
-engine, called Tendermint Core, ensures that the same transactions are
+engine, called ReapchainCore Core, ensures that the same transactions are
 recorded on every machine in the same order. The application interface,
 called the Application BlockChain Interface (ABCI), enables the
 transactions to be processed in any programming language. Unlike other
 blockchain and consensus solutions, which come pre-packaged with built
 in state machines (like a fancy key-value store, or a quirky scripting
-language), developers can use Tendermint for BFT state machine
+language), developers can use ReapchainCore for BFT state machine
 replication of applications written in whatever programming language and
 development environment is right for them.
 
-Tendermint is designed to be easy-to-use, simple-to-understand, highly
+ReapchainCore is designed to be easy-to-use, simple-to-understand, highly
 performant, and useful for a wide variety of distributed applications.
 
-## Tendermint vs. X
+## ReapchainCore vs. X
 
-Tendermint is broadly similar to two classes of software. The first
+ReapchainCore is broadly similar to two classes of software. The first
 class consists of distributed key-value stores, like Zookeeper, etcd,
 and consul, which use non-BFT consensus. The second class is known as
 "blockchain technology", and consists of both cryptocurrencies like
@@ -64,7 +64,7 @@ featureful key-value store, but all are generally focused around
 providing basic services to distributed systems, such as dynamic
 configuration, service discovery, locking, leader-election, and so on.
 
-Tendermint is in essence similar software, but with two key differences:
+ReapchainCore is in essence similar software, but with two key differences:
 
 - It is Byzantine Fault Tolerant, meaning it can only tolerate up to a
   1/3 of failures, but those failures can include arbitrary behaviour -
@@ -76,31 +76,31 @@ Tendermint is in essence similar software, but with two key differences:
 
 ### Bitcoin, Ethereum, etc
 
-Tendermint emerged in the tradition of cryptocurrencies like Bitcoin,
+ReapchainCore emerged in the tradition of cryptocurrencies like Bitcoin,
 Ethereum, etc. with the goal of providing a more efficient and secure
 consensus algorithm than Bitcoin's Proof of Work. In the early days,
-Tendermint had a simple currency built in, and to participate in
+ReapchainCore had a simple currency built in, and to participate in
 consensus, users had to "bond" units of the currency into a security
 deposit which could be revoked if they misbehaved -this is what made
-Tendermint a Proof-of-Stake algorithm.
+ReapchainCore a Proof-of-Stake algorithm.
 
-Since then, Tendermint has evolved to be a general purpose blockchain
+Since then, ReapchainCore has evolved to be a general purpose blockchain
 consensus engine that can host arbitrary application states. That means
 it can be used as a plug-and-play replacement for the consensus engines
 of other blockchain software. So one can take the current Ethereum code
 base, whether in Rust, or Go, or Haskell, and run it as a ABCI
-application using Tendermint consensus. Indeed, [we did that with
+application using ReapchainCore consensus. Indeed, [we did that with
 Ethereum](https://github.com/cosmos/ethermint). And we plan to do
 the same for Bitcoin, ZCash, and various other deterministic
 applications as well.
 
-Another example of a cryptocurrency application built on Tendermint is
+Another example of a cryptocurrency application built on ReapchainCore is
 [the Cosmos network](http://cosmos.network).
 
 ### Other Blockchain Projects
 
 [Fabric](https://github.com/hyperledger/fabric) takes a similar approach
-to Tendermint, but is more opinionated about how the state is managed,
+to ReapchainCore, but is more opinionated about how the state is managed,
 and requires that all application behaviour runs in potentially many
 docker containers, modules it calls "chaincode". It uses an
 implementation of [PBFT](http://pmg.csail.mit.edu/papers/osdi99.pdf).
@@ -108,19 +108,19 @@ from a team at IBM that is [augmented to handle potentially
 non-deterministic
 chaincode](https://www.zurich.ibm.com/~cca/papers/sieve.pdf) It is
 possible to implement this docker-based behaviour as a ABCI app in
-Tendermint, though extending Tendermint to handle non-determinism
+ReapchainCore, though extending ReapchainCore to handle non-determinism
 remains for future work.
 
 [Burrow](https://github.com/hyperledger/burrow) is an implementation of
 the Ethereum Virtual Machine and Ethereum transaction mechanics, with
 additional features for a name-registry, permissions, and native
-contracts, and an alternative blockchain API. It uses Tendermint as its
+contracts, and an alternative blockchain API. It uses ReapchainCore as its
 consensus engine, and provides a particular application state.
 
 ## ABCI Overview
 
 The [Application BlockChain Interface
-(ABCI)](https://github.com/tendermint/tendermint/tree/master/abci)
+(ABCI)](https://github.com/reapchain/reapchain-core/tree/master/abci)
 allows for Byzantine Fault Tolerant replication of applications
 written in any programming language.
 
@@ -153,19 +153,19 @@ the application to an interface, which is implemented as a socket
 protocol.
 
 Thus we have an interface, the Application BlockChain Interface (ABCI),
-and its primary implementation, the Tendermint Socket Protocol (TSP, or
+and its primary implementation, the ReapchainCore Socket Protocol (TSP, or
 Teaspoon).
 
 ### Intro to ABCI
 
-[Tendermint Core](https://github.com/tendermint/tendermint) (the
+[ReapchainCore Core](https://github.com/reapchain/reapchain-core) (the
 "consensus engine") communicates with the application via a socket
 protocol that satisfies the ABCI.
 
 To draw an analogy, lets talk about a well-known cryptocurrency,
 Bitcoin. Bitcoin is a cryptocurrency blockchain where each node
 maintains a fully audited Unspent Transaction Output (UTXO) database. If
-one wanted to create a Bitcoin-like system on top of ABCI, Tendermint
+one wanted to create a Bitcoin-like system on top of ABCI, ReapchainCore
 Core would be responsible for
 
 - Sharing blocks and transactions between nodes
@@ -179,7 +179,7 @@ The application will be responsible for
 - Preventing transactions from spending non-existent transactions
 - Allowing clients to query the UTXO database.
 
-Tendermint is able to decompose the blockchain design by offering a very
+ReapchainCore is able to decompose the blockchain design by offering a very
 simple API (ie. the ABCI) between the application process and consensus
 process.
 
@@ -188,7 +188,7 @@ core to the application. The application replies with corresponding
 response messages.
 
 The messages are specified here: [ABCI Message
-Types](https://github.com/tendermint/tendermint/blob/master/abci/README.md#message-types).
+Types](https://github.com/reapchain/reapchain-core/blob/master/abci/README.md#message-types).
 
 The **DeliverTx** message is the work horse of the application. Each
 transaction in the blockchain is delivered with this message. The
@@ -200,7 +200,7 @@ value into a key values store, or by updating the UTXO database, for
 instance.
 
 The **CheckTx** message is similar to **DeliverTx**, but it's only for
-validating transactions. Tendermint Core's mempool first checks the
+validating transactions. ReapchainCore Core's mempool first checks the
 validity of a transaction with **CheckTx**, and only relays valid
 transactions to its peers. For instance, an application may check an
 incrementing sequence number in the transaction and return an error upon
@@ -217,7 +217,7 @@ lightweight clients, as Merkle-hash proofs can be verified by checking
 against the block hash, and that the block hash is signed by a quorum.
 
 There can be multiple ABCI socket connections to an application.
-Tendermint Core creates three ABCI connections to the application; one
+ReapchainCore Core creates three ABCI connections to the application; one
 for the validation of transactions when broadcasting in the mempool, one
 for the consensus engine to run block proposals, and one more for
 querying the application state.
@@ -233,7 +233,7 @@ below illustrates the flow of messages via ABCI.
 
 The logic for blockchain transaction processing must be deterministic.
 If the application logic weren't deterministic, consensus would not be
-reached among the Tendermint Core replica nodes.
+reached among the ReapchainCore Core replica nodes.
 
 Solidity on Ethereum is a great language of choice for blockchain
 applications because, among other reasons, it is a completely
@@ -259,7 +259,7 @@ create such tools.
 
 ## Consensus Overview
 
-Tendermint is an easy-to-understand, mostly asynchronous, BFT consensus
+ReapchainCore is an easy-to-understand, mostly asynchronous, BFT consensus
 protocol. The protocol follows a simple state machine that looks like
 this:
 
@@ -281,18 +281,18 @@ validators pre-vote for the same block, we call that a **polka**. Every
 pre-commit must be justified by a polka in the same round.
 
 Validators may fail to commit a block for a number of reasons; the
-current proposer may be offline, or the network may be slow. Tendermint
+current proposer may be offline, or the network may be slow. ReapchainCore
 allows them to establish that a validator should be skipped. Validators
 wait a small amount of time to receive a complete proposal block from
 the proposer before voting to move to the next round. This reliance on a
-timeout is what makes Tendermint a weakly synchronous protocol, rather
+timeout is what makes ReapchainCore a weakly synchronous protocol, rather
 than an asynchronous one. However, the rest of the protocol is
 asynchronous, and validators only make progress after hearing from more
 than two-thirds of the validator set. A simplifying element of
-Tendermint is that it uses the same mechanism to commit a block as it
+ReapchainCore is that it uses the same mechanism to commit a block as it
 does to skip to the next round.
 
-Assuming less than one-third of the validators are Byzantine, Tendermint
+Assuming less than one-third of the validators are Byzantine, ReapchainCore
 guarantees that safety will never be violated - that is, validators will
 never commit conflicting blocks at the same height. To do this it
 introduces a few **locking** rules which modulate which paths can be
@@ -311,7 +311,7 @@ two-thirds of the validators, but in those proportions of the total
 voting power, which may not be uniformly distributed across individual
 validators.
 
-Since Tendermint can replicate arbitrary applications, it is possible to
+Since ReapchainCore can replicate arbitrary applications, it is possible to
 define a currency, and denominate the voting power in that currency.
 When voting power is denominated in a native currency, the system is
 often referred to as Proof-of-Stake. Validators can be forced, by logic
@@ -325,6 +325,6 @@ The [Cosmos Network](https://cosmos.network) is designed to use this
 Proof-of-Stake mechanism across an array of cryptocurrencies implemented
 as ABCI applications.
 
-The following diagram is Tendermint in a (technical) nutshell.
+The following diagram is ReapchainCore in a (technical) nutshell.
 
 ![tx-flow](../imgs/tm-transaction-flow.png)

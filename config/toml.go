@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	tmos "github.com/tendermint/tendermint/libs/os"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
 )
 
 // DefaultDirPerm is the default permissions used when creating directories.
@@ -49,7 +49,7 @@ func EnsureRoot(rootDir string) {
 	}
 }
 
-// XXX: this func should probably be called by cmd/tendermint/commands/init.go
+// XXX: this func should probably be called by cmd/reapchain/commands/init.go
 // alongside the writing of the genesis.json and priv_validator.json
 func writeDefaultConfigFile(configFilePath string) {
 	WriteConfigFile(configFilePath, DefaultConfig())
@@ -73,7 +73,7 @@ const defaultConfigTemplate = `# This is a TOML config file.
 
 # NOTE: Any path below can be absolute (e.g. "/var/myawesomeapp/data") or
 # relative to the home directory (e.g. "data"). The home directory is
-# "$HOME/.tendermint" by default, but could be changed via $TMHOME env variable
+# "$HOME/.reapchain-core" by default, but could be changed via $TMHOME env variable
 # or --home cmd flag.
 
 #######################################################################
@@ -81,7 +81,7 @@ const defaultConfigTemplate = `# This is a TOML config file.
 #######################################################################
 
 # TCP or UNIX socket address of the ABCI application,
-# or the name of an ABCI application compiled in with the Tendermint binary
+# or the name of an ABCI application compiled in with the ReapchainCore binary
 proxy_app = "{{ .BaseConfig.ProxyApp }}"
 
 # A custom human readable name for this node
@@ -133,7 +133,7 @@ priv_validator_key_file = "{{ js .BaseConfig.PrivValidatorKey }}"
 # Path to the JSON file containing the last sign state of a validator
 priv_validator_state_file = "{{ js .BaseConfig.PrivValidatorState }}"
 
-# TCP or UNIX socket address for Tendermint to listen on for
+# TCP or UNIX socket address for ReapchainCore to listen on for
 # connections from an external PrivValidator process
 priv_validator_laddr = "{{ .BaseConfig.PrivValidatorListenAddr }}"
 
@@ -236,7 +236,7 @@ experimental_close_on_slow_client = {{ .RPC.CloseOnSlowClient }}
 # How long to wait for a tx to be committed during /broadcast_tx_commit.
 # WARNING: Using a value larger than 10s will result in increasing the
 # global HTTP write timeout, which applies to all connections and endpoints.
-# See https://github.com/tendermint/tendermint/issues/3435
+# See https://github.com/reapchain/reapchain-core/issues/3435
 timeout_broadcast_tx_commit = "{{ .RPC.TimeoutBroadcastTxCommit }}"
 
 # Maximum size of request body, in bytes
@@ -246,17 +246,17 @@ max_body_bytes = {{ .RPC.MaxBodyBytes }}
 max_header_bytes = {{ .RPC.MaxHeaderBytes }}
 
 # The path to a file containing certificate that is used to create the HTTPS server.
-# Might be either absolute path or path related to Tendermint's config directory.
+# Might be either absolute path or path related to ReapchainCore's config directory.
 # If the certificate is signed by a certificate authority,
 # the certFile should be the concatenation of the server's certificate, any intermediates,
 # and the CA's certificate.
-# NOTE: both tls_cert_file and tls_key_file must be present for Tendermint to create HTTPS server.
+# NOTE: both tls_cert_file and tls_key_file must be present for ReapchainCore to create HTTPS server.
 # Otherwise, HTTP server is run.
 tls_cert_file = "{{ .RPC.TLSCertFile }}"
 
 # The path to a file containing matching private key that is used to create the HTTPS server.
-# Might be either absolute path or path related to Tendermint's config directory.
-# NOTE: both tls-cert-file and tls-key-file must be present for Tendermint to create HTTPS server.
+# Might be either absolute path or path related to ReapchainCore's config directory.
+# NOTE: both tls-cert-file and tls-key-file must be present for ReapchainCore to create HTTPS server.
 # Otherwise, HTTP server is run.
 tls_key_file = "{{ .RPC.TLSKeyFile }}"
 
@@ -373,7 +373,7 @@ max_tx_bytes = {{ .Mempool.MaxTxBytes }}
 
 # Maximum size of a batch of transactions to send to a peer
 # Including space needed by encoding (one varint per transaction).
-# XXX: Unused due to https://github.com/tendermint/tendermint/issues/5796
+# XXX: Unused due to https://github.com/reapchain/reapchain-core/issues/5796
 max_batch_bytes = {{ .Mempool.MaxBatchBytes }}
 
 # ttl-duration, if non-zero, defines the maximum amount of time a transaction
@@ -469,6 +469,12 @@ timeout_commit = "{{ .Consensus.TimeoutCommit }}"
 # So, validators should stop the state machine, wait for some blocks, and then restart the state machine to avoid panic.
 double_sign_check_height = {{ .Consensus.DoubleSignCheckHeight }}
 
+# The mechanism of how to generate QRN (default = os / qrng)
+# os is using OS random number
+# qrng is using Quentum Random Number Generator
+qrn_generation_mechanism = "{{ .Consensus.QrnGenerationMechanism }}"
+qrn_generator_file_path = "{{ .Consensus.QrnGeneratorFilePath }}"
+
 # Make progress as soon as we have all the precommits (as if TimeoutCommit = 0)
 skip_timeout_commit = {{ .Consensus.SkipTimeoutCommit }}
 
@@ -557,7 +563,7 @@ func ResetTestRootWithChainID(testName string, chainID string) *Config {
 	}
 	if !tmos.FileExists(genesisFilePath) {
 		if chainID == "" {
-			chainID = "tendermint_test"
+			chainID = "reapchain-core_test"
 		}
 		testGenesis := fmt.Sprintf(testGenesisFmt, chainID)
 		tmos.MustWriteFile(genesisFilePath, []byte(testGenesis), 0644)
@@ -595,7 +601,7 @@ var testGenesisFmt = `{
   "validators": [
     {
       "pub_key": {
-        "type": "tendermint/PubKeyEd25519",
+        "type": "reapchain-core/PubKeyEd25519",
         "value":"AT/+aaL1eB0477Mud9JMm8Sh8BIvOYlPGC9KkIUmFaE="
       },
       "power": "10",
@@ -608,11 +614,11 @@ var testGenesisFmt = `{
 var testPrivValidatorKey = `{
   "address": "A3258DCBF45DCA0DF052981870F2D1441A36D145",
   "pub_key": {
-    "type": "tendermint/PubKeyEd25519",
+    "type": "reapchain/PubKeyEd25519",
     "value": "AT/+aaL1eB0477Mud9JMm8Sh8BIvOYlPGC9KkIUmFaE="
   },
   "priv_key": {
-    "type": "tendermint/PrivKeyEd25519",
+    "type": "reapchain/PrivKeyEd25519",
     "value": "EVkqJO/jIXp3rkASXfh9YnyToYXRXhBr6g9cQVxPFnQBP/5povV4HTjvsy530kybxKHwEi85iU8YL0qQhSYVoQ=="
   }
 }`

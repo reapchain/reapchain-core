@@ -9,12 +9,12 @@ parent:
 
 ## Quick Start
 
-Get Tendermint up-and-running quickly with the [quick-start guide](./quick-start.md)!
+Get ReapchainCore up-and-running quickly with the [quick-start guide](./quick-start.md)!
 
 ## Install
 
 Detailed [installation instructions](./install.md).
 
-## What is Tendermint
+## What is ReapchainCore
 
-Dive into [what Tendermint is and why](./what-is-tendermint.md)!
+Dive into [what ReapchainCore is and why](./what-is-reapchain-core.md)!

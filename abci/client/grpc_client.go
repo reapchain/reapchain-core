@@ -9,10 +9,10 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"github.com/tendermint/tendermint/abci/types"
-	tmnet "github.com/tendermint/tendermint/libs/net"
-	"github.com/tendermint/tendermint/libs/service"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
+	"github.com/reapchain/reapchain-core/abci/types"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 )
 
 var _ Client = (*grpcClient)(nil)

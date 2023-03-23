@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tendermint/tendermint/crypto"
-	ce "github.com/tendermint/tendermint/crypto/encoding"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	ce "github.com/reapchain/reapchain-core/crypto/encoding"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
 
 // Volatile state for each Validator
@@ -18,17 +18,18 @@ import (
 type Validator struct {
 	Address     Address       `json:"address"`
 	PubKey      crypto.PubKey `json:"pub_key"`
+	Type      string 					`json:"type"`
 	VotingPower int64         `json:"voting_power"`
-
 	ProposerPriority int64 `json:"proposer_priority"`
 }
 
 // NewValidator returns a new validator with the given pubkey and voting power.
-func NewValidator(pubKey crypto.PubKey, votingPower int64) *Validator {
+func NewValidator(pubKey crypto.PubKey, votingPower int64, validatorType string) *Validator {
 	return &Validator{
 		Address:          pubKey.Address(),
 		PubKey:           pubKey,
 		VotingPower:      votingPower,
+		Type: validatorType,
 		ProposerPriority: 0,
 	}
 }
@@ -146,6 +147,7 @@ func (v *Validator) ToProto() (*tmproto.Validator, error) {
 	vp := tmproto.Validator{
 		Address:          v.Address,
 		PubKey:           pk,
+		Type: v.Type,
 		VotingPower:      v.VotingPower,
 		ProposerPriority: v.ProposerPriority,
 	}
@@ -167,6 +169,7 @@ func ValidatorFromProto(vp *tmproto.Validator) (*Validator, error) {
 	v := new(Validator)
 	v.Address = vp.GetAddress()
 	v.PubKey = pk
+	v.Type = vp.Type
 	v.VotingPower = vp.GetVotingPower()
 	v.ProposerPriority = vp.GetProposerPriority()
 
@@ -188,6 +191,10 @@ func RandValidator(randPower bool, minPower int64) (*Validator, PrivValidator) {
 	if err != nil {
 		panic(fmt.Errorf("could not retrieve pubkey %w", err))
 	}
-	val := NewValidator(pubKey, votePower)
+	validatorType, err := privVal.GetType()
+	if err != nil {
+		panic(fmt.Errorf("could not retrieve validator type %w", err))
+	}
+	val := NewValidator(pubKey, votePower, validatorType)
 	return val, privVal
 }

@@ -8,18 +8,18 @@ import (
 	"strings"
 	"time"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
+	abci "github.com/reapchain/reapchain-core/abci/types"
+	"github.com/reapchain/reapchain-core/libs/log"
 
-	cfg "github.com/tendermint/tendermint/config"
-	tmnet "github.com/tendermint/tendermint/libs/net"
-	nm "github.com/tendermint/tendermint/node"
-	"github.com/tendermint/tendermint/p2p"
-	"github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/proxy"
-	ctypes "github.com/tendermint/tendermint/rpc/core/types"
-	core_grpc "github.com/tendermint/tendermint/rpc/grpc"
-	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
+	cfg "github.com/reapchain/reapchain-core/config"
+	tmnet "github.com/reapchain/reapchain-core/libs/net"
+	nm "github.com/reapchain/reapchain-core/node"
+	"github.com/reapchain/reapchain-core/p2p"
+	"github.com/reapchain/reapchain-core/privval"
+	"github.com/reapchain/reapchain-core/proxy"
+	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
+	core_grpc "github.com/reapchain/reapchain-core/rpc/grpc"
+	rpcclient "github.com/reapchain/reapchain-core/rpc/jsonrpc/client"
 )
 
 // Options helps with specifying some parameters for our RPC testing for greater
@@ -97,7 +97,7 @@ func createConfig() *cfg.Config {
 	tm, rpc, grpc := makeAddrs()
 	c.P2P.ListenAddress = tm
 	c.RPC.ListenAddress = rpc
-	c.RPC.CORSAllowedOrigins = []string{"https://tendermint.com/"}
+	c.RPC.CORSAllowedOrigins = []string{"https://reapchain-core.com/"}
 	c.RPC.GRPCListenAddress = grpc
 	return c
 }
@@ -115,13 +115,13 @@ func GetGRPCClient() core_grpc.BroadcastAPIClient {
 	return core_grpc.StartGRPCClient(grpcAddr)
 }
 
-// StartTendermint starts a test tendermint server in a go routine and returns when it is initialized
-func StartTendermint(app abci.Application, opts ...func(*Options)) *nm.Node {
+// StartReapchainCore starts a test reapchain-core server in a go routine and returns when it is initialized
+func StartReapchainCore(app abci.Application, opts ...func(*Options)) *nm.Node {
 	nodeOpts := defaultOptions
 	for _, opt := range opts {
 		opt(&nodeOpts)
 	}
-	node := NewTendermint(app, &nodeOpts)
+	node := NewReapchainCore(app, &nodeOpts)
 	err := node.Start()
 	if err != nil {
 		panic(err)
@@ -132,15 +132,15 @@ func StartTendermint(app abci.Application, opts ...func(*Options)) *nm.Node {
 	waitForGRPC()
 
 	if !nodeOpts.suppressStdout {
-		fmt.Println("Tendermint running!")
+		fmt.Println("ReapchainCore running!")
 	}
 
 	return node
 }
 
-// StopTendermint stops a test tendermint server, waits until it's stopped and
+// StopReapchainCore stops a test reapchain-core server, waits until it's stopped and
 // cleans up test/config files.
-func StopTendermint(node *nm.Node) {
+func StopReapchainCore(node *nm.Node) {
 	if err := node.Stop(); err != nil {
 		node.Logger.Error("Error when trying to stop node", "err", err)
 	}
@@ -148,8 +148,8 @@ func StopTendermint(node *nm.Node) {
 	os.RemoveAll(node.Config().RootDir)
 }
 
-// NewTendermint creates a new tendermint server and sleeps forever
-func NewTendermint(app abci.Application, opts *Options) *nm.Node {
+// NewReapchainCore creates a new reapchain-core server and sleeps forever
+func NewReapchainCore(app abci.Application, opts *Options) *nm.Node {
 	// Create & start node
 	config := GetConfig(opts.recreateConfig)
 	var logger log.Logger
@@ -178,7 +178,7 @@ func NewTendermint(app abci.Application, opts *Options) *nm.Node {
 	return node
 }
 
-// SuppressStdout is an option that tries to make sure the RPC test Tendermint
+// SuppressStdout is an option that tries to make sure the RPC test ReapchainCore
 // node doesn't log anything to stdout.
 func SuppressStdout(o *Options) {
 	o.suppressStdout = true

@@ -12,22 +12,26 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	cfg "github.com/tendermint/tendermint/config"
-	cstypes "github.com/tendermint/tendermint/consensus/types"
-	"github.com/tendermint/tendermint/crypto"
-	tmevents "github.com/tendermint/tendermint/libs/events"
-	"github.com/tendermint/tendermint/libs/fail"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmmath "github.com/tendermint/tendermint/libs/math"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	"github.com/tendermint/tendermint/libs/service"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/p2p"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	cfg "github.com/reapchain/reapchain-core/config"
+	cstypes "github.com/reapchain/reapchain-core/consensus/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	tmevents "github.com/reapchain/reapchain-core/libs/events"
+	"github.com/reapchain/reapchain-core/libs/fail"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmmath "github.com/reapchain/reapchain-core/libs/math"
+	tmos "github.com/reapchain/reapchain-core/libs/os"
+	"github.com/reapchain/reapchain-core/libs/service"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/p2p"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
+
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+
+	qrnfunc "github.com/reapchain/reapchain-core/qrnfunc"
 )
 
 // Consensus sentinel errors
@@ -109,6 +113,8 @@ type State struct {
 	internalMsgQueue chan msgInfo
 	timeoutTicker    TimeoutTicker
 
+	CatchupStates []*sm.State
+
 	// information about about added votes and block parts are written on this channel
 	// so statistics can be computed by reactor
 	statsMsgQueue chan msgInfo
@@ -155,6 +161,7 @@ func NewState(
 	evpool evidencePool,
 	options ...StateOption,
 ) *State {
+
 	cs := &State{
 		config:           config,
 		blockExec:        blockExec,
@@ -259,6 +266,17 @@ func (cs *State) GetValidators() (int64, []*types.Validator) {
 	cs.mtx.RLock()
 	defer cs.mtx.RUnlock()
 	return cs.state.LastBlockHeight, cs.state.Validators.Copy().Validators
+}
+
+func (cs *State) GetStandingMembers() (int64, []*types.StandingMember) {
+	cs.mtx.RLock()
+	defer cs.mtx.RUnlock()
+	return cs.state.LastBlockHeight, cs.state.StandingMemberSet.Copy().StandingMembers
+}
+func (cs *State) GetSteeringMemberCandidates() (int64, []*types.SteeringMemberCandidate) {
+	cs.mtx.RLock()
+	defer cs.mtx.RUnlock()
+	return cs.state.LastBlockHeight, cs.state.SteeringMemberCandidateSet.Copy().SteeringMemberCandidates
 }
 
 // SetPrivValidator sets the private validator account for signing votes. It
@@ -614,9 +632,6 @@ func (cs *State) updateToState(state sm.State) {
 		}
 	}
 
-	// Reset fields based on state.
-	validators := state.Validators
-
 	switch {
 	case state.LastBlockHeight == 0: // Very first commit should be empty.
 		cs.LastCommit = (*types.VoteSet)(nil)
@@ -631,13 +646,16 @@ func (cs *State) updateToState(state sm.State) {
 		cs.LastCommit = cs.Votes.Precommits(cs.CommitRound)
 
 	case cs.LastCommit == nil:
-		// NOTE: when Tendermint starts, it has no votes. reconstructLastCommit
+		// NOTE: when ReapchainCore starts, it has no votes. reconstructLastCommit
 		// must be called to reconstruct LastCommit from SeenCommit.
 		panic(fmt.Sprintf(
 			"last commit cannot be empty after initial block (H:%d)",
 			state.LastBlockHeight+1,
 		))
 	}
+
+	// Reset fields based on state.
+	validators := state.Validators
 
 	// Next desired block height
 	height := state.LastBlockHeight + 1
@@ -674,6 +692,9 @@ func (cs *State) updateToState(state sm.State) {
 	cs.CommitRound = -1
 	cs.LastValidators = state.LastValidators
 	cs.TriggeredTimeoutPrecommit = false
+
+	cs.StandingMemberSet = state.StandingMemberSet
+	cs.SteeringMemberCandidateSet = state.SteeringMemberCandidateSet
 
 	cs.state = state
 
@@ -863,7 +884,7 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// We probably don't want to stop the peer here. The vote does not
 		// necessarily comes from a malicious peer but can be just broadcasted by
 		// a typical peer.
-		// https://github.com/tendermint/tendermint/issues/1281
+		// https://github.com/reapchain/reapchain-core/issues/1281
 		// }
 
 		// NOTE: the vote is broadcast to peers by the reactor listening
@@ -872,6 +893,15 @@ func (cs *State) handleMsg(mi msgInfo) {
 		// TODO: If rs.Height == vote.Height && rs.Round < vote.Round,
 		// the peer is sending us CatchupCommit precommits.
 		// We could make note of this and help filter in broadcastHasVoteMessage().
+
+	case *QrnMessage:
+		added, err = cs.tryAddQrn(msg.Qrn, peerID)
+
+	case *SettingSteeringMemberMessage:
+		err = cs.trySetSteeringMember(msg.SettingSteeringMember, peerID)
+
+	case *VrfMessage:
+		added, err = cs.tryAddVrf(msg.Vrf, peerID)
 
 	default:
 		cs.Logger.Error("unknown msg type", "type", fmt.Sprintf("%T", msg))
@@ -976,6 +1006,7 @@ func (cs *State) handleTxsAvailable() {
 // Enter: +2/3 prevotes any or +2/3 precommits for block or any from (height, round)
 // NOTE: cs.StartTime was already set for height.
 func (cs *State) enterNewRound(height int64, round int32) {
+
 	logger := cs.Logger.With("height", height, "round", round)
 
 	if cs.Height != height || round < cs.Round || (cs.Round == round && cs.Step != cstypes.RoundStepNewHeight) {
@@ -1004,16 +1035,26 @@ func (cs *State) enterNewRound(height int64, round int32) {
 	// but we fire an event, so update the round step first
 	cs.updateRoundStep(round, cstypes.RoundStepNewRound)
 	cs.Validators = validators
+
 	if round == 0 {
 		// We've already reset these upon new height,
 		// and meanwhile we might have received a proposal
 		// for round 0.
 	} else {
-		logger.Debug("resetting proposal info")
+		cs.StandingMemberSet.CurrentCoordinatorRanking++
+
+		if cs.StandingMemberSet.CurrentCoordinatorRanking == int64(cs.StandingMemberSet.Size()) {
+			cs.StandingMemberSet.CurrentCoordinatorRanking = 0
+		}
+
 		cs.Proposal = nil
 		cs.ProposalBlock = nil
 		cs.ProposalBlockParts = nil
 	}
+
+	cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
+	_, proposer := cs.Validators.GetByAddress(cs.StandingMemberSet.Coordinator.PubKey.Address())
+	cs.Validators.Proposer = proposer
 
 	cs.Votes.SetRound(tmmath.SafeAddInt32(round, 1)) // also track next round (round+1) to allow round-skipping
 	cs.TriggeredTimeoutPrecommit = false
@@ -1021,7 +1062,6 @@ func (cs *State) enterNewRound(height int64, round int32) {
 	if err := cs.eventBus.PublishEventNewRound(cs.NewRoundEvent()); err != nil {
 		cs.Logger.Error("failed publishing new round", "err", err)
 	}
-
 	cs.metrics.Rounds.Set(float64(round))
 
 	// Wait for txs to be available in the mempool
@@ -1086,13 +1126,17 @@ func (cs *State) enterPropose(height int64, round int32) {
 	// If we don't get the proposal and all block parts quick enough, enterPrevote
 	cs.scheduleTimeout(cs.config.Propose(round), height, round, cstypes.RoundStepPropose)
 
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight == height || cs.StandingMemberSet.Coordinator == nil {
+		cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
+		_, proposer := cs.Validators.GetByAddress(cs.StandingMemberSet.Coordinator.PubKey.Address())
+		cs.Validators.Proposer = proposer
+	}
+
 	// Nothing more to do if we're not a validator
 	if cs.privValidator == nil {
 		logger.Debug("node is not a validator")
 		return
 	}
-
-	logger.Debug("node is a validator")
 
 	if cs.privValidatorPubKey == nil {
 		// If this node is a validator & proposer in the current round, it will
@@ -1147,6 +1191,7 @@ func (cs *State) defaultDecideProposal(height int64, round int32) {
 	propBlockID := types.BlockID{Hash: block.Hash(), PartSetHeader: blockParts.Header()}
 	proposal := types.NewProposal(height, round, cs.ValidRound, propBlockID)
 	p := proposal.ToProto()
+
 	if err := cs.privValidator.SignProposal(cs.state.ChainID, p); err == nil {
 		proposal.Signature = p.Signature
 
@@ -1485,8 +1530,6 @@ func (cs *State) enterCommit(height int64, commitRound int32) {
 		return
 	}
 
-	logger.Debug("entering commit step", "current", log.NewLazySprintf("%v/%v/%v", cs.Height, cs.Round, cs.Step))
-
 	defer func() {
 		// Done enterCommit:
 		// keep cs.Round the same, commitRound points to the right Precommits set.
@@ -1594,13 +1637,13 @@ func (cs *State) finalizeCommit(height int64) {
 	if err := cs.blockExec.ValidateBlock(cs.state, block); err != nil {
 		panic(fmt.Errorf("+2/3 committed an invalid block: %w", err))
 	}
-
 	logger.Info(
 		"finalizing commit of block",
 		"hash", log.NewLazyBlockHash(block),
 		"root", block.AppHash,
 		"num_txs", len(block.Txs),
 	)
+
 	logger.Debug("committed block", "block", log.NewLazySprintf("%v", block))
 
 	fail.Fail() // XXX
@@ -1645,6 +1688,29 @@ func (cs *State) finalizeCommit(height int64) {
 	// Create a copy of the state for staging and an event cache for txs.
 	stateCopy := cs.state.Copy()
 
+	if(len(cs.CatchupStates) != 0) {
+		for i := 0; i < (len(cs.CatchupStates) - 1); {
+			cs.CatchupStates = append(cs.CatchupStates[:i], cs.CatchupStates[i+1:]...)
+
+			if (block.Height == cs.CatchupStates[i].LastBlockHeight) {
+				for j :=0; j < (len(cs.CatchupStates[i].NextQrnSet.Qrns)); j++ {
+					stateCopy.NextQrnSet.AddQrn(cs.state.ChainID, cs.CatchupStates[i].NextQrnSet.Qrns[j])
+				}
+
+
+				for j :=0; j < (len(cs.CatchupStates[i].NextVrfSet.Vrfs)); j++ {
+					stateCopy.NextVrfSet.AddVrf(cs.CatchupStates[i].NextVrfSet.Vrfs[j])
+				}
+				
+				if cs.CatchupStates[i].SettingSteeringMember != nil {
+					stateCopy.SettingSteeringMember = cs.CatchupStates[i].SettingSteeringMember.Copy()
+				}
+
+				break;
+			}
+    	}
+	}
+
 	// Execute and commit the block, update and save the state, and update the mempool.
 	// NOTE The block.AppHash wont reflect these txs until the next block.
 	var (
@@ -1688,6 +1754,82 @@ func (cs *State) finalizeCommit(height int64) {
 	// Private validator might have changed it's key pair => refetch pubkey.
 	if err := cs.updatePrivValidatorPubKey(); err != nil {
 		logger.Error("failed to get private validator pubkey", "err", err)
+	}
+
+	// When the qrnPeriod, if the node is a standing member, generate qrn information and send the qrn message to the internal message.
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight - 1 == height || 1 == height {
+		if cs.privValidatorPubKey != nil {
+			address := cs.privValidatorPubKey.Address()
+			// Check whether the node is standing member
+			if cs.state.NextQrnSet.HasAddress(address) == true {
+				var qrnValue uint64
+				
+				if cs.config.QrnGenerationMechanism == "qrng" {
+					qrnValue = qrnfunc.GenerateQrnValue(cs.config.QrnGeneratorFilePath)
+				} else {
+					qrnValue = tmrand.Uint64()
+				}
+				
+				qrn := types.NewQrn(cs.state.NextQrnSet.GetHeight(), cs.privValidatorPubKey, qrnValue)
+				err := cs.privValidator.SignQrn(cs.state.ChainID, qrn)
+
+				if err != nil {
+					logger.Error("Can't sign qrn", "err", err)
+				} else {
+					cs.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
+				}
+			}
+		}
+	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.QrnPeriod) - 1 == height {
+		// When the vrfPeriod, if the node is a steering member candidate, generate vrf information and send the vrf message to the internal message.
+		if cs.privValidatorPubKey != nil {
+			address := cs.privValidatorPubKey.Address()
+			
+			// Check whether the node is steering member candidate
+			if cs.state.NextVrfSet.HasAddress(address) == true {
+				isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
+
+				if isFull == false {
+					isFull = cs.state.NextQrnSet.QrnsBitArray.IsFull()
+					time.Sleep(time.Second * 1)
+				}
+
+				seed := cs.state.NextQrnSet.GetMaxValue()
+				vrf := types.NewVrf(cs.state.NextVrfSet.GetHeight(), cs.privValidatorPubKey, []byte(fmt.Sprint(seed)))
+
+				if err := cs.privValidator.ProveVrf(vrf); err != nil {
+					cs.Logger.Error("Can't prove vrf", "err", err)
+				}
+
+				if vrf.Verify() == false {
+					cs.Logger.Error("Invalid vrf sign")
+				} else {
+					cs.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
+				}
+			}
+		}
+	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.QrnPeriod + cs.state.ConsensusRound.VrfPeriod) - 1 == height {
+		// When the validatorPeriod, if the node is a coordinator in a standing member set, select steering member based on VRF and send the message to the internal message.
+		if cs.privValidatorPubKey != nil {
+			address := cs.privValidatorPubKey.Address()
+			
+			// Check whether the node is coordinator
+			if cs.isProposer(address) {
+				settingSteeringMember := cs.state.NextVrfSet.GetSteeringMemberAddresses()
+
+				if settingSteeringMember != nil {
+					settingSteeringMember.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Period)
+					settingSteeringMember.CoordinatorPubKey = cs.privValidatorPubKey
+
+					err := cs.privValidator.SignSettingSteeringMember(cs.state.ChainID, settingSteeringMember)
+					if err != nil {
+						cs.Logger.Error("Can't sign settingSteeringMember", "err", err)
+					} else {
+						cs.sendInternalMessage(msgInfo{&SettingSteeringMemberMessage{settingSteeringMember}, ""})
+					}
+				}
+			}
+		}
 	}
 
 	// cs.StartTime is already set.
@@ -1905,7 +2047,43 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 		if err := cs.eventBus.PublishEventCompleteProposal(cs.CompleteProposalEvent()); err != nil {
 			cs.Logger.Error("failed publishing event complete proposal", "err", err)
 		}
+
+		// Update Valid* if we can.
+		prevotes := cs.Votes.Prevotes(cs.Round)
+		blockID, hasTwoThirds := prevotes.TwoThirdsMajority()
+		if hasTwoThirds && !blockID.IsZero() && (cs.ValidRound < cs.Round) {
+			if cs.ProposalBlock.HashesTo(blockID.Hash) {
+				cs.Logger.Debug(
+					"updating valid block to new proposal block",
+					"valid_round", cs.Round,
+					"valid_block_hash", cs.ProposalBlock.Hash(),
+				)
+
+				cs.ValidRound = cs.Round
+				cs.ValidBlock = cs.ProposalBlock
+				cs.ValidBlockParts = cs.ProposalBlockParts
+			}
+			// TODO: In case there is +2/3 majority in Prevotes set for some
+			// block and cs.ProposalBlock contains different block, either
+			// proposer is faulty or voting power of faulty processes is more
+			// than 1/3. We should trigger in the future accountability
+			// procedure at this point.
+		}
+
+		if cs.Step <= cstypes.RoundStepPropose && cs.isProposalComplete() {
+			// Move onto the next step
+			cs.enterPrevote(height, cs.Round)
+			if hasTwoThirds { // this is optimisation as this will be triggered when prevote is added
+				cs.enterPrecommit(height, cs.Round)
+			}
+		} else if cs.Step == cstypes.RoundStepCommit {
+			// If we're waiting on the proposal block...
+			cs.tryFinalizeCommit(height)
+		}
+
+		return added, nil
 	}
+
 	return added, nil
 }
 
@@ -1963,8 +2141,9 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 					"height", vote.Height,
 					"round", vote.Round,
 					"type", vote.Type,
+					"vote.ValidatorAddress", vote.ValidatorAddress,
+					"cs.privValidatorPubKey.Address()", cs.privValidatorPubKey.Address(),
 				)
-
 				return added, err
 			}
 
@@ -1975,7 +2154,6 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 				"vote_a", voteErr.VoteA,
 				"vote_b", voteErr.VoteB,
 			)
-
 			return added, err
 		} else if errors.Is(err, types.ErrVoteNonDeterministicSignature) {
 			cs.Logger.Debug("vote has non-deterministic signature", "err", err)
@@ -1984,7 +2162,7 @@ func (cs *State) tryAddVote(vote *types.Vote, peerID p2p.ID) (bool, error) {
 			// 1) bad peer OR
 			// 2) not a bad peer? this can also err sometimes with "Unexpected step" OR
 			// 3) tmkms use with multiple validators connecting to a single tmkms instance
-			// 		(https://github.com/tendermint/tendermint/issues/3839).
+			// 		(https://github.com/reapchain/reapchain-core/issues/3839).
 			cs.Logger.Info("failed attempting to add vote", "err", err)
 			return added, ErrAddingVote
 		}
@@ -2173,6 +2351,7 @@ func (cs *State) signVote(
 	hash []byte,
 	header types.PartSetHeader,
 ) (*types.Vote, error) {
+
 	// Flush the WAL. Otherwise, we may not recompute the same vote to sign,
 	// and the privValidator will refuse to sign anything.
 	if err := cs.wal.FlushAndSync(); err != nil {
@@ -2208,10 +2387,10 @@ func (cs *State) voteTime() time.Time {
 	now := tmtime.Now()
 	minVoteTime := now
 	// TODO: We should remove next line in case we don't vote for v in case cs.ProposalBlock == nil,
-	// even if cs.LockedBlock != nil. See https://docs.tendermint.com/master/spec/.
+	// even if cs.LockedBlock != nil. See https://docs.reapchain-core.com/master/spec/.
 	timeIota := time.Duration(cs.state.ConsensusParams.Block.TimeIotaMs) * time.Millisecond
 	if cs.LockedBlock != nil {
-		// See the BFT time spec https://docs.tendermint.com/master/spec/consensus/bft-time.html
+		// See the BFT time spec https://docs.reapchain-core.com/master/spec/consensus/bft-time.html
 		minVoteTime = cs.LockedBlock.Time.Add(timeIota)
 	} else if cs.ProposalBlock != nil {
 		minVoteTime = cs.ProposalBlock.Time.Add(timeIota)
@@ -2371,6 +2550,33 @@ func repairWalFile(src, dst string) error {
 		if err != nil {
 			return fmt.Errorf("failed to encode msg: %w", err)
 		}
+	}
+
+	return nil
+}
+
+func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeringMember, peerID p2p.ID) error {
+	cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
+	currentCoordinator := cs.StandingMemberSet.Coordinator.Copy()
+
+	if currentCoordinator.PubKey.Equals(settingSteeringMember.CoordinatorPubKey) == false {
+		return fmt.Errorf("Miss match coordinator")
+	}
+
+	if settingSteeringMember.VerifySign(cs.state.ChainID) == false {
+		return fmt.Errorf("Invalid seeting steering member sign")
+	}
+
+	if cs.state.IsSetSteeringMember == false {
+		cs.state.SettingSteeringMember = settingSteeringMember.Copy()
+		cs.state.IsSetSteeringMember = true
+		cs.state.LastHeightSettingSteeringMemberChanged = cs.state.LastBlockHeight + 1
+		
+		if err := cs.eventBus.PublishEventSettingSteeringMember(types.EventDataSettingSteeringMember{SettingSteeringMember: settingSteeringMember}); err != nil {
+			return err
+		}
+	
+		cs.evsw.FireEvent(types.EventSettingSteeringMember, settingSteeringMember)
 	}
 
 	return nil

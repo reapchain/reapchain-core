@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Update the generated code for protocol buffers in the Tendermint repository.
-# This must be run from inside a Tendermint working directory.
+# Update the generated code for protocol buffers in the ReapchainCore repository.
+# This must be run from inside a ReapchainCore working directory.
 #
 set -euo pipefail
 

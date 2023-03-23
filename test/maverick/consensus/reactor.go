@@ -9,19 +9,19 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	tmcon "github.com/tendermint/tendermint/consensus"
-	cstypes "github.com/tendermint/tendermint/consensus/types"
-	"github.com/tendermint/tendermint/libs/bits"
-	tmevents "github.com/tendermint/tendermint/libs/events"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmsync "github.com/tendermint/tendermint/libs/sync"
-	"github.com/tendermint/tendermint/p2p"
-	tmcons "github.com/tendermint/tendermint/proto/tendermint/consensus"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
+	tmcon "github.com/reapchain/reapchain-core/consensus"
+	cstypes "github.com/reapchain/reapchain-core/consensus/types"
+	"github.com/reapchain/reapchain-core/libs/bits"
+	tmevents "github.com/reapchain/reapchain-core/libs/events"
+	tmjson "github.com/reapchain/reapchain-core/libs/json"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmsync "github.com/reapchain/reapchain-core/libs/sync"
+	"github.com/reapchain/reapchain-core/p2p"
+	tmcons "github.com/reapchain/reapchain-core/proto/reapchain-core/consensus"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
 const (
@@ -1398,15 +1398,15 @@ func (ps *PeerState) StringIndented(indent string) string {
 //-----------------------------------------------------------------------------
 
 // func init() {
-// 	tmjson.RegisterType(&NewRoundStepMessage{}, "tendermint/NewRoundStepMessage")
-// 	tmjson.RegisterType(&NewValidBlockMessage{}, "tendermint/NewValidBlockMessage")
-// 	tmjson.RegisterType(&ProposalMessage{}, "tendermint/Proposal")
-// 	tmjson.RegisterType(&ProposalPOLMessage{}, "tendermint/ProposalPOL")
-// 	tmjson.RegisterType(&BlockPartMessage{}, "tendermint/BlockPart")
-// 	tmjson.RegisterType(&VoteMessage{}, "tendermint/Vote")
-// 	tmjson.RegisterType(&HasVoteMessage{}, "tendermint/HasVote")
-// 	tmjson.RegisterType(&VoteSetMaj23Message{}, "tendermint/VoteSetMaj23")
-// 	tmjson.RegisterType(&VoteSetBitsMessage{}, "tendermint/VoteSetBits")
+// 	tmjson.RegisterType(&NewRoundStepMessage{}, "reapchain-core/NewRoundStepMessage")
+// 	tmjson.RegisterType(&NewValidBlockMessage{}, "reapchain-core/NewValidBlockMessage")
+// 	tmjson.RegisterType(&ProposalMessage{}, "reapchain-core/Proposal")
+// 	tmjson.RegisterType(&ProposalPOLMessage{}, "reapchain-core/ProposalPOL")
+// 	tmjson.RegisterType(&BlockPartMessage{}, "reapchain-core/BlockPart")
+// 	tmjson.RegisterType(&VoteMessage{}, "reapchain-core/Vote")
+// 	tmjson.RegisterType(&HasVoteMessage{}, "reapchain-core/HasVote")
+// 	tmjson.RegisterType(&VoteSetMaj23Message{}, "reapchain-core/VoteSetMaj23")
+// 	tmjson.RegisterType(&VoteSetBitsMessage{}, "reapchain-core/VoteSetBits")
 // }
 
 func decodeMsg(bz []byte) (msg tmcon.Message, err error) {

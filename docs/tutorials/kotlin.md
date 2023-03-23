@@ -6,15 +6,15 @@ order: 4
 
 ## Guide Assumptions
 
-This guide is designed for beginners who want to get started with a Tendermint
+This guide is designed for beginners who want to get started with a ReapchainCore
 Core application from scratch. It does not assume that you have any prior
-experience with Tendermint Core.
+experience with ReapchainCore Core.
 
-Tendermint Core is Byzantine Fault Tolerant (BFT) middleware that takes a state
+ReapchainCore Core is Byzantine Fault Tolerant (BFT) middleware that takes a state
 transition machine (your application) - written in any programming language - and securely
 replicates it on many machines.
 
-By following along with this guide, you'll create a Tendermint Core project
+By following along with this guide, you'll create a ReapchainCore Core project
 called kvstore, a (very) simple distributed BFT key-value store. The application (which should
 implementing the blockchain interface (ABCI)) will be written in Kotlin.
 
@@ -22,16 +22,16 @@ This guide assumes that you are not new to JVM world. If you are new please see 
 
 ## Built-in app vs external app
 
-If you use Golang, you can run your app and Tendermint Core in the same process to get maximum performance.
+If you use Golang, you can run your app and ReapchainCore Core in the same process to get maximum performance.
 [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) is written this way.
-Please refer to [Writing a built-in Tendermint Core application in Go](./go-built-in.md) guide for details.
+Please refer to [Writing a built-in ReapchainCore Core application in Go](./go-built-in.md) guide for details.
 
 If you choose another language, like we did in this guide, you have to write a separate app,
-which will communicate with Tendermint Core via a socket (UNIX or TCP) or gRPC.
+which will communicate with ReapchainCore Core via a socket (UNIX or TCP) or gRPC.
 This guide will show you how to build external application using RPC server.
 
 Having a separate application might give you better security guarantees as two
-processes would be communicating via established binary protocol. Tendermint
+processes would be communicating via established binary protocol. ReapchainCore
 Core will not have access to application's state.
 
 ## 1.1 Installing Java and Gradle
@@ -111,12 +111,12 @@ When run, this should print "Hello world." to the standard output.
 Hello world.
 ```
 
-## 1.3 Writing a Tendermint Core application
+## 1.3 Writing a ReapchainCore Core application
 
-Tendermint Core communicates with the application through the Application
+ReapchainCore Core communicates with the application through the Application
 BlockChain Interface (ABCI). All message types are defined in the [protobuf
-file](https://github.com/tendermint/tendermint/blob/master/proto/tendermint/abci/types.proto).
-This allows Tendermint Core to run applications written in any programming
+file](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain-core/abci/types.proto).
+This allows ReapchainCore Core to run applications written in any programming
 language.
 
 ### 1.3.1 Compile .proto files
@@ -168,29 +168,29 @@ Copy the necessary `.proto` files to your project:
 
 ```bash
 mkdir -p \
-  $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/abci \
-  $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/version \
-  $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/types \
-  $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/crypto \
-  $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/libs \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/abci \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/version \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/libs \
   $KVSTORE_HOME/src/main/proto/github.com/gogo/protobuf/gogoproto
 
-cp $GOPATH/src/github.com/tendermint/tendermint/proto/tendermint/abci/types.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/abci/types.proto
-cp $GOPATH/src/github.com/tendermint/tendermint/proto/tendermint/version/version.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/version/version.proto
-cp $GOPATH/src/github.com/tendermint/tendermint/proto/tendermint/types/types.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/types/types.proto
-cp $GOPATH/src/github.com/tendermint/tendermint/proto/tendermint/types/evidence.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/types/evidence.proto
-cp $GOPATH/src/github.com/tendermint/tendermint/proto/tendermint/types/params.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/types/params.proto
-cp $GOPATH/src/github.com/tendermint/tendermint/proto/tendermint/crypto/merkle.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/crypto/merkle.proto
-cp $GOPATH/src/github.com/tendermint/tendermint/proto/tendermint/crypto/keys.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/crypto/keys.proto
-cp $GOPATH/src/github.com/tendermint/tendermint/proto/tendermint/libs/types.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/tendermint/tendermint/proto/tendermint/libs/types.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/abci/types.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/abci/types.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/version/version.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/version/version.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/types/types.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types/types.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/types/evidence.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types/evidence.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/types/params.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types/params.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/merkle.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/merkle.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/keys.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/keys.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/libs/types.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/libs/types.proto
 cp $GOPATH/src/github.com/gogo/protobuf/gogoproto/gogo.proto \
    $KVSTORE_HOME/src/main/proto/github.com/gogo/protobuf/gogoproto/gogo.proto
 ```
@@ -261,7 +261,7 @@ required business logic.
 
 ### 1.3.3 CheckTx
 
-When a new transaction is added to the Tendermint Core, it will ask the
+When a new transaction is added to the ReapchainCore Core, it will ask the
 application to check it (validate the format, signatures, etc.).
 
 ```kotlin
@@ -310,11 +310,11 @@ code. When the same key=value already exist (same key and value), we return `2`
 code. For others, we return a zero code indicating that they are valid.
 
 Note that anything with non-zero code will be considered invalid (`-1`, `100`,
-etc.) by Tendermint Core.
+etc.) by ReapchainCore Core.
 
 Valid transactions will eventually be committed given they are not too big and
 have enough gas. To learn more about gas, check out ["the
-specification"](https://docs.tendermint.com/master/spec/abci/apps.html#gas).
+specification"](https://docs.reapchain-core.com/master/spec/abci/apps.html#gas).
 
 For the underlying key-value store we'll use
 [JetBrains Xodus](https://github.com/JetBrains/xodus), which is a transactional schema-less embedded high-performance database written in Java.
@@ -355,7 +355,7 @@ class KVStoreApp(
 
 ### 1.3.4 BeginBlock -> DeliverTx -> EndBlock -> Commit
 
-When Tendermint Core has decided on the block, it's transferred to the
+When ReapchainCore Core has decided on the block, it's transferred to the
 application in 3 parts: `BeginBlock`, one `DeliverTx` per transaction and
 `EndBlock` in the end. `DeliverTx` are being transferred asynchronously, but the
 responses are expected to come in order.
@@ -417,14 +417,14 @@ override fun commit(req: RequestCommit, responseObserver: StreamObserver<Respons
 ### 1.3.5 Query
 
 Now, when the client wants to know whenever a particular key/value exist, it
-will call Tendermint Core RPC `/abci_query` endpoint, which in turn will call
+will call ReapchainCore Core RPC `/abci_query` endpoint, which in turn will call
 the application's `Query` method.
 
-Applications are free to provide their own APIs. But by using Tendermint Core
+Applications are free to provide their own APIs. But by using ReapchainCore Core
 as a proxy, clients (including [light client
-package](https://godoc.org/github.com/tendermint/tendermint/light)) can leverage
+package](https://godoc.org/github.com/reapchain/reapchain-core/light)) can leverage
 the unified API across different applications. Plus they won't have to call the
-otherwise separate Tendermint Core API for additional proofs.
+otherwise separate ReapchainCore Core API for additional proofs.
 
 Note we don't include a proof here.
 
@@ -446,9 +446,9 @@ override fun query(req: RequestQuery, responseObserver: StreamObserver<ResponseQ
 ```
 
 The complete specification can be found
-[here](https://docs.tendermint.com/master/spec/abci/).
+[here](https://docs.reapchain-core.com/master/spec/abci/).
 
-## 1.4 Starting an application and a Tendermint Core instances
+## 1.4 Starting an application and a ReapchainCore Core instances
 
 Put the following code into the `$KVSTORE_HOME/src/main/kotlin/io/example/App.kt` file:
 
@@ -469,7 +469,7 @@ fun main() {
 
 It is the entry point of the application.
 Here we create a special object `Environment`, which knows where to store the application state.
-Then we create and start the gRPC server to handle Tendermint Core requests.
+Then we create and start the gRPC server to handle ReapchainCore Core requests.
 
 Create `$KVSTORE_HOME/src/main/kotlin/io/example/GrpcServer.kt` file with the following content:
 
@@ -517,14 +517,14 @@ class GrpcServer(
 ## 1.5 Getting Up and Running
 
 To create a default configuration, nodeKey and private validator files, let's
-execute `tendermint init`. But before we do that, we will need to install
-Tendermint Core.
+execute `reapchain-core init`. But before we do that, we will need to install
+ReapchainCore Core.
 
 ```bash
 rm -rf /tmp/example
-cd $GOPATH/src/github.com/tendermint/tendermint
+cd $GOPATH/src/github.com/reapchain/reapchain-core
 make install
-TMHOME="/tmp/example" tendermint init
+TMHOME="/tmp/example" reapchain-core init
 
 I[2019-07-16|18:20:36.480] Generated private validator                  module=main keyFile=/tmp/example/config/priv_validator_key.json stateFile=/tmp/example2/data/priv_validator_state.json
 I[2019-07-16|18:20:36.481] Generated node key                           module=main path=/tmp/example/config/node_key.json
@@ -533,7 +533,7 @@ I[2019-07-16|18:20:36.482] Generated genesis file                       module=m
 
 Feel free to explore the generated files, which can be found at
 `/tmp/example/config` directory. Documentation on the config can be found
-[here](https://docs.tendermint.com/master/tendermint-core/configuration.html).
+[here](https://docs.reapchain-core.com/master/reapchain-core-core/configuration.html).
 
 We are ready to start our application:
 
@@ -543,11 +543,11 @@ We are ready to start our application:
 gRPC server started, listening on 26658
 ```
 
-Then we need to start Tendermint Core and point it to our application. Staying
+Then we need to start ReapchainCore Core and point it to our application. Staying
 within the application directory execute:
 
 ```bash
-TMHOME="/tmp/example" tendermint node --abci grpc --proxy_app tcp://127.0.0.1:26658
+TMHOME="/tmp/example" reapchain-core node --abci grpc --proxy_app tcp://127.0.0.1:26658
 
 I[2019-07-28|15:44:53.632] Version info                                 module=main software=0.32.1 block=10 p2p=7
 I[2019-07-28|15:44:53.677] Starting Node                                module=main impl=Node
@@ -559,7 +559,7 @@ I[2019-07-28|15:44:54.814] Committed state                              module=s
 Now open another tab in your terminal and try sending a transaction:
 
 ```bash
-curl -s 'localhost:26657/broadcast_tx_commit?tx="tendermint=rocks"'
+curl -s 'localhost:26657/broadcast_tx_commit?tx="reapchain-core=rocks"'
 {
   "jsonrpc": "2.0",
   "id": "",
@@ -578,7 +578,7 @@ Response should contain the height where this transaction was committed.
 Now let's check if the given key now exists and its value:
 
 ```bash
-curl -s 'localhost:26657/abci_query?data="tendermint"'
+curl -s 'localhost:26657/abci_query?data="reapchain-core"'
 {
   "jsonrpc": "2.0",
   "id": "",
@@ -592,13 +592,13 @@ curl -s 'localhost:26657/abci_query?data="tendermint"'
 }
 ```
 
-`dGVuZGVybWludA==` and `cm9ja3M=` are the base64-encoding of the ASCII of `tendermint` and `rocks` accordingly.
+`dGVuZGVybWludA==` and `cm9ja3M=` are the base64-encoding of the ASCII of `reapchain-core` and `rocks` accordingly.
 
 ## Outro
 
 I hope everything went smoothly and your first, but hopefully not the last,
-Tendermint Core application is up and running. If not, please [open an issue on
-Github](https://github.com/tendermint/tendermint/issues/new/choose). To dig
-deeper, read [the docs](https://docs.tendermint.com/master/).
+ReapchainCore Core application is up and running. If not, please [open an issue on
+Github](https://github.com/reapchain/reapchain-core/issues/new/choose). To dig
+deeper, read [the docs](https://docs.reapchain-core.com/master/).
 
-The full source code of this example project can be found [here](https://github.com/climber73/tendermint-abci-grpc-kotlin).
+The full source code of this example project can be found [here](https://github.com/climber73/reapchain-core-abci-grpc-kotlin).

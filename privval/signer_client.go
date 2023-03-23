@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto"
-	cryptoenc "github.com/tendermint/tendermint/crypto/encoding"
-	privvalproto "github.com/tendermint/tendermint/proto/tendermint/privval"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tendermint/tendermint/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
+	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain-core/privval"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	"github.com/reapchain/reapchain-core/types"
 )
 
 // SignerClient implements PrivValidator.
@@ -90,6 +90,26 @@ func (sc *SignerClient) GetPubKey() (crypto.PubKey, error) {
 	return pk, nil
 }
 
+// GetPubKey retrieves a validator type from a remote signer
+// returns an error if client is not able to provide the type
+func (sc *SignerClient) GetType() (string, error) {
+	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.TypeRequest{ChainId: sc.chainID}))
+	if err != nil {
+		return "", fmt.Errorf("send: %w", err)
+	}
+
+	resp := response.GetTypeResponse()
+	if resp == nil {
+		return "", ErrUnexpectedResponse
+	}
+	if resp.Error != nil {
+		return "", &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
+	}
+
+	return resp.Type, nil
+}
+
+
 // SignVote requests a remote signer to sign a vote
 func (sc *SignerClient) SignVote(chainID string, vote *tmproto.Vote) error {
 	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignVoteRequest{Vote: vote, ChainId: chainID}))
@@ -106,6 +126,64 @@ func (sc *SignerClient) SignVote(chainID string, vote *tmproto.Vote) error {
 	}
 
 	*vote = resp.Vote
+
+	return nil
+}
+
+func (sc *SignerClient) SignQrn(chainID string, qrn *types.Qrn) error {
+	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignQrnRequest{Qrn: qrn.ToProto()}))
+	if err != nil {
+		return err
+	}
+
+	resp := response.GetSignedQrnResponse()
+	if resp == nil {
+		return ErrUnexpectedResponse
+	}
+	if resp.Error != nil {
+		return &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
+	}
+
+	qrn = types.QrnFromProto(&resp.Qrn)
+
+	return nil
+}
+
+func (sc *SignerClient) SignSettingSteeringMember(chainID string, settingSteeringMember *types.SettingSteeringMember) error {
+	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignSettingSteeringMemberRequest{SettingSteeringMember: settingSteeringMember.ToProto()}))
+	if err != nil {
+		return err
+	}
+
+	resp := response.GetSignedSettingSteeringMemberResponse()
+	if resp == nil {
+		return ErrUnexpectedResponse
+	}
+	if resp.Error != nil {
+		return &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
+	}
+
+	settingSteeringMember = types.SettingSteeringMemberFromProto(&resp.SettingSteeringMember)
+
+	return nil
+}
+
+//TODO: mssong
+func (sc *SignerClient) ProveVrf(vrf *types.Vrf) error {
+	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignVrfRequest{Vrf: vrf.ToProto()}))
+	if err != nil {
+		return err
+	}
+
+	resp := response.GetSignedVrfResponse()
+	if resp == nil {
+		return ErrUnexpectedResponse
+	}
+	if resp.Error != nil {
+		return &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
+	}
+
+	vrf = types.VrfFromProto(&resp.Vrf)
 
 	return nil
 }

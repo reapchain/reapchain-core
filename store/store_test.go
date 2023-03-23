@@ -14,16 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 	dbm "github.com/tendermint/tm-db"
 
-	cfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/libs/log"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmstore "github.com/tendermint/tendermint/proto/tendermint/store"
-	tmversion "github.com/tendermint/tendermint/proto/tendermint/version"
-	sm "github.com/tendermint/tendermint/state"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
-	"github.com/tendermint/tendermint/version"
+	cfg "github.com/reapchain/reapchain-core/config"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/libs/log"
+	tmrand "github.com/reapchain/reapchain-core/libs/rand"
+	tmstore "github.com/reapchain/reapchain-core/proto/reapchain-core/store"
+	tmversion "github.com/reapchain/reapchain-core/proto/reapchain-core/version"
+	sm "github.com/reapchain/reapchain-core/state"
+	"github.com/reapchain/reapchain-core/types"
+	tmtime "github.com/reapchain/reapchain-core/types/time"
+	"github.com/reapchain/reapchain-core/version"
 )
 
 // A cleanupFunc cleans up any config / test files created for a particular
@@ -404,7 +404,7 @@ func TestLoadBlockPart(t *testing.T) {
 	require.Nil(t, res, "a non-existent block part should return nil")
 
 	// 2. Next save a corrupted block then try to load it
-	err := db.Set(calcBlockPartKey(height, index), []byte("Tendermint"))
+	err := db.Set(calcBlockPartKey(height, index), []byte("ReapchainCore"))
 	require.NoError(t, err)
 	res, _, panicErr = doFn(loadPart)
 	require.NotNil(t, panicErr, "expecting a non-nil panic")
@@ -524,7 +524,7 @@ func TestLoadBlockMeta(t *testing.T) {
 	require.Nil(t, res, "a non-existent blockMeta should return nil")
 
 	// 2. Next save a corrupted blockMeta then try to load it
-	err := db.Set(calcBlockMetaKey(height), []byte("Tendermint-Meta"))
+	err := db.Set(calcBlockMetaKey(height), []byte("ReapchainCore-Meta"))
 	require.NoError(t, err)
 	res, _, panicErr = doFn(loadMeta)
 	require.NotNil(t, panicErr, "expecting a non-nil panic")

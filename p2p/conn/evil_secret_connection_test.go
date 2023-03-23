@@ -11,11 +11,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/chacha20poly1305"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	cryptoenc "github.com/tendermint/tendermint/crypto/encoding"
-	"github.com/tendermint/tendermint/libs/protoio"
-	tmp2p "github.com/tendermint/tendermint/proto/tendermint/p2p"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
+	"github.com/reapchain/reapchain-core/libs/protoio"
+	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain-core/p2p"
 )
 
 type buffer struct {
@@ -184,7 +184,7 @@ func (c *evilConn) signChallenge() []byte {
 	// Sort by lexical order.
 	loEphPub, hiEphPub := sort32(c.locEphPub, c.remEphPub)
 
-	transcript := merlin.NewTranscript("TENDERMINT_SECRET_CONNECTION_TRANSCRIPT_HASH")
+	transcript := merlin.NewTranscript("REAPCHAIN_SECRET_CONNECTION_TRANSCRIPT_HASH")
 
 	transcript.AppendMessage(labelEphemeralLowerPublicKey, loEphPub[:])
 	transcript.AppendMessage(labelEphemeralUpperPublicKey, hiEphPub[:])

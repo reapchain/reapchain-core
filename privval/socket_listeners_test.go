@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto/ed25519"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
 )
 
 //-------------------------------------------
@@ -29,7 +29,7 @@ type listenerTestCase struct {
 // testUnixAddr will attempt to obtain a platform-independent temporary file
 // name for a Unix socket
 func testUnixAddr() (string, error) {
-	f, err := ioutil.TempFile("", "tendermint-privval-test-*")
+	f, err := ioutil.TempFile("", "reapchain-core-privval-test-*")
 	if err != nil {
 		return "", err
 	}

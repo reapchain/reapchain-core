@@ -5,18 +5,24 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"github.com/reapchain/reapchain-core/crypto"
+	"github.com/reapchain/reapchain-core/crypto/ed25519"
+	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	 "github.com/reapchain/reapchain-core/vrfunc"
 )
 
-// PrivValidator defines the functionality of a local Tendermint validator
+// PrivValidator defines the functionality of a local ReapchainCore validator
 // that signs votes and proposals, and never double signs.
 type PrivValidator interface {
 	GetPubKey() (crypto.PubKey, error)
+	GetType() (string, error)
 
 	SignVote(chainID string, vote *tmproto.Vote) error
 	SignProposal(chainID string, proposal *tmproto.Proposal) error
+
+	SignQrn(chainID string, qrn *Qrn) error
+	SignSettingSteeringMember(chainID string, vrf *SettingSteeringMember) error
+	ProveVrf(vrf *Vrf) error
 }
 
 type PrivValidatorsByAddress []PrivValidator
@@ -49,24 +55,30 @@ func (pvs PrivValidatorsByAddress) Swap(i, j int) {
 // Only use it for testing.
 type MockPV struct {
 	PrivKey              crypto.PrivKey
+	Type              string
 	breakProposalSigning bool
 	breakVoteSigning     bool
 }
 
 func NewMockPV() MockPV {
-	return MockPV{ed25519.GenPrivKey(), false, false}
+	return MockPV{ed25519.GenPrivKey(), "steering", false, false}
 }
 
 // NewMockPVWithParams allows one to create a MockPV instance, but with finer
 // grained control over the operation of the mock validator. This is useful for
 // mocking test failures.
-func NewMockPVWithParams(privKey crypto.PrivKey, breakProposalSigning, breakVoteSigning bool) MockPV {
-	return MockPV{privKey, breakProposalSigning, breakVoteSigning}
+func NewMockPVWithParams(privKey crypto.PrivKey, validatorType string, breakProposalSigning, breakVoteSigning bool) MockPV {
+	return MockPV{privKey, validatorType, breakProposalSigning, breakVoteSigning}
 }
 
 // Implements PrivValidator.
 func (pv MockPV) GetPubKey() (crypto.PubKey, error) {
 	return pv.PrivKey.PubKey(), nil
+}
+
+// Implements PrivValidator.
+func (pv MockPV) GetType() (string, error) {
+	return pv.Type, nil
 }
 
 // Implements PrivValidator.
@@ -84,6 +96,36 @@ func (pv MockPV) SignVote(chainID string, vote *tmproto.Vote) error {
 	vote.Signature = sig
 	return nil
 }
+
+func (pv MockPV) SignQrn(chainID string, qrn *Qrn) error {
+	signBytes := qrn.GetQrnBytesForSign(chainID)
+	sig, err := pv.PrivKey.Sign(signBytes)
+	if err != nil {
+		return err
+	}
+	qrn.Signature = sig
+	return nil
+}
+
+func (pv MockPV) SignSettingSteeringMember(chainID string, settingSteeringMember *SettingSteeringMember) error {
+	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign(chainID)
+	sig, err := pv.PrivKey.Sign(signBytes)
+	if err != nil {
+		return err
+	}
+	settingSteeringMember.Signature = sig
+	return nil
+}
+
+func (pv MockPV) ProveVrf(vrf *Vrf) error {
+	privateKey := vrfunc.PrivateKey(pv.PrivKey.Bytes())
+	value, proof := privateKey.Prove(vrf.Seed)
+	vrf.Value = value
+	vrf.Proof = proof
+
+	return nil
+}
+
 
 // Implements PrivValidator.
 func (pv MockPV) SignProposal(chainID string, proposal *tmproto.Proposal) error {
@@ -141,5 +183,5 @@ func (pv *ErroringMockPV) SignProposal(chainID string, proposal *tmproto.Proposa
 // NewErroringMockPV returns a MockPV that fails on each signing request. Again, for testing only.
 
 func NewErroringMockPV() *ErroringMockPV {
-	return &ErroringMockPV{MockPV{ed25519.GenPrivKey(), false, false}}
+	return &ErroringMockPV{MockPV{ed25519.GenPrivKey(), "steering", false, false}}
 }

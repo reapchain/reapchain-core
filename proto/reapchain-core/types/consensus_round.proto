@@ -1,0 +1,17 @@
+syntax = "proto3";
+package reapchain.types;
+
+option go_package = "github.com/reapchain/reapchain-core/proto/reapchain-core/types";
+
+import "gogoproto/gogo.proto";
+
+option (gogoproto.equal_all) = true;
+
+// ConsensusRound
+message ConsensusRound {
+  int64 consensus_start_block_height = 1;
+  uint64 qrn_period = 2;
+  uint64 vrf_period = 3;
+  uint64 validator_period = 4;
+  uint64 period = 5;
+}

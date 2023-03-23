@@ -6,32 +6,32 @@ order: 1
 
 ## Guide Assumptions
 
-This guide is designed for beginners who want to get started with a Tendermint
+This guide is designed for beginners who want to get started with a ReapchainCore
 Core application from scratch. It does not assume that you have any prior
-experience with Tendermint Core.
+experience with ReapchainCore Core.
 
-Tendermint Core is Byzantine Fault Tolerant (BFT) middleware that takes a state
+ReapchainCore Core is Byzantine Fault Tolerant (BFT) middleware that takes a state
 transition machine - written in any programming language - and securely
 replicates it on many machines.
 
-Although Tendermint Core is written in the Golang programming language, prior
+Although ReapchainCore Core is written in the Golang programming language, prior
 knowledge of it is not required for this guide. You can learn it as we go due
 to it's simplicity. However, you may want to go through [Learn X in Y minutes
 Where X=Go](https://learnxinyminutes.com/docs/go/) first to familiarize
 yourself with the syntax.
 
-By following along with this guide, you'll create a Tendermint Core project
+By following along with this guide, you'll create a ReapchainCore Core project
 called kvstore, a (very) simple distributed BFT key-value store.
 
 ## Built-in app vs external app
 
 To get maximum performance it is better to run your application alongside
-Tendermint Core. [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) is written
-this way. Please refer to [Writing a built-in Tendermint Core application in
+ReapchainCore Core. [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) is written
+this way. Please refer to [Writing a built-in ReapchainCore Core application in
 Go](./go-built-in.md) guide for details.
 
 Having a separate application might give you better security guarantees as two
-processes would be communicating via established binary protocol. Tendermint
+processes would be communicating via established binary protocol. ReapchainCore
 Core will not have access to application's state.
 
 ## 1.1 Installing Go
@@ -72,23 +72,23 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello, Tendermint Core")
+	fmt.Println("Hello, ReapchainCore Core")
 }
 ```
 
-When run, this should print "Hello, Tendermint Core" to the standard output.
+When run, this should print "Hello, ReapchainCore Core" to the standard output.
 
 ```bash
 go run main.go
-Hello, Tendermint Core
+Hello, ReapchainCore Core
 ```
 
-## 1.3 Writing a Tendermint Core application
+## 1.3 Writing a ReapchainCore Core application
 
-Tendermint Core communicates with the application through the Application
+ReapchainCore Core communicates with the application through the Application
 BlockChain Interface (ABCI). All message types are defined in the [protobuf
-file](https://github.com/tendermint/tendermint/blob/master/proto/tendermint/abci/types.proto).
-This allows Tendermint Core to run applications written in any programming
+file](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain-core/abci/types.proto).
+This allows ReapchainCore Core to run applications written in any programming
 language.
 
 Create a file called `app.go` with the following content:
@@ -97,7 +97,7 @@ Create a file called `app.go` with the following content:
 package main
 
 import (
-	abcitypes "github.com/tendermint/tendermint/abci/types"
+	abcitypes "github.com/reapchain/reapchain-core/abci/types"
 )
 
 type KVStoreApplication struct {}
@@ -166,7 +166,7 @@ required business logic.
 
 ### 1.3.1 CheckTx
 
-When a new transaction is added to the Tendermint Core, it will ask the
+When a new transaction is added to the ReapchainCore Core, it will ask the
 application to check it (validate the format, signatures, etc.).
 
 ```go
@@ -217,11 +217,11 @@ code. When the same key=value already exist (same key and value), we return `2`
 code. For others, we return a zero code indicating that they are valid.
 
 Note that anything with non-zero code will be considered invalid (`-1`, `100`,
-etc.) by Tendermint Core.
+etc.) by ReapchainCore Core.
 
 Valid transactions will eventually be committed given they are not too big and
 have enough gas. To learn more about gas, check out ["the
-specification"](https://docs.tendermint.com/master/spec/abci/apps.html#gas).
+specification"](https://docs.reapchain-core.com/master/spec/abci/apps.html#gas).
 
 For the underlying key-value store we'll use
 [badger](https://github.com/dgraph-io/badger), which is an embeddable,
@@ -244,7 +244,7 @@ func NewKVStoreApplication(db *badger.DB) *KVStoreApplication {
 
 ### 1.3.2 BeginBlock -> DeliverTx -> EndBlock -> Commit
 
-When Tendermint Core has decided on the block, it's transferred to the
+When ReapchainCore Core has decided on the block, it's transferred to the
 application in 3 parts: `BeginBlock`, one `DeliverTx` per transaction and
 `EndBlock` in the end. DeliverTx are being transferred asynchronously, but the
 responses are expected to come in order.
@@ -302,14 +302,14 @@ func (app *KVStoreApplication) Commit() abcitypes.ResponseCommit {
 ### 1.3.3 Query
 
 Now, when the client wants to know whenever a particular key/value exist, it
-will call Tendermint Core RPC `/abci_query` endpoint, which in turn will call
+will call ReapchainCore Core RPC `/abci_query` endpoint, which in turn will call
 the application's `Query` method.
 
-Applications are free to provide their own APIs. But by using Tendermint Core
+Applications are free to provide their own APIs. But by using ReapchainCore Core
 as a proxy, clients (including [light client
-package](https://godoc.org/github.com/tendermint/tendermint/light)) can leverage
+package](https://godoc.org/github.com/reapchain/reapchain-core/light)) can leverage
 the unified API across different applications. Plus they won't have to call the
-otherwise separate Tendermint Core API for additional proofs.
+otherwise separate ReapchainCore Core API for additional proofs.
 
 Note we don't include a proof here.
 
@@ -340,9 +340,9 @@ func (app *KVStoreApplication) Query(reqQuery abcitypes.RequestQuery) (resQuery 
 ```
 
 The complete specification can be found
-[here](https://docs.tendermint.com/master/spec/abci/).
+[here](https://docs.reapchain-core.com/master/spec/abci/).
 
-## 1.4 Starting an application and a Tendermint Core instances
+## 1.4 Starting an application and a ReapchainCore Core instances
 
 Put the following code into the "main.go" file:
 
@@ -358,8 +358,8 @@ import (
 
 	"github.com/dgraph-io/badger"
 
-	abciserver "github.com/tendermint/tendermint/abci/server"
-	"github.com/tendermint/tendermint/libs/log"
+	abciserver "github.com/reapchain/reapchain-core/abci/server"
+	"github.com/reapchain/reapchain-core/libs/log"
 )
 
 var socketAddr string
@@ -418,7 +418,7 @@ db, err := badger.Open(badger.DefaultOptions("/tmp/badger").WithTruncate(true))
 ```
 
 Then we start the ABCI server and add some signal handling to gracefully stop
-it upon receiving SIGTERM or Ctrl-C. Tendermint Core will act as a client,
+it upon receiving SIGTERM or Ctrl-C. ReapchainCore Core will act as a client,
 which connects to our server and send us transactions and other messages.
 
 ```go
@@ -443,7 +443,7 @@ dependency management.
 
 ```bash
 go mod init github.com/me/example
-go get github.com/tendermint/tendermint/@v0.34.0
+go get github.com/reapchain/reapchain-core/@v0.34.0
 ```
 
 After running the above commands you will see two generated files, go.mod and go.sum. The go.mod file should look similar to:
@@ -455,7 +455,7 @@ go 1.15
 
 require (
 	github.com/dgraph-io/badger v1.6.2
-	github.com/tendermint/tendermint v0.34.0
+	github.com/reapchain/reapchain-core v0.34.0
 )
 ```
 
@@ -466,14 +466,14 @@ go build
 ```
 
 To create a default configuration, nodeKey and private validator files, let's
-execute `tendermint init`. But before we do that, we will need to install
-Tendermint Core. Please refer to [the official
-guide](https://docs.tendermint.com/master/introduction/install.html). If you're
+execute `reapchain-core init`. But before we do that, we will need to install
+ReapchainCore Core. Please refer to [the official
+guide](https://docs.reapchain-core.com/master/introduction/install.html). If you're
 installing from source, don't forget to checkout the latest release (`git checkout vX.Y.Z`).
 
 ```bash
 rm -rf /tmp/example
-TMHOME="/tmp/example" tendermint init
+TMHOME="/tmp/example" reapchain-core init
 
 I[2019-07-16|18:20:36.480] Generated private validator                  module=main keyFile=/tmp/example/config/priv_validator_key.json stateFile=/tmp/example2/data/priv_validator_state.json
 I[2019-07-16|18:20:36.481] Generated node key                           module=main path=/tmp/example/config/node_key.json
@@ -482,7 +482,7 @@ I[2019-07-16|18:20:36.482] Generated genesis file                       module=m
 
 Feel free to explore the generated files, which can be found at
 `/tmp/example/config` directory. Documentation on the config can be found
-[here](https://docs.tendermint.com/master/tendermint-core/configuration.html).
+[here](https://docs.reapchain-core.com/master/reapchain-core-core/configuration.html).
 
 We are ready to start our application:
 
@@ -496,11 +496,11 @@ badger 2019/07/16 18:25:11 INFO: Replay took: 300.4s
 I[2019-07-16|18:25:11.523] Starting ABCIServer                          impl=ABCIServ
 ```
 
-Then we need to start Tendermint Core and point it to our application. Staying
+Then we need to start ReapchainCore Core and point it to our application. Staying
 within the application directory execute:
 
 ```bash
-TMHOME="/tmp/example" tendermint node --proxy_app=unix://example.sock
+TMHOME="/tmp/example" reapchain-core node --proxy_app=unix://example.sock
 
 I[2019-07-16|18:26:20.362] Version info                                 module=main software=0.32.1 block=10 p2p=7
 I[2019-07-16|18:26:20.383] Starting Node                                module=main impl=Node
@@ -524,7 +524,7 @@ I[2019-07-16|18:26:20.330] Accepted a new connection
 Now open another tab in your terminal and try sending a transaction:
 
 ```json
-curl -s 'localhost:26657/broadcast_tx_commit?tx="tendermint=rocks"'
+curl -s 'localhost:26657/broadcast_tx_commit?tx="reapchain-core=rocks"'
 {
   "jsonrpc": "2.0",
   "id": "",
@@ -543,7 +543,7 @@ Response should contain the height where this transaction was committed.
 Now let's check if the given key now exists and its value:
 
 ```json
-curl -s 'localhost:26657/abci_query?data="tendermint"'
+curl -s 'localhost:26657/abci_query?data="reapchain-core"'
 {
   "jsonrpc": "2.0",
   "id": "",
@@ -558,11 +558,11 @@ curl -s 'localhost:26657/abci_query?data="tendermint"'
 ```
 
 "dGVuZGVybWludA==" and "cm9ja3M=" are the base64-encoding of the ASCII of
-"tendermint" and "rocks" accordingly.
+"reapchain-core" and "rocks" accordingly.
 
 ## Outro
 
 I hope everything went smoothly and your first, but hopefully not the last,
-Tendermint Core application is up and running. If not, please [open an issue on
-Github](https://github.com/tendermint/tendermint/issues/new/choose). To dig
-deeper, read [the docs](https://docs.tendermint.com/master/).
+ReapchainCore Core application is up and running. If not, please [open an issue on
+Github](https://github.com/reapchain/reapchain-core/issues/new/choose). To dig
+deeper, read [the docs](https://docs.reapchain-core.com/master/).
