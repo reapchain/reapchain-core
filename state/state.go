@@ -282,9 +282,8 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	return sm, nil
 }
 
-// FromProto takes a state proto message & returns the local state type
-//StateFromProto
-func FromProto(pb *tmstate.State) (*State, error) { //nolint:golint
+// StateFromProto takes a state proto message & returns the local state type
+func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	if pb == nil {
 		return nil, errors.New("nil State")
 	}
@@ -532,7 +531,7 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 			validators[i] = types.NewValidator(val.PubKey, val.Power, val.Type)
 		}
 		validatorSet = types.NewValidatorSet(validators)
-		nextValidatorSet = types.NewValidatorSet(validators).CopyIncrementProposerPriority(1)
+		nextValidatorSet = types.NewValidatorSet(validators).Copy()
 	}
 
 	var standingMemberSet *types.StandingMemberSet

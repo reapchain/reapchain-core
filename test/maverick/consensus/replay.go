@@ -79,14 +79,7 @@ func (cs *State) readReplayMessage(msg *tmcon.TimedWALMessage, newStepSub types.
 			v := msg.Vote
 			cs.Logger.Info("Replay: Vote", "height", v.Height, "round", v.Round, "type", v.Type,
 				"blockID", v.BlockID, "peer", peerID)
-		case *tmcon.QrnMessage:
-			qrn := msg.Qrn
-			cs.Logger.Info("Replay: Qrn", "height", qrn.Height, "timestamp", qrn.Timestamp,
-				"value", qrn.Value, "standing_member_address", qrn.StandingMemberPubKey.Address(), "peer", peerID)
-		case *tmcon.VrfMessage:
-			vrf := msg.Vrf
-			cs.Logger.Info("Replay: Vrf", "height", vrf.Height, "timestamp", vrf.Timestamp,
-				"value", vrf.Value, "standing_member_address", vrf.SteeringMemberCandidatePubKey.Address(), "peer", peerID)
+		
 		}
 		cs.handleMsg(m)
 	case timeoutInfo:
@@ -313,7 +306,7 @@ func (h *Handshaker) ReplayBlocks(
 	if appBlockHeight == 0 {
 		validators := make([]*types.Validator, len(h.genDoc.Validators))
 		for i, val := range h.genDoc.Validators {
-			validators[i] = types.NewValidator(val.PubKey, val.Power)
+			validators[i] = types.NewValidator(val.PubKey, val.Power, val.Type)
 		}
 		validatorSet := types.NewValidatorSet(validators)
 		nextVals := types.TM2PB.ValidatorUpdates(validatorSet)
@@ -347,7 +340,7 @@ func (h *Handshaker) ReplayBlocks(
 					return nil, err
 				}
 				state.Validators = types.NewValidatorSet(vals)
-				state.NextValidators = types.NewValidatorSet(vals).CopyIncrementProposerPriority(1)
+				state.NextValidators = types.NewValidatorSet(vals).Copy()
 			} else if len(h.genDoc.Validators) == 0 {
 				// If validator set is not set in genesis and still empty after InitChain, exit.
 				return nil, fmt.Errorf("validator set is nil in genesis and still empty after InitChain")

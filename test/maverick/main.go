@@ -215,6 +215,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 			Address: pubKey.Address(),
 			PubKey:  pubKey,
 			Power:   10,
+			Type: "standing",
 		}}
 
 		if err := genDoc.SaveAs(genFile); err != nil {

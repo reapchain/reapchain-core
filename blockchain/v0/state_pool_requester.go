@@ -42,6 +42,7 @@ func (stateRequester *StatePoolRequester) OnStart() error {
 	return nil
 }
 
+// Returns true if the peer matches and state doesn't already exist.
 func (stateRequester *StatePoolRequester) setState(state *sm.State, peerID p2p.ID) bool {
 	stateRequester.mtx.Lock()
 	if stateRequester.state != nil || stateRequester.peerID != peerID {
@@ -71,6 +72,7 @@ func (stateRequester *StatePoolRequester) getPeerID() p2p.ID {
 	return stateRequester.peerID
 }
 
+// This is called from the requestRoutine, upon redo().
 func (stateRequester *StatePoolRequester) reset() {
 	stateRequester.mtx.Lock()
 	defer stateRequester.mtx.Unlock()
@@ -83,6 +85,8 @@ func (stateRequester *StatePoolRequester) reset() {
 	stateRequester.state = nil
 }
 
+// Tells bpRequester to pick another peer and try again.
+// NOTE: Nonblocking, and does nothing if another redo was already requested.
 func (stateRequester *StatePoolRequester) redo(peerID p2p.ID) {
 	select {
 	case stateRequester.redoCh <- peerID:
@@ -90,6 +94,8 @@ func (stateRequester *StatePoolRequester) redo(peerID p2p.ID) {
 	}
 }
 
+// Responsible for making more requests as necessary
+// Returns only when a state is found (e.g. AddState() is called)
 func (stateRequester *StatePoolRequester) requestRoutine() {
 OUTER_LOOP:
 	for {

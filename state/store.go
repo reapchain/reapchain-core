@@ -187,7 +187,7 @@ func (store dbStore) loadState(key []byte) (state State, err error) {
 		%v\n`, err))
 	}
 
-	sm, err := FromProto(sp)
+	sm, err := StateFromProto(sp)
 	if err != nil {
 		return state, err
 	}
@@ -219,7 +219,7 @@ func (store dbStore) loadRollbackState(key []byte) (state State, err error) {
 		%v\n`, err))
 	}
 
-	sm, err := FromProto(sp)
+	sm, err := StateFromProto(sp)
 	if err != nil {
 		return state, err
 	}

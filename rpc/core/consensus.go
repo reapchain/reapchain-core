@@ -47,6 +47,10 @@ func Validators(ctx *rpctypes.Context, heightPtr *int64, pagePtr, perPagePtr *in
 		Total:       totalCount}, nil
 }
 
+// StandingMembers gets the standing member set at the given block height.
+//
+// If no height is provided, it will fetch the latest standing member set.
+
 func StandingMembers(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultStandingMembers, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {
@@ -66,6 +70,9 @@ func StandingMembers(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultSta
 	}, nil
 }
 
+// SteeringMemberCandidates gets the steering memeber candiate set at the given block height.
+//
+// If no height is provided, it will fetch the latest steering memeber candiate set.
 func SteeringMemberCandidates(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultSteeringMemberCandidates, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {
@@ -84,6 +91,7 @@ func SteeringMemberCandidates(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.
 	}, nil
 }
 
+// Qrns gets the qrn set at the given block height.
 func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {
@@ -103,6 +111,7 @@ func Qrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 	}, nil
 }
 
+// NextQrns gets the next consensus round qrn set at the given block height.
 func NextQrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {
@@ -122,6 +131,7 @@ func NextQrns(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultQrns, erro
 	}, nil
 }
 
+// SettingSteeringMember gets the steerin member list to be applied next consensus round at the given block height.
 func SettingSteeringMember(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultSettingSteeringMember, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {
@@ -152,6 +162,7 @@ func SettingSteeringMember(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.Res
 	}, nil
 }
 
+// Vrf gets the vrf set at the given block height.
 func Vrfs(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultVrfs, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {
@@ -171,6 +182,7 @@ func Vrfs(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultVrfs, error) {
 	}, nil
 }
 
+// NextVrfs gets the next consensus round vrf set at the given block height.
 func NextVrfs(ctx *rpctypes.Context, heightPtr *int64) (*ctypes.ResultVrfs, error) {
 	height, err := getHeight(latestUncommittedHeight(), heightPtr)
 	if err != nil {

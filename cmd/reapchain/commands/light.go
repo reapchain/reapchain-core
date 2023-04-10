@@ -77,7 +77,7 @@ func init() {
 	LightCmd.Flags().StringVar(&listenAddr, "laddr", "tcp://localhost:8888",
 		"serve the proxy on the given address")
 	LightCmd.Flags().StringVarP(&primaryAddr, "primary", "p", "",
-		"connect to a ReapchainCore node at this address")
+		"connect to a reapchain-core node at this address")
 	LightCmd.Flags().StringVarP(&witnessAddrsJoined, "witnesses", "w", "",
 		"reapchain-core nodes to cross-check the primary node, comma-separated")
 	LightCmd.Flags().StringVar(&home, "home-dir", os.ExpandEnv(filepath.Join("$HOME", ".reapchain-core-light")),

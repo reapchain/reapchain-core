@@ -96,6 +96,7 @@ type ResultStatus struct {
 	NodeInfo      p2p.DefaultNodeInfo `json:"node_info"`
 	SyncInfo      SyncInfo            `json:"sync_info"`
 	ValidatorInfo ValidatorInfo       `json:"validator_info"`
+	StandingMember types.StandingMember `json:"standing_member_info"`
 }
 
 // Is TxIndexing enabled

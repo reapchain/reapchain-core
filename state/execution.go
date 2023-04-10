@@ -493,7 +493,9 @@ func updateState(
 	// Update the validator set with the latest abciResponses.
 	lastHeightValsChanged := state.LastHeightValidatorsChanged 
 
+	// Copy the standing member set so we can apply changes from EndBlock and update s.StandingMemberSet.	
 	standingMemberSet := state.StandingMemberSet.Copy()
+	// Update the standing member set with the latest abciResponses.
 	lastHeightStandingMembersChanged := state.LastHeightStandingMembersChanged
 	
 	if len(standingMemberUpdates) > 0 { // add or remove standing members
@@ -506,10 +508,11 @@ func updateState(
 		lastHeightStandingMembersChanged = header.Height  + 1
 		state.LastHeightNextQrnChanged = header.Height + 1
 	}
-
+	// Copy the steering member candidate set so we can apply changes from EndBlock and update s.StandingMemberCandidateSet.
 	steeringMemberCandidateSet := state.SteeringMemberCandidateSet.Copy()
+	// Update the steering member candidate set with the latest abciResponses.
 	lastHeightSteeringMemberCandidatesChanged := state.LastHeightSteeringMemberCandidatesChanged
-	if len(steeringMemberCandidateUpdates) > 0 {
+	if len(steeringMemberCandidateUpdates) > 0 { // add or remove steering member candiates
 		err := steeringMemberCandidateSet.UpdateWithChangeSet(steeringMemberCandidateUpdates)
 		if err != nil {
 			return state, fmt.Errorf("error changing steering member candidate set: %v", err)
@@ -520,6 +523,8 @@ func updateState(
 		state.LastHeightNextVrfChanged = header.Height + 1
 	}
 
+	// if it has any update about the stanidng members or steering member candiates,
+	// update the validator set information (because the validator is added or removed)
 	if len(standingMemberUpdates) > 0 || len(steeringMemberCandidateUpdates) > 0 {
 
 		validators := make([]*types.Validator, 0, len(state.Validators.Validators))

@@ -988,6 +988,8 @@ func TestConsensusConfig() *ConsensusConfig {
 	cfg.PeerGossipSleepDuration = 5 * time.Millisecond
 	cfg.PeerQueryMaj23SleepDuration = 250 * time.Millisecond
 	cfg.DoubleSignCheckHeight = int64(0)
+	cfg.QrnGenerationMechanism = "os"
+	cfg.QrnGeneratorFilePath = ""
 	return cfg
 }
 

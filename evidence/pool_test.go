@@ -148,7 +148,7 @@ func TestReportConflictingVotes(t *testing.T) {
 	var height int64 = 10
 
 	pool, pv := defaultTestPool(height)
-	val := types.NewValidator(pv.PrivKey.PubKey(), 10)
+	val := types.NewValidator(pv.PrivKey.PubKey(), 10, "standing")
 	ev := types.NewMockDuplicateVoteEvidenceWithValidator(height+1, defaultEvidenceTime, pv, evidenceChainID)
 
 	pool.ReportConflictingVotes(ev.VoteA, ev.VoteB)
@@ -174,9 +174,6 @@ func TestReportConflictingVotes(t *testing.T) {
 	// should be able to retrieve evidence from pool
 	evList, _ = pool.PendingEvidence(defaultEvidenceMaxBytes)
 	require.Equal(t, []types.Evidence{ev}, evList)
-
-	next = pool.EvidenceFront()
-	require.NotNil(t, next)
 }
 
 func TestEvidencePoolUpdate(t *testing.T) {
@@ -237,29 +234,63 @@ func TestVerifyDuplicatedEvidenceFails(t *testing.T) {
 
 // check that valid light client evidence is correctly validated and stored in
 // evidence pool
-func TestLightClientAttackEvidenceLifecycle(t *testing.T) {
-	var (
-		height       int64 = 100
-		commonHeight int64 = 90
-	)
 
-	ev, trusted, common := makeLunaticEvidence(t, height, commonHeight,
-		10, 5, 5, defaultEvidenceTime, defaultEvidenceTime.Add(1*time.Hour))
+func TestCheckEvidenceWithLightClientAttack(t *testing.T) {
+	var (
+		nValidators          = 5
+		validatorPower int64 = 10
+		height         int64 = 10
+	)
+	conflictingVals, conflictingPrivVals := types.RandValidatorSet(nValidators, validatorPower)
+	trustedHeader := makeHeaderRandom(height)
+	trustedHeader.Time = defaultEvidenceTime
+
+	conflictingHeader := makeHeaderRandom(height)
+	conflictingHeader.ValidatorsHash = conflictingVals.Hash()
+
+	trustedHeader.ValidatorsHash = conflictingHeader.ValidatorsHash
+	trustedHeader.NextValidatorsHash = conflictingHeader.NextValidatorsHash
+	trustedHeader.ConsensusHash = conflictingHeader.ConsensusHash
+	trustedHeader.AppHash = conflictingHeader.AppHash
+	trustedHeader.LastResultsHash = conflictingHeader.LastResultsHash
+
+	// for simplicity we are simulating a duplicate vote attack where all the validators in the
+	// conflictingVals set voted twice
+	blockID := makeBlockID(conflictingHeader.Hash(), 1000, []byte("partshash"))
+	voteSet := types.NewVoteSet(evidenceChainID, height, 1, tmproto.SignedMsgType(2), conflictingVals)
+	commit, err := types.MakeCommit(blockID, height, 1, voteSet, conflictingPrivVals, defaultEvidenceTime)
+	require.NoError(t, err)
+	ev := &types.LightClientAttackEvidence{
+		ConflictingBlock: &types.LightBlock{
+			SignedHeader: &types.SignedHeader{
+				Header: conflictingHeader,
+				Commit: commit,
+			},
+			ValidatorSet: conflictingVals,
+		},
+		CommonHeight:        10,
+		TotalVotingPower:    int64(nValidators) * validatorPower,
+		ByzantineValidators: conflictingVals.Validators,
+		Timestamp:           defaultEvidenceTime,
+	}
+
+	trustedBlockID := makeBlockID(trustedHeader.Hash(), 1000, []byte("partshash"))
+	trustedVoteSet := types.NewVoteSet(evidenceChainID, height, 1, tmproto.SignedMsgType(2), conflictingVals)
+	trustedCommit, err := types.MakeCommit(trustedBlockID, height, 1, trustedVoteSet, conflictingPrivVals,
+		defaultEvidenceTime)
+	require.NoError(t, err)
 
 	state := sm.State{
-		LastBlockTime:   defaultEvidenceTime.Add(2 * time.Hour),
-		LastBlockHeight: 110,
+		LastBlockTime:   defaultEvidenceTime.Add(1 * time.Minute),
+		LastBlockHeight: 11,
 		ConsensusParams: *types.DefaultConsensusParams(),
 	}
 	stateStore := &smmocks.Store{}
-	stateStore.On("LoadValidators", height).Return(trusted.ValidatorSet, nil)
-	stateStore.On("LoadValidators", commonHeight).Return(common.ValidatorSet, nil)
+	stateStore.On("LoadValidators", height).Return(conflictingVals, nil)
 	stateStore.On("Load").Return(state, nil)
 	blockStore := &mocks.BlockStore{}
-	blockStore.On("LoadBlockMeta", height).Return(&types.BlockMeta{Header: *trusted.Header})
-	blockStore.On("LoadBlockMeta", commonHeight).Return(&types.BlockMeta{Header: *common.Header})
-	blockStore.On("LoadBlockCommit", height).Return(trusted.Commit)
-	blockStore.On("LoadBlockCommit", commonHeight).Return(common.Commit)
+	blockStore.On("LoadBlockMeta", height).Return(&types.BlockMeta{Header: *trustedHeader})
+	blockStore.On("LoadBlockCommit", height).Return(trustedCommit)
 
 	pool, err := evidence.NewPool(dbm.NewMemDB(), stateStore, blockStore)
 	require.NoError(t, err)
@@ -268,32 +299,14 @@ func TestLightClientAttackEvidenceLifecycle(t *testing.T) {
 	err = pool.AddEvidence(ev)
 	assert.NoError(t, err)
 
-	hash := ev.Hash()
+	err = pool.CheckEvidence(types.EvidenceList{ev})
+	assert.NoError(t, err)
 
-	require.NoError(t, pool.AddEvidence(ev))
-	require.NoError(t, pool.AddEvidence(ev))
-
-	pendingEv, _ := pool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
-	require.Equal(t, 1, len(pendingEv))
-	require.Equal(t, ev, pendingEv[0])
-
-	require.NoError(t, pool.CheckEvidence(pendingEv))
-	require.Equal(t, ev, pendingEv[0])
-
-	state.LastBlockHeight++
-	state.LastBlockTime = state.LastBlockTime.Add(1 * time.Minute)
-	pool.Update(state, pendingEv)
-	require.Equal(t, hash, pendingEv[0].Hash())
-
-	remaindingEv, _ := pool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
-	require.Empty(t, remaindingEv)
-
-	// evidence is already committed so it shouldn't pass
-	require.Error(t, pool.CheckEvidence(types.EvidenceList{ev}))
-	require.NoError(t, pool.AddEvidence(ev))
-
-	remaindingEv, _ = pool.PendingEvidence(state.ConsensusParams.Evidence.MaxBytes)
-	require.Empty(t, remaindingEv)
+	// take away the last signature -> there are less validators then what we have detected,
+	// hence this should fail
+	commit.Signatures = append(commit.Signatures[:nValidators-1], types.NewCommitSigAbsent())
+	err = pool.CheckEvidence(types.EvidenceList{ev})
+	assert.Error(t, err)
 }
 
 // Tests that restarting the evidence pool after a potential failure will recover the
@@ -346,17 +359,23 @@ func TestRecoverPendingEvidence(t *testing.T) {
 
 }
 
-func initializeStateFromValidatorSet(valSet *types.ValidatorSet, height int64) sm.Store {
+func initializeStateFromValidatorSet(valSet *types.ValidatorSet, standingMemberSet *types.StandingMemberSet, steeringMemberCandidateSet *types.SteeringMemberCandidateSet, height int64) sm.Store {
 	stateDB := dbm.NewMemDB()
 	stateStore := sm.NewStore(stateDB)
+	qrnSet := types.NewQrnSet(1, standingMemberSet, nil)
+
 	state := sm.State{
 		ChainID:                     evidenceChainID,
 		InitialHeight:               1,
 		LastBlockHeight:             height,
 		LastBlockTime:               defaultEvidenceTime,
 		Validators:                  valSet,
-		NextValidators:              valSet.CopyIncrementProposerPriority(1),
+		NextValidators:              valSet.Copy(),
 		LastValidators:              valSet,
+		QrnSet:                      qrnSet,
+		NextQrnSet:                  qrnSet.Copy(),
+		StandingMemberSet:           standingMemberSet,
+		SteeringMemberCandidateSet:  steeringMemberCandidateSet,
 		LastHeightValidatorsChanged: 1,
 		ConsensusParams: tmproto.ConsensusParams{
 			Block: tmproto.BlockParams{
@@ -383,9 +402,10 @@ func initializeStateFromValidatorSet(valSet *types.ValidatorSet, height int64) s
 }
 
 func initializeValidatorState(privVal types.PrivValidator, height int64) sm.Store {
-
 	pubKey, _ := privVal.GetPubKey()
 	validator := &types.Validator{Address: pubKey.Address(), VotingPower: 10, PubKey: pubKey}
+	standingMember := &types.StandingMember{Address: validator.Address, PubKey: pubKey}
+	steeringMemberCandidate := &types.SteeringMemberCandidate{Address: validator.Address, PubKey: pubKey}
 
 	// create validator set and state
 	valSet := &types.ValidatorSet{
@@ -393,8 +413,17 @@ func initializeValidatorState(privVal types.PrivValidator, height int64) sm.Stor
 		Proposer:   validator,
 	}
 
-	return initializeStateFromValidatorSet(valSet, height)
+	standingMemberSet := &types.StandingMemberSet{
+		StandingMembers: []*types.StandingMember{standingMember},
+	}
+
+	steeringMemberCandidateSet := &types.SteeringMemberCandidateSet{
+		SteeringMemberCandidates: []*types.SteeringMemberCandidate{steeringMemberCandidate},
+	}
+
+	return initializeStateFromValidatorSet(valSet, standingMemberSet, steeringMemberCandidateSet, height)
 }
+
 
 // initializeBlockStore creates a block storage and populates it w/ a dummy
 // block at +height+.

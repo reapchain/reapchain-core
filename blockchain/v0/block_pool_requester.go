@@ -10,6 +10,7 @@ import (
 	"github.com/reapchain/reapchain-core/types"
 )
 
+//bpRequest performs the role of requesting other nodes to validate the check
 type bpRequester struct {
 	service.BaseService
 	pool       *BlockPool

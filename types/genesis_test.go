@@ -81,7 +81,7 @@ func TestGenesisGood(t *testing.T) {
 	// create a base gendoc from struct
 	baseGenDoc := &GenesisDoc{
 		ChainID:    "abc",
-		Validators: []GenesisValidator{{pubkey.Address(), pubkey, 10, "myval"}},
+		Validators: []GenesisValidator{{pubkey.Address(), pubkey,"standing", 10, "myval"}},
 	}
 	genDocBytes, err = tmjson.Marshal(baseGenDoc)
 	assert.NoError(t, err, "error marshaling genDoc")
@@ -158,7 +158,7 @@ func randomGenesisDoc() *GenesisDoc {
 		GenesisTime:     tmtime.Now(),
 		ChainID:         "abc",
 		InitialHeight:   1000,
-		Validators:      []GenesisValidator{{pubkey.Address(), pubkey, 10, "myval"}},
+		Validators:      []GenesisValidator{{pubkey.Address(), pubkey, "standing", 10, "myval"}},
 		ConsensusParams: DefaultConsensusParams(),
 		AppHash:         []byte{1, 2, 3},
 	}

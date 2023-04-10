@@ -350,21 +350,21 @@ func logNodeStartupInfo(state sm.State, pubKey crypto.PubKey, logger, consensusL
 	addr := pubKey.Address()
 	// Log whether this node is a validator or an observer
 	if state.Validators.HasAddress(addr) {
-		logger.Info("This node is a validator", "addr", addr, "pubKey", pubKey)
+		consensusLogger.Info("This node is a validator", "addr", addr, "pubKey", pubKey)
 	} else {
-		logger.Info("This node is not a validator", "addr", addr, "pubKey", pubKey)
+		consensusLogger.Info("This node is not a validator", "addr", addr, "pubKey", pubKey)
 	}
 
 	if state.StandingMemberSet.HasAddress(addr) {
-		logger.Info("This node is a standing member", "addr", addr, "pubKey", pubKey)
+		consensusLogger.Info("This node is a standing member", "addr", addr, "pubKey", pubKey)
 	} else {
-		logger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
+		consensusLogger.Info("This node is not a standing member", "addr", addr, "pubKey", pubKey)
 	}
 
 	if state.SteeringMemberCandidateSet.HasAddress(addr) {
-		logger.Info("This node is a steering member candidate", "addr", addr, "pubKey", pubKey)
+		consensusLogger.Info("This node is a steering member candidate", "addr", addr, "pubKey", pubKey)
 	} else {
-		logger.Info("This node is not a steering member candidate", "addr", addr, "pubKey", pubKey)
+		consensusLogger.Info("This node is not a steering member candidate", "addr", addr, "pubKey", pubKey)
 	}
 }
 
@@ -485,6 +485,7 @@ func createConsensusReactor(config *cfg.Config,
 	waitSync bool,
 	eventBus *types.EventBus,
 	consensusLogger log.Logger) (*cs.Reactor, *cs.State) {
+
 	consensusState := cs.NewState(
 		config.Consensus,
 		state.Copy(),
@@ -498,7 +499,7 @@ func createConsensusReactor(config *cfg.Config,
 	if privValidator != nil {
 		consensusState.SetPrivValidator(privValidator)
 	}
-	consensusReactor := cs.NewReactor(consensusState, stateStore, waitSync, cs.ReactorMetrics(csMetrics))
+	consensusReactor := cs.NewReactor(state.ChainID, consensusState, stateStore, waitSync, cs.ReactorMetrics(csMetrics))
 	consensusReactor.SetLogger(consensusLogger)
 	// services which will be publishing and/or subscribing for messages (events)
 	// consensusReactor will set it on consensusState and blockExecutor
@@ -1055,6 +1056,17 @@ func (n *Node) OnStop() {
 		if err := n.prometheusSrv.Shutdown(context.Background()); err != nil {
 			// Error from closing listeners, or context timeout:
 			n.Logger.Error("Prometheus HTTP server Shutdown", "err", err)
+		}
+	}
+	//Tendermint V0.34.20 Added
+	if n.blockStore != nil {
+		if err := n.blockStore.Close(); err != nil {
+			n.Logger.Error("problem closing blockstore", "err", err)
+		}
+	}
+	if n.stateStore != nil {
+		if err := n.stateStore.Close(); err != nil {
+			n.Logger.Error("problem closing statestore", "err", err)
 		}
 	}
 }

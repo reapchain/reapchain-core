@@ -61,7 +61,7 @@ func BenchmarkLoadValidators(b *testing.B) {
 	}
 
 	state.Validators = genValSet(valSetSize)
-	state.NextValidators = state.Validators.CopyIncrementProposerPriority(1)
+	state.NextValidators = state.Validators.Copy()
 	err = stateStore.Save(state)
 	require.NoError(b, err)
 

@@ -1046,7 +1046,7 @@ func (cs *State) enterNewRound(height int64, round int32) {
 		if cs.StandingMemberSet.CurrentCoordinatorRanking == int64(cs.StandingMemberSet.Size()) {
 			cs.StandingMemberSet.CurrentCoordinatorRanking = 0
 		}
-
+		logger.Debug("resetting proposal info")
 		cs.Proposal = nil
 		cs.ProposalBlock = nil
 		cs.ProposalBlockParts = nil
@@ -1138,6 +1138,8 @@ func (cs *State) enterPropose(height int64, round int32) {
 		return
 	}
 
+	logger.Debug("node is a validator")
+
 	if cs.privValidatorPubKey == nil {
 		// If this node is a validator & proposer in the current round, it will
 		// miss the opportunity to create a block.
@@ -1154,15 +1156,13 @@ func (cs *State) enterPropose(height int64, round int32) {
 	}
 
 	if cs.isProposer(address) {
-		logger.Debug("propose step; our turn to propose", "proposer", address)
+		logger.Error("I'm a proposer", "proposer", address)
 		cs.decideProposal(height, round)
-	} else {
-		logger.Debug("propose step; not our turn to propose", "proposer", cs.Validators.GetProposer().Address)
 	}
 }
 
 func (cs *State) isProposer(address []byte) bool {
-	return bytes.Equal(cs.Validators.GetProposer().Address, address)
+	return bytes.Equal(cs.StandingMemberSet.Coordinator.Address, address)
 }
 
 func (cs *State) defaultDecideProposal(height int64, round int32) {
@@ -1529,6 +1529,8 @@ func (cs *State) enterCommit(height int64, commitRound int32) {
 		)
 		return
 	}
+
+	logger.Debug("entering commit step", "current", log.NewLazySprintf("%v/%v/%v", cs.Height, cs.Round, cs.Step))
 
 	defer func() {
 		// Done enterCommit:

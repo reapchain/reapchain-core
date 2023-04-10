@@ -47,7 +47,7 @@ func TestValidatorValidateBasic(t *testing.T) {
 		msg string
 	}{
 		{
-			val: NewValidator(pubKey, 1),
+			val: NewValidator(pubKey, 1, "standing"),
 			err: false,
 			msg: "",
 		},
@@ -64,7 +64,7 @@ func TestValidatorValidateBasic(t *testing.T) {
 			msg: "validator does not have a public key",
 		},
 		{
-			val: NewValidator(pubKey, -1),
+			val: NewValidator(pubKey, -1, "standing"),
 			err: true,
 			msg: "validator has negative voting power",
 		},

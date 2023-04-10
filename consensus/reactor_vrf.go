@@ -8,6 +8,8 @@ import (
 	"github.com/reapchain/reapchain-core/p2p"
 )
 
+// It plays the role of passing the VRF information
+// it has to other peers while running in an infinite loop.
 func (conR *Reactor) gossipVrfsRoutine(peer p2p.Peer, ps *PeerState) {
 	logger := conR.Logger.With("peer", peer)
 
@@ -26,6 +28,8 @@ OUTER_LOOP:
 			roundPeriod := rs.LockedBlock.ConsensusRound.Period
 
 			if consensusStartBlockHeight <= prs.Height && prs.Height < consensusStartBlockHeight + int64(roundPeriod) {
+				// Random select peer for sending vrf.
+				// If the vrf is already sent to a peer, the peer is not selected.
 				if ps.PickSendVrf(conR.conS.state.NextVrfSet) {
 					continue OUTER_LOOP
 				}
@@ -36,7 +40,8 @@ OUTER_LOOP:
 	}
 }
 
-
+// Try add the vrf which are from other peers.
+// It only works, when the node is syncying.
 func (conR *Reactor) tryAddCatchupVrfMessage(vrfMessage *VrfMessage) (error) {
 	if vrfMessage == nil {
 		return fmt.Errorf("VrfMessage is nil")

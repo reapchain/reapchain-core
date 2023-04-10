@@ -41,6 +41,7 @@ func (steeringMemberCandidate *SteeringMemberCandidate) ValidateBasic() error {
 	return nil
 }
 
+// Convert byte array for getting hash
 func (steeringMemberCandidate *SteeringMemberCandidate) Bytes() []byte {
 	pubKeyProto, err := ce.PubKeyToProto(steeringMemberCandidate.PubKey)
 	if err != nil {
@@ -58,6 +59,25 @@ func (steeringMemberCandidate *SteeringMemberCandidate) Bytes() []byte {
 	return bz
 }
 
+// Convert the steering member candidate's proto puffer type to this type to apply the reapchain-core
+func SteeringMemberCandidateFromProto(steeringMemberCandidateProto *tmproto.SteeringMemberCandidate) (*SteeringMemberCandidate, error) {
+	if steeringMemberCandidateProto == nil {
+		return nil, errors.New("nil steering member candidate")
+	}
+
+	pubKey, err := ce.PubKeyFromProto(steeringMemberCandidateProto.PubKey)
+	if err != nil {
+		return nil, err
+	}
+	steeringMemberCandidate := new(SteeringMemberCandidate)
+	steeringMemberCandidate.Address = steeringMemberCandidateProto.GetAddress()
+	steeringMemberCandidate.PubKey = pubKey
+	steeringMemberCandidate.VotingPower = steeringMemberCandidateProto.GetVotingPower()
+
+	return steeringMemberCandidate, nil
+}
+
+// Convert the type to proto puffer type to send the type to other peer or SDK
 func (steeringMemberCandidate *SteeringMemberCandidate) ToProto() (*tmproto.SteeringMemberCandidate, error) {
 	if steeringMemberCandidate == nil {
 		return nil, errors.New("nil steering member candidate")
@@ -82,6 +102,7 @@ func (steeringMemberCandidate *SteeringMemberCandidate) Copy() *SteeringMemberCa
 	return &steeringMemberCandidateCopy
 }
 
+// For steeringMemberCandidate list to string for logging
 func SteeringMemberCandidateListString(steeringMemberCandidates []*SteeringMemberCandidate) string {
 	chunks := make([]string, len(steeringMemberCandidates))
 	for i, steeringMemberCandidate := range steeringMemberCandidates {
@@ -91,19 +112,4 @@ func SteeringMemberCandidateListString(steeringMemberCandidates []*SteeringMembe
 	return strings.Join(chunks, ",")
 }
 
-func SteeringMemberCandidateFromProto(steeringMemberCandidateProto *tmproto.SteeringMemberCandidate) (*SteeringMemberCandidate, error) {
-	if steeringMemberCandidateProto == nil {
-		return nil, errors.New("nil steering member candidate")
-	}
 
-	pubKey, err := ce.PubKeyFromProto(steeringMemberCandidateProto.PubKey)
-	if err != nil {
-		return nil, err
-	}
-	steeringMemberCandidate := new(SteeringMemberCandidate)
-	steeringMemberCandidate.Address = steeringMemberCandidateProto.GetAddress()
-	steeringMemberCandidate.PubKey = pubKey
-	steeringMemberCandidate.VotingPower = steeringMemberCandidateProto.GetVotingPower()
-
-	return steeringMemberCandidate, nil
-}

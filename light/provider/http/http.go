@@ -88,9 +88,54 @@ func (p *http) LightBlock(ctx context.Context, height int64) (*types.LightBlock,
 		return nil, err
 	}
 
+	standingMemberSet, err := p.standingMemberSet(ctx, &sh.Height)
+	if err != nil {
+		return nil, err
+	}
+
+	steeringMembmerCandidateSet, err := p.steeringMembmerCandidateSet(ctx, &sh.Height)
+	if err != nil {
+		return nil, err
+	}
+
+	qrnSet, err := p.qrnSet(ctx, &sh.Height)
+	if err != nil {
+		return nil, err
+	}
+
+	nextQrnSet, err := p.nextQrnSet(ctx, &sh.Height)
+	if err != nil {
+		return nil, err
+	}
+
+	vrfSet, err := p.vrfSet(ctx, &sh.Height)
+	if err != nil {
+		return nil, err
+	}
+
+	nextVrfSet, err := p.nextVrfSet(ctx, &sh.Height)
+	if err != nil {
+		return nil, err
+	}
+
+	settingSteeringMember, err := p.settingSteeringMember(ctx, &sh.Height)
+	if err != nil {
+		return nil, err
+	}
+
 	lb := &types.LightBlock{
 		SignedHeader: sh,
 		ValidatorSet: vs,
+		StandingMemberSet: standingMemberSet,
+		SteeringMemberCandidateSet: steeringMembmerCandidateSet,
+
+		QrnSet: qrnSet,
+		VrfSet: vrfSet,
+
+		NextQrnSet: nextQrnSet,
+		NextVrfSet: nextVrfSet,
+
+		SettingSteeringMember: settingSteeringMember,
 	}
 
 	err = lb.ValidateBasic(p.chainID)
@@ -100,6 +145,7 @@ func (p *http) LightBlock(ctx context.Context, height int64) (*types.LightBlock,
 
 	return lb, nil
 }
+
 
 // ReportEvidence calls `/broadcast_evidence` endpoint.
 func (p *http) ReportEvidence(ctx context.Context, ev types.Evidence) error {
@@ -174,6 +220,377 @@ OUTER_LOOP:
 	}
 	return valSet, nil
 }
+
+func (p *http) standingMemberSet(ctx context.Context, height *int64) (*types.StandingMemberSet, error) {
+	var (
+		standingMembers = []*types.StandingMember{}
+		currentCoordinatorRanking = int64(0)
+	)
+
+	for attempt := 1; attempt <= maxRetryAttempts; attempt++ {
+		res, err := p.client.StandingMembers(ctx, height)
+		switch {
+		case err == nil:
+			// Validate response.
+			if len(res.StandingMembers) == 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("standingMember set is empty (height: %d)",
+						height),
+				}
+			}
+
+			if res.Count <= 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("total number of standingMembers is <= 0: %d (height: %d)",
+						res.Count, height),
+				}
+			}
+			currentCoordinatorRanking = res.CurrentCoordinatorRanking
+			standingMembers = res.StandingMembers
+			break
+
+		case regexpTooHigh.MatchString(err.Error()):
+			return nil, provider.ErrHeightTooHigh
+
+		case regexpMissingHeight.MatchString(err.Error()):
+			return nil, provider.ErrLightBlockNotFound
+
+		// if we have exceeded retry attempts then return no response error
+		case attempt == maxRetryAttempts:
+			return nil, provider.ErrNoResponse
+
+		case regexpTimedOut.MatchString(err.Error()):
+			// we wait and try again with exponential backoff
+
+			time.Sleep(backoffTimeout(uint16(attempt)))
+			continue
+		// context canceled or connection refused we return the error
+		default:
+			return nil, err
+		}
+	}
+
+	standingMemberSet, err := types.StandingMemberSetFromExistingStandingMembers(standingMembers)
+	standingMemberSet.Coordinator = standingMemberSet.StandingMembers[currentCoordinatorRanking]
+	standingMemberSet.CurrentCoordinatorRanking = currentCoordinatorRanking
+	if err != nil {
+		return nil, provider.ErrBadLightBlock{Reason: err}
+	}
+	
+	return standingMemberSet, nil
+}
+
+func (p *http) steeringMembmerCandidateSet(ctx context.Context, height *int64) (*types.SteeringMemberCandidateSet, error) {
+	var (
+		steeringMembmerCandidates = []*types.SteeringMemberCandidate{}
+	)
+
+	for attempt := 1; attempt <= maxRetryAttempts; attempt++ {
+		res, err := p.client.SteeringMemberCandidates(ctx, height)
+		switch {
+		case err == nil:
+			// Validate response.
+			if len(res.SteeringMemberCandidates) == 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("steeringMembmerCandidate set is empty (height: %d)",
+						height),
+				}
+			}
+
+			if res.Count <= 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("total number of steeringMembmerCandidates is <= 0: %d (height: %d)",
+						res.Count, height),
+				}
+			}
+			steeringMembmerCandidates = res.SteeringMemberCandidates
+			break
+
+		case regexpTooHigh.MatchString(err.Error()):
+			return nil, provider.ErrHeightTooHigh
+
+		case regexpMissingHeight.MatchString(err.Error()):
+			return nil, provider.ErrLightBlockNotFound
+
+		// if we have exceeded retry attempts then return no response error
+		case attempt == maxRetryAttempts:
+			return nil, provider.ErrNoResponse
+
+		case regexpTimedOut.MatchString(err.Error()):
+			// we wait and try again with exponential backoff
+
+			time.Sleep(backoffTimeout(uint16(attempt)))
+			continue
+		// context canceled or connection refused we return the error
+		default:
+			return nil, err
+		}
+	}
+
+
+	steeringMembmerCandidateSet, err := types.SteeringMemberCandidateSetFromExistingSteeringMemberCandidates(steeringMembmerCandidates)
+	if err != nil {
+		return nil, provider.ErrBadLightBlock{Reason: err}
+	}
+	return steeringMembmerCandidateSet, nil
+}
+
+func (p *http) qrnSet(ctx context.Context, height *int64) (*types.QrnSet, error) {
+	var (
+		qrns = []*types.Qrn{}
+	)
+
+	for attempt := 1; attempt <= maxRetryAttempts; attempt++ {
+		res, err := p.client.Qrns(ctx, height)
+		switch {
+		case err == nil:
+			// Validate response.
+			if len(res.Qrns) == 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("qrn set is empty (height: %d)",
+						height),
+				}
+			}
+
+			if res.Count <= 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("total number of qrns is <= 0: %d (height: %d)",
+						res.Count, height),
+				}
+			}
+			qrns = res.Qrns
+			break
+
+		case regexpTooHigh.MatchString(err.Error()):
+			return nil, provider.ErrHeightTooHigh
+
+		case regexpMissingHeight.MatchString(err.Error()):
+			return nil, provider.ErrLightBlockNotFound
+
+		// if we have exceeded retry attempts then return no response error
+		case attempt == maxRetryAttempts:
+			return nil, provider.ErrNoResponse
+
+		case regexpTimedOut.MatchString(err.Error()):
+			// we wait and try again with exponential backoff
+
+			time.Sleep(backoffTimeout(uint16(attempt)))
+			continue
+		// context canceled or connection refused we return the error
+		default:
+			return nil, err
+		}
+	}
+
+
+	qrnSet, err := types.QrnSetFromExistingQrns(qrns)
+	if err != nil {
+		return nil, provider.ErrBadLightBlock{Reason: err}
+	}
+	return qrnSet, nil
+}
+
+func (p *http) nextQrnSet(ctx context.Context, height *int64) (*types.QrnSet, error) {
+	var (
+		qrns = []*types.Qrn{}
+	)
+
+	for attempt := 1; attempt <= maxRetryAttempts; attempt++ {
+		res, err := p.client.NextQrns(ctx, height)
+		switch {
+		case err == nil:
+			// Validate response.
+			if len(res.Qrns) == 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("qrn set is empty (height: %d)",
+						height),
+				}
+			}
+
+			if res.Count <= 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("total number of qrns is <= 0: %d (height: %d)",
+						res.Count, height),
+				}
+			}
+			qrns = res.Qrns
+			break
+
+		case regexpTooHigh.MatchString(err.Error()):
+			return nil, provider.ErrHeightTooHigh
+
+		case regexpMissingHeight.MatchString(err.Error()):
+			return nil, provider.ErrLightBlockNotFound
+
+		// if we have exceeded retry attempts then return no response error
+		case attempt == maxRetryAttempts:
+			return nil, provider.ErrNoResponse
+
+		case regexpTimedOut.MatchString(err.Error()):
+			// we wait and try again with exponential backoff
+
+			time.Sleep(backoffTimeout(uint16(attempt)))
+			continue
+		// context canceled or connection refused we return the error
+		default:
+			return nil, err
+		}
+	}
+
+
+	qrnSet, err := types.QrnSetFromExistingQrns(qrns)
+	if err != nil {
+		return nil, provider.ErrBadLightBlock{Reason: err}
+	}
+	return qrnSet, nil
+}
+
+func (p *http) vrfSet(ctx context.Context, height *int64) (*types.VrfSet, error) {
+	var (
+		vrfs = []*types.Vrf{}
+	)
+
+	for attempt := 1; attempt <= maxRetryAttempts; attempt++ {
+		res, err := p.client.Vrfs(ctx, height)
+		switch {
+		case err == nil:
+			// Validate response.
+			if len(res.Vrfs) == 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("vrf set is empty (height: %d)",
+						height),
+				}
+			}
+
+			if res.Count <= 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("total number of vrfs is <= 0: %d (height: %d)",
+						res.Count, height),
+				}
+			}
+			vrfs = res.Vrfs
+			break
+
+		case regexpTooHigh.MatchString(err.Error()):
+			return nil, provider.ErrHeightTooHigh
+
+		case regexpMissingHeight.MatchString(err.Error()):
+			return nil, provider.ErrLightBlockNotFound
+
+		// if we have exceeded retry attempts then return no response error
+		case attempt == maxRetryAttempts:
+			return nil, provider.ErrNoResponse
+
+		case regexpTimedOut.MatchString(err.Error()):
+			// we wait and try again with exponential backoff
+
+			time.Sleep(backoffTimeout(uint16(attempt)))
+			continue
+		// context canceled or connection refused we return the error
+		default:
+			return nil, err
+		}
+	}
+
+
+	vrfSet, err := types.VrfSetFromExistingVrfs(vrfs)
+	if err != nil {
+		return nil, provider.ErrBadLightBlock{Reason: err}
+	}
+	return vrfSet, nil
+}
+
+func (p *http) nextVrfSet(ctx context.Context, height *int64) (*types.VrfSet, error) {
+	var (
+		vrfs = []*types.Vrf{}
+	)
+
+	for attempt := 1; attempt <= maxRetryAttempts; attempt++ {
+		res, err := p.client.NextVrfs(ctx, height)
+		switch {
+		case err == nil:
+			// Validate response.
+			if len(res.Vrfs) == 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("vrf set is empty (height: %d)",
+						height),
+				}
+			}
+
+			if res.Count <= 0 {
+				return nil, provider.ErrBadLightBlock{
+					Reason: fmt.Errorf("total number of vrfs is <= 0: %d (height: %d)",
+						res.Count, height),
+				}
+			}
+			vrfs = res.Vrfs
+			break
+
+		case regexpTooHigh.MatchString(err.Error()):
+			return nil, provider.ErrHeightTooHigh
+
+		case regexpMissingHeight.MatchString(err.Error()):
+			return nil, provider.ErrLightBlockNotFound
+
+		// if we have exceeded retry attempts then return no response error
+		case attempt == maxRetryAttempts:
+			return nil, provider.ErrNoResponse
+
+		case regexpTimedOut.MatchString(err.Error()):
+			// we wait and try again with exponential backoff
+
+			time.Sleep(backoffTimeout(uint16(attempt)))
+			continue
+		// context canceled or connection refused we return the error
+		default:
+			return nil, err
+		}
+	}
+
+
+	vrfSet, err := types.VrfSetFromExistingVrfs(vrfs)
+	if err != nil {
+		return nil, provider.ErrBadLightBlock{Reason: err}
+	}
+	return vrfSet, nil
+}
+
+func (p *http) settingSteeringMember(ctx context.Context, height *int64) (*types.SettingSteeringMember, error) {
+
+	settingSteeringMember := &types.SettingSteeringMember {}
+
+	for attempt := 1; attempt <= maxRetryAttempts; attempt++ {
+		res, err := p.client.SettingSteeringMember(ctx, height)
+		switch {
+		case err == nil:
+
+			settingSteeringMember.SteeringMemberAddresses = res.SteeringMemberAddresses
+			settingSteeringMember.Timestamp = res.Timestamp
+			break
+		case regexpTooHigh.MatchString(err.Error()):
+			return nil, provider.ErrHeightTooHigh
+
+		case regexpMissingHeight.MatchString(err.Error()):
+			return nil, provider.ErrLightBlockNotFound
+
+		// if we have exceeded retry attempts then return no response error
+		case attempt == maxRetryAttempts:
+			return nil, provider.ErrNoResponse
+
+		case regexpTimedOut.MatchString(err.Error()):
+			// we wait and try again with exponential backoff
+
+			time.Sleep(backoffTimeout(uint16(attempt)))
+			continue
+		// context canceled or connection refused we return the error
+		default:
+			return nil, err
+		}
+	}
+
+	return settingSteeringMember, nil
+}
+
 
 func (p *http) signedHeader(ctx context.Context, height *int64) (*types.SignedHeader, error) {
 	for attempt := 1; attempt <= maxRetryAttempts; attempt++ {

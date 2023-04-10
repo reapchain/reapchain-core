@@ -15,12 +15,13 @@ import (
 
 const MAXIMUM_STEERING_MEMBER_CANDIDATES = 30
 
+// It manages the status of VRF-related lists and blocks heights for consensus.
 type VrfSet struct {
 	Height int64
 
 	mtx          tmsync.Mutex
 	Vrfs         []*Vrf
-	VrfsBitArray *bits.BitArray
+	VrfsBitArray *bits.BitArray // It is used to check existings of VRF 
 }
 
 func NewVrfSet(height int64, steeringMemberCandidateSet *SteeringMemberCandidateSet, vrfs []*Vrf) *VrfSet {
@@ -39,7 +40,39 @@ func NewVrfSet(height int64, steeringMemberCandidateSet *SteeringMemberCandidate
 		Vrfs:                       vrfs,
 	}
 }
+// Check all vrfs in the VRF list
+func (vrfSet *VrfSet) ValidateBasic() error {
+	for idx, vrf := range vrfSet.Vrfs {
+		if err := vrf.ValidateBasic(); err != nil {
+			return fmt.Errorf("Invalid vrf #%d: %w", idx, err)
+		}
+	}
 
+	return nil
+}
+
+// Get the height of the blockchain of the current VRF set
+func (vrfSet *VrfSet) GetHeight() int64 {
+	if vrfSet == nil {
+		return 0
+	}
+	return vrfSet.Height
+}
+
+// Get vrfs size in the VrfSet
+func (vrfSet *VrfSet) Size() int {
+	if vrfSet == nil {
+		return 0
+	}
+
+	return len(vrfSet.Vrfs)
+}
+
+func (vrfSet *VrfSet) IsNilOrEmpty() bool {
+	return vrfSet == nil || len(vrfSet.Vrfs) == 0
+}
+
+// Function to transform from ProtocolBuffer to the corresponding type
 func VrfSetFromProto(vrfSetProto *tmproto.VrfSet) (*VrfSet, error) {
 	if vrfSetProto == nil {
 		return nil, errors.New("nil vrf set")
@@ -62,39 +95,7 @@ func VrfSetFromProto(vrfSetProto *tmproto.VrfSet) (*VrfSet, error) {
 	return vrfSet, vrfSet.ValidateBasic()
 }
 
-func (vrfSet *VrfSet) ValidateBasic() error {
-	// if vrfSet == nil || len(vrfSet.Vrfs) == 0 {
-	// 	return errors.New("vrf set is nil or empty")
-	// }
-
-	for idx, vrf := range vrfSet.Vrfs {
-		if err := vrf.ValidateBasic(); err != nil {
-			return fmt.Errorf("Invalid vrf #%d: %w", idx, err)
-		}
-	}
-
-	return nil
-}
-
-func (vrfSet *VrfSet) GetHeight() int64 {
-	if vrfSet == nil {
-		return 0
-	}
-	return vrfSet.Height
-}
-
-func (vrfSet *VrfSet) Size() int {
-	if vrfSet == nil {
-		return 0
-	}
-
-	return len(vrfSet.Vrfs)
-}
-
-func (vrfSet *VrfSet) IsNilOrEmpty() bool {
-	return vrfSet == nil || len(vrfSet.Vrfs) == 0
-}
-
+// Add vrf in the set
 func (vrfSet *VrfSet) AddVrf(vrf *Vrf) bool {
 	vrfSet.mtx.Lock()
 	defer func() {
@@ -103,33 +104,30 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) bool {
 
 
 	if vrf == nil {
-		// return fmt.Errorf("Vrf is nil")
 		return false
 	}
 
 	if vrf.Value != nil {
 		if vrf.Verify() == false {
-			// return fmt.Errorf("Invalid vrf sign")
 			return false
 		}
 	
 		if vrfSet.Height != vrf.Height {
-			// return fmt.Errorf("Invalid vrf height vrfSet height: %v / vrf height: %v", vrfSet.Height, vrf.Height)
 			return false
 		}
 	}
 
-
 	vrfIndex := vrfSet.GetVrfIndexByAddress(vrf.SteeringMemberCandidatePubKey.Address())
 	
 	if vrfIndex == -1 {
-		// return fmt.Errorf("Not exist steering member candidate of vrf: %v", vrf.SteeringMemberCandidatePubKey.Address())
 		return false
 	}
 
 	if vrfSet.VrfsBitArray.GetIndex(int(vrfIndex)) == false {
 		vrf.VrfIndex = vrfIndex
 		vrfSet.Vrfs[vrfIndex] = vrf.Copy()
+		
+		// Set the vrf flag (true == existing)
 		vrfSet.VrfsBitArray.SetIndex(int(vrfIndex), true)
 		return true
 	}
@@ -137,6 +135,7 @@ func (vrfSet *VrfSet) AddVrf(vrf *Vrf) bool {
 	return false
 }
 
+// Get vrf with steering member candidate public key
 func (vrfSet *VrfSet) GetVrf(steeringMemberCandidatePubKey crypto.PubKey) (vrf *Vrf) {
 	vrfIndex := vrfSet.GetVrfIndexByAddress(steeringMemberCandidatePubKey.Address())
 
@@ -147,6 +146,7 @@ func (vrfSet *VrfSet) GetVrf(steeringMemberCandidatePubKey crypto.PubKey) (vrf *
 	return nil
 }
 
+// Generate vrf list Hash
 func (vrfSet *VrfSet) Hash() []byte {
 	vrfBytesArray := make([][]byte, len(vrfSet.Vrfs))
 	for i, vrf := range vrfSet.Vrfs {
@@ -157,6 +157,7 @@ func (vrfSet *VrfSet) Hash() []byte {
 	return merkle.HashFromByteSlices(vrfBytesArray)
 }
 
+// Function to transform from current set (type) to the corresponding ProtocolBuffer
 func (vrfSet *VrfSet) ToProto() (*tmproto.VrfSet, error) {
 	if vrfSet.IsNilOrEmpty() {
 		return &tmproto.VrfSet{}, nil
@@ -203,6 +204,18 @@ func (vrfSet *VrfSet) GetByIndex(vrfIndex int32) *Vrf {
 	return vrfSet.Vrfs[vrfIndex]
 }
 
+func (vrfSet *VrfSet) GetVrfIndexByAddress(address []byte) (int32) {
+	if vrfSet == nil {
+		return -1
+	}
+	for idx, vrf := range vrfSet.Vrfs {
+		if bytes.Equal(vrf.SteeringMemberCandidatePubKey.Address(), address) {
+			return int32(idx)
+		}
+	}
+	return -1
+}
+
 func (vrfSet *VrfSet) BitArray() *bits.BitArray {
 	if vrfSet == nil {
 		return nil
@@ -223,6 +236,8 @@ type VrfSetReader interface {
 	GetByIndex(int32) *Vrf
 }
 
+// update the vrf set, when a SDK sends the changed steering member candidate information and initialize.
+// It adds or removes the vrf from the managed list
 func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMemberCandidateSet) error {
 	vrfSet.mtx.Lock()
 	defer func() {
@@ -252,18 +267,8 @@ func (vrfSet *VrfSet) UpdateWithChangeSet(steeringMemberCandidateSet *SteeringMe
 	return nil
 }
 
-func (vrfSet *VrfSet) GetVrfIndexByAddress(address []byte) (int32) {
-	if vrfSet == nil {
-		return -1
-	}
-	for idx, vrf := range vrfSet.Vrfs {
-		if bytes.Equal(vrf.SteeringMemberCandidatePubKey.Address(), address) {
-			return int32(idx)
-		}
-	}
-	return -1
-}
-
+// Check an address is included in vrf set at the consensus round.
+// It means that the address is whether it is steering member candidate or not steering member candidate.
 func (vrfSet *VrfSet) HasAddress(address []byte) (bool) {
 	if vrfSet == nil {
 		return false
@@ -276,6 +281,7 @@ func (vrfSet *VrfSet) HasAddress(address []byte) (bool) {
 	return false
 }
 
+// Get steering member addresses selected as validators for the next consensus round.
 func (vrfSet *VrfSet) GetSteeringMemberAddresses() *SettingSteeringMember {
 	if len(vrfSet.Vrfs) != 0 {
 		sort.Sort(SortedVrfs(vrfSet.Vrfs))

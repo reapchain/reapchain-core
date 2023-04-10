@@ -177,6 +177,36 @@ func (c *Local) Validators(ctx context.Context, height *int64, page, perPage *in
 	return core.Validators(c.ctx, height, page, perPage)
 }
 
+func (c *Local) StandingMembers(ctx context.Context, height *int64) (*ctypes.ResultStandingMembers, error) {
+	return core.StandingMembers(c.ctx, height)
+}
+
+// SteeringMemberCandidates implements client.Client
+func (c *Local) SteeringMemberCandidates(ctx context.Context, height *int64) (*ctypes.ResultSteeringMemberCandidates, error) {
+	return core.SteeringMemberCandidates(c.ctx, height)
+}
+
+func (c *Local) Qrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	return core.Qrns(c.ctx, height)
+}
+
+func (c *Local) NextQrns(ctx context.Context, height *int64) (*ctypes.ResultQrns, error) {
+	return core.NextQrns(c.ctx, height)
+}
+
+func (c *Local) SettingSteeringMember(ctx context.Context, height *int64) (*ctypes.ResultSettingSteeringMember, error) {
+	return core.SettingSteeringMember(c.ctx, height)
+}
+
+func (c *Local) Vrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	return core.Vrfs(c.ctx, height)
+}
+
+func (c *Local) NextVrfs(ctx context.Context, height *int64) (*ctypes.ResultVrfs, error) {
+	return core.NextVrfs(c.ctx, height)
+}
+
+
 func (c *Local) Tx(ctx context.Context, hash []byte, prove bool) (*ctypes.ResultTx, error) {
 	return core.Tx(c.ctx, hash, prove)
 }

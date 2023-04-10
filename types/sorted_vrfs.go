@@ -2,6 +2,7 @@ package types
 
 import "bytes"
 
+// For sorting vrf with value
 type SortedVrfs []*Vrf
 
 func (sms SortedVrfs) Len() int { return len(sms) }

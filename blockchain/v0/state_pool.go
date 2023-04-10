@@ -26,7 +26,7 @@ type StatePool struct {
 	requestsCh chan<- BlockRequest
 	errorsCh   chan<- peerError
 }
-
+// StatePool keeps track of the fast sync peers, state requests and state responses.
 func NewStatePool(start int64, requestsCh chan<- BlockRequest, errorsCh chan<- peerError) *StatePool {
 	statePool := &StatePool{
 		peers: make(map[p2p.ID]*StatePoolPeer),
@@ -41,13 +41,13 @@ func NewStatePool(start int64, requestsCh chan<- BlockRequest, errorsCh chan<- p
 	statePool.BaseService = *service.NewBaseService(nil, "StatePool", statePool)
 	return statePool
 }
-
+// OnStart implements service.Service by spawning requesters routine and recording pool's start time.
 func (pool *StatePool) OnStart() error {
 	go pool.makeRequestersRoutine()
 	pool.startTime = time.Now()
 	return nil
 }
-
+// spawns requesters as needed
 func (pool *StatePool) makeRequestersRoutine() {
 	for {
 		if !pool.IsRunning() {
@@ -96,7 +96,8 @@ func (pool *StatePool) removeTimedoutPeers() {
 		}
 	}
 }
-
+// GetStatus returns pool's height, numPending requests and the number of
+// requesters.
 func (pool *StatePool) GetStatus() (height int64, numPending int32, lenRequesters int) {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
@@ -104,6 +105,8 @@ func (pool *StatePool) GetStatus() (height int64, numPending int32, lenRequester
 	return pool.height, atomic.LoadInt32(&pool.numPending), len(pool.requesters)
 }
 
+// IsCaughtUp returns true if this node is caught up, false - otherwise.
+// TODO: relax conditions, prevent abuse.
 func (pool *StatePool) IsCaughtUp() bool {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
@@ -113,12 +116,21 @@ func (pool *StatePool) IsCaughtUp() bool {
 		return false
 	}
 
+	// Some conditions to determine if we're caught up.
+	// Ensures we've either received a block or waited some amount of time,
+	// and that we're synced to the highest known height.
+	// Note we use maxPeerHeight - 1 because to sync block H requires block H+1
+	// to verify the LastCommit.
 	receivedBlockOrTimedOut := pool.height > 0 || time.Since(pool.startTime) > 5*time.Second
 	ourChainIsLongestAmongPeers := pool.maxPeerHeight == 0 || pool.height >= (pool.maxPeerHeight-1)
 	isCaughtUp := receivedBlockOrTimedOut && ourChainIsLongestAmongPeers
 	return isCaughtUp
 }
 
+// PeekTwoStates returns states at pool.height and pool.height+1.
+// We need to see the second state's Commit to validate the first state.
+// So we peek two states at a time.
+// The caller will verify the commit.
 func (pool *StatePool) PeekTwoStates() (firstState *sm.State, secondState *sm.State) {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
@@ -132,6 +144,8 @@ func (pool *StatePool) PeekTwoStates() (firstState *sm.State, secondState *sm.St
 	return
 }
 
+// PopRequest pops the first state at pool.height.
+// It must have been validated by 'second'.Commit from PeekTwoStates().
 func (pool *StatePool) PopRequest() {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
@@ -147,6 +161,9 @@ func (pool *StatePool) PopRequest() {
 	}
 }
 
+// RedoRequest invalidates the state at pool.height,
+// Remove the peer and redo request from others.
+// Returns the ID of the removed peer.
 func (pool *StatePool) RedoRequest(height int64) p2p.ID {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
@@ -159,6 +176,8 @@ func (pool *StatePool) RedoRequest(height int64) p2p.ID {
 	return peerID
 }
 
+// AddState validates that the state comes from the peer it was expected from and calls the requester to store it.
+// TODO: ensure that states come in order for each peer.
 func (pool *StatePool) AddState(peerID p2p.ID, state *sm.State, blockSize int) {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
@@ -187,12 +206,14 @@ func (pool *StatePool) AddState(peerID p2p.ID, state *sm.State, blockSize int) {
 	}
 }
 
+// MaxPeerHeight returns the highest reported height.
 func (pool *StatePool) MaxPeerHeight() int64 {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
 	return pool.maxPeerHeight
 }
 
+// SetPeerRange sets the peer's alleged blockchain base and height.
 func (pool *StatePool) SetPeerRange(peerID p2p.ID, base int64, height int64) {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
@@ -212,6 +233,8 @@ func (pool *StatePool) SetPeerRange(peerID p2p.ID, base int64, height int64) {
 	}
 }
 
+// RemovePeer removes the peer with peerID from the pool. 
+// If there's no peer with peerID, function is a no-op.
 func (pool *StatePool) RemovePeer(peerID p2p.ID) {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
@@ -242,6 +265,7 @@ func (pool *StatePool) removePeer(peerID p2p.ID) {
 	}
 }
 
+// If no peers are left, maxPeerHeight is set to 0.
 func (pool *StatePool) updateMaxPeerHeight() {
 	var max int64
 	for _, peer := range pool.peers {
@@ -252,6 +276,8 @@ func (pool *StatePool) updateMaxPeerHeight() {
 	pool.maxPeerHeight = max
 }
 
+// Pick an available peer with the given height available.
+// If no peers are available, returns nil.
 func (pool *StatePool) pickIncrAvailablePeer(height int64) *StatePoolPeer {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
@@ -311,6 +337,7 @@ func (pool *StatePool) sendError(err error, peerID p2p.ID) {
 	pool.errorsCh <- peerError{err, peerID}
 }
 
+// for debugging purposes nolint:unused
 func (pool *StatePool) debug() string {
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()

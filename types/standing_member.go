@@ -41,6 +41,7 @@ func (standingMember *StandingMember) ValidateBasic() error {
 	return nil
 }
 
+// Convert byte array for getting hash for including block header
 func (standingMember *StandingMember) Bytes() []byte {
 	pubKeyProto, err := ce.PubKeyToProto(standingMember.PubKey)
 	if err != nil {
@@ -58,6 +59,7 @@ func (standingMember *StandingMember) Bytes() []byte {
 	return bz
 }
 
+// Convert the standing member's proto puffer type to this type to apply the reapchain-core
 func StandingMemberFromProto(standingMemberProto *tmproto.StandingMember) (*StandingMember, error) {
 	if standingMemberProto == nil {
 		return nil, errors.New("nil standing member")
@@ -75,6 +77,7 @@ func StandingMemberFromProto(standingMemberProto *tmproto.StandingMember) (*Stan
 	return standingMember, nil
 }
 
+// Convert the type to proto puffer type to send the type to other peer or SDK
 func (standingMember *StandingMember) ToProto() (*tmproto.StandingMember, error) {
 	if standingMember == nil {
 		return nil, errors.New("nil standing member")
@@ -99,6 +102,7 @@ func (sm *StandingMember) Copy() *StandingMember {
 	return &smCopy
 }
 
+// For standingMember list to string for logging
 func StandingMemberListString(standingMembers []*StandingMember) string {
 	chunks := make([]string, len(standingMembers))
 	for i, standingMember := range standingMembers {

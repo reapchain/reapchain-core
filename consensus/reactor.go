@@ -60,9 +60,11 @@ type ReactorOption func(*Reactor)
 
 // NewReactor returns a new Reactor with the given
 // consensusState.
-func NewReactor(consensusState *State, stateStore sm.Store, waitSync bool, options ...ReactorOption) *Reactor {
+func NewReactor(chainID string, consensusState *State, stateStore sm.Store, waitSync bool, options ...ReactorOption) *Reactor {
 	conR := &Reactor{
 		conS:     consensusState,
+		chainID: chainID,
+		stateStore: stateStore,
 		waitSync: waitSync,
 		rs:       consensusState.GetRoundState(),
 		Metrics:  NopMetrics(),
@@ -121,7 +123,7 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 	if state.LastBlockHeight > 0 {
 		conR.conS.reconstructLastCommit(state)
 	}
-
+	
 	// if we have CatchupQrnMessages, add the qrns
 	for _, currentQrnMessage := range conR.CatchupQrnMessages {
 		state.NextQrnSet.AddQrn(state.ChainID, currentQrnMessage.Qrn)
@@ -217,7 +219,7 @@ func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 			RecvBufferCapacity:  50 * 4096,
 			RecvMessageCapacity: maxMsgSize,
 		},
-		{
+				{
 			ID:                  CatchUpChannel,
 			Priority:            10,
 			SendQueueCapacity:   100,
@@ -245,6 +247,7 @@ func (conR *Reactor) AddPeer(peer p2p.Peer) {
 	if !ok {
 		panic(fmt.Sprintf("peer %v has no state", peer))
 	}
+
 	// Begin routines for this peer.
 	go conR.gossipDataRoutine(peer, peerState)
 	go conR.gossipVotesRoutine(peer, peerState)
@@ -493,7 +496,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			conR.Logger.Info("Ignoring message received during sync", "msg", msg)
 			return
 		}
-
+		
 		switch msg := msg.(type) {
 		case *VoteMessage:
 			cs := conR.conS
@@ -1154,3 +1157,6 @@ func (conR *Reactor) StringIndented(indent string) string {
 func ReactorMetrics(metrics *Metrics) ReactorOption {
 	return func(conR *Reactor) { conR.Metrics = metrics }
 }
+
+//-----------------------------------------------------------------------------
+// Messages

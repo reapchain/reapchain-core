@@ -21,7 +21,8 @@ import (
 	are not at peer limits, we can probably switch to consensus reactor
 */
 
-
+// bpPeer makes this possible by opening and maintaing communcation channels between nodes, accepting new
+// blocks from other nodes, and responding to requests for block validaity verification
 type bpPeer struct {
 	didTimeout      bool
 	numPending      int32

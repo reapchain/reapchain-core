@@ -366,7 +366,7 @@ func TestProposerFrequency(t *testing.T) {
 			privVal := types.NewMockPV()
 			pubKey, err := privVal.GetPubKey()
 			require.NoError(t, err)
-			val := types.NewValidator(pubKey, votePower)
+			val := types.NewValidator(pubKey, votePower, "standing")
 			val.ProposerPriority = tmrand.Int64()
 			vals[j] = val
 		}
@@ -383,7 +383,7 @@ func genValSetWithPowers(powers []int64) *types.ValidatorSet {
 	totalVotePower := int64(0)
 	for i := 0; i < size; i++ {
 		totalVotePower += powers[i]
-		val := types.NewValidator(ed25519.GenPrivKey().PubKey(), powers[i])
+		val := types.NewValidator(ed25519.GenPrivKey().PubKey(), powers[i], "standing")
 		val.ProposerPriority = tmrand.Int64()
 		vals[i] = val
 	}
@@ -405,7 +405,6 @@ func testProposerFreq(t *testing.T, caseNum int, valSet *types.ValidatorSet) {
 		prop := valSet.GetProposer()
 		idx, _ := valSet.GetByAddress(prop.Address)
 		freqs[idx]++
-		valSet.IncrementProposerPriority(1)
 	}
 
 	// assert frequencies match expected (max off by 1)
@@ -726,6 +725,7 @@ func TestLargeGenesisValidator(t *testing.T) {
 		Address:     genesisPubKey.Address(),
 		PubKey:      genesisPubKey,
 		VotingPower: genesisVotingPower,
+		Type: "standing",
 	}
 	// reset state validators to above validator
 	state.Validators = types.NewValidatorSet([]*types.Validator{genesisVal})
@@ -903,7 +903,7 @@ func TestStoreLoadValidatorsIncrementsProposerPriority(t *testing.T) {
 	t.Cleanup(func() { tearDown(t) })
 	stateStore := sm.NewStore(stateDB)
 	state.Validators = genValSet(valSetSize)
-	state.NextValidators = state.Validators.CopyIncrementProposerPriority(1)
+	state.NextValidators = state.Validators.Copy()
 	err := stateStore.Save(state)
 	require.NoError(t, err)
 
@@ -929,7 +929,7 @@ func TestManyValidatorChangesSaveLoad(t *testing.T) {
 	stateStore := sm.NewStore(stateDB)
 	require.Equal(t, int64(0), state.LastBlockHeight)
 	state.Validators = genValSet(valSetSize)
-	state.NextValidators = state.Validators.CopyIncrementProposerPriority(1)
+	state.NextValidators = state.Validators.Copy()
 	err := stateStore.Save(state)
 	require.NoError(t, err)
 
@@ -1075,7 +1075,7 @@ func TestStateProto(t *testing.T) {
 			assert.NoError(t, err, tt.testName)
 		}
 
-		smt, err := sm.FromProto(pbs)
+		smt, err := sm.StateFromProto(pbs)
 		if tt.expPass2 {
 			require.NoError(t, err, tt.testName)
 			require.Equal(t, tt.state, smt, tt.testName)

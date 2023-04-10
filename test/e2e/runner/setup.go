@@ -208,6 +208,7 @@ func MakeGenesis(testnet *e2e.Testnet) (types.GenesisDoc, error) {
 	for validator, power := range testnet.Validators {
 		genesis.Validators = append(genesis.Validators, types.GenesisValidator{
 			Name:    validator.Name,
+			Type:    validator.Type,
 			Address: validator.PrivvalKey.PubKey().Address(),
 			PubKey:  validator.PrivvalKey.PubKey(),
 			Power:   power,
