@@ -686,7 +686,7 @@ type blockVotes struct {
 	bitArray  *bits.BitArray // valIndex -> hasVote?
 	votes     []*Vote        // valIndex -> *Vote
 	sum       int64          // vote sum
-	voteCount       int64
+	voteCount       int64          // vote count
 }
 
 func newBlockVotes(peerMaj23 bool, numValidators int) *blockVotes {
