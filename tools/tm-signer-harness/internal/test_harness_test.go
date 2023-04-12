@@ -71,6 +71,8 @@ const (
 }`
 
 	defaultConnDeadline = 100
+
+	validatorType = "standing"
 )
 
 func TestRemoteSignerTestHarnessMaxAcceptRetriesReached(t *testing.T) {
@@ -87,7 +89,7 @@ func TestRemoteSignerTestHarnessSuccessfulRun(t *testing.T) {
 	harnessTest(
 		t,
 		func(th *TestHarness) *privval.SignerServer {
-			return newMockSignerServer(t, th, th.fpv.Key.PrivKey,"standing", false, false)
+			return newMockSignerServer(t, th, th.fpv.Key.PrivKey, validatorType, false, false)
 		},
 		NoError,
 	)
@@ -97,7 +99,7 @@ func TestRemoteSignerPublicKeyCheckFailed(t *testing.T) {
 	harnessTest(
 		t,
 		func(th *TestHarness) *privval.SignerServer {
-			return newMockSignerServer(t, th, ed25519.GenPrivKey(),"standing", false, false)
+			return newMockSignerServer(t, th, ed25519.GenPrivKey(), validatorType, false, false)
 		},
 		ErrTestPublicKeyFailed,
 	)
@@ -107,7 +109,7 @@ func TestRemoteSignerProposalSigningFailed(t *testing.T) {
 	harnessTest(
 		t,
 		func(th *TestHarness) *privval.SignerServer {
-			return newMockSignerServer(t, th, th.fpv.Key.PrivKey,"standing",  true, false)
+			return newMockSignerServer(t, th, th.fpv.Key.PrivKey, validatorType, true, false)
 		},
 		ErrTestSignProposalFailed,
 	)
@@ -117,7 +119,7 @@ func TestRemoteSignerVoteSigningFailed(t *testing.T) {
 	harnessTest(
 		t,
 		func(th *TestHarness) *privval.SignerServer {
-			return newMockSignerServer(t, th, th.fpv.Key.PrivKey,"standing", false, true)
+			return newMockSignerServer(t, th, th.fpv.Key.PrivKey, validatorType, false, true)
 		},
 		ErrTestSignVoteFailed,
 	)
@@ -131,7 +133,7 @@ func newMockSignerServer(
 	breakProposalSigning bool,
 	breakVoteSigning bool,
 ) *privval.SignerServer {
-	mockPV := types.NewMockPVWithParams(privKey,validatorType, breakProposalSigning, breakVoteSigning)
+	mockPV := types.NewMockPVWithParams(privKey, validatorType, breakProposalSigning, breakVoteSigning)
 
 	dialerEndpoint := privval.NewSignerDialerEndpoint(
 		th.logger,
