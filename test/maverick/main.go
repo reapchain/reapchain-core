@@ -23,6 +23,10 @@ import (
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 )
 
+const (
+	validatorType = "standing"
+)
+
 var (
 	config          = cfg.DefaultConfig()
 	logger          = log.NewTMLogger(log.NewSyncWriter(os.Stdout))
@@ -215,7 +219,7 @@ func initFilesWithConfig(config *cfg.Config) error {
 			Address: pubKey.Address(),
 			PubKey:  pubKey,
 			Power:   10,
-			Type: "standing",
+			Type:    validatorType,
 		}}
 
 		if err := genDoc.SaveAs(genFile); err != nil {

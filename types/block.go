@@ -352,10 +352,10 @@ type Header struct {
 	StandingMembersHash tmbytes.HexBytes `json:"standing_members_hash"`
 	SteeringMemberCandidatesHash tmbytes.HexBytes `json:"steering_member_candidates_hash"`
 
-	QrnsHash tmbytes.HexBytes `json:"qrns_hash"`
-	VrfsHash tmbytes.HexBytes `json:"vrfs_hash"`
+	QrnsHash tmbytes.HexBytes `json:"qrns_hash"` // QRN list hash of consensus round
+	VrfsHash tmbytes.HexBytes `json:"vrfs_hash"` // VRF list hash of consensus round
 
-	ConsensusRound      ConsensusRound   `json:"consensus_round"`
+	ConsensusRound      ConsensusRound   `json:"consensus_round"` // Consensus round information
 }
 
 // Populate the Header with state-derived data.

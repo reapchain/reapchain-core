@@ -414,7 +414,6 @@ func (h *Handshaker) ReplayBlocks(
 				if err != nil {
 					return nil, err
 				}
-				fmt.Println("jbjb")
 
 				state.StandingMemberSet = types.NewStandingMemberSet(standingMembers)
 			} else if len(h.genDoc.StandingMembers) == 0 {

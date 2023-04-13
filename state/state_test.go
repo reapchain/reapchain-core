@@ -24,6 +24,10 @@ import (
 	"github.com/reapchain/reapchain-core/types"
 )
 
+const (
+	validatorType = "standing"
+)
+
 // setupTestCase does setup common to all test cases.
 func setupTestCase(t *testing.T) (func(t *testing.T), dbm.DB, sm.State) {
 	config := cfg.ResetTestRoot("state_")
@@ -366,7 +370,7 @@ func TestProposerFrequency(t *testing.T) {
 			privVal := types.NewMockPV()
 			pubKey, err := privVal.GetPubKey()
 			require.NoError(t, err)
-			val := types.NewValidator(pubKey, votePower, "standing")
+			val := types.NewValidator(pubKey, votePower, validatorType)
 			val.ProposerPriority = tmrand.Int64()
 			vals[j] = val
 		}
@@ -383,7 +387,7 @@ func genValSetWithPowers(powers []int64) *types.ValidatorSet {
 	totalVotePower := int64(0)
 	for i := 0; i < size; i++ {
 		totalVotePower += powers[i]
-		val := types.NewValidator(ed25519.GenPrivKey().PubKey(), powers[i], "standing")
+		val := types.NewValidator(ed25519.GenPrivKey().PubKey(), powers[i], validatorType)
 		val.ProposerPriority = tmrand.Int64()
 		vals[i] = val
 	}
@@ -405,6 +409,7 @@ func testProposerFreq(t *testing.T, caseNum int, valSet *types.ValidatorSet) {
 		prop := valSet.GetProposer()
 		idx, _ := valSet.GetByAddress(prop.Address)
 		freqs[idx]++
+		// valSet.IncrementProposerPriority(1) //not used for PoDC
 	}
 
 	// assert frequencies match expected (max off by 1)
@@ -725,7 +730,7 @@ func TestLargeGenesisValidator(t *testing.T) {
 		Address:     genesisPubKey.Address(),
 		PubKey:      genesisPubKey,
 		VotingPower: genesisVotingPower,
-		Type: "standing",
+		Type:        validatorType,
 	}
 	// reset state validators to above validator
 	state.Validators = types.NewValidatorSet([]*types.Validator{genesisVal})

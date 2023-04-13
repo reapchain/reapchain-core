@@ -847,7 +847,7 @@ func NewNode(config *cfg.Config,
 		*config.StateSync,
 		proxyApp.Snapshot(),
 		proxyApp.Query(),
-		config.StateSync.TempDir,
+		config.StateSync.TempDir
 	)
 	stateSyncReactor.SetLogger(logger.With("module", "statesync"))
 
