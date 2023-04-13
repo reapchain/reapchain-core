@@ -35,11 +35,11 @@ func TestNewProvider(t *testing.T) {
 func TestMain(m *testing.M) {
 	app := kvstore.NewApplication()
 	app.RetainBlocks = 9
-	node := rpctest.StartReapchain(app)
+	node := rpctest.StartReapchainCore(app)
 
 	code := m.Run()
 
-	rpctest.StopReapchain(node)
+	rpctest.StopReapchainCore(node)
 	os.Exit(code)
 }
 

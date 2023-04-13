@@ -1156,8 +1156,10 @@ func (cs *State) enterPropose(height int64, round int32) {
 	}
 
 	if cs.isProposer(address) {
-		logger.Error("I'm a proposer", "proposer", address)
+		logger.Debug("propose step; our turn to propose", "proposer", address)
 		cs.decideProposal(height, round)
+	} else {
+		logger.Debug("propose step; not our turn to propose", "proposer", cs.Validators.GetProposer().Address)
 	}
 }
 
