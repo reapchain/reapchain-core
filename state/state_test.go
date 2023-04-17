@@ -114,7 +114,7 @@ func TestABCIResponsesSaveLoad1(t *testing.T) {
 	abciResponses.DeliverTxs[0] = &abci.ResponseDeliverTx{Data: []byte("foo"), Events: nil}
 	abciResponses.DeliverTxs[1] = &abci.ResponseDeliverTx{Data: []byte("bar"), Log: "ok", Events: nil}
 	abciResponses.EndBlock = &abci.ResponseEndBlock{ValidatorUpdates: []abci.ValidatorUpdate{
-		types.TM2PB.NewValidatorUpdate(ed25519.GenPrivKey().PubKey(), 10),
+		types.TM2PB.NewValidatorUpdate(ed25519.GenPrivKey().PubKey(), 10, "standing"),
 	}}
 
 	err := stateStore.SaveABCIResponses(block.Height, abciResponses)
@@ -281,6 +281,7 @@ func TestOneValidatorChangesSaveLoad(t *testing.T) {
 		err := stateStore.Save(state)
 		require.NoError(t, err)
 	}
+
 
 	// On each height change, increment the power by one.
 	testCases := make([]int64, highestHeight)

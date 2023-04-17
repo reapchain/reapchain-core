@@ -60,7 +60,7 @@ const (
 		{
 		"address": "D08FCA3BA74CF17CBFC15E64F9505302BB0E2748",
 		"pub_key": {
-			"type": "reapchain-core/PubKeyEd25519",
+			"type": "reapchain/PubKeyEd25519",
 			"value": "ZCsuTjaczEyon70nmKxwvwu+jqrbq5OH3yQjcK0SFxc="
 		},
 		"power": "10",

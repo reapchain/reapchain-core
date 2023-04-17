@@ -601,7 +601,7 @@ var testGenesisFmt = `{
   "validators": [
     {
       "pub_key": {
-        "type": "reapchain-core/PubKeyEd25519",
+        "type": "reapchain/PubKeyEd25519",
         "value":"AT/+aaL1eB0477Mud9JMm8Sh8BIvOYlPGC9KkIUmFaE="
       },
       "power": "10",

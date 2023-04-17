@@ -25,13 +25,15 @@ const ValSetCheckpointInterval = valSetCheckpointInterval
 // UpdateState is an alias for updateState exported from execution.go,
 // exclusively and explicitly for testing.
 func UpdateState(
+	store Store,
 	state State,
 	blockID types.BlockID,
 	header *types.Header,
 	abciResponses *tmstate.ABCIResponses,
-	validatorUpdates []*types.Validator,
+	standingMemberUpdates []*types.StandingMember,
+	steeringMemberCandidateUpdates []*types.SteeringMemberCandidate,
 ) (State, error) {
-	return updateState(state, blockID, header, abciResponses, validatorUpdates)
+	return updateState(store, state, blockID, header, abciResponses, standingMemberUpdates, steeringMemberCandidateUpdates)
 }
 
 // ValidateValidatorUpdates is an alias for validateValidatorUpdates exported

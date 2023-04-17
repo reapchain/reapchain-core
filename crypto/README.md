@@ -22,9 +22,9 @@ JSON encoding is done using reapchain-core's internal json encoder. For more inf
 Example JSON encodings:
 
 ed25519.PrivKey     - {"type":"reapchain/PrivKeyEd25519","value":"EVkqJO/jIXp3rkASXfh9YnyToYXRXhBr6g9cQVxPFnQBP/5povV4HTjvsy530kybxKHwEi85iU8YL0qQhSYVoQ=="}
-ed25519.PubKey      - {"type":"reapchain-core/PubKeyEd25519","value":"AT/+aaL1eB0477Mud9JMm8Sh8BIvOYlPGC9KkIUmFaE="}
+ed25519.PubKey      - {"type":"reapchain/PubKeyEd25519","value":"AT/+aaL1eB0477Mud9JMm8Sh8BIvOYlPGC9KkIUmFaE="}
 sr25519.PrivKeySr25519   - {"type":"reapchain/PrivKeySr25519","value":"xtYVH8UCIqfrY8FIFc0QEpAEBShSG4NT0zlEOVSZ2w4="}
-sr25519.PubKeySr25519    - {"type":"reapchain-core/PubKeySr25519","value":"8sKBLKQ/OoXMcAJVxBqz1U7TyxRFQ5cmliuHy4MrF0s="}
+sr25519.PubKeySr25519    - {"type":"reapchain/PubKeySr25519","value":"8sKBLKQ/OoXMcAJVxBqz1U7TyxRFQ5cmliuHy4MrF0s="}
 crypto.PrivKeySecp256k1   - {"type":"reapchain/PrivKeySecp256k1","value":"zx4Pnh67N+g2V+5vZbQzEyRerX9c4ccNZOVzM9RvJ0Y="}
-crypto.PubKeySecp256k1    - {"type":"reapchain-core/PubKeySecp256k1","value":"A8lPKJXcNl5VHt1FK8a244K9EJuS4WX1hFBnwisi0IJx"}
+crypto.PubKeySecp256k1    - {"type":"reapchain/PubKeySecp256k1","value":"A8lPKJXcNl5VHt1FK8a244K9EJuS4WX1hFBnwisi0IJx"}
 ```

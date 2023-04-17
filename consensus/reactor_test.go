@@ -56,7 +56,11 @@ func startConsensusNet(t *testing.T, css []*State, n int) (
 	for i := 0; i < n; i++ {
 		/*logger, err := tmflags.ParseLogLevel("consensus:info,*:error", logger, "info")
 		if err != nil {	t.Fatal(err)}*/
-		reactors[i] = NewReactor(css[i], true) // so we dont start the consensus states
+		//for defining stateStore to test reactors[i]
+		stateDB := dbm.NewMemDB() 
+		stateStore := sm.NewStore(stateDB)
+		//NewReactor(chainID, conS[cosensusState],  stateStore, waitSync)
+		reactors[i] = NewReactor("test", css[i],stateStore, true) // so we dont start the consensus states
 		reactors[i].SetLogger(css[i].Logger)
 
 		// eventBus is already started with the cs

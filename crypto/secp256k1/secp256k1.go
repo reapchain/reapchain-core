@@ -17,8 +17,8 @@ import (
 
 //-------------------------------------
 const (
-	PrivKeyName = "reapchain-core/PrivKeySecp256k1"
-	PubKeyName  = "reapchain-core/PubKeySecp256k1"
+	PrivKeyName = "reapchain/PrivKeySecp256k1"
+	PubKeyName  = "reapchain/PubKeySecp256k1"
 
 	KeyType     = "secp256k1"
 	PrivKeySize = 32

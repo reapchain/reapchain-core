@@ -113,7 +113,7 @@ definition](https://github.com/reapchain/reapchain-core/blob/master/types/genesi
     {
       "address": "B547AB87E79F75A4A3198C57A8C2FDAF8628CB47",
       "pub_key": {
-        "type": "reapchain-core/PubKeyEd25519",
+        "type": "reapchain/PubKeyEd25519",
         "value": "P/V6GHuZrb8rs/k1oBorxc6vyXMlnzhJmv7LmjELDys="
       },
       "power": "10",
@@ -355,7 +355,7 @@ When `reapchain-core init` is run, both a `genesis.json` and
     {
       "pub_key" : {
         "value" : "h3hk+QE8c6QLTySp8TcfzclJw/BG79ziGB/pIA+DfPE=",
-        "type" : "reapchain-core/PubKeyEd25519"
+        "type" : "reapchain/PubKeyEd25519"
       },
       "power" : 10,
       "name" : ""
@@ -521,7 +521,7 @@ then the new `genesis.json` will be:
     {
       "pub_key" : {
         "value" : "h3hk+QE8c6QLTySp8TcfzclJw/BG79ziGB/pIA+DfPE=",
-        "type" : "reapchain-core/PubKeyEd25519"
+        "type" : "reapchain/PubKeyEd25519"
       },
       "power" : 10,
       "name" : ""
@@ -529,7 +529,7 @@ then the new `genesis.json` will be:
     {
       "pub_key" : {
         "value" : "l9X9+fjkeBzDfPGbUM7AMIRE6uJN78zN5+lk5OYotek=",
-        "type" : "reapchain-core/PubKeyEd25519"
+        "type" : "reapchain/PubKeyEd25519"
       },
       "power" : 10,
       "name" : ""

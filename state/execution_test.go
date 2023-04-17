@@ -102,7 +102,7 @@ func TestBeginBlockValidators(t *testing.T) {
 		// block for height 2
 		block, _ := state.MakeBlock(2, makeTxs(2), lastCommit, nil, state.Validators.GetProposer().Address)
 
-		_, err = sm.ExecCommitBlock(proxyApp.Consensus(), block, log.TestingLogger(), stateStore, 1)
+		_, err = sm.ExecCommitBlock(proxyApp.Consensus(), block, log.TestingLogger(), stateStore, 1, state)
 		require.Nil(t, err, tc.desc)
 
 		// -> app receives a list of validators with a bool indicating if they signed
@@ -273,9 +273,9 @@ func TestValidateValidatorUpdates(t *testing.T) {
 
 func TestUpdateValidators(t *testing.T) {
 	pubkey1 := ed25519.GenPrivKey().PubKey()
-	val1 := types.NewValidator(pubkey1, 10)
+	val1 := types.NewValidator(pubkey1, 10, "standing")
 	pubkey2 := ed25519.GenPrivKey().PubKey()
-	val2 := types.NewValidator(pubkey2, 20)
+	val2 := types.NewValidator(pubkey2, 20, "standing")
 
 	pk, err := cryptoenc.PubKeyToProto(pubkey1)
 	require.NoError(t, err)
@@ -302,7 +302,7 @@ func TestUpdateValidators(t *testing.T) {
 			"updating a validator is OK",
 			types.NewValidatorSet([]*types.Validator{val1}),
 			[]abci.ValidatorUpdate{{PubKey: pk, Power: 20}},
-			types.NewValidatorSet([]*types.Validator{types.NewValidator(pubkey1, 20)}),
+			types.NewValidatorSet([]*types.Validator{types.NewValidator(pubkey1, 20, "standing")}),
 			false,
 		},
 		{
@@ -374,7 +374,7 @@ func TestEndBlockValidatorUpdates(t *testing.T) {
 	updatesSub, err := eventBus.Subscribe(
 		context.Background(),
 		"TestEndBlockValidatorUpdates",
-		types.EventQueryValidatorSetUpdates,
+		types.EventQueryStandingMemberSetUpdates,
 	)
 	require.NoError(t, err)
 
@@ -401,11 +401,11 @@ func TestEndBlockValidatorUpdates(t *testing.T) {
 	// test we threw an event
 	select {
 	case msg := <-updatesSub.Out():
-		event, ok := msg.Data().(types.EventDataValidatorSetUpdates)
-		require.True(t, ok, "Expected event of type EventDataValidatorSetUpdates, got %T", msg.Data())
-		if assert.NotEmpty(t, event.ValidatorUpdates) {
-			assert.Equal(t, pubkey, event.ValidatorUpdates[0].PubKey)
-			assert.EqualValues(t, 10, event.ValidatorUpdates[0].VotingPower)
+		event, ok := msg.Data().(types.EventDataStandingMemberSetUpdates)
+		require.True(t, ok, "Expected event of type EventDataStandingMemberSetUpdates, got %T", msg.Data())
+		if assert.NotEmpty(t, event.StandingMemberUpdates) {
+			assert.Equal(t, pubkey, event.StandingMemberUpdates[0].PubKey)
+			assert.EqualValues(t, 10, event.StandingMemberUpdates[0].VotingPower)
 		}
 	case <-updatesSub.Cancelled():
 		t.Fatalf("updatesSub was cancelled (reason: %v)", updatesSub.Err())

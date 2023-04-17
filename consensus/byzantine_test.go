@@ -122,7 +122,11 @@ func TestByzantinePrevoteEquivocation(t *testing.T) {
 	blocksSubs := make([]types.Subscription, 0)
 	eventBuses := make([]*types.EventBus, nValidators)
 	for i := 0; i < nValidators; i++ {
-		reactors[i] = NewReactor(css[i], true) // so we dont start the consensus states
+		//for defining stateStore to test reactors[i]
+		stateDB := dbm.NewMemDB() 
+		stateStore := sm.NewStore(stateDB)
+
+		reactors[i] = NewReactor("test", css[i],stateStore, true) // so we dont start the consensus states
 		reactors[i].SetLogger(css[i].Logger)
 
 		// eventBus is already started with the cs
@@ -351,8 +355,12 @@ func TestByzantineConflictingProposalsWithPartition(t *testing.T) {
 		var err error
 		blocksSubs[i], err = eventBus.Subscribe(context.Background(), testSubscriber, types.EventQueryNewBlock)
 		require.NoError(t, err)
-
-		conR := NewReactor(css[i], true) // so we don't start the consensus states
+		//for defining stateStore to test reactors[i]
+		stateDB := dbm.NewMemDB() 
+		stateStore := sm.NewStore(stateDB)
+		
+		//chainID, conS[cosensusState],  stateStore, waitSync]
+		conR := NewReactor("test", css[i],stateStore, true) // so we don't start the consensus states
 		conR.SetLogger(logger.With("validator", i))
 		conR.SetEventBus(eventBus)
 

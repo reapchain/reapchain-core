@@ -61,7 +61,7 @@ Response:
                 {
                   "address": "09EAD022FD25DE3A02E64B0FE9610B1417183EE4",
                   "pub_key": {
-                    "type": "reapchain-core/PubKeyEd25519",
+                    "type": "reapchain/PubKeyEd25519",
                     "value": "ww0z4WaZ0Xg+YI10w43wTWbBmM3dpVza4mmSQYsd0ck="
                   },
                   "voting_power": "10",

@@ -6,9 +6,9 @@ import (
 	mock "github.com/stretchr/testify/mock"
 	state "github.com/reapchain/reapchain-core/state"
 
-	reapchain-corestate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
+	tendermintstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
 
-	reapchain-coretypes "github.com/reapchain/reapchain-core/types"
+	tenderminttypes "github.com/reapchain/reapchain-core/types"
 
 	types "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
 )
@@ -68,15 +68,15 @@ func (_m *Store) Load() (state.State, error) {
 }
 
 // LoadABCIResponses provides a mock function with given fields: _a0
-func (_m *Store) LoadABCIResponses(_a0 int64) (*reapchain-corestate.ABCIResponses, error) {
+func (_m *Store) LoadABCIResponses(_a0 int64) (*tendermintstate.ABCIResponses, error) {
 	ret := _m.Called(_a0)
 
-	var r0 *reapchain-corestate.ABCIResponses
-	if rf, ok := ret.Get(0).(func(int64) *reapchain-corestate.ABCIResponses); ok {
+	var r0 *tendermintstate.ABCIResponses
+	if rf, ok := ret.Get(0).(func(int64) *tendermintstate.ABCIResponses); ok {
 		r0 = rf(_a0)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*reapchain-corestate.ABCIResponses)
+			r0 = ret.Get(0).(*tendermintstate.ABCIResponses)
 		}
 	}
 
@@ -134,18 +134,18 @@ func (_m *Store) LoadConsensusRound(_a0 int64) (types.ConsensusRound, error) {
 
 
 // LoadFromDBOrGenesisDoc provides a mock function with given fields: _a0
-func (_m *Store) LoadFromDBOrGenesisDoc(_a0 *reapchain-coretypes.GenesisDoc) (state.State, error) {
+func (_m *Store) LoadFromDBOrGenesisDoc(_a0 *tenderminttypes.GenesisDoc) (state.State, error) {
 	ret := _m.Called(_a0)
 
 	var r0 state.State
-	if rf, ok := ret.Get(0).(func(*reapchain-coretypes.GenesisDoc) state.State); ok {
+	if rf, ok := ret.Get(0).(func(*tenderminttypes.GenesisDoc) state.State); ok {
 		r0 = rf(_a0)
 	} else {
 		r0 = ret.Get(0).(state.State)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*reapchain-coretypes.GenesisDoc) error); ok {
+	if rf, ok := ret.Get(1).(func(*tenderminttypes.GenesisDoc) error); ok {
 		r1 = rf(_a0)
 	} else {
 		r1 = ret.Error(1)
@@ -176,15 +176,15 @@ func (_m *Store) LoadFromDBOrGenesisFile(_a0 string) (state.State, error) {
 }
 
 // LoadValidators provides a mock function with given fields: _a0
-func (_m *Store) LoadValidators(_a0 int64) (*reapchain-coretypes.ValidatorSet, error) {
+func (_m *Store) LoadValidators(_a0 int64) (*tenderminttypes.ValidatorSet, error) {
 	ret := _m.Called(_a0)
 
-	var r0 *reapchain-coretypes.ValidatorSet
-	if rf, ok := ret.Get(0).(func(int64) *reapchain-coretypes.ValidatorSet); ok {
+	var r0 *tenderminttypes.ValidatorSet
+	if rf, ok := ret.Get(0).(func(int64) *tenderminttypes.ValidatorSet); ok {
 		r0 = rf(_a0)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*reapchain-coretypes.ValidatorSet)
+			r0 = ret.Get(0).(*tenderminttypes.ValidatorSet)
 		}
 	}
 
@@ -227,11 +227,11 @@ func (_m *Store) Save(_a0 state.State) error {
 }
 
 // SaveABCIResponses provides a mock function with given fields: _a0, _a1
-func (_m *Store) SaveABCIResponses(_a0 int64, _a1 *reapchain-corestate.ABCIResponses) error {
+func (_m *Store) SaveABCIResponses(_a0 int64, _a1 *tendermintstate.ABCIResponses) error {
 	ret := _m.Called(_a0, _a1)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(int64, *reapchain-corestate.ABCIResponses) error); ok {
+	if rf, ok := ret.Get(0).(func(int64, *tendermintstate.ABCIResponses) error); ok {
 		r0 = rf(_a0, _a1)
 	} else {
 		r0 = ret.Error(0)

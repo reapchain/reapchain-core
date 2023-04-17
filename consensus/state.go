@@ -631,6 +631,8 @@ func (cs *State) updateToState(state sm.State) {
 			return
 		}
 	}
+	// Reset fields based on state.
+	validators := state.Validators
 
 	switch {
 	case state.LastBlockHeight == 0: // Very first commit should be empty.
@@ -653,9 +655,6 @@ func (cs *State) updateToState(state sm.State) {
 			state.LastBlockHeight+1,
 		))
 	}
-
-	// Reset fields based on state.
-	validators := state.Validators
 
 	// Next desired block height
 	height := state.LastBlockHeight + 1
@@ -2052,7 +2051,7 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 			cs.Logger.Error("failed publishing event complete proposal", "err", err)
 		}
 
-		// Update Valid* if we can.
+		/* // Update Valid* if we can. => hanldeCompleteProposal
 		prevotes := cs.Votes.Prevotes(cs.Round)
 		blockID, hasTwoThirds := prevotes.TwoThirdsMajority()
 		if hasTwoThirds && !blockID.IsZero() && (cs.ValidRound < cs.Round) {
@@ -2073,7 +2072,7 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 			// than 1/3. We should trigger in the future accountability
 			// procedure at this point.
 		}
-
+		
 		if cs.Step <= cstypes.RoundStepPropose && cs.isProposalComplete() {
 			// Move onto the next step
 			cs.enterPrevote(height, cs.Round)
@@ -2084,7 +2083,7 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 			// If we're waiting on the proposal block...
 			cs.tryFinalizeCommit(height)
 		}
-
+		*/
 		return added, nil
 	}
 
