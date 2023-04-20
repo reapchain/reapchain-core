@@ -18,8 +18,8 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	tmstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmstate "github.com/reapchain/reapchain-core/proto/podc/state"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"
 )

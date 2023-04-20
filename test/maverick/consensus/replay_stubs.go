@@ -4,7 +4,7 @@ import (
 	abci "github.com/reapchain/reapchain-core/abci/types"
 	"github.com/reapchain/reapchain-core/libs/clist"
 	mempl "github.com/reapchain/reapchain-core/mempool"
-	tmstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
+	tmstate "github.com/reapchain/reapchain-core/proto/podc/state"
 	"github.com/reapchain/reapchain-core/proxy"
 	"github.com/reapchain/reapchain-core/types"
 )

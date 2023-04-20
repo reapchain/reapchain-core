@@ -156,7 +156,7 @@ func ExampleClient_VerifyLightBlockAtHeight() {
 }
 
 func TestMain(m *testing.M) {
-	// start a reapchain-core node (and kvstore) in the background to test against
+	// start a podc node (and kvstore) in the background to test against
 	app := kvstore.NewApplication()
 	node := rpctest.StartReapchainCore(app, rpctest.SuppressStdout)
 

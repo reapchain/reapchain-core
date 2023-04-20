@@ -11,7 +11,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/libs/protoio"
 	"github.com/reapchain/reapchain-core/p2p/conn"
-	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain-core/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/podc/p2p"
 )
 
 const (

@@ -17,6 +17,6 @@ done
 cp -r ./reapchain-core/* ./proto/*
 rm -rf reapchain-core
 
-mv ./proto/reapchain-core/abci/types.pb.go ./abci/types
+mv ./proto/podc/abci/types.pb.go ./abci/types
 
-mv ./proto/reapchain-core/rpc/grpc/types.pb.go ./rpc/grpc
+mv ./proto/podc/rpc/grpc/types.pb.go ./rpc/grpc

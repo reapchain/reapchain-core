@@ -8,7 +8,7 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto/merkle"
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 )
 
 // It manages steering member candidate list
@@ -69,7 +69,7 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) updateWithChangeSe
 }
 
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) ValidateBasic() error {
-	if steeringMemberCandidateSet.IsNilOrEmpty() {
+	if steeringMemberCandidateSet.IsNil() {
 		return errors.New("steering member candidate set is nil or empty")
 	}
 
@@ -82,8 +82,8 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) ValidateBasic() er
 	return nil
 }
 
-func (steeringMemberCandidateSet *SteeringMemberCandidateSet) IsNilOrEmpty() bool {
-	return steeringMemberCandidateSet == nil || len(steeringMemberCandidateSet.SteeringMemberCandidates) == 0
+func (steeringMemberCandidateSet *SteeringMemberCandidateSet) IsNil() bool {
+	return steeringMemberCandidateSet == nil
 }
 
 // Make steering member candiate set hash to validate and be included in the block header
@@ -101,6 +101,8 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) Hash() []byte {
 
 // Convert the steering member candiate set's proto puffer type to this type to apply the reapchain-core
 func SteeringMemberCandidateSetFromProto(steeringMemberCandidateSetProto *tmproto.SteeringMemberCandidateSet) (*SteeringMemberCandidateSet, error) {
+	fmt.Println("SteeringMemberCandidateSetFromProto", steeringMemberCandidateSetProto, steeringMemberCandidateSetProto == nil)
+
 	steeringMemberCandidateSet := new(SteeringMemberCandidateSet)
 	if steeringMemberCandidateSetProto == nil {
 		return steeringMemberCandidateSet, nil
@@ -122,7 +124,7 @@ func SteeringMemberCandidateSetFromProto(steeringMemberCandidateSetProto *tmprot
 
 // Convert the type to proto puffer type to send the type to other peer or SDK
 func (steeringMemberCandidateSet *SteeringMemberCandidateSet) ToProto() (*tmproto.SteeringMemberCandidateSet, error) {
-	if steeringMemberCandidateSet.IsNilOrEmpty() == true {
+	if steeringMemberCandidateSet.IsNil() == true {
 		return &tmproto.SteeringMemberCandidateSet{}, nil
 	}
 

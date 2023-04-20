@@ -9,7 +9,7 @@ import (
 
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
 	ctest "github.com/reapchain/reapchain-core/libs/test"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 )
 
 func makeTxs(cnt, size int) Txs {

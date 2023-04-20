@@ -63,13 +63,13 @@ ReapchainCore binary installed. If not, follow the steps from
 before, use:
 
 ```sh
-reapchain-core init
-reapchain-core node
+podc init
+podc node
 ```
 
 If you have used ReapchainCore, you may want to reset the data for a new
 blockchain by running `reapchain-core unsafe_reset_all`. Then you can run
-`reapchain-core node` to start ReapchainCore, and connect to the app. For more
+`podc node` to start ReapchainCore, and connect to the app. For more
 details, see [the guide on using ReapchainCore](../reapchain-core-core/using-reapchain-core.md).
 
 You should see ReapchainCore making blocks! We can get the status of our
@@ -202,7 +202,7 @@ In another window, reset then start ReapchainCore:
 
 ```sh
 reapchain-core unsafe_reset_all
-reapchain-core node
+podc node
 ```
 
 Once again, you can see the blocks streaming by. Let's send some
@@ -277,7 +277,7 @@ In another window, reset and start `reapchain-core`:
 
 ```sh
 reapchain-core unsafe_reset_all
-reapchain-core node
+podc node
 ```
 
 Once again, you should see blocks streaming by - but now, our

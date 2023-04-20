@@ -16,7 +16,7 @@ import (
 	tmos "github.com/reapchain/reapchain-core/libs/os"
 	"github.com/reapchain/reapchain-core/libs/protoio"
 	"github.com/reapchain/reapchain-core/libs/tempfile"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	"github.com/reapchain/reapchain-core/types"
 	tmtime "github.com/reapchain/reapchain-core/types/time"
 	"github.com/reapchain/reapchain-core/vrfunc"

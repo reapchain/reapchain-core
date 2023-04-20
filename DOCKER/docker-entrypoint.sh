@@ -2,8 +2,8 @@
 set -e
 
 if [ ! -d "$TMHOME/config" ]; then
-	echo "Running reapchain-core init to create (default) configuration for docker run."
-	reapchain-core init
+	echo "Running podc init to create (default) configuration for docker run."
+	podc init
 
 	sed -i \
 		-e "s/^proxy_app\s*=.*/proxy_app = \"$PROXY_APP\"/" \

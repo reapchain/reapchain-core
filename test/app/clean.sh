@@ -1,3 +1,3 @@
-killall reapchain-core
+killall podc
 killall abci-cli
-rm -rf ~/.reapchain-core_app
+rm -rf ~/.podc_app

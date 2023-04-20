@@ -56,8 +56,8 @@ reapchain-core version
 To start a one-node blockchain with a simple in-process application:
 
 ```sh
-reapchain-core init
-reapchain-core node --proxy_app=kvstore
+podc init
+podc node --proxy_app=kvstore
 ```
 
 ## Reinstall

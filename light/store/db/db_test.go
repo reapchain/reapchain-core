@@ -13,7 +13,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	tmversion "github.com/reapchain/reapchain-core/proto/reapchain-core/version"
+	tmversion "github.com/reapchain/reapchain-core/proto/podc/version"
 	"github.com/reapchain/reapchain-core/types"
 	"github.com/reapchain/reapchain-core/version"
 )

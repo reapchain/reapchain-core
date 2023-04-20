@@ -10,8 +10,8 @@ import (
 	abci "github.com/reapchain/reapchain-core/abci/types"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	tmos "github.com/reapchain/reapchain-core/libs/os"
-	tmstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmstate "github.com/reapchain/reapchain-core/proto/podc/state"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

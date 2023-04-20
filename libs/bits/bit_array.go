@@ -9,7 +9,7 @@ import (
 
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	tmprotobits "github.com/reapchain/reapchain-core/proto/reapchain-core/libs/bits"
+	tmprotobits "github.com/reapchain/reapchain-core/proto/podc/libs/bits"
 )
 
 // BitArray is a thread-safe implementation of a bit array.

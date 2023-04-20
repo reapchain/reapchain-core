@@ -10,8 +10,8 @@ import (
 	"github.com/reapchain/reapchain-core/libs/bits"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	"github.com/reapchain/reapchain-core/p2p"
-	tmcons "github.com/reapchain/reapchain-core/proto/reapchain-core/consensus"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmcons "github.com/reapchain/reapchain-core/proto/podc/consensus"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

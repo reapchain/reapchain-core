@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/reapchain/reapchain-core/libs/bits"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

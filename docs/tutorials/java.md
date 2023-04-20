@@ -115,7 +115,7 @@ Hello world.
 
 ReapchainCore Core communicates with the application through the Application
 BlockChain Interface (ABCI). All message types are defined in the [protobuf
-file](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain-core/abci/types.proto).
+file](https://github.com/reapchain/reapchain-core/blob/master/proto/podc/abci/types.proto).
 This allows ReapchainCore Core to run applications written in any programming
 language.
 
@@ -168,29 +168,29 @@ Copy the necessary `.proto` files to your project:
 
 ```bash
 mkdir -p \
-  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/abci \
-  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/version \
-  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types \
-  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto \
-  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/libs \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/abci \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/version \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/types \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/crypto \
+  $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/libs \
   $KVSTORE_HOME/src/main/proto/github.com/gogo/protobuf/gogoproto
 
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/abci/types.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/abci/types.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/version/version.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/version/version.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/types/types.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types/types.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/types/evidence.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types/evidence.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/types/params.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/types/params.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/merkle.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/merkle.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/keys.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/crypto/keys.proto
-cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/reapchain-core/libs/types.proto \
-   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/reapchain-core/libs/types.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/podc/abci/types.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/abci/types.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/podc/version/version.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/version/version.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/podc/types/types.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/types/types.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/podc/types/evidence.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/types/evidence.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/podc/types/params.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/types/params.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/podc/crypto/merkle.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/crypto/merkle.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/podc/crypto/keys.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/crypto/keys.proto
+cp $GOPATH/src/github.com/reapchain/reapchain-core/proto/podc/libs/types.proto \
+   $KVSTORE_HOME/src/main/proto/github.com/reapchain/reapchain-core/proto/podc/libs/types.proto
 cp $GOPATH/src/github.com/gogo/protobuf/gogoproto/gogo.proto \
    $KVSTORE_HOME/src/main/proto/github.com/gogo/protobuf/gogoproto/gogo.proto
 ```
@@ -543,14 +543,14 @@ class GrpcServer {
 ## 1.5 Getting Up and Running
 
 To create a default configuration, nodeKey and private validator files, let's
-execute `reapchain-core init`. But before we do that, we will need to install
+execute `podc init`. But before we do that, we will need to install
 ReapchainCore Core.
 
 ```bash
 $ rm -rf /tmp/example
 $ cd $GOPATH/src/github.com/reapchain/reapchain-core
 $ make install
-$ TMHOME="/tmp/example" reapchain-core init
+$ TMHOME="/tmp/example" podc init
 
 I[2019-07-16|18:20:36.480] Generated private validator                  module=main keyFile=/tmp/example/config/priv_validator_key.json stateFile=/tmp/example2/data/priv_validator_state.json
 I[2019-07-16|18:20:36.481] Generated node key                           module=main path=/tmp/example/config/node_key.json
@@ -573,7 +573,7 @@ Then we need to start ReapchainCore Core and point it to our application. Stayin
 within the application directory execute:
 
 ```bash
-$ TMHOME="/tmp/example" reapchain-core node --abci grpc --proxy_app tcp://127.0.0.1:26658
+$ TMHOME="/tmp/example" podc node --abci grpc --proxy_app tcp://127.0.0.1:26658
 
 I[2019-07-28|15:44:53.632] Version info                                 module=main software=0.32.1 block=10 p2p=7
 I[2019-07-28|15:44:53.677] Starting Node                                module=main impl=Node

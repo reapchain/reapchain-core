@@ -6,7 +6,7 @@ import (
 	tmcon "github.com/reapchain/reapchain-core/consensus"
 	cstypes "github.com/reapchain/reapchain-core/consensus/types"
 	"github.com/reapchain/reapchain-core/libs/log"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

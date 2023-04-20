@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	cmd "github.com/reapchain/reapchain-core/cmd/reapchain/commands"
-	"github.com/reapchain/reapchain-core/cmd/reapchain/commands/debug"
+	cmd "github.com/reapchain/reapchain-core/cmd/podc/commands"
+	"github.com/reapchain/reapchain-core/cmd/podc/commands/debug"
 	cfg "github.com/reapchain/reapchain-core/config"
 	"github.com/reapchain/reapchain-core/libs/cli"
 	tmflags "github.com/reapchain/reapchain-core/libs/cli/flags"

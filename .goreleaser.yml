@@ -6,7 +6,7 @@ env:
 
 builds:
   - id: "ReapchainCore"
-    main: ./cmd/reapchain/main.go
+    main: ./cmd/podc/main.go
     ldflags:
       - -s -w -X github.com/reapchain/reapchain-core/version.TMCoreSemVer={{ .Version }}
     env:

@@ -13,7 +13,7 @@ import (
 var node *nm.Node
 
 func TestMain(m *testing.M) {
-	// start a reapchain-core node (and kvstore) in the background to test against
+	// start a podc node (and kvstore) in the background to test against
 	dir, err := ioutil.TempDir("/tmp", "rpc-client-test")
 	if err != nil {
 		panic(err)

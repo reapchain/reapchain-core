@@ -37,7 +37,7 @@ const (
 // config/toml.go
 // NOTE: libs/cli must know to look in the config dir!
 var (
-	DefaultReapchainCoreDir = ".reapchain-core"
+	DefaultReapchainCoreDir = ".podc"
 	defaultConfigDir     = "config"
 	defaultDataDir       = "data"
 

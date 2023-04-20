@@ -13,7 +13,7 @@ number with `reapchain-core version`.
 
 ## Directory Root
 
-The default directory for blockchain data is `~/.reapchain-core`. Override
+The default directory for blockchain data is `~/.podc`. Override
 this by setting the `TMHOME` environment variable.
 
 ## Initialize
@@ -21,7 +21,7 @@ this by setting the `TMHOME` environment variable.
 Initialize the root directory by running:
 
 ```sh
-reapchain-core init
+podc init
 ```
 
 This will create a new private key (`priv_validator_key.json`), and a
@@ -113,7 +113,7 @@ definition](https://github.com/reapchain/reapchain-core/blob/master/types/genesi
     {
       "address": "B547AB87E79F75A4A3198C57A8C2FDAF8628CB47",
       "pub_key": {
-        "type": "reapchain/PubKeyEd25519",
+        "type": "tendermint/PubKeyEd25519",
         "value": "P/V6GHuZrb8rs/k1oBorxc6vyXMlnzhJmv7LmjELDys="
       },
       "power": "10",
@@ -129,7 +129,7 @@ definition](https://github.com/reapchain/reapchain-core/blob/master/types/genesi
 To run a ReapchainCore node, use:
 
 ```bash
-reapchain-core node
+podc node
 ```
 
 By default, ReapchainCore will try to connect to an ABCI application on
@@ -138,7 +138,7 @@ another window. If you don't, kill ReapchainCore and run an in-process version o
 the `kvstore` app:
 
 ```bash
-reapchain-core node --proxy_app=kvstore
+podc node --proxy_app=kvstore
 ```
 
 After a few seconds, you should see blocks start streaming in. Note that blocks
@@ -152,10 +152,10 @@ Go, run it in another process, and use the `--proxy_app` flag to specify the
 address of the socket it is listening on, for instance:
 
 ```bash
-reapchain-core node --proxy_app=/var/run/abci.sock
+podc node --proxy_app=/var/run/abci.sock
 ```
 
-You can find out what flags are supported by running `reapchain-core node --help`.
+You can find out what flags are supported by running `podc node --help`.
 
 ## Transactions
 
@@ -272,7 +272,7 @@ transactions or the app hash changes, run ReapchainCore with this
 additional flag:
 
 ```sh
-reapchain-core node --consensus.create_empty_blocks=false
+podc node --consensus.create_empty_blocks=false
 ```
 
 or set the configuration via the `config.toml` file:
@@ -345,8 +345,8 @@ write-ahead-log](../reapchain-core-core/running-in-production.md#mempool-wal)
 
 ## ReapchainCore Networks
 
-When `reapchain-core init` is run, both a `genesis.json` and
-`priv_validator_key.json` are created in `~/.reapchain-core/config`. The
+When `podc init` is run, both a `genesis.json` and
+`priv_validator_key.json` are created in `~/.podc/config`. The
 `genesis.json` might look like:
 
 ```json
@@ -355,7 +355,7 @@ When `reapchain-core init` is run, both a `genesis.json` and
     {
       "pub_key" : {
         "value" : "h3hk+QE8c6QLTySp8TcfzclJw/BG79ziGB/pIA+DfPE=",
-        "type" : "reapchain/PubKeyEd25519"
+        "type" : "tendermint/PubKeyEd25519"
       },
       "power" : 10,
       "name" : ""
@@ -376,12 +376,12 @@ And the `priv_validator_key.json`:
   "address" : "B788DEDE4F50AD8BC9462DE76741CCAFF87D51E2",
   "pub_key" : {
     "value" : "h3hk+QE8c6QLTySp8TcfzclJw/BG79ziGB/pIA+DfPE=",
-    "type" : "reapchain/PubKeyEd25519"
+    "type" : "tendermint/PubKeyEd25519"
   },
   "last_height" : "0",
   "priv_key" : {
     "value" : "JPivl82x+LfVkp8i3ztoTjY6c6GJ4pBxQexErOCyhwqHeGT5ATxzpAtPJKnxNx/NyUnD8Ebv3OIYH+kgD4N88Q==",
-    "type" : "reapchain/PrivKeyEd25519"
+    "type" : "tendermint/PrivKeyEd25519"
   }
 }
 ```
@@ -447,7 +447,7 @@ persistent connections with.
 For example,
 
 ```sh
-reapchain-core node --p2p.seeds "f9baeaa15fedf5e1ef7448dd60f46c01f1a9e9c4@1.2.3.4:26656,0491d373a8e0fcf1023aaf18c51d6a1d0d4f31bd@5.6.7.8:26656"
+podc node --p2p.seeds "f9baeaa15fedf5e1ef7448dd60f46c01f1a9e9c4@1.2.3.4:26656,0491d373a8e0fcf1023aaf18c51d6a1d0d4f31bd@5.6.7.8:26656"
 ```
 
 Alternatively, you can use the `/dial_seeds` endpoint of the RPC to
@@ -467,7 +467,7 @@ maintain a persistent connection with each, you can use the
 stopping ReapchainCore core instance.
 
 ```sh
-reapchain-core node --p2p.persistent_peers "429fcf25974313b95673f58d77eacdd434402665@10.11.12.13:26656,96663a3dd0d7b9d17d4c8211b191af259621c693@10.11.12.14:26656"
+podc node --p2p.persistent_peers "429fcf25974313b95673f58d77eacdd434402665@10.11.12.13:26656,96663a3dd0d7b9d17d4c8211b191af259621c693@10.11.12.14:26656"
 
 curl 'localhost:26657/dial_peers?persistent=true&peers=\["429fcf25974313b95673f58d77eacdd434402665@10.11.12.13:26656","96663a3dd0d7b9d17d4c8211b191af259621c693@10.11.12.14:26656"\]'
 ```
@@ -475,7 +475,7 @@ curl 'localhost:26657/dial_peers?persistent=true&peers=\["429fcf25974313b95673f5
 ### Adding a Non-Validator
 
 Adding a non-validator is simple. Just copy the original `genesis.json`
-to `~/.reapchain-core/config` on the new machine and start the node,
+to `~/.podc/config` on the new machine and start the node,
 specifying seeds or persistent peers as necessary. If no seeds or
 persistent peers are specified, the node won't make any blocks, because
 it's not a validator, and it won't hear about any blocks, because it's
@@ -501,11 +501,11 @@ Now we can update our genesis file. For instance, if the new
   "address" : "5AF49D2A2D4F5AD4C7C8C4CC2FB020131E9C4902",
   "pub_key" : {
     "value" : "l9X9+fjkeBzDfPGbUM7AMIRE6uJN78zN5+lk5OYotek=",
-    "type" : "reapchain/PubKeyEd25519"
+    "type" : "tendermint/PubKeyEd25519"
   },
   "priv_key" : {
     "value" : "EDJY9W6zlAw+su6ITgTKg2nTZcHAH1NMTW5iwlgmNDuX1f35+OR4HMN88ZtQzsAwhETq4k3vzM3n6WTk5ii16Q==",
-    "type" : "reapchain/PrivKeyEd25519"
+    "type" : "tendermint/PrivKeyEd25519"
   },
   "last_step" : 0,
   "last_round" : "0",
@@ -521,7 +521,7 @@ then the new `genesis.json` will be:
     {
       "pub_key" : {
         "value" : "h3hk+QE8c6QLTySp8TcfzclJw/BG79ziGB/pIA+DfPE=",
-        "type" : "reapchain/PubKeyEd25519"
+        "type" : "tendermint/PubKeyEd25519"
       },
       "power" : 10,
       "name" : ""
@@ -529,7 +529,7 @@ then the new `genesis.json` will be:
     {
       "pub_key" : {
         "value" : "l9X9+fjkeBzDfPGbUM7AMIRE6uJN78zN5+lk5OYotek=",
-        "type" : "reapchain/PubKeyEd25519"
+        "type" : "tendermint/PubKeyEd25519"
       },
       "power" : 10,
       "name" : ""
@@ -541,11 +541,11 @@ then the new `genesis.json` will be:
 }
 ```
 
-Update the `genesis.json` in `~/.reapchain-core/config`. Copy the genesis
-file and the new `priv_validator_key.json` to the `~/.reapchain-core/config` on
+Update the `genesis.json` in `~/.podc/config`. Copy the genesis
+file and the new `priv_validator_key.json` to the `~/.podc/config` on
 a new machine.
 
-Now run `reapchain-core node` on both machines, and use either
+Now run `podc node` on both machines, and use either
 `--p2p.persistent_peers` or the `/dial_peers` to get them to peer up.
 They should start making blocks, and will only continue to do so as long
 as both of them are online.

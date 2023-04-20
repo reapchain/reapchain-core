@@ -10,7 +10,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/merkle"
 	"github.com/reapchain/reapchain-core/libs/bits"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 )
 
 // It manages QRN list of consensus round

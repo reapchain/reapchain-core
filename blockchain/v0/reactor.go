@@ -8,7 +8,7 @@ import (
 	bc "github.com/reapchain/reapchain-core/blockchain"
 	"github.com/reapchain/reapchain-core/libs/log"
 	"github.com/reapchain/reapchain-core/p2p"
-	bcproto "github.com/reapchain/reapchain-core/proto/reapchain-core/blockchain"
+	bcproto "github.com/reapchain/reapchain-core/proto/podc/blockchain"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/store"
 	"github.com/reapchain/reapchain-core/types"

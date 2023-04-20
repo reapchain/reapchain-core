@@ -11,7 +11,7 @@ import (
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	"github.com/reapchain/reapchain-core/mempool"
 	"github.com/reapchain/reapchain-core/p2p"
-	protomem "github.com/reapchain/reapchain-core/proto/reapchain-core/mempool"
+	protomem "github.com/reapchain/reapchain-core/proto/podc/mempool"
 	"github.com/reapchain/reapchain-core/types"
 )
 

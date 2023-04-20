@@ -49,7 +49,7 @@ func EnsureRoot(rootDir string) {
 	}
 }
 
-// XXX: this func should probably be called by cmd/reapchain/commands/init.go
+// XXX: this func should probably be called by cmd/podc/commands/init.go
 // alongside the writing of the genesis.json and priv_validator.json
 func writeDefaultConfigFile(configFilePath string) {
 	WriteConfigFile(configFilePath, DefaultConfig())
@@ -73,7 +73,7 @@ const defaultConfigTemplate = `# This is a TOML config file.
 
 # NOTE: Any path below can be absolute (e.g. "/var/myawesomeapp/data") or
 # relative to the home directory (e.g. "data"). The home directory is
-# "$HOME/.reapchain-core" by default, but could be changed via $TMHOME env variable
+# "$HOME/.podc" by default, but could be changed via $TMHOME env variable
 # or --home cmd flag.
 
 #######################################################################
@@ -601,7 +601,7 @@ var testGenesisFmt = `{
   "validators": [
     {
       "pub_key": {
-        "type": "reapchain/PubKeyEd25519",
+        "type": "tendermint/PubKeyEd25519",
         "value":"AT/+aaL1eB0477Mud9JMm8Sh8BIvOYlPGC9KkIUmFaE="
       },
       "power": "10",
@@ -614,11 +614,11 @@ var testGenesisFmt = `{
 var testPrivValidatorKey = `{
   "address": "A3258DCBF45DCA0DF052981870F2D1441A36D145",
   "pub_key": {
-    "type": "reapchain/PubKeyEd25519",
+    "type": "tendermint/PubKeyEd25519",
     "value": "AT/+aaL1eB0477Mud9JMm8Sh8BIvOYlPGC9KkIUmFaE="
   },
   "priv_key": {
-    "type": "reapchain/PrivKeyEd25519",
+    "type": "tendermint/PrivKeyEd25519",
     "value": "EVkqJO/jIXp3rkASXfh9YnyToYXRXhBr6g9cQVxPFnQBP/5povV4HTjvsy530kybxKHwEi85iU8YL0qQhSYVoQ=="
   }
 }`

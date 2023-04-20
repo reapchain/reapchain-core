@@ -13,7 +13,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	"github.com/reapchain/reapchain-core/libs/log"
 	memmock "github.com/reapchain/reapchain-core/mempool/mock"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/state/mocks"
 	"github.com/reapchain/reapchain-core/types"

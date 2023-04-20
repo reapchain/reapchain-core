@@ -84,7 +84,7 @@ Hello, ReapchainCore Core
 
 ReapchainCore Core communicates with the application through the Application
 BlockChain Interface (ABCI). All message types are defined in the [protobuf
-file](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain-core/abci/types.proto).
+file](https://github.com/reapchain/reapchain-core/blob/master/proto/podc/abci/types.proto).
 This allows ReapchainCore Core to run applications written in any programming
 language.
 
@@ -370,7 +370,7 @@ import (
 var configFile string
 
 func init() {
-	flag.StringVar(&configFile, "config", "$HOME/.reapchain-core/config/config.toml", "Path to config.toml")
+	flag.StringVar(&configFile, "config", "$HOME/.podc/config/config.toml", "Path to config.toml")
 }
 
 func main() {
@@ -511,7 +511,7 @@ Note we use `proxy.NewLocalClientCreator` here to create a local client instead
 of one communicating through a socket or gRPC.
 
 [viper](https://github.com/spf13/viper) is being used for reading the config,
-which we will generate later using the `reapchain-core init` command.
+which we will generate later using the `podc init` command.
 
 ```go
 config := cfg.DefaultConfig()
@@ -608,14 +608,14 @@ go build
 ```
 
 To create a default configuration, nodeKey and private validator files, let's
-execute `reapchain-core init`. But before we do that, we will need to install
+execute `podc init`. But before we do that, we will need to install
 ReapchainCore Core. Please refer to [the official
 guide](https://docs.reapchain-core.com/master/introduction/install.html). If you're
 installing from source, don't forget to checkout the latest release (`git checkout vX.Y.Z`).
 
 ```bash
 $ rm -rf /tmp/example
-$ TMHOME="/tmp/example" reapchain-core init
+$ TMHOME="/tmp/example" podc init
 
 I[2019-07-16|18:40:36.480] Generated private validator                  module=main keyFile=/tmp/example/config/priv_validator_key.json stateFile=/tmp/example2/data/priv_validator_state.json
 I[2019-07-16|18:40:36.481] Generated node key                           module=main path=/tmp/example/config/node_key.json

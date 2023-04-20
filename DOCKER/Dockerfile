@@ -43,7 +43,7 @@ COPY --from=builder /reapchain-core/build/reapchain-core /usr/bin/reapchain-core
 
 # You can overwrite these before the first run to influence
 # config.json and genesis.json. Additionally, you can override
-# CMD to add parameters to `reapchain-core node`.
+# CMD to add parameters to `podc node`.
 ENV PROXY_APP=kvstore MONIKER=dockernode CHAIN_ID=dockerchain
 
 COPY ./DOCKER/docker-entrypoint.sh /usr/local/bin/

@@ -138,15 +138,15 @@ The E2E test harness is designed to run several nodes of varying configurations 
 
 ```bash
 make node
-reapchain-core init validator
-TMHOME=$HOME/.reapchain-core ./build/node ./node/built-in.toml
+podc init validator
+TMHOME=$HOME/.podc ./build/node ./node/built-in.toml
 ```
 
-To make things simpler the e2e application can also be run in the reapchain-core binary
+To make things simpler the e2e application can also be run in the podc binary
 by running
 
 ```bash
-reapchain-core start --proxy-app e2e
+podc start --proxy-app e2e
 ```
 
 However this won't offer the same level of configurability of the application.
@@ -155,8 +155,8 @@ However this won't offer the same level of configurability of the application.
 
 ```bash
 make node
-reapchain-core init validator
-reapchain-core start
+podc init validator
+podc start
 ./build/node ./node.socket.toml
 ```
 

@@ -12,8 +12,8 @@ import (
 	"github.com/reapchain/reapchain-core/libs/log"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
 	"github.com/reapchain/reapchain-core/p2p"
-	bcproto "github.com/reapchain/reapchain-core/proto/reapchain-core/blockchain"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	bcproto "github.com/reapchain/reapchain-core/proto/podc/blockchain"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/types"
 )

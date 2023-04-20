@@ -8,7 +8,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto"
 	ce "github.com/reapchain/reapchain-core/crypto/encoding"
 
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 )
 
 type SteeringMemberCandidate struct {

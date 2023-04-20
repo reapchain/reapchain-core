@@ -49,7 +49,7 @@ Note also that ReapchainCore 0.34 also requires Go 1.15 or higher.
   Applications should be able to handle these evidence types
   (i.e., through slashing or other accountability measures).
 
-* The [`PublicKey` type](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain-core/crypto/keys.proto#L13-L15)
+* The [`PublicKey` type](https://github.com/reapchain/reapchain-core/blob/master/proto/podc/crypto/keys.proto#L13-L15)
   (used in ABCI as part of `ValidatorUpdate`) now uses a `oneof` protobuf type.
   Note that since ReapchainCore only supports ed25519 validator keys, there's only one
   option in the `oneof`.  For more, see "Protocol Buffers," below.
@@ -687,7 +687,7 @@ serialized before they are passed in.
 
 The `node.RunForever` function was removed. Signal handling and running forever
 should instead be explicitly configured by the caller. See how we do it
-[here](https://github.com/reapchain/reapchain-core/blob/30519e8361c19f4bf320ef4d26288ebc621ad725/cmd/reapchain/commands/run_node.go#L60).
+[here](https://github.com/reapchain/reapchain-core/blob/30519e8361c19f4bf320ef4d26288ebc621ad725/cmd/podc/commands/run_node.go#L60).
 
 ### Other
 

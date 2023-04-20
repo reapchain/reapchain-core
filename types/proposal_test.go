@@ -12,7 +12,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	"github.com/reapchain/reapchain-core/libs/protoio"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 )
 
 var (

@@ -12,7 +12,7 @@ import (
 	"github.com/reapchain/reapchain-core/config"
 	"github.com/reapchain/reapchain-core/p2p"
 	p2pmocks "github.com/reapchain/reapchain-core/p2p/mocks"
-	ssproto "github.com/reapchain/reapchain-core/proto/reapchain-core/statesync"
+	ssproto "github.com/reapchain/reapchain-core/proto/podc/statesync"
 	proxymocks "github.com/reapchain/reapchain-core/proxy/mocks"
 )
 

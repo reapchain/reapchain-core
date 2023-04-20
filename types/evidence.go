@@ -14,7 +14,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	tmjson "github.com/reapchain/reapchain-core/libs/json"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 )
 
 // Evidence represents any provable malicious activity by a validator.

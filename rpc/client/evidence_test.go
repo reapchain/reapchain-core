@@ -15,7 +15,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
 	"github.com/reapchain/reapchain-core/privval"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	"github.com/reapchain/reapchain-core/rpc/client"
 	rpctest "github.com/reapchain/reapchain-core/rpc/test"
 	"github.com/reapchain/reapchain-core/types"

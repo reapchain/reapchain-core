@@ -10,7 +10,7 @@ import (
 	ce "github.com/reapchain/reapchain-core/crypto/encoding"
 	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
 	"github.com/reapchain/reapchain-core/libs/protoio"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 )
 
 const (

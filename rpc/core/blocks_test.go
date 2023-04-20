@@ -10,7 +10,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	abci "github.com/reapchain/reapchain-core/abci/types"
-	tmstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
+	tmstate "github.com/reapchain/reapchain-core/proto/podc/state"
 	ctypes "github.com/reapchain/reapchain-core/rpc/core/types"
 	rpctypes "github.com/reapchain/reapchain-core/rpc/jsonrpc/types"
 	sm "github.com/reapchain/reapchain-core/state"

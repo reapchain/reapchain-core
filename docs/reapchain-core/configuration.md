@@ -11,7 +11,7 @@ further below are intended for advance power users.
 
 ## Options
 
-The default configuration file create by `reapchain-core init` has all
+The default configuration file create by `podc init` has all
 the parameters set with their default values. It will look something
 like the file below, however, double check by inspecting the
 `config.toml` created with your version of `reapchain-core` installed:
@@ -22,7 +22,7 @@ like the file below, however, double check by inspecting the
 
 # NOTE: Any path below can be absolute (e.g. "/var/myawesomeapp/data") or
 # relative to the home directory (e.g. "data"). The home directory is
-# "$HOME/.reapchain-core" by default, but could be changed via $TMHOME env variable
+# "$HOME/.podc" by default, but could be changed via $TMHOME env variable
 # or --home cmd flag.
 
 #######################################################################

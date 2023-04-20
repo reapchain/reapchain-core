@@ -3053,7 +3053,7 @@ IMPROVEMENTS
 
 BUG FIXES
 
-- [cmd] Set GenesisTime during `reapchain-core init`
+- [cmd] Set GenesisTime during `podc init`
 - [consensus] fix ValidBlock rules
 
 ## 0.19.2 (April 30th, 2018)
@@ -3243,7 +3243,7 @@ BUG FIXES:
 - [state] validate block.Header.ValidatorsHash
 - [p2p] allow seed addresses to be prefixed with eg. `tcp://`
 - [p2p] use consistent key to refer to peers so we dont try to connect to existing peers
-- [cmd] fix `reapchain-core init` to ignore files that are there and generate files that aren't.
+- [cmd] fix `podc init` to ignore files that are there and generate files that aren't.
 
 ## 0.14.0 (December 11, 2017)
 
@@ -3497,7 +3497,7 @@ IMPROVEMENTS:
 - Use `.Wrap()` and `.Unwrap()` instead of eg. `PubKeyS` for `go-crypto` types
 - RPC JSON responses use pretty printing (via `json.MarshalIndent`)
 - Color code different instances of the consensus for tests
-- Isolate viper to `cmd/reapchain/commands` and do not read config from file for tests
+- Isolate viper to `cmd/podc/commands` and do not read config from file for tests
 
 
 ## 0.9.2 (April 26, 2017)

@@ -12,7 +12,7 @@ import (
 	tmjson "github.com/reapchain/reapchain-core/libs/json"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	tmsync "github.com/reapchain/reapchain-core/libs/sync"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 )
 
 var (

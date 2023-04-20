@@ -18,7 +18,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/log"
 	"github.com/reapchain/reapchain-core/mempool"
 	"github.com/reapchain/reapchain-core/p2p"
-	memproto "github.com/reapchain/reapchain-core/proto/reapchain-core/mempool"
+	memproto "github.com/reapchain/reapchain-core/proto/podc/mempool"
 	"github.com/reapchain/reapchain-core/proxy"
 	"github.com/reapchain/reapchain-core/types"
 )

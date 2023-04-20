@@ -21,7 +21,7 @@ import (
 	"github.com/reapchain/reapchain-core/mempool"
 	"github.com/reapchain/reapchain-core/p2p"
 	"github.com/reapchain/reapchain-core/p2p/mock"
-	memproto "github.com/reapchain/reapchain-core/proto/reapchain-core/mempool"
+	memproto "github.com/reapchain/reapchain-core/proto/podc/mempool"
 	"github.com/reapchain/reapchain-core/proxy"
 	"github.com/reapchain/reapchain-core/types"
 )

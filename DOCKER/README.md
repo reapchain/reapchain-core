@@ -31,8 +31,8 @@ To get started developing applications, see the [application developers guide](h
 A quick example of a built-in app and ReapchainCore core in one container.
 
 ```sh
-docker run -it --rm -v "/tmp:/reapchain-core" reapchain/reapchain-core init
-docker run -it --rm -v "/tmp:/reapchain-core" reapchain/reapchain-core node --proxy_app=kvstore
+docker run -it --rm -v "/tmp:/reapchain-core" reapchain/podc init
+docker run -it --rm -v "/tmp:/reapchain-core" reapchain/podc node --proxy_app=kvstore
 ```
 
 ## Local cluster

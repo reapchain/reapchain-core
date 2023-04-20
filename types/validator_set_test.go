@@ -17,7 +17,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	tmrand "github.com/reapchain/reapchain-core/libs/rand"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 )
 
 func TestValidatorSetBasic(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/merkle"
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
 	tmbytes "github.com/reapchain/reapchain-core/libs/bytes"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 )
 
 // TxKeySize is the size of the transaction key index

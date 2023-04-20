@@ -12,9 +12,9 @@ import (
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
 	"github.com/reapchain/reapchain-core/crypto/tmhash"
-	cryptoproto "github.com/reapchain/reapchain-core/proto/reapchain-core/crypto"
-	privproto "github.com/reapchain/reapchain-core/proto/reapchain-core/privval"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	cryptoproto "github.com/reapchain/reapchain-core/proto/podc/crypto"
+	privproto "github.com/reapchain/reapchain-core/proto/podc/privval"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

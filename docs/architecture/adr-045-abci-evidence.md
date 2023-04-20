@@ -31,7 +31,7 @@ checking).
 
 Currently, evidence verification is handled by Reapchain. Once committed,
 [evidence is passed over
-ABCI](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain-core/abci/types.proto#L354)
+ABCI](https://github.com/reapchain/reapchain-core/blob/master/proto/podc/abci/types.proto#L354)
 in BeginBlock in a reduced form that includes only
 the type of evidence, its height and timestamp, the validator it's from, and the
 total voting power of the validator set at the height. The app trusts Reapchain

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package reapchain.types;
+
+option go_package = "github.com/reapchain/reapchain-core/proto/podc/types";
+
+import "gogoproto/gogo.proto";
+import "reapchain-core/crypto/keys.proto";
+import "google/protobuf/timestamp.proto";
+
+message SettingSteeringMember {
+  int64 height = 1;
+  google.protobuf.Timestamp timestamp = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  reapchain.crypto.PublicKey coordinator_pub_key           = 3 [(gogoproto.nullable) = false];
+  repeated bytes steering_member_addresses = 4;
+  bytes signature         = 5;
+}

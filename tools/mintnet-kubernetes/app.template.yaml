@@ -152,7 +152,7 @@ spec:
           done
           seeds=$(IFS=','; echo "${seeds[*]}")
 
-          reapchain-core node --p2p.seeds="$seeds" --moniker="`hostname`" --proxy_app="unix:///socks/app.sock"
+          podc node --p2p.seeds="$seeds" --moniker="`hostname`" --proxy_app="unix:///socks/app.sock"
         volumeMounts:
         - name: tmdir
           mountPath: /reapchain-core

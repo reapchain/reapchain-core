@@ -33,7 +33,7 @@ import (
 	mempoolv1 "github.com/reapchain/reapchain-core/mempool/v1"
 	"github.com/reapchain/reapchain-core/p2p"
 	p2pmock "github.com/reapchain/reapchain-core/p2p/mock"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	statemocks "github.com/reapchain/reapchain-core/state/mocks"
 	"github.com/reapchain/reapchain-core/store"

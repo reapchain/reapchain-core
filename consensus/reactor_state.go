@@ -3,7 +3,7 @@ package consensus
 import (
 	bc "github.com/reapchain/reapchain-core/blockchain"
 	"github.com/reapchain/reapchain-core/p2p"
-	bcproto "github.com/reapchain/reapchain-core/proto/reapchain-core/blockchain"
+	bcproto "github.com/reapchain/reapchain-core/proto/podc/blockchain"
 	sm "github.com/reapchain/reapchain-core/state"
 )
 

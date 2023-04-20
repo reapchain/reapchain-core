@@ -87,7 +87,7 @@ Hello, ReapchainCore Core
 
 ReapchainCore Core communicates with the application through the Application
 BlockChain Interface (ABCI). All message types are defined in the [protobuf
-file](https://github.com/reapchain/reapchain-core/blob/master/proto/reapchain-core/abci/types.proto).
+file](https://github.com/reapchain/reapchain-core/blob/master/proto/podc/abci/types.proto).
 This allows ReapchainCore Core to run applications written in any programming
 language.
 
@@ -466,14 +466,14 @@ go build
 ```
 
 To create a default configuration, nodeKey and private validator files, let's
-execute `reapchain-core init`. But before we do that, we will need to install
+execute `podc init`. But before we do that, we will need to install
 ReapchainCore Core. Please refer to [the official
 guide](https://docs.reapchain-core.com/master/introduction/install.html). If you're
 installing from source, don't forget to checkout the latest release (`git checkout vX.Y.Z`).
 
 ```bash
 rm -rf /tmp/example
-TMHOME="/tmp/example" reapchain-core init
+TMHOME="/tmp/example" podc init
 
 I[2019-07-16|18:20:36.480] Generated private validator                  module=main keyFile=/tmp/example/config/priv_validator_key.json stateFile=/tmp/example2/data/priv_validator_state.json
 I[2019-07-16|18:20:36.481] Generated node key                           module=main path=/tmp/example/config/node_key.json
@@ -500,7 +500,7 @@ Then we need to start ReapchainCore Core and point it to our application. Stayin
 within the application directory execute:
 
 ```bash
-TMHOME="/tmp/example" reapchain-core node --proxy_app=unix://example.sock
+TMHOME="/tmp/example" podc node --proxy_app=unix://example.sock
 
 I[2019-07-16|18:26:20.362] Version info                                 module=main software=0.32.1 block=10 p2p=7
 I[2019-07-16|18:26:20.383] Starting Node                                module=main impl=Node

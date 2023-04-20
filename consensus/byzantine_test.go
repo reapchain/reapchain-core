@@ -26,7 +26,7 @@ import (
 	mempoolv0 "github.com/reapchain/reapchain-core/mempool/v0"
 	mempoolv1 "github.com/reapchain/reapchain-core/mempool/v1"
 	"github.com/reapchain/reapchain-core/p2p"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	sm "github.com/reapchain/reapchain-core/state"
 	"github.com/reapchain/reapchain-core/store"
 	"github.com/reapchain/reapchain-core/types"

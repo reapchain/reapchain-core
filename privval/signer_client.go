@@ -6,8 +6,8 @@ import (
 
 	"github.com/reapchain/reapchain-core/crypto"
 	cryptoenc "github.com/reapchain/reapchain-core/crypto/encoding"
-	privvalproto "github.com/reapchain/reapchain-core/proto/reapchain-core/privval"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	privvalproto "github.com/reapchain/reapchain-core/proto/podc/privval"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	"github.com/reapchain/reapchain-core/types"
 )
 

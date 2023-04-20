@@ -13,7 +13,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	// start a reapchain-core node in the background to test against
+	// start a podc node in the background to test against
 	app := kvstore.NewApplication()
 	node := rpctest.StartReapchainCore(app)
 

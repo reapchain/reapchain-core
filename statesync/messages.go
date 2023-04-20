@@ -6,7 +6,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	ssproto "github.com/reapchain/reapchain-core/proto/reapchain-core/statesync"
+	ssproto "github.com/reapchain/reapchain-core/proto/podc/statesync"
 )
 
 const (

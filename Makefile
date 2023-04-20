@@ -1,7 +1,7 @@
 PACKAGES=$(shell go list ./...)
-OUTPUT?=build/reapchain-core
+OUTPUT?=build/podc
 
-BUILD_TAGS?=reapchain-core
+BUILD_TAGS?=podc
 
 # If building a release, please checkout the version tag to get the correct version setting
 ifneq ($(shell git symbolic-ref -q --short HEAD),)
@@ -62,11 +62,11 @@ include tests.mk
 ###############################################################################
 
 build:
-	CGO_ENABLED=$(CGO_ENABLED) go build $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' -o $(OUTPUT) ./cmd/reapchain/
+	CGO_ENABLED=$(CGO_ENABLED) go build $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' -o $(OUTPUT) ./cmd/podc/
 .PHONY: build
 
 install:
-	CGO_ENABLED=$(CGO_ENABLED) go install $(BUILD_FLAGS) -tags $(BUILD_TAGS) ./cmd/reapchain
+	CGO_ENABLED=$(CGO_ENABLED) go install $(BUILD_FLAGS) -tags '$(BUILD_TAGS)' ./cmd/podc
 .PHONY: install
 
 
@@ -97,7 +97,7 @@ endif
 proto-gen: check-proto-deps
 	@echo "Generating Protobuf files"
 	@go run github.com/bufbuild/buf/cmd/buf generate
-	@mv ./proto/reapchain-core/abci/types.pb.go ./abci/types/
+	@mv ./proto/podc/abci/types.pb.go ./abci/types/
 .PHONY: proto-gen
 
 # These targets are provided for convenience and are intended for local
@@ -159,12 +159,12 @@ go.sum: go.mod
 draw_deps:
 	@# requires brew install graphviz or apt-get install graphviz
 	go get github.com/RobotsAndPencils/goviz
-	@goviz -i github.com/reapchain/reapchain-core/cmd/reapchain -d 3 | dot -Tpng -o dependency-graph.png
+	@goviz -i github.com/reapchain/reapchain-core/cmd/podc -d 3 | dot -Tpng -o dependency-graph.png
 .PHONY: draw_deps
 
 get_deps_bin_size:
 	@# Copy of build recipe with additional flags to perform binary size analysis
-	$(eval $(shell go build -work -a $(BUILD_FLAGS) -tags $(BUILD_TAGS) -o $(OUTPUT) ./cmd/reapchain/ 2>&1))
+	$(eval $(shell go build -work -a $(BUILD_FLAGS) -tags $(BUILD_TAGS) -o $(OUTPUT) ./cmd/podc/ 2>&1))
 	@find $(WORK) -type f -name "*.a" | xargs -I{} du -hxs "{}" | sort -rh | sed -e s:${WORK}/::g > deps_bin_size.log
 	@echo "Results can be found here: $(CURDIR)/deps_bin_size.log"
 .PHONY: get_deps_bin_size
@@ -233,7 +233,7 @@ sync-docs:
 
 build-docker: build-linux
 	cp $(OUTPUT) DOCKER/reapchain-core
-	docker build --label=reapchain-core --tag="reapchain/reapchain-core" DOCKER
+	docker build --label=podc --tag="reapchain/podc" DOCKER
 	rm -rf DOCKER/reapchain-core
 .PHONY: build-docker
 

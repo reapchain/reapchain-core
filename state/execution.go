@@ -11,8 +11,8 @@ import (
 	"github.com/reapchain/reapchain-core/libs/fail"
 	"github.com/reapchain/reapchain-core/libs/log"
 	mempl "github.com/reapchain/reapchain-core/mempool"
-	tmstate "github.com/reapchain/reapchain-core/proto/reapchain-core/state"
-	tmproto "github.com/reapchain/reapchain-core/proto/reapchain-core/types"
+	tmstate "github.com/reapchain/reapchain-core/proto/podc/state"
+	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
 	"github.com/reapchain/reapchain-core/proxy"
 	"github.com/reapchain/reapchain-core/types"
 )

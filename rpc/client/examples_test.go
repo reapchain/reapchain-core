@@ -13,7 +13,7 @@ import (
 )
 
 func ExampleHTTP_simple() {
-	// Start a reapchain-core node (and kvstore) in the background to test against
+	// Start a podc node (and kvstore) in the background to test against
 	app := kvstore.NewApplication()
 	node := rpctest.StartReapchainCore(app, rpctest.SuppressStdout, rpctest.RecreateConfig)
 	defer rpctest.StopReapchainCore(node)
@@ -66,7 +66,7 @@ func ExampleHTTP_simple() {
 }
 
 func ExampleHTTP_batching() {
-	// Start a reapchain-core node (and kvstore) in the background to test against
+	// Start a podc node (and kvstore) in the background to test against
 	app := kvstore.NewApplication()
 	node := rpctest.StartReapchainCore(app, rpctest.SuppressStdout, rpctest.RecreateConfig)
 

@@ -17,7 +17,7 @@ import (
 	"github.com/reapchain/reapchain-core/libs/log"
 	"github.com/reapchain/reapchain-core/p2p"
 	"github.com/reapchain/reapchain-core/p2p/mock"
-	tmp2p "github.com/reapchain/reapchain-core/proto/reapchain-core/p2p"
+	tmp2p "github.com/reapchain/reapchain-core/proto/podc/p2p"
 )
 
 var (

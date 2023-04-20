@@ -34,19 +34,19 @@ For manual installation, see the [install instructions](install.md)
 Running:
 
 ```sh
-reapchain-core init
+podc init
 ```
 
 will create the required files for a single, local node.
 
-These files are found in `$HOME/.reapchain-core`:
+These files are found in `$HOME/.podc`:
 
 ```sh
-$ ls $HOME/.reapchain-core
+$ ls $HOME/.podc
 
 config  data
 
-$ ls $HOME/.reapchain-core/config/
+$ ls $HOME/.podc/config/
 
 config.toml  genesis.json  node_key.json  priv_validator.json
 ```
@@ -59,7 +59,7 @@ Configuring a cluster is covered further below.
 Start ReapchainCore with a simple in-process application:
 
 ```sh
-reapchain-core node --proxy_app=kvstore
+podc node --proxy_app=kvstore
 ```
 
 > Note: `kvstore` is a non persistent app, if you would like to run an application with persistence run `--proxy_app=persistent_kvstore`
@@ -134,10 +134,10 @@ reapchain-core show_node_id --home ./mytestnet/node3
 Finally, from each machine, run:
 
 ```sh
-reapchain-core node --home ./mytestnet/node0 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
-reapchain-core node --home ./mytestnet/node1 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
-reapchain-core node --home ./mytestnet/node2 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
-reapchain-core node --home ./mytestnet/node3 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
+podc node --home ./mytestnet/node0 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
+podc node --home ./mytestnet/node1 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
+podc node --home ./mytestnet/node2 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
+podc node --home ./mytestnet/node3 --proxy_app=kvstore --p2p.persistent_peers="ID1@IP1:26656,ID2@IP2:26656,ID3@IP3:26656,ID4@IP4:26656"
 ```
 
 Note that after the third node is started, blocks will start to stream in
