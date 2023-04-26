@@ -12,7 +12,6 @@ import (
 	"github.com/reapchain/reapchain-core/types"
 )
 
-
 // BlockPool keeps track of the fast sync peers, block requests and block responses.
 type BlockPool struct {
 	service.BaseService
@@ -142,6 +141,8 @@ func (pool *BlockPool) IsCaughtUp() bool {
 // So we peek two blocks at a time.
 // The caller will verify the commit.
 func (pool *BlockPool) PeekTwoBlocks() (first *types.Block, second *types.Block) {
+	fmt.Println("stompesi - PeekTwoBlocks")
+
 	pool.mtx.Lock()
 	defer pool.mtx.Unlock()
 

@@ -101,8 +101,6 @@ func (steeringMemberCandidateSet *SteeringMemberCandidateSet) Hash() []byte {
 
 // Convert the steering member candiate set's proto puffer type to this type to apply the reapchain-core
 func SteeringMemberCandidateSetFromProto(steeringMemberCandidateSetProto *tmproto.SteeringMemberCandidateSet) (*SteeringMemberCandidateSet, error) {
-	fmt.Println("SteeringMemberCandidateSetFromProto", steeringMemberCandidateSetProto, steeringMemberCandidateSetProto == nil)
-
 	steeringMemberCandidateSet := new(SteeringMemberCandidateSet)
 	if steeringMemberCandidateSetProto == nil {
 		return steeringMemberCandidateSet, nil

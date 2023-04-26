@@ -26,6 +26,7 @@ type StatePool struct {
 	requestsCh chan<- BlockRequest
 	errorsCh   chan<- peerError
 }
+
 // StatePool keeps track of the fast sync peers, state requests and state responses.
 func NewStatePool(start int64, requestsCh chan<- BlockRequest, errorsCh chan<- peerError) *StatePool {
 	statePool := &StatePool{
@@ -41,12 +42,14 @@ func NewStatePool(start int64, requestsCh chan<- BlockRequest, errorsCh chan<- p
 	statePool.BaseService = *service.NewBaseService(nil, "StatePool", statePool)
 	return statePool
 }
+
 // OnStart implements service.Service by spawning requesters routine and recording pool's start time.
 func (pool *StatePool) OnStart() error {
 	go pool.makeRequestersRoutine()
 	pool.startTime = time.Now()
 	return nil
 }
+
 // spawns requesters as needed
 func (pool *StatePool) makeRequestersRoutine() {
 	for {
@@ -96,6 +99,7 @@ func (pool *StatePool) removeTimedoutPeers() {
 		}
 	}
 }
+
 // GetStatus returns pool's height, numPending requests and the number of
 // requesters.
 func (pool *StatePool) GetStatus() (height int64, numPending int32, lenRequesters int) {
@@ -233,7 +237,7 @@ func (pool *StatePool) SetPeerRange(peerID p2p.ID, base int64, height int64) {
 	}
 }
 
-// RemovePeer removes the peer with peerID from the pool. 
+// RemovePeer removes the peer with peerID from the pool.
 // If there's no peer with peerID, function is a no-op.
 func (pool *StatePool) RemovePeer(peerID p2p.ID) {
 	pool.mtx.Lock()

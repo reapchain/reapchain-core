@@ -43,21 +43,23 @@ type BlockchainReactor struct {
 	// immutable
 	initialState sm.State
 
-	blockExec *sm.BlockExecutor
-	store     *store.BlockStore
+	blockExec  *sm.BlockExecutor
+	store      *store.BlockStore
 	stateStore sm.Store
 	blockPool  *BlockPool
 	statePool  *StatePool
-	fastSync  bool
+	fastSync   bool
 
-	requestsCh <-chan BlockRequest
+	requestsCh      <-chan BlockRequest
 	stateRequestsCh <-chan BlockRequest
-	errorsCh   <-chan peerError
+	errorsCh        <-chan peerError
 }
 
 // NewBlockchainReactor returns new reactor instance.
-func NewBlockchainReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore, stateStore sm.Store,
-	fastSync bool) *BlockchainReactor {
+func NewBlockchainReactor(state sm.State, blockExec *sm.BlockExecutor, store *store.BlockStore,
+	stateStore sm.Store, fastSync bool) *BlockchainReactor {
+
+	fmt.Println("stompesi - NewBlockchainReactor", "fastSync", fastSync)
 
 	if state.LastBlockHeight != store.Height() {
 		panic(fmt.Sprintf("state (%v) and store (%v) height mismatch", state.LastBlockHeight,
@@ -78,17 +80,18 @@ func NewBlockchainReactor(state sm.State, blockExec *sm.BlockExecutor, store *st
 	statePool := NewStatePool(startHeight, stateRequestsCh, errorsCh)
 
 	bcR := &BlockchainReactor{
-		initialState: state,
-		blockExec:    blockExec,
-		store:        store,
-		stateStore:   stateStore,
-		blockPool:    blockPool,
-		statePool:    statePool,
-		fastSync:     fastSync,
-		requestsCh:   requestsCh,
+		initialState:    state,
+		blockExec:       blockExec,
+		store:           store,
+		stateStore:      stateStore,
+		blockPool:       blockPool,
+		statePool:       statePool,
+		fastSync:        fastSync,
+		requestsCh:      requestsCh,
 		stateRequestsCh: stateRequestsCh,
-		errorsCh:     errorsCh,
+		errorsCh:        errorsCh,
 	}
+
 	bcR.BaseReactor = *p2p.NewBaseReactor("BlockchainReactor", bcR)
 	return bcR
 }
@@ -125,12 +128,10 @@ func (bcR *BlockchainReactor) SwitchToFastSync(state sm.State) error {
 
 	bcR.blockPool.height = state.LastBlockHeight + 1
 	bcR.statePool.height = state.LastBlockHeight + 1
-	
 	err := bcR.blockPool.Start()
 	if err != nil {
 		return err
 	}
-
 	err = bcR.statePool.Start()
 	if err != nil {
 		return err
@@ -146,7 +147,6 @@ func (bcR *BlockchainReactor) OnStop() {
 		if err := bcR.blockPool.Stop(); err != nil {
 			bcR.Logger.Error("Error stopping pool", "err", err)
 		}
-
 		if err := bcR.statePool.Stop(); err != nil {
 			bcR.Logger.Error("Error stopping pool", "err", err)
 		}
@@ -193,7 +193,6 @@ func (bcR *BlockchainReactor) RemovePeer(peer p2p.Peer, reason interface{}) {
 // if we have it. Otherwise, we'll respond saying we don't have it.
 func (bcR *BlockchainReactor) respondToPeer(msg *bcproto.BlockRequest,
 	src p2p.Peer) (queued bool) {
-
 	block := bcR.store.LoadBlock(msg.Height)
 	if block != nil {
 		bl, err := block.ToProto()
@@ -237,15 +236,13 @@ func (bcR *BlockchainReactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) 
 		return
 	}
 
-	//bcR.Logger.Debug("Receive", "src", src, "chID", chID, "msg", msg)
-
 	switch msg := msg.(type) {
-
 	case *bcproto.BlockRequest:
 		bcR.respondToPeer(msg, src)
 
 	case *bcproto.BlockResponse:
 		bi, err := types.BlockFromProto(msg.Block)
+
 		if err != nil {
 			bcR.Logger.Error("Block content is invalid", "err", err)
 			return
@@ -264,7 +261,6 @@ func (bcR *BlockchainReactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) 
 		}
 		bcR.statePool.AddState(src.ID(), state, len(msgBytes))
 
-
 	case *bcproto.StatusRequest:
 		// Send peer our state.
 		msgBytes, err := bc.EncodeMsg(&bcproto.StatusResponse{
@@ -279,6 +275,7 @@ func (bcR *BlockchainReactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) 
 	case *bcproto.StatusResponse:
 		// Got a peer status. Unverified.
 		bcR.blockPool.SetPeerRange(src.ID(), msg.Base, msg.Height)
+		bcR.statePool.SetPeerRange(src.ID(), msg.Base, msg.Height)
 	case *bcproto.NoBlockResponse:
 		bcR.Logger.Debug("Peer does not have requested block", "peer", src, "height", msg.Height)
 	default:
@@ -331,7 +328,7 @@ func (bcR *BlockchainReactor) poolRoutine(stateSynced bool) {
 				if !queued {
 					bcR.Logger.Debug("Send queue is full, drop block request", "peer", peer.ID(), "height", request.Height)
 				}
-/*
+
 			case request := <-bcR.stateRequestsCh:
 				peer := bcR.Switch.Peers().Get(request.PeerID)
 				if peer == nil {
@@ -347,7 +344,7 @@ func (bcR *BlockchainReactor) poolRoutine(stateSynced bool) {
 				if !queued {
 					bcR.Logger.Debug("Send queue is full, drop block request", "peer", peer.ID(), "height", request.Height)
 				}
-*/
+
 			case err := <-bcR.errorsCh:
 				peer := bcR.Switch.Peers().Get(err.peerID)
 				if peer != nil {
@@ -370,6 +367,7 @@ FOR_LOOP:
 			_, numStatePending, lenStateRequesters := bcR.statePool.GetStatus()
 
 			outbound, inbound, _ := bcR.Switch.NumPeers()
+
 			bcR.Logger.Debug("Consensus ticker", "numPending", numPending, "numStatePending", numStatePending, "total", lenRequesters, "lenStateRequesters", lenStateRequesters,
 				"outbound", outbound, "inbound", inbound)
 
@@ -382,9 +380,6 @@ FOR_LOOP:
 				if ok {
 					conR.SwitchToConsensus(state, blocksSynced > 0 || stateSynced)
 				}
-				// else {
-				// should only happen during testing
-				// }
 
 				break FOR_LOOP
 			}
@@ -401,7 +396,6 @@ FOR_LOOP:
 
 				break FOR_LOOP
 			}
-
 
 		case <-trySyncTicker.C: // chan time
 			select {
@@ -427,6 +421,7 @@ FOR_LOOP:
 				continue FOR_LOOP
 			}
 
+			// See if there are any states to sync.
 			firstState, secondState := bcR.statePool.PeekTwoStates()
 			if firstState == nil || secondState == nil {
 				didProcessCh <- struct{}{}
@@ -440,9 +435,7 @@ FOR_LOOP:
 			// NOTE: we can probably make this more efficient, but note that calling
 			// first.Hash() doesn't verify the tx contents, so MakePartSet() is
 			// currently necessary.
-			err := state.Validators.VerifyCommitLight(
-				chainID, firstID, first.Height, second.LastCommit)
-
+			err := state.Validators.VerifyCommitLight(chainID, firstID, first.Height, second.LastCommit)
 			if err == nil {
 				// validate the block before we persist it
 				err = bcR.blockExec.ValidateBlock(state, first)
@@ -457,6 +450,7 @@ FOR_LOOP:
 					// still need to clean up the rest.
 					bcR.Switch.StopPeerForError(peer, fmt.Errorf("blockchainReactor validation error: %v", err))
 				}
+
 				peerID2 := bcR.blockPool.RedoRequest(second.Height)
 				peer2 := bcR.Switch.Peers().Get(peerID2)
 				if peer2 != nil && peer2 != peer {
@@ -465,35 +459,35 @@ FOR_LOOP:
 					bcR.Switch.StopPeerForError(peer2, fmt.Errorf("blockchainReactor validation error: %v", err))
 				}
 				continue FOR_LOOP
+			} else {
+				bcR.blockPool.PopRequest()
+				bcR.statePool.PopRequest()
+
+				// TODO: batch saves so we dont persist to disk every block
+				bcR.store.SaveBlock(first, firstParts, second.LastCommit)
+
+				// TODO: same thing for app - but we would need a way to
+				// get the hash without persisting the state
+				var err error
+
+				state.SettingSteeringMember = firstState.SettingSteeringMember.Copy()
+				state.NextQrnSet = firstState.NextQrnSet.Copy()
+				state.NextVrfSet = firstState.NextVrfSet.Copy()
+
+				state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
+
+				if err != nil {
+					// TODO This is bad, are we zombie?
+					panic(fmt.Sprintf("Failed to process committed block (%d:%X): %v", first.Height, first.Hash(), err))
+				}
+				blocksSynced++
+
+				if blocksSynced%100 == 0 {
+					lastRate = 0.9*lastRate + 0.1*(100/time.Since(lastHundred).Seconds())
+					bcR.Logger.Info("Fast Sync Rate", "height", bcR.blockPool.height, "max_peer_height", bcR.blockPool.MaxPeerHeight(), "blocks/s", lastRate)
+					lastHundred = time.Now()
+				}
 			}
-
-			bcR.blockPool.PopRequest()
-			bcR.statePool.PopRequest()
-
-			// TODO: batch saves so we dont persist to disk every block
-			bcR.store.SaveBlock(first, firstParts, second.LastCommit)
-
-			// TODO: same thing for app - but we would need a way to
-			// get the hash without persisting the state
-			
-			state.SettingSteeringMember = firstState.SettingSteeringMember.Copy()
-			state.NextQrnSet = firstState.NextQrnSet.Copy()
-			state.NextVrfSet = firstState.NextVrfSet.Copy()
-			
-			state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
-			if err != nil {
-				// TODO This is bad, are we zombie?
-				panic(fmt.Sprintf("Failed to process committed block (%d:%X): %v", first.Height, first.Hash(), err))
-			}
-			blocksSynced++
-
-			if blocksSynced%100 == 0 {
-				lastRate = 0.9*lastRate + 0.1*(100/time.Since(lastHundred).Seconds())
-				bcR.Logger.Info("Fast Sync Rate", "height", bcR.blockPool.height,
-					"max_peer_height", bcR.blockPool.MaxPeerHeight(), "blocks/s", lastRate)
-				lastHundred = time.Now()
-			}
-
 			continue FOR_LOOP
 
 		case <-bcR.Quit():

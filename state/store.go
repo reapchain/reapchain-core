@@ -20,7 +20,7 @@ const (
 	// LoadValidators taking too much time.
 	// https://github.com/reapchain/reapchain-core/pull/3438
 	// 100000 results in ~ 100ms to get 100 validators (see BenchmarkLoadValidators)
-	valSetCheckpointInterval = 100000
+	valSetCheckpointInterval                     = 100000
 )
 
 //------------------------------------------------------------------------
@@ -149,6 +149,7 @@ func (store dbStore) LoadFromDBOrGenesisFile(genesisFilePath string) (State, err
 // or creates a new one from the given genesisDoc.
 func (store dbStore) LoadFromDBOrGenesisDoc(genesisDoc *types.GenesisDoc) (State, error) {
 	state, err := store.Load()
+
 	if err != nil {
 		return State{}, err
 	}
@@ -174,6 +175,7 @@ func (store dbStore) loadState(key []byte) (state State, err error) {
 	if err != nil {
 		return state, err
 	}
+
 	if len(buf) == 0 {
 		return state, nil
 	}
@@ -227,8 +229,6 @@ func (store dbStore) loadRollbackState(key []byte) (state State, err error) {
 	return *sm, nil
 }
 
-
-
 // Save persists the State, the ValidatorsInfo, and the ConsensusParamsInfo to the database.
 // This flushes the writes (e.g. calls SetSync).
 func (store dbStore) Save(state State) error {
@@ -244,7 +244,6 @@ func (store dbStore) save(state State, key []byte) error {
 	// If first block, save validators for the block.
 	if nextHeight == 1 {
 		nextHeight = state.InitialHeight
-
 		// This extra logic due to Reapchain validator set changes being delayed 1 block.
 		// It may get overwritten due to InitChain validator updates.
 
@@ -275,7 +274,6 @@ func (store dbStore) save(state State, key []byte) error {
 		if err := store.saveSteeringMemberCandidatesInfo(nextHeight, nextHeight, state.SteeringMemberCandidateSet); err != nil {
 			return err
 		}
-		
 	}
 	if err := store.saveConsensusRoundInfo(nextHeight, state.LastHeightConsensusRoundChanged, state.ConsensusRound); err != nil {
 		return err
@@ -315,10 +313,10 @@ func (store dbStore) save(state State, key []byte) error {
 	}
 
 	// Save next consensus params.
-	if err := store.saveConsensusParamsInfo(nextHeight,
-		state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
+	if err := store.saveConsensusParamsInfo(nextHeight, state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
 		return err
 	}
+
 	err := store.db.SetSync(key, state.Bytes())
 	if err != nil {
 		return err
@@ -371,7 +369,6 @@ func (store dbStore) Bootstrap(state State) error {
 		return err
 	}
 
-
 	if err := store.saveValidatorsInfo(height, height, state.Validators); err != nil {
 		return err
 	}
@@ -380,8 +377,7 @@ func (store dbStore) Bootstrap(state State) error {
 		return err
 	}
 
-	if err := store.saveConsensusParamsInfo(height,
-		state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
+	if err := store.saveConsensusParamsInfo(height, state.LastHeightConsensusParamsChanged, state.ConsensusParams); err != nil {
 		return err
 	}
 
@@ -433,12 +429,12 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 		keepSettingSteeringMember[tmmath.MaxInt64(to, SettingSteeringMemberInfo.LastHeightChanged)] = true
 	}
 
-
 	keepVals := make(map[int64]bool)
 	if valInfo.ValidatorSet == nil {
 		keepVals[valInfo.LastHeightChanged] = true
 		keepVals[lastStoredHeightFor(to, valInfo.LastHeightChanged)] = true // keep last checkpoint too
 	}
+
 	keepParams := make(map[int64]bool)
 	if paramsInfo.ConsensusParams.Equal(&tmproto.ConsensusParams{}) {
 		keepParams[paramsInfo.LastHeightChanged] = true
@@ -455,7 +451,6 @@ func (store dbStore) PruneStates(from int64, to int64) error {
 		keepQrnSet[qrnsInfo.LastHeightChanged] = true
 		keepQrnSet[tmmath.MaxInt64(to, qrnsInfo.LastHeightChanged)] = true // keep last checkpoint too
 	}
-
 
 	batch := store.db.NewBatch()
 	defer batch.Close()
@@ -895,8 +890,6 @@ func (store dbStore) saveSteeringMemberCandidatesInfo(height, lastHeightChanged 
 
 	return nil
 }
-
-
 
 //-----------------------------------------------------------------------------
 

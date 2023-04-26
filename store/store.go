@@ -414,7 +414,6 @@ func (bs *BlockStore) saveState() {
 	SaveBlockStoreState(&bss, bs.db)
 }
 
-
 func (bs *BlockStore) SaveRollbackBlock(height int64) {
 	bs.mtx.RLock()
 	bss := tmstore.BlockStoreState{

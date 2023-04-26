@@ -225,6 +225,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 
 	return state, retainHeight, nil
 }
+
 // Commit locks the mempool, runs the ABCI Commit message, and updates the
 // mempool.
 // It returns the result of calling abci.Commit (the AppHash) and the height to retain (if any).
@@ -249,6 +250,7 @@ func (blockExec *BlockExecutor) Commit(
 
 	// Commit block, get hash back
 	res, err := blockExec.proxyApp.CommitSync()
+	
 	if err != nil {
 		blockExec.logger.Error("client error during proxyAppConn.CommitSync", "err", err)
 		return nil, 0, err
@@ -292,6 +294,7 @@ func execBlockOnProxyApp(
 	txIndex := 0
 	abciResponses := new(tmstate.ABCIResponses)
 	dtxs := make([]*abci.ResponseDeliverTx, len(block.Txs))
+
 	abciResponses.DeliverTxs = dtxs
 
 	// Execute transactions and get hash.
@@ -330,13 +333,12 @@ func execBlockOnProxyApp(
 
 	vrfCheckList := types.GetVrfCheckList(vrfSet)
 
-
 	abciResponses.BeginBlock, err = proxyAppConn.BeginBlockSync(abci.RequestBeginBlock{
 		Hash:                block.Hash(),
 		Header:              *pbh,
 		LastCommitInfo:      commitInfo,
 		ByzantineValidators: byzVals,
-		VrfCheckList: vrfCheckList,
+		VrfCheckList: vrfCheckList, 
 	})
 	if err != nil {
 		logger.Error("error in proxyAppConn.BeginBlock", "err", err)
@@ -353,11 +355,11 @@ func execBlockOnProxyApp(
 
 	// End block.
 	abciResponses.EndBlock, err = proxyAppConn.EndBlockSync(abci.RequestEndBlock{Height: block.Height})
+
 	if err != nil {
 		logger.Error("error in proxyAppConn.EndBlock", "err", err)
 		return nil, err
 	}
-
 	logger.Info("executed block", "height", block.Height, "num_valid_txs", validTxs, "num_invalid_txs", invalidTxs)
 	return abciResponses, nil
 }
@@ -427,7 +429,6 @@ func validateValidatorUpdates(abciUpdates []abci.ValidatorUpdate,
 	return nil
 }
 
-
 func validateStandingMemberUpdates(standingMemberUpdatesAbci abci.ValidatorUpdates, params tmproto.ValidatorParams) error {
 	for _, valUpdate := range standingMemberUpdatesAbci {
 		if valUpdate.GetType() == "standing" {
@@ -493,7 +494,7 @@ func updateState(
 	// Update the validator set with the latest abciResponses.
 	lastHeightValsChanged := state.LastHeightValidatorsChanged 
 
-	// Copy the standing member set so we can apply changes from EndBlock and update s.StandingMemberSet.	
+	// Copy the standing member set so we can apply changes from EndBlock and update s.StandingMemberSet.
 	standingMemberSet := state.StandingMemberSet.Copy()
 	// Update the standing member set with the latest abciResponses.
 	lastHeightStandingMembersChanged := state.LastHeightStandingMembersChanged
@@ -508,11 +509,13 @@ func updateState(
 		lastHeightStandingMembersChanged = header.Height  + 1
 		state.LastHeightNextQrnChanged = header.Height + 1
 	}
+
 	// Copy the steering member candidate set so we can apply changes from EndBlock and update s.StandingMemberCandidateSet.
 	steeringMemberCandidateSet := state.SteeringMemberCandidateSet.Copy()
 	// Update the steering member candidate set with the latest abciResponses.
 	lastHeightSteeringMemberCandidatesChanged := state.LastHeightSteeringMemberCandidatesChanged
-	if len(steeringMemberCandidateUpdates) > 0 { // add or remove steering member candiates
+
+	if len(steeringMemberCandidateUpdates) > 0 {// add or remove steering member candiates
 		err := steeringMemberCandidateSet.UpdateWithChangeSet(steeringMemberCandidateUpdates)
 		if err != nil {
 			return state, fmt.Errorf("error changing steering member candidate set: %v", err)
@@ -526,7 +529,6 @@ func updateState(
 	// if it has any update about the stanidng members or steering member candiates,
 	// update the validator set information (because the validator is added or removed)
 	if len(standingMemberUpdates) > 0 || len(steeringMemberCandidateUpdates) > 0 {
-
 		validators := make([]*types.Validator, 0, len(state.Validators.Validators))
 
 		currentNumberofSteeringMembers := 0
@@ -568,6 +570,7 @@ func updateState(
 		lastHeightParamsChanged = header.Height + 1
 	}
 
+	// Update the consensus round with the latest abciResponses.
 	currentConsensusRound := state.ConsensusRound
 	lastHeightConsensusRoundChanged := state.LastHeightConsensusRoundChanged
 	if abciResponses.EndBlock.ConsensusRoundUpdates != nil {
@@ -609,6 +612,8 @@ func updateState(
 		lastHeightConsensusRoundChanged = header.Height + 1
 	}
 
+	// if the currentConsensusRound's consensus start block height is current block height -2,
+	// it setting next Validator (for next consensus round)
 	if currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period) - 2 == header.Height {
 		validatorSize := len(standingMemberSet.StandingMembers)
 
@@ -636,7 +641,6 @@ func updateState(
 					break
 				}
 			}
-			// lastHeightSettingSteeringMemberChanged = header.Height + 1
 		}
 		
 		nValSet = types.NewValidatorSet(validators)
@@ -648,21 +652,26 @@ func updateState(
 
 	nextVersion := state.Version
 
+	// for store only the qrn period, it check the block height (in the qrn qeriod, it store the qrn information)
 	if (currentConsensusRound.ConsensusStartBlockHeight <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod)) {
 		state.LastHeightNextQrnChanged = header.Height + 1
 	}
 
+	// for store only the vrf period, it check the block height (in the vrf qeriod, it store the vrf information)
 	if (currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) + int64(currentConsensusRound.VrfPeriod)) {
 		state.LastHeightNextVrfChanged = header.Height + 1
 	}
 
+	// for store only the setting steering member period, it check the block height (in the setting steering member qeriod, it store the setting steering member information)
 	if (currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) + int64(currentConsensusRound.VrfPeriod) <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period)) {
 		state.LastHeightSettingSteeringMemberChanged = header.Height + 1
 	}
 
+	// update coordinator with qrns
 	standingMemberSet.SetCoordinator(state.QrnSet)
 	_, proposer := nValSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
 	nValSet.Proposer = proposer
+
 	nValSet.UpdateTotalVotingPower()
 
 	// NOTE: the AppHash has not been populated.
@@ -713,8 +722,6 @@ func updateState(
 	}, nil
 }
 
-
-
 // Fire NewBlock, NewBlockHeader.
 // Fire TxEvent for every tx.
 // NOTE: if ReapchainCore crashes before commit, some or all of these events may be published again.
@@ -731,7 +738,6 @@ func fireEvents(
 	qrnSet *types.QrnSet,
 	nextQrnSet *types.QrnSet,
 	settingSteeringMember *types.SettingSteeringMember,
-
 ) {
 	vrfSetProto, _ := vrfSet.ToProto();
 	nextVrfSetProto, _ := nextVrfSet.ToProto();
@@ -747,7 +753,7 @@ func fireEvents(
 		NextQrnSet:            nextQrnSetProto,
 		SettingSteeringMember: settingSteeringMemberProto,
 	};
-	
+
 	if err := eventBus.PublishEventNewBlock(types.EventDataNewBlock{
 		Block:            block,
 		ResultBeginBlock: *abciResponses.BeginBlock,
@@ -828,7 +834,6 @@ func ExecCommitBlock(
 		logger.Error("client error during proxyAppConn.CommitSync", "err", res)
 		return nil, err
 	}
-
 	// ResponseCommit has no error or log, just data
 	return res.Data, nil
 }

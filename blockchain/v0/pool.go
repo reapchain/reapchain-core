@@ -2,8 +2,6 @@ package v0
 
 import (
 	"time"
-
-	
 )
 
 /*
@@ -37,4 +35,3 @@ const (
 )
 
 var peerTimeout = 15 * time.Second // not const so we can override with tests
-

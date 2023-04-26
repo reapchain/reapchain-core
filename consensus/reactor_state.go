@@ -11,7 +11,7 @@ import (
 // these states are related to next consensus round's validators.
 func (conR *Reactor) respondStateToPeer(height int64,
 	peer p2p.Peer) (queued bool) {
-	settingSteeringMember, err := conR.stateStore.LoadSettingSteeringMember(height+1)
+	settingSteeringMember, err := conR.stateStore.LoadSettingSteeringMember(height + 1)
 	if err != nil {
 		return false
 	}
@@ -27,12 +27,12 @@ func (conR *Reactor) respondStateToPeer(height int64,
 	}
 
 	state := &sm.State{
-		LastBlockHeight:            height,
-		SettingSteeringMember:      settingSteeringMember,
-		NextVrfSet:                 nextVrfSet,
-		NextQrnSet:                 nextQrnSet,
+		LastBlockHeight:       height,
+		SettingSteeringMember: settingSteeringMember,
+		NextVrfSet:            nextVrfSet,
+		NextQrnSet:            nextQrnSet,
 	}
-	
+
 	stateProto, err := state.ToProto()
 	if err != nil {
 		return false

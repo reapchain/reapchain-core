@@ -131,9 +131,8 @@ func (state State) Copy() State {
 		ConsensusParams:                  state.ConsensusParams,
 		LastHeightConsensusParamsChanged: state.LastHeightConsensusParamsChanged,
 
-		AppHash: state.AppHash,
-
 		LastResultsHash: state.LastResultsHash,
+		AppHash: state.AppHash,
 
 		StandingMemberSet:                state.StandingMemberSet.Copy(),
 		LastHeightStandingMembersChanged: state.LastHeightStandingMembersChanged,
@@ -158,7 +157,6 @@ func (state State) Copy() State {
 		LastHeightSettingSteeringMemberChanged: state.LastHeightSettingSteeringMemberChanged,
 		
 		IsSetSteeringMember:   state.IsSetSteeringMember,
-	
 	}
 }
 
@@ -278,7 +276,6 @@ func (state *State) ToProto() (*tmstate.State, error) {
 	
 	sm.IsSetSteeringMember = state.IsSetSteeringMember
 
-
 	return sm, nil
 }
 
@@ -380,10 +377,8 @@ func StateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 
 	state.IsSetSteeringMember = pb.IsSetSteeringMember
 
-
 	return state, nil
 }
-
 
 func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	if pb == nil {
@@ -417,7 +412,6 @@ func SyncStateFromProto(pb *tmstate.State) (*State, error) { //nolint:golint
 	return state, nil
 }
 
-
 //------------------------------------------------------------------------
 // Create a block from the latest state
 
@@ -431,7 +425,6 @@ func (state State) MakeBlock(
 	evidence []types.Evidence,
 	proposerAddress []byte,
 ) (*types.Block, *types.PartSet) {
-
 	// Build base block with block data.
 	block := types.MakeBlock(height, txs, commit, evidence)
 

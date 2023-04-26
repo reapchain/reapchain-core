@@ -54,7 +54,6 @@ func NewReactor(
 		connQuery: connQuery,
 	}
 	r.BaseReactor = *p2p.NewBaseReactor("StateSync", r)
-
 	return r
 }
 
@@ -265,7 +264,7 @@ func (r *Reactor) Sync(stateProvider StateProvider, discoveryTime time.Duration)
 		return sm.State{}, nil, errors.New("a state sync is already in progress")
 	}
 	r.syncer = newSyncer(r.cfg, r.Logger, r.conn, r.connQuery, stateProvider, r.tempDir)
-	
+
 	r.mtx.Unlock()
 
 	hook := func() {
