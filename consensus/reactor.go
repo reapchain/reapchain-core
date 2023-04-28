@@ -46,7 +46,7 @@ type Reactor struct {
 	mtx      tmsync.RWMutex
 	waitSync bool
 	eventBus *types.EventBus
-
+	//rs       *cstypes.RoundState Removed: Inefficient variable assignments related to conR.conS.GetRoundState()
 	Metrics *Metrics
 
 	stateStore                          sm.Store
@@ -164,7 +164,7 @@ conR:
 }
 
 // GetChannels implements Reactor
-// SettingStandingMember changes priority for avoiding to overload the channel
+// [SettingStandingMember, VrfChannel, QrnChannel, CatchUpChannel] changes priority for avoiding to overload the channel
 func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 	// TODO optimize
 	return []*p2p.ChannelDescriptor{
@@ -198,14 +198,14 @@ func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 		},
 		{
 			ID:                  QrnChannel,
-			Priority:            10,
+			Priority:            20,
 			SendQueueCapacity:   100,
 			RecvBufferCapacity:  50 * 4096,
 			RecvMessageCapacity: maxMsgSize,
 		},
 		{
 			ID:                  VrfChannel,
-			Priority:            10,
+			Priority:            20,
 			SendQueueCapacity:   100,
 			RecvBufferCapacity:  50 * 4096,
 			RecvMessageCapacity: maxMsgSize,
@@ -219,7 +219,7 @@ func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 		},
 		{
 			ID:                  CatchUpChannel,
-			Priority:            10,
+			Priority:            15,
 			SendQueueCapacity:   100,
 			RecvBufferCapacity:  50 * 4096,
 			RecvMessageCapacity: maxMsgSize,
