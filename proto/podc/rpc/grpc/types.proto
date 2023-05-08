@@ -2,7 +2,7 @@ syntax = "proto3";
 package reapchain.rpc.grpc;
 option  go_package = "github.com/reapchain/reapchain-core/rpc/grpc;coregrpc";
 
-import "reapchain-core/abci/types.proto";
+import "podc/abci/types.proto";
 
 //----------------------------------------
 // Request types

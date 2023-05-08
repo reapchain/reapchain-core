@@ -4,7 +4,7 @@ package reapchain.p2p;
 option go_package = "github.com/reapchain/reapchain-core/proto/podc/p2p";
 
 import "gogoproto/gogo.proto";
-import "reapchain-core/crypto/keys.proto";
+import "podc/crypto/keys.proto";
 
 message PacketPing {}
 

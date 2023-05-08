@@ -5,17 +5,17 @@ option go_package = "github.com/reapchain/reapchain-core/abci/types";
 
 // For more information on gogo.proto, see:
 // https://github.com/gogo/protobuf/blob/master/extensions.md
-import "reapchain-core/crypto/proof.proto";
-import "reapchain-core/types/types.proto";
-import "reapchain-core/crypto/keys.proto";
-import "reapchain-core/types/params.proto";
+import "podc/crypto/proof.proto";
+import "podc/types/types.proto";
+import "podc/crypto/keys.proto";
+import "podc/types/params.proto";
 import "google/protobuf/timestamp.proto";
 import "gogoproto/gogo.proto";
 
-import "reapchain-core/types/vrf.proto";
-import "reapchain-core/types/qrn.proto";
-import "reapchain-core/types/setting_steering_member.proto";
-import "reapchain-core/types/consensus_round.proto";
+import "podc/types/vrf.proto";
+import "podc/types/qrn.proto";
+import "podc/types/setting_steering_member.proto";
+import "podc/types/consensus_round.proto";
 
   
 

@@ -3,8 +3,8 @@ package reapchain.blockchain;
 
 option go_package = "github.com/reapchain/reapchain-core/proto/podc/blockchain";
 
-import "reapchain-core/types/block.proto";
-import "reapchain-core/state/types.proto";
+import "podc/types/block.proto";
+import "podc/state/types.proto";
 
 // BlockRequest requests a block for a specific height
 message BlockRequest {

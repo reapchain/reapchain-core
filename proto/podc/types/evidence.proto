@@ -5,8 +5,8 @@ option go_package = "github.com/reapchain/reapchain-core/proto/podc/types";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "reapchain-core/types/types.proto";
-import "reapchain-core/types/validator.proto";
+import "podc/types/types.proto";
+import "podc/types/validator.proto";
 
 message Evidence {
   oneof sum {

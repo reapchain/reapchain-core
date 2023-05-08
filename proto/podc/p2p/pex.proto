@@ -3,7 +3,7 @@ package reapchain.p2p;
 
 option go_package = "github.com/reapchain/reapchain-core/proto/podc/p2p";
 
-import "reapchain-core/p2p/types.proto";
+import "podc/p2p/types.proto";
 import "gogoproto/gogo.proto";
 
 message PexRequest {}

@@ -4,8 +4,8 @@ package reapchain.types;
 option go_package = "github.com/reapchain/reapchain-core/proto/podc/types";
 
 import "gogoproto/gogo.proto";
-import "reapchain-core/types/types.proto";
-import "reapchain-core/crypto/keys.proto";
+import "podc/types/types.proto";
+import "podc/crypto/keys.proto";
 import "google/protobuf/timestamp.proto";
 
 message CanonicalBlockID {

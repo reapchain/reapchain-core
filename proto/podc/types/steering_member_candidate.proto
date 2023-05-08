@@ -4,7 +4,7 @@ package reapchain.types;
 option go_package = "github.com/reapchain/reapchain-core/proto/podc/types";
 
 import "gogoproto/gogo.proto";
-import "reapchain-core/crypto/keys.proto";
+import "podc/crypto/keys.proto";
 
 message SteeringMemberCandidate {
   reapchain.crypto.PublicKey pub_key  = 1 [(gogoproto.nullable) = false];

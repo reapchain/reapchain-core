@@ -4,11 +4,11 @@ package reapchain.consensus;
 option go_package = "github.com/reapchain/reapchain-core/proto/podc/consensus";
 
 import "gogoproto/gogo.proto";
-import "reapchain-core/types/types.proto";
-import "reapchain-core/types/qrn.proto";
-import "reapchain-core/types/setting_steering_member.proto";
-import "reapchain-core/types/vrf.proto";
-import "reapchain-core/libs/bits/types.proto";
+import "podc/types/types.proto";
+import "podc/types/qrn.proto";
+import "podc/types/setting_steering_member.proto";
+import "podc/types/vrf.proto";
+import "podc/libs/bits/types.proto";
 
 // NewRoundStep is sent for every step taken in the ConsensusState.
 // For every height/round/step transition

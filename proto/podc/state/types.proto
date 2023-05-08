@@ -4,18 +4,18 @@ package reapchain.state;
 option go_package = "github.com/reapchain/reapchain-core/proto/podc/state";
 
 import "gogoproto/gogo.proto";
-import "reapchain-core/abci/types.proto";
-import "reapchain-core/types/types.proto";
-import "reapchain-core/types/validator.proto";
-import "reapchain-core/types/params.proto";
-import "reapchain-core/version/types.proto";
+import "podc/abci/types.proto";
+import "podc/types/types.proto";
+import "podc/types/validator.proto";
+import "podc/types/params.proto";
+import "podc/version/types.proto";
 import "google/protobuf/timestamp.proto";
-import "reapchain-core/types/standing_member.proto";
-import "reapchain-core/types/steering_member_candidate.proto";
-import "reapchain-core/types/qrn.proto";
-import "reapchain-core/types/vrf.proto";
-import "reapchain-core/types/setting_steering_member.proto";
-import "reapchain-core/types/consensus_round.proto";
+import "podc/types/standing_member.proto";
+import "podc/types/steering_member_candidate.proto";
+import "podc/types/qrn.proto";
+import "podc/types/vrf.proto";
+import "podc/types/setting_steering_member.proto";
+import "podc/types/consensus_round.proto";
 
 // ABCIResponses retains the responses
 // of the various ABCI calls during block processing.

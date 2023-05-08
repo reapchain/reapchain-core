@@ -4,8 +4,8 @@ package reapchain.consensus;
 option go_package = "github.com/reapchain/reapchain-core/proto/podc/consensus";
 
 import "gogoproto/gogo.proto";
-import "reapchain-core/consensus/types.proto";
-import "reapchain-core/types/events.proto";
+import "podc/consensus/types.proto";
+import "podc/types/events.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 

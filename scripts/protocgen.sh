@@ -14,8 +14,8 @@ plugins=grpc,paths=source_relative:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 done
 
-cp -r ./reapchain-core/* ./proto/*
-rm -rf reapchain-core
+cp -r ./podc/* ./proto/*
+rm -rf podc
 
 mv ./proto/podc/abci/types.pb.go ./abci/types
 
