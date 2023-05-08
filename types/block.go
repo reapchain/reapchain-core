@@ -26,7 +26,8 @@ const (
 	// MaxHeaderBytes is a maximum header size.
 	// NOTE: Because app hash can be of arbitrary size, the header is therefore not
 	// capped in size and thus this number should be seen as a soft max
-	MaxHeaderBytes int64 = 626
+	// for stading & steering member -> 626 -> 778
+	MaxHeaderBytes int64 = 778
 
 	// MaxOverheadForBlock - maximum overhead to encode a block (up to
 	// MaxBlockSizeBytes in size) not including it's parts except Data.
@@ -518,12 +519,6 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		return nil
 	}
 
-	crbi := h.ConsensusRound.ToProto()
-	crbz, err := crbi.Marshal()
-	if err != nil {
-		return nil
-	}
-
 	return merkle.HashFromByteSlices([][]byte{
 		hbz,
 		cdcEncode(h.ChainID),
@@ -540,11 +535,10 @@ func (h *Header) Hash() tmbytes.HexBytes {
 		cdcEncode(h.EvidenceHash),
 		cdcEncode(h.ProposerAddress),
 		cdcEncode(h.StandingMembersHash), //
-		cdcEncode(h.ConsensusRound),
+		cdcEncode(h.SteeringMemberCandidatesHash), // 
 		cdcEncode(h.QrnsHash), //
 		cdcEncode(h.VrfsHash), //
-		cdcEncode(h.SteeringMemberCandidatesHash), // 
-		crbz,
+		cdcEncode(h.ConsensusRound),
 	})
 }
 

@@ -22,6 +22,14 @@ type QrnSet struct {
 }
 
 func NewQrnSet(height int64, standingMemberSet *StandingMemberSet, qrns []*Qrn) *QrnSet {
+	if standingMemberSet == nil {
+		return &QrnSet{
+			Height:            height,
+			QrnsBitArray:      nil,
+			Qrns:              nil,
+		}	
+	}
+	
 	if qrns == nil || len(qrns) == 0 {
 		qrns = make([]*Qrn, standingMemberSet.Size())
 		for i, standingMember := range standingMemberSet.StandingMembers {
@@ -98,6 +106,11 @@ func (qrnSet *QrnSet) AddQrn(chainID string, qrn *Qrn) bool {
 	defer qrnSet.mtx.Unlock()
 
 	if qrn == nil {
+		return false
+	}
+	
+	// Checking qrn signature is null?
+	if qrn.Signature == nil {
 		return false
 	}
 	

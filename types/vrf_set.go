@@ -25,6 +25,13 @@ type VrfSet struct {
 }
 
 func NewVrfSet(height int64, steeringMemberCandidateSet *SteeringMemberCandidateSet, vrfs []*Vrf) *VrfSet {
+	if steeringMemberCandidateSet == nil {
+		return &VrfSet{
+				Height:                     height,
+				VrfsBitArray:               nil,
+				Vrfs:                       nil,
+			}
+	}
 
 	if vrfs == nil || len(vrfs) == 0 {
 		vrfs = make([]*Vrf, steeringMemberCandidateSet.Size())

@@ -198,28 +198,28 @@ func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 		},
 		{
 			ID:                  QrnChannel,
-			Priority:            20,
+			Priority:            30,
 			SendQueueCapacity:   100,
-			RecvBufferCapacity:  50 * 4096,
+			RecvBufferCapacity:  30 * 4096,
 			RecvMessageCapacity: maxMsgSize,
 		},
 		{
 			ID:                  VrfChannel,
-			Priority:            20,
+			Priority:            30,
 			SendQueueCapacity:   100,
-			RecvBufferCapacity:  50 * 4096,
+			RecvBufferCapacity:  30 * 4096,
 			RecvMessageCapacity: maxMsgSize,
 		},
 		{
 			ID:                  SettingSteeringMemberChannel,
-			Priority:            20,
+			Priority:            30,
 			SendQueueCapacity:   100,
 			RecvBufferCapacity:  50 * 4096,
 			RecvMessageCapacity: maxMsgSize,
 		},
 		{
 			ID:                  CatchUpChannel,
-			Priority:            15,
+			Priority:            40,
 			SendQueueCapacity:   100,
 			RecvBufferCapacity:  50 * 4096,
 			RecvMessageCapacity: maxMsgSize,
@@ -287,24 +287,59 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 		return
 	}
 
+	// Get peer states
+	ps, ok := src.Get(types.PeerStateKey).(*PeerState)
+	if !ok {
+		panic(fmt.Sprintf("Peer %v has no state", src))
+	}
+
 	switch chID {
 	case CatchUpChannel:
 		msg, _ := bc.DecodeMsg(msgBytes)
 		switch msg := msg.(type) {
 		case *bcproto.StateResponse:
 			state, err := sm.SyncStateFromProto(msg.State)
-
 			if err != nil {
-				conR.Logger.Error("State content is invalid", "err", err)
-				return
+				fmt.Println("Error decoding msg: ", msg)
 			}
 
-			for _, catchupState := range conR.conS.CatchupStates {
-				if catchupState.LastBlockHeight == state.LastBlockHeight {
+			if conR.WaitSync() { // fast sync is true
+				if err != nil {
+					conR.Logger.Error("State content is invalid", "err", err)
 					return
 				}
+
+				for _, catchupState := range conR.conS.CatchupStates {
+					if catchupState.LastBlockHeight == state.LastBlockHeight {
+						return
+					}
+				}
+				conR.conS.CatchupStates = append(conR.conS.CatchupStates, state)
+			} else { // fast sync is false
+				ps.EnsureQrnBitArrays(state.LastBlockHeight, len(state.NextQrnSet.Qrns))
+				
+				for j :=0; j < (len(state.NextQrnSet.Qrns)); j++ {
+					if state.NextQrnSet.Qrns[j].Signature != nil {
+						qrn := state.NextQrnSet.Qrns[j]
+						ps.SetHasQrn(qrn)
+						conR.conS.sendInternalMessage(msgInfo{&QrnMessage{qrn}, ""})
+					}
+				}
+
+				ps.EnsureVrfBitArrays(state.LastBlockHeight, len(state.NextVrfSet.Vrfs))
+				for j :=0; j < (len(state.NextVrfSet.Vrfs)); j++ {
+					if state.NextVrfSet.Vrfs[j].Proof != nil {
+						vrf := state.NextVrfSet.Vrfs[j]
+						ps.SetHasVrf(vrf)
+						conR.conS.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
+					}
+				}
+				
+				if state.SettingSteeringMember != nil {
+					ps.SetHasSettingSteeringMember(state.SettingSteeringMember.Height)
+					conR.conS.sendInternalMessage(msgInfo{&SettingSteeringMemberMessage{state.SettingSteeringMember}, ""})
+				}
 			}
-			conR.conS.CatchupStates = append(conR.conS.CatchupStates, state)
 		}
 		return
 	}
@@ -322,13 +357,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 		return
 	}
 
-	conR.Logger.Debug("Receive", "src", src, "chId", chID, "msg", msg)
-
-	// Get peer states
-	ps, ok := src.Get(types.PeerStateKey).(*PeerState)
-	if !ok {
-		panic(fmt.Sprintf("Peer %v has no state", src))
-	}
+	conR.Logger.Debug("Receive", "src", src, "chId", chID, "msg", msg)	
 
 	switch chID {
 	case StateChannel:
@@ -341,8 +370,16 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 				conR.Logger.Error("Peer sent us invalid msg1", "peer", src, "msg", msg, "err", err)
 				conR.Switch.StopPeerForError(src, err)
 				return
+			}	
+
+			if msg.Height < conR.conS.state.ConsensusRound.ConsensusStartBlockHeight {
+				consensusRound, _ := conR.stateStore.LoadConsensusRound(msg.Height)
+				// It is syncing..
+				ps.ApplyNewRoundStepMessage(msg, consensusRound.ConsensusStartBlockHeight+int64(consensusRound.Period))
+			} else {
+				ps.ApplyNewRoundStepMessage(msg, conR.conS.state.ConsensusRound.ConsensusStartBlockHeight+int64(conR.conS.state.ConsensusRound.Period))
 			}
-			ps.ApplyNewRoundStepMessage(msg, conR.conS.state.ConsensusRound.ConsensusStartBlockHeight+int64(conR.conS.state.ConsensusRound.Period))
+
 		case *NewValidBlockMessage:
 			ps.ApplyNewValidBlockMessage(msg)
 		case *HasVoteMessage:
@@ -749,7 +786,7 @@ OUTER_LOOP:
 			}
 
 			// if the peer is on syncying
-			if prs.Height < rs.Height-1 {
+			if prs.Height < rs.Height - 1 {
 				conR.respondStateToPeer(prs.Height, peer)
 			}
 

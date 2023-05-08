@@ -24,6 +24,7 @@ var (
 
 // rollback state key
 var (
+	previousConsensusRound tmproto.ConsensusRound
 	rollbackStateKey = []byte("rollbackStateKey")
 )
 
