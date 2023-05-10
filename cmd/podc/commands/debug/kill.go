@@ -21,14 +21,14 @@ import (
 
 var killCmd = &cobra.Command{
 	Use:   "kill [pid] [compressed-output-file]",
-	Short: "Kill a ReapchainCore process while aggregating and packaging debugging data",
-	Long: `Kill a ReapchainCore process while also aggregating ReapchainCore process data
+	Short: "Kill a podc process while aggregating and packaging debugging data",
+	Long: `Kill a podc process while also aggregating ReapchainCore process data
 such as the latest node state, including consensus and networking state,
 go-routine state, and the node's WAL and config information. This aggregated data
 is packaged into a compressed archive.
 
 Example:
-$ reapchain-core debug 34255 /path/to/tm-debug.zip`,
+$ podc debug 34255 /path/to/tm-debug.zip`,
 	Args: cobra.ExactArgs(2),
 	RunE: killCmdHandler,
 }
@@ -56,7 +56,7 @@ func killCmdHandler(cmd *cobra.Command, args []string) error {
 
 	// Create a temporary directory which will contain all the state dumps and
 	// relevant files and directories that will be compressed into a file.
-	tmpDir, err := ioutil.TempDir(os.TempDir(), "reapchain-core_debug_tmp")
+	tmpDir, err := ioutil.TempDir(os.TempDir(), "podc_debug_tmp")
 	if err != nil {
 		return fmt.Errorf("failed to create temporary directory: %w", err)
 	}
@@ -87,7 +87,7 @@ func killCmdHandler(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	logger.Info("killing ReapchainCore process")
+	logger.Info("killing podc process")
 	if err := killProc(pid, tmpDir); err != nil {
 		return err
 	}
@@ -96,13 +96,13 @@ func killCmdHandler(cmd *cobra.Command, args []string) error {
 	return zipDir(tmpDir, outFile)
 }
 
-// killProc attempts to kill the ReapchainCore process with a given PID with an
+// killProc attempts to kill the podc process with a given PID with an
 // ABORT signal which should result in a goroutine stacktrace. The PID's STDERR
 // is tailed and piped to a file under the directory dir. An error is returned
 // if the output file cannot be created or the tail command cannot be started.
 // An error is not returned if any subsequent syscall fails.
 func killProc(pid uint64, dir string) error {
-	// pipe STDERR output from tailing the ReapchainCore process to a file
+	// pipe STDERR output from tailing the podc process to a file
 	//
 	// NOTE: This will only work on UNIX systems.
 	cmd := exec.Command("tail", "-f", fmt.Sprintf("/proc/%d/fd/2", pid)) // nolint: gosec

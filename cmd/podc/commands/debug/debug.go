@@ -21,10 +21,10 @@ var (
 )
 
 // DebugCmd defines the root command containing subcommands that assist in
-// debugging running ReapchainCore processes.
+// debugging running podc processes.
 var DebugCmd = &cobra.Command{
 	Use:   "debug",
-	Short: "A utility to kill or watch a ReapchainCore process while aggregating debugging data",
+	Short: "A utility to kill or watch a podc process while aggregating debugging data",
 }
 
 func init() {

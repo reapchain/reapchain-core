@@ -18,8 +18,8 @@ import (
 
 var dumpCmd = &cobra.Command{
 	Use:   "dump [output-directory]",
-	Short: "Continuously poll a ReapchainCore process and dump debugging data into a single location",
-	Long: `Continuously poll a ReapchainCore process and dump debugging data into a single
+	Short: "Continuously poll a podc process and dump debugging data into a single location",
+	Long: `Continuously poll a podc process and dump debugging data into a single
 location at a specified frequency. At each frequency interval, an archived and compressed
 file will contain node debugging information including the goroutine and heap profiles
 if enabled.`,
@@ -82,7 +82,7 @@ func dumpCmdHandler(_ *cobra.Command, args []string) error {
 func dumpDebugData(outDir string, conf *cfg.Config, rpc *rpchttp.HTTP) {
 	start := time.Now().UTC()
 
-	tmpDir, err := ioutil.TempDir(outDir, "reapchain-core_debug_tmp")
+	tmpDir, err := ioutil.TempDir(outDir, "podc_debug_tmp")
 	if err != nil {
 		logger.Error("failed to create temporary directory", "dir", tmpDir, "error", err)
 		return
