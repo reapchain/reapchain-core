@@ -21,7 +21,7 @@ var (
 // InitFilesCmd initialises a fresh Reapchain Core instance.
 var InitFilesCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize Reapchain",
+	Short: "Initialize podc",
 	RunE:  initFiles,
 }
 

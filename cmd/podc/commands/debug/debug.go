@@ -33,7 +33,7 @@ func init() {
 		&nodeRPCAddr,
 		flagNodeRPCAddr,
 		"tcp://localhost:26657",
-		"the ReapchainCore node's RPC address (<host>:<port>)",
+		"the podc node's RPC address (<host>:<port>)",
 	)
 
 	DebugCmd.AddCommand(killCmd)

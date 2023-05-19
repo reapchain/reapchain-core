@@ -79,7 +79,7 @@ func init() {
 // TestnetFilesCmd allows initialisation of files for a ReapchainCore testnet.
 var TestnetFilesCmd = &cobra.Command{
 	Use:   "testnet",
-	Short: "Initialize files for a ReapchainCore testnet",
+	Short: "Initialize files for a podc testnet",
 	Long: `testnet will create "v" + "n" number of directories and populate each with
 necessary files (private validator, genesis, config, etc.).
 
@@ -89,7 +89,7 @@ Optionally, it will fill in persistent_peers list in config file using either ho
 
 Example:
 
-	reapchain-core testnet --v 4 --o ./output --populate-persistent-peers --starting-ip-address 192.168.10.2
+	podc testnet --v 4 --o ./output --populate-persistent-peers --starting-ip-address 192.168.10.2
 	`,
 	RunE: testnetFiles,
 }

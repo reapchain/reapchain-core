@@ -81,7 +81,7 @@ const defaultConfigTemplate = `# This is a TOML config file.
 #######################################################################
 
 # TCP or UNIX socket address of the ABCI application,
-# or the name of an ABCI application compiled in with the ReapchainCore binary
+# or the name of an ABCI application compiled in with the reapchain-core binary
 proxy_app = "{{ .BaseConfig.ProxyApp }}"
 
 # A custom human readable name for this node
@@ -133,7 +133,7 @@ priv_validator_key_file = "{{ js .BaseConfig.PrivValidatorKey }}"
 # Path to the JSON file containing the last sign state of a validator
 priv_validator_state_file = "{{ js .BaseConfig.PrivValidatorState }}"
 
-# TCP or UNIX socket address for ReapchainCore to listen on for
+# TCP or UNIX socket address for reapchain-core to listen on for
 # connections from an external PrivValidator process
 priv_validator_laddr = "{{ .BaseConfig.PrivValidatorListenAddr }}"
 
@@ -236,7 +236,7 @@ experimental_close_on_slow_client = {{ .RPC.CloseOnSlowClient }}
 # How long to wait for a tx to be committed during /broadcast_tx_commit.
 # WARNING: Using a value larger than 10s will result in increasing the
 # global HTTP write timeout, which applies to all connections and endpoints.
-# See https://github.com/reapchain/reapchain-core/issues/3435
+# See https://github.com/tendermint/tendermint/issues/3435
 timeout_broadcast_tx_commit = "{{ .RPC.TimeoutBroadcastTxCommit }}"
 
 # Maximum size of request body, in bytes
@@ -246,17 +246,17 @@ max_body_bytes = {{ .RPC.MaxBodyBytes }}
 max_header_bytes = {{ .RPC.MaxHeaderBytes }}
 
 # The path to a file containing certificate that is used to create the HTTPS server.
-# Might be either absolute path or path related to ReapchainCore's config directory.
+# Might be either absolute path or path related to reapchain-core's config directory.
 # If the certificate is signed by a certificate authority,
 # the certFile should be the concatenation of the server's certificate, any intermediates,
 # and the CA's certificate.
-# NOTE: both tls_cert_file and tls_key_file must be present for ReapchainCore to create HTTPS server.
+# NOTE: both tls_cert_file and tls_key_file must be present for reapchain-core to create HTTPS server.
 # Otherwise, HTTP server is run.
 tls_cert_file = "{{ .RPC.TLSCertFile }}"
 
 # The path to a file containing matching private key that is used to create the HTTPS server.
-# Might be either absolute path or path related to ReapchainCore's config directory.
-# NOTE: both tls-cert-file and tls-key-file must be present for ReapchainCore to create HTTPS server.
+# Might be either absolute path or path related to reapchain-core's config directory.
+# NOTE: both tls-cert-file and tls-key-file must be present for reapchain-core to create HTTPS server.
 # Otherwise, HTTP server is run.
 tls_key_file = "{{ .RPC.TLSKeyFile }}"
 
@@ -373,7 +373,7 @@ max_tx_bytes = {{ .Mempool.MaxTxBytes }}
 
 # Maximum size of a batch of transactions to send to a peer
 # Including space needed by encoding (one varint per transaction).
-# XXX: Unused due to https://github.com/reapchain/reapchain-core/issues/5796
+# XXX: Unused due to https://github.com/tendermint/tendermint/issues/5796
 max_batch_bytes = {{ .Mempool.MaxBatchBytes }}
 
 # ttl-duration, if non-zero, defines the maximum amount of time a transaction
