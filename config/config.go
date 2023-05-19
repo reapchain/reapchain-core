@@ -38,8 +38,8 @@ const (
 // NOTE: libs/cli must know to look in the config dir!
 var (
 	DefaultReapchainCoreDir = ".podc"
-	defaultConfigDir     = "config"
-	defaultDataDir       = "data"
+	defaultConfigDir        = "config"
+	defaultDataDir          = "data"
 
 	defaultConfigFileName  = "config.toml"
 	defaultGenesisJSONName = "genesis.json"
@@ -948,7 +948,7 @@ type ConsensusConfig struct {
 	DoubleSignCheckHeight int64 `mapstructure:"double_sign_check_height"`
 
 	QrnGenerationMechanism string `mapstructure:"qrn_generation_mechanism"`
-	QrnGeneratorFilePath string `mapstructure:"qrn_generator_file_path"`
+	QrnGeneratorFilePath   string `mapstructure:"qrn_generator_file_path"`
 }
 
 // DefaultConsensusConfig returns a default configuration for the consensus service
@@ -968,8 +968,8 @@ func DefaultConsensusConfig() *ConsensusConfig {
 		PeerGossipSleepDuration:     100 * time.Millisecond,
 		PeerQueryMaj23SleepDuration: 2000 * time.Millisecond,
 		DoubleSignCheckHeight:       int64(0),
-		QrnGenerationMechanism: 		 "os",
-		QrnGeneratorFilePath: 			 "",
+		QrnGenerationMechanism:      "os",
+		QrnGeneratorFilePath:        "",
 	}
 }
 
@@ -1084,12 +1084,14 @@ func (cfg *ConsensusConfig) ValidateBasic() error {
 	return nil
 }
 
-//-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // TxIndexConfig
 // Remember that Event has the following structure:
 // type: [
-//  key: value,
-//  ...
+//
+//	key: value,
+//	...
+//
 // ]
 //
 // CompositeKeys are constructed by `type.key`
@@ -1152,7 +1154,7 @@ func DefaultInstrumentationConfig() *InstrumentationConfig {
 		Prometheus:           false,
 		PrometheusListenAddr: ":26660",
 		MaxOpenConnections:   3,
-		Namespace:            "reapchain-core",
+		Namespace:            "podc",
 	}
 }
 
