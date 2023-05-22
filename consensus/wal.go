@@ -46,9 +46,9 @@ type EndHeightMessage struct {
 type WALMessage interface{}
 
 func init() {
-	tmjson.RegisterType(msgInfo{}, "reapchain-core/wal/MsgInfo")
-	tmjson.RegisterType(timeoutInfo{}, "reapchain-core/wal/TimeoutInfo")
-	tmjson.RegisterType(EndHeightMessage{}, "reapchain-core/wal/EndHeightMessage")
+	tmjson.RegisterType(msgInfo{}, "podc/wal/MsgInfo")
+	tmjson.RegisterType(timeoutInfo{}, "podc/wal/TimeoutInfo")
+	tmjson.RegisterType(EndHeightMessage{}, "podc/wal/EndHeightMessage")
 }
 
 //--------------------------------------------------------

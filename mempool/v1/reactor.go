@@ -231,7 +231,7 @@ func (memR *Reactor) broadcastTxRoutine(peer p2p.Peer) {
 		}
 
 		// NOTE: Transaction batching was disabled due to
-		// https://github.com/reapchain/reapchain-core/issues/5796
+		// https://github.com/tendermint/tendermint/issues/5796
 		if !memTx.HasPeer(peerID) {
 			msg := protomem.Message{
 				Sum: &protomem.Message_Txs{

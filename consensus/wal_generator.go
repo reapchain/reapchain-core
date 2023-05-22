@@ -116,7 +116,7 @@ func WALGenerateNBlocks(t *testing.T, wr io.Writer, numBlocks int) (err error) {
 		if err := consensusState.Stop(); err != nil {
 			t.Error(err)
 		}
-		return fmt.Errorf("waited too long for reapchain to produce %d blocks (grep logs for `wal_generator`)", numBlocks)
+		return fmt.Errorf("waited too long for podc to produce %d blocks (grep logs for `wal_generator`)", numBlocks)
 	}
 }
 

@@ -46,7 +46,7 @@ module.exports = {
           children: [
             {
               // TODO(creachadair): Figure out how to make this per-branch.
-              // See: https://github.com/reapchain/reapchain-core/issues/7908
+              // See: https://github.com/tendermint/tendermint/issues/7908
               title: 'RPC',
               path: 'https://docs.reapchain-core.com/v0.35/rpc/',
               static: true

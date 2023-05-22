@@ -610,7 +610,7 @@ func (mem *CListMempool) Update(
 		//   101 -> 102
 		// Mempool after:
 		//   100
-		// https://github.com/reapchain/reapchain-core/issues/3322.
+		// https://github.com/tendermint/tendermint/issues/3322.
 		if e, ok := mem.txsMap.Load(tx.Key()); ok {
 			mem.removeTx(tx, e.(*clist.CElement), false)
 		}
