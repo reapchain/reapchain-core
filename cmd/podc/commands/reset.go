@@ -11,7 +11,7 @@ import (
 	"github.com/reapchain/reapchain-core/privval"
 )
 
-// ResetAllCmd removes the database of this ReapchainCore core
+// ResetAllCmd removes the database of this reapchain-core
 // instance.
 var ResetAllCmd = &cobra.Command{
 	Use:     "unsafe-reset-all",
@@ -23,7 +23,7 @@ var ResetAllCmd = &cobra.Command{
 
 var keepAddrBook bool
 
-// ResetStateCmd removes the database of the specified ReapchainCore core instance.
+// ResetStateCmd removes the database of the specified reapchain-core instance.
 var ResetStateCmd = &cobra.Command{
 	Use:    "reset-state",
 	Short:  "Remove all the data and WAL",

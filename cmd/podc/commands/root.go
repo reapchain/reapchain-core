@@ -28,7 +28,7 @@ func registerFlagsRootCmd(cmd *cobra.Command) {
 }
 
 // ParseConfig retrieves the default environment configuration,
-// sets up the ReapchainCore root and ensures that the root exists
+// sets up the reapchain-core root and ensures that the root exists
 func ParseConfig() (*cfg.Config, error) {
 	conf := cfg.DefaultConfig()
 	err := viper.Unmarshal(conf)
@@ -43,9 +43,9 @@ func ParseConfig() (*cfg.Config, error) {
 	return conf, nil
 }
 
-// RootCmd is the root command for ReapchainCore core.
+// RootCmd is the root command for reapchain-core.
 var RootCmd = &cobra.Command{
-	Use:   "reapchain-core",
+	Use:   "podc",
 	Short: "BFT state machine replication for applications in any programming languages",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) (err error) {
 		if cmd.Name() == VersionCmd.Name() {

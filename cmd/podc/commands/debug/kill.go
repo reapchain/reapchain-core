@@ -120,25 +120,25 @@ func killProc(pid uint64, dir string) error {
 		return err
 	}
 
-	// kill the underlying ReapchainCore process and subsequent tailing process
+	// kill the underlying podc process and subsequent tailing process
 	go func() {
-		// Killing the ReapchainCore process with the '-ABRT|-6' signal will result in
+		// Killing the podc process with the '-ABRT|-6' signal will result in
 		// a goroutine stacktrace.
 		p, err := os.FindProcess(int(pid))
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed to find PID to kill ReapchainCore process: %s", err)
+			fmt.Fprintf(os.Stderr, "failed to find PID to kill podc process: %s", err)
 		} else if err = p.Signal(syscall.SIGABRT); err != nil {
-			fmt.Fprintf(os.Stderr, "failed to kill ReapchainCore process: %s", err)
+			fmt.Fprintf(os.Stderr, "failed to kill podc process: %s", err)
 		}
 
-		// allow some time to allow the ReapchainCore process to be killed
+		// allow some time to allow the podc process to be killed
 		//
 		// TODO: We should 'wait' for a kill to succeed (e.g. poll for PID until it
 		// cannot be found). Regardless, this should be ample time.
 		time.Sleep(5 * time.Second)
 
 		if err := cmd.Process.Kill(); err != nil {
-			fmt.Fprintf(os.Stderr, "failed to kill ReapchainCore process output redirection: %s", err)
+			fmt.Fprintf(os.Stderr, "failed to kill podc process output redirection: %s", err)
 		}
 	}()
 

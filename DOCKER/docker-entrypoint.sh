@@ -20,4 +20,4 @@ if [ ! -d "$TMHOME/config" ]; then
 	mv "$TMHOME/config/genesis.json.new" "$TMHOME/config/genesis.json"
 fi
 
-exec reapchain-core "$@"
+exec podc "$@"

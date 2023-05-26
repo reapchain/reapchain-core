@@ -28,12 +28,12 @@ import (
 // LightCmd represents the base command when called without any subcommands
 var LightCmd = &cobra.Command{
 	Use:   "light [chainID]",
-	Short: "Run a light client proxy server, verifying ReapchainCore rpc",
-	Long: `Run a light client proxy server, verifying ReapchainCore rpc.
+	Short: "Run a light client proxy server, verifying podc rpc",
+	Long: `Run a light client proxy server, verifying podc rpc.
 
 All calls that can be tracked back to a block header by a proof
 will be verified before passing them back to the caller. Other than
-that, it will present the same interface as a full ReapchainCore node.
+that, it will present the same interface as a full podc node.
 
 Furthermore to the chainID, a fresh instance of a light client will
 need a primary RPC address, a trusted hash and height and witness RPC addresses
@@ -132,7 +132,7 @@ func runProxy(cmd *cobra.Command, args []string) error {
 		}
 		if primaryAddr == "" {
 			return errors.New("no primary address was provided nor found. Please provide a primary (using -p)." +
-				" Run the command: reapchain-core light --help for more information")
+				" Run the command: podc light --help for more information")
 		}
 	} else {
 		err := saveProviders(db, primaryAddr, witnessAddrsJoined)
@@ -207,7 +207,7 @@ func runProxy(cmd *cobra.Command, args []string) error {
 	cfg.MaxOpenConnections = maxOpenConnections
 	// If necessary adjust global WriteTimeout to ensure it's greater than
 	// TimeoutBroadcastTxCommit.
-	// See https://github.com/reapchain/reapchain-core/issues/3435
+	// See https://github.com/tendermint/tendermint/issues/3435
 	if cfg.WriteTimeout <= config.RPC.TimeoutBroadcastTxCommit {
 		cfg.WriteTimeout = config.RPC.TimeoutBroadcastTxCommit + 1*time.Second
 	}

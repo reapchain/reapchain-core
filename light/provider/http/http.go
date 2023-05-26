@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	// This is very brittle, see: https://github.com/reapchain/reapchain-core/issues/4740
+	// This is very brittle, see: https://github.com/tendermint/tendermint/issues/4740
 	regexpMissingHeight = regexp.MustCompile(`height \d+ is not available`)
 	regexpTooHigh       = regexp.MustCompile(`height \d+ must be less than or equal to`)
 	regexpTimedOut      = regexp.MustCompile(`Timeout exceeded`)

@@ -23,7 +23,7 @@ func TestSignAndValidateEd25519(t *testing.T) {
 	assert.True(t, pubKey.VerifySignature(msg, sig))
 
 	// Mutate the signature, just one bit.
-	// TODO: Replace this with a much better fuzzer, reapchain-core/ed25519/issues/10
+	// TODO: Replace this with a much better fuzzer, tendermint/ed25519/issues/10
 	sig[7] ^= byte(0x01)
 
 	assert.False(t, pubKey.VerifySignature(msg, sig))

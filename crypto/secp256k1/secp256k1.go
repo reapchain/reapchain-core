@@ -18,7 +18,7 @@ import (
 //-------------------------------------
 const (
 	PrivKeyName = "tendermint/PrivKeySecp256k1"
-	PubKeyName  = "reapchain/PubKeySecp256k1"
+	PubKeyName  = "tendermint/PubKeySecp256k1"
 
 	KeyType     = "secp256k1"
 	PrivKeySize = 32
