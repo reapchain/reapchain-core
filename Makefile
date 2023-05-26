@@ -74,9 +74,9 @@ install:
 ###                                Mocks                                    ###
 ###############################################################################
 
-mockery: 
+mockery:
 	go generate -run="./scripts/mockery_generate.sh" ./...
-.PHONY: mockery 
+.PHONY: mockery
 
 ###############################################################################
 ###                                Protobuf                                 ###
@@ -129,7 +129,7 @@ proto-check-breaking-ci:
 ###############################################################################
 
 build_abci:
-	@go build -mod=readonly -i ./abci/cmd/...
+	@go build -mod=readonly ./abci/cmd/...
 .PHONY: build_abci
 
 install_abci:
