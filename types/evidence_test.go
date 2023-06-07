@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"math"
 	"testing"
 	"time"
@@ -143,7 +144,10 @@ func TestLightClientAttackEvidenceBasic(t *testing.T) {
 			ByzantineValidators: valSet.Validators[:nValidators/2],
 		}
 		hash := lcae.Hash()
+		fmt.Println()
+		fmt.Println("hihi", lcae.Height(), hash, lcae.Hash(), tc.testName)
 		tc.malleateEvidence(lcae)
+
 		assert.NotEqual(t, hash, lcae.Hash(), tc.testName)
 	}
 }

@@ -20,10 +20,10 @@ const (
 	// LoadValidators taking too much time.
 	// https://github.com/reapchain/reapchain-core/pull/3438
 	// 100000 results in ~ 100ms to get 100 validators (see BenchmarkLoadValidators)
-	valSetCheckpointInterval                     = 100000
+	valSetCheckpointInterval = 100000
 )
 
-//------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 func calcConsensusRoundKey(height int64) []byte {
 	return []byte(fmt.Sprintf("consensusRoundKey:%v", height))
 }
@@ -232,14 +232,9 @@ func (store dbStore) loadRollbackState(key []byte) (state State, err error) {
 // Save persists the State, the ValidatorsInfo, and the ConsensusParamsInfo to the database.
 // This flushes the writes (e.g. calls SetSync).
 func (store dbStore) Save(state State) error {
-	fmt.Println("stompesi - state.ConsensusRound.ConsensusStartBlockHeight", state.ConsensusRound.ConsensusStartBlockHeight)
-	fmt.Println("stompesi - state.LastBlockHeight", state.LastBlockHeight)
-	fmt.Println("stompesi - state.ConsensusRound.ConsensusStartBlockHeight + int64(state.ConsensusRound.Period) - 2", state.ConsensusRound.ConsensusStartBlockHeight + int64(state.ConsensusRound.Period) - 1)
-	fmt.Println("stompesi - previousConsensusRound.ConsensusStartBlockHeight + int64(previousConsensusRound.Period) + int64(state.ConsensusRound.Period) - 1", previousConsensusRound.ConsensusStartBlockHeight + int64(previousConsensusRound.Period) + int64(state.ConsensusRound.Period) - 1)
-	
-	if (state.LastBlockHeight == 1|| previousConsensusRound.ConsensusStartBlockHeight + int64(previousConsensusRound.Period) + int64(state.ConsensusRound.Period) - 1 == state.LastBlockHeight ) {
+	if state.LastBlockHeight == 1 || previousConsensusRound.ConsensusStartBlockHeight+int64(previousConsensusRound.Period)+int64(state.ConsensusRound.Period)-1 == state.LastBlockHeight {
 		previousConsensusRound = state.ConsensusRound
-		store.save(state, rollbackStateKey)	
+		store.save(state, rollbackStateKey)
 	}
 	// 1, 13, 25, 37
 	// 1,2,3,4,5,6,7,8,9,10,11  - 1
@@ -716,7 +711,6 @@ func (store dbStore) saveQrnsInfo(height, lastHeightChanged int64, qrnSet *types
 		qrnSetInfo.QrnSet = qrnSetProto
 	}
 
-
 	bz, err := qrnSetInfo.Marshal()
 	if err != nil {
 		return err
@@ -731,7 +725,7 @@ func (store dbStore) saveQrnsInfo(height, lastHeightChanged int64, qrnSet *types
 }
 
 func (store dbStore) saveNextQrnsInfo(height, lastHeightChanged int64, qrnSet *types.QrnSet) error {
-		if lastHeightChanged > height {
+	if lastHeightChanged > height {
 		return errors.New("lastHeightChanged cannot be greater than QrnsInfo height")
 	}
 
@@ -746,7 +740,6 @@ func (store dbStore) saveNextQrnsInfo(height, lastHeightChanged int64, qrnSet *t
 		}
 		qrnSetInfo.QrnSet = qrnSetProto
 	}
-
 
 	bz, err := qrnSetInfo.Marshal()
 	if err != nil {
@@ -822,14 +815,14 @@ func (store dbStore) saveNextVrfsInfo(height, lastHeightChanged int64, vrfSet *t
 }
 
 func (store dbStore) saveSettingSteeringMemberInfo(height, lastHeightChanged int64, settingSteeringMember *types.SettingSteeringMember) error {
-		if lastHeightChanged > height {
+	if lastHeightChanged > height {
 		return errors.New("lastHeightChanged cannot be greater than SettingSteeringMemberInfo height")
 	}
 
 	SettingSteeringMemberInfo := &tmstate.SettingSteeringMemberInfo{
 		LastHeightChanged: height,
 	}
-	
+
 	if height == lastHeightChanged {
 		SettingSteeringMemberInfo.SettingSteeringMember = settingSteeringMember.ToProto()
 	}
@@ -948,7 +941,6 @@ func (store dbStore) loadConsensusParamsInfo(height int64) (*tmstate.ConsensusPa
 
 	return paramsInfo, nil
 }
-
 
 func (store dbStore) loadConsensusRoundInfo(height int64) (*tmstate.ConsensusRoundInfo, error) {
 	buf, err := store.db.Get(calcConsensusRoundKey(height))
@@ -1392,7 +1384,6 @@ func loadConsensusRoundInfo(db dbm.DB, height int64) (*tmstate.ConsensusRoundInf
 
 	return consensusRound, nil
 }
-
 
 func (store dbStore) Close() error {
 	return store.db.Close()

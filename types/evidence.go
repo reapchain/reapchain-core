@@ -512,8 +512,9 @@ func EvidenceFromProto(evidence *tmproto.Evidence) (Evidence, error) {
 }
 
 func init() {
-	tmjson.RegisterType(&DuplicateVoteEvidence{}, "reapchain-core/DuplicateVoteEvidence")
-	tmjson.RegisterType(&LightClientAttackEvidence{}, "reapchain-core/LightClientAttackEvidence")
+	//ReigsterType Reapchain-core -> tendermint
+	tmjson.RegisterType(&DuplicateVoteEvidence{}, "tendermint/DuplicateVoteEvidence")
+	tmjson.RegisterType(&LightClientAttackEvidence{}, "tendermint/LightClientAttackEvidence")
 }
 
 //-------------------------------------------- ERRORS --------------------------------------
@@ -565,7 +566,7 @@ func NewMockDuplicateVoteEvidenceWithValidator(height int64, time time.Time,
 	pv PrivValidator, chainID string) *DuplicateVoteEvidence {
 	pubKey, _ := pv.GetPubKey()
 	validatorType, _ := pv.GetType()
-	
+
 	val := NewValidator(pubKey, 10, validatorType)
 	voteA := makeMockVote(height, 0, 0, pubKey.Address(), randBlockID(), time)
 	vA := voteA.ToProto()
@@ -577,7 +578,6 @@ func NewMockDuplicateVoteEvidenceWithValidator(height int64, time time.Time,
 	voteB.Signature = vB.Signature
 	return NewDuplicateVoteEvidence(voteA, voteB, time, NewValidatorSet([]*Validator{val}))
 }
-
 
 func makeMockVote(height int64, round, index int32, addr Address,
 	blockID BlockID, time time.Time) *Vote {

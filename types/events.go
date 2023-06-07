@@ -16,14 +16,13 @@ const (
 	// after a block has been committed.
 	// These are also used by the tx indexer for async indexing.
 	// All of this data can be fetched through the rpc.
-	EventNewBlock            = "NewBlock"
-	EventNewBlockHeader      = "NewBlockHeader"
-	EventNewEvidence         = "NewEvidence"
-	EventTx                  = "Tx"
-	EventValidatorSetUpdates = "ValidatorSetUpdates"
+	EventNewBlock                          = "NewBlock"
+	EventNewBlockHeader                    = "NewBlockHeader"
+	EventNewEvidence                       = "NewEvidence"
+	EventTx                                = "Tx"
+	EventValidatorSetUpdates               = "ValidatorSetUpdates"
 	EventSteeringMemberCandidateSetUpdates = "SteeringMemberCandidateSetUpdates"
 	EventStandingMemberSetUpdates          = "StandingMemberSetUpdates"
-
 
 	// Internal consensus events.
 	// These are used for testing the consensus state machine.
@@ -40,9 +39,9 @@ const (
 	EventValidBlock       = "ValidBlock"
 	EventVote             = "Vote"
 
-	EventQrn             					= "Qrn"
-	EventVrf             					= "Vrf"
-	EventSettingSteeringMember    = "SettingSteeringMember"
+	EventQrn                   = "Qrn"
+	EventVrf                   = "Vrf"
+	EventSettingSteeringMember = "SettingSteeringMember"
 )
 
 // ENCODING / DECODING
@@ -53,21 +52,22 @@ type TMEventData interface {
 }
 
 func init() {
-	tmjson.RegisterType(EventDataNewBlock{}, "reapchain-core/event/NewBlock")
-	tmjson.RegisterType(EventDataNewBlockHeader{}, "reapchain-core/event/NewBlockHeader")
-	tmjson.RegisterType(EventDataNewEvidence{}, "reapchain-core/event/NewEvidence")
-	tmjson.RegisterType(EventDataTx{}, "reapchain-core/event/Tx")
-	tmjson.RegisterType(EventDataRoundState{}, "reapchain-core/event/RoundState")
-	tmjson.RegisterType(EventDataNewRound{}, "reapchain-core/event/NewRound")
-	tmjson.RegisterType(EventDataCompleteProposal{}, "reapchain-core/event/CompleteProposal")
-	tmjson.RegisterType(EventDataVote{}, "reapchain-core/event/Vote")
-	tmjson.RegisterType(EventDataSteeringMemberCandidateSetUpdates{}, "reapchain/event/SteeringMemberCandidateSetUpdates")
-	tmjson.RegisterType(EventDataStandingMemberSetUpdates{}, "reapchain/event/StandingMemberSetUpdates")
-	tmjson.RegisterType(EventDataString(""), "reapchain-core/event/ProposalString")
+	//RegisterType [reapchain-core => tendermint]
+	tmjson.RegisterType(EventDataNewBlock{}, "tendermint/event/NewBlock")
+	tmjson.RegisterType(EventDataNewBlockHeader{}, "tendermint/event/NewBlockHeader")
+	tmjson.RegisterType(EventDataNewEvidence{}, "tendermint/event/NewEvidence")
+	tmjson.RegisterType(EventDataTx{}, "tendermint/event/Tx")
+	tmjson.RegisterType(EventDataRoundState{}, "tendermint/event/RoundState")
+	tmjson.RegisterType(EventDataNewRound{}, "tendermint/event/NewRound")
+	tmjson.RegisterType(EventDataCompleteProposal{}, "tendermint/event/CompleteProposal")
+	tmjson.RegisterType(EventDataVote{}, "tendermint/event/Vote")
+	tmjson.RegisterType(EventDataSteeringMemberCandidateSetUpdates{}, "tendermint/event/SteeringMemberCandidateSetUpdates")
+	tmjson.RegisterType(EventDataStandingMemberSetUpdates{}, "tendermint/event/StandingMemberSetUpdates")
+	tmjson.RegisterType(EventDataString(""), "tendermint/event/ProposalString")
 
-	tmjson.RegisterType(EventDataQrn{}, "reapchain/event/Qrn")
-	tmjson.RegisterType(EventDataVrf{}, "reapchain/event/Vrf")
-	tmjson.RegisterType(EventDataSettingSteeringMember{}, "reapchain/event/SetEventDataSettingSteeringMember")
+	tmjson.RegisterType(EventDataQrn{}, "tendermint/event/Qrn")
+	tmjson.RegisterType(EventDataVrf{}, "tendermint/event/Vrf")
+	tmjson.RegisterType(EventDataSettingSteeringMember{}, "tendermint/event/SetEventDataSettingSteeringMember")
 
 }
 
@@ -79,7 +79,7 @@ type EventDataNewBlock struct {
 
 	ResultBeginBlock abci.ResponseBeginBlock `json:"result_begin_block"`
 	ResultEndBlock   abci.ResponseEndBlock   `json:"result_end_block"`
-	ConsensusInfo 	 abci.ConsensusInfo 	 `json:"consensus_info"`
+	ConsensusInfo    abci.ConsensusInfo      `json:"consensus_info"`
 }
 
 type EventDataNewBlockHeader struct {
@@ -146,7 +146,6 @@ type EventDataSettingSteeringMember struct {
 	SettingSteeringMember *SettingSteeringMember
 }
 
-
 type EventDataString string
 
 type EventDataSteeringMemberCandidateSetUpdates struct {
@@ -175,28 +174,27 @@ const (
 )
 
 var (
-	EventQueryCompleteProposal    = QueryForEvent(EventCompleteProposal)
-	EventQueryLock                = QueryForEvent(EventLock)
-	EventQueryNewBlock            = QueryForEvent(EventNewBlock)
-	EventQueryNewBlockHeader      = QueryForEvent(EventNewBlockHeader)
-	EventQueryNewEvidence         = QueryForEvent(EventNewEvidence)
-	EventQueryNewRound            = QueryForEvent(EventNewRound)
-	EventQueryNewRoundStep        = QueryForEvent(EventNewRoundStep)
-	EventQueryPolka               = QueryForEvent(EventPolka)
-	EventQueryRelock              = QueryForEvent(EventRelock)
-	EventQueryTimeoutPropose      = QueryForEvent(EventTimeoutPropose)
-	EventQueryTimeoutWait         = QueryForEvent(EventTimeoutWait)
-	EventQueryTx                  = QueryForEvent(EventTx)
-	EventQueryUnlock              = QueryForEvent(EventUnlock)
+	EventQueryCompleteProposal                  = QueryForEvent(EventCompleteProposal)
+	EventQueryLock                              = QueryForEvent(EventLock)
+	EventQueryNewBlock                          = QueryForEvent(EventNewBlock)
+	EventQueryNewBlockHeader                    = QueryForEvent(EventNewBlockHeader)
+	EventQueryNewEvidence                       = QueryForEvent(EventNewEvidence)
+	EventQueryNewRound                          = QueryForEvent(EventNewRound)
+	EventQueryNewRoundStep                      = QueryForEvent(EventNewRoundStep)
+	EventQueryPolka                             = QueryForEvent(EventPolka)
+	EventQueryRelock                            = QueryForEvent(EventRelock)
+	EventQueryTimeoutPropose                    = QueryForEvent(EventTimeoutPropose)
+	EventQueryTimeoutWait                       = QueryForEvent(EventTimeoutWait)
+	EventQueryTx                                = QueryForEvent(EventTx)
+	EventQueryUnlock                            = QueryForEvent(EventUnlock)
 	EventQuerySteeringMemberCandidateSetUpdates = QueryForEvent(EventSteeringMemberCandidateSetUpdates)
 	EventQueryStandingMemberSetUpdates          = QueryForEvent(EventStandingMemberSetUpdates)
-	EventQueryValidBlock          = QueryForEvent(EventValidBlock)
-	EventQueryVote                = QueryForEvent(EventVote)
+	EventQueryValidBlock                        = QueryForEvent(EventValidBlock)
+	EventQueryVote                              = QueryForEvent(EventVote)
 
-	EventQueryQrn                              = QueryForEvent(EventQrn)
-	EventQueryVrf                              = QueryForEvent(EventVrf)
-	EventQuerySettingSteeringMember						 = QueryForEvent(EventSettingSteeringMember)
-
+	EventQueryQrn                   = QueryForEvent(EventQrn)
+	EventQueryVrf                   = QueryForEvent(EventVrf)
+	EventQuerySettingSteeringMember = QueryForEvent(EventSettingSteeringMember)
 )
 
 func EventQueryTxFor(tx Tx) tmpubsub.Query {

@@ -152,14 +152,14 @@ func TestBlockHashesTo(t *testing.T) {
 	block.ValidatorsHash = valSet.Hash()
 
 	block.ConsensusRound = NewConsensusRound(1, 4, 4, 4)
-	block.StandingMembersHash  = NewStandingMemberSet(nil).Hash()
-	block.SteeringMemberCandidatesHash  = NewSteeringMemberCandidateSet(nil).Hash()
+	block.StandingMembersHash = NewStandingMemberSet(nil).Hash()
+	block.SteeringMemberCandidatesHash = NewSteeringMemberCandidateSet(nil).Hash()
 	block.QrnsHash = NewQrnSet(1, nil, nil).Hash()
 	block.VrfsHash = NewVrfSet(1, nil, nil).Hash()
 
 	assert.False(t, block.HashesTo([]byte{}))
 	assert.False(t, block.HashesTo([]byte("something else")))
-	
+
 	fmt.Println("hihi")
 	blockHash := block.Hash()
 	fmt.Println("hihi", blockHash)
@@ -212,7 +212,7 @@ func makeBlockID(hash []byte, partSetSize uint32, partSetHash []byte) BlockID {
 
 var nilBytes []byte
 
-// This follows RFC-6962, i.e. `echo -n '' | sha256sum`
+// This follows RFC-6962, i.e. `echo -n ” | sha256sum`
 var emptyBytes = []byte{0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14, 0x9a, 0xfb, 0xf4, 0xc8,
 	0x99, 0x6f, 0xb9, 0x24, 0x27, 0xae, 0x41, 0xe4, 0x64, 0x9b, 0x93, 0x4c, 0xa4, 0x95, 0x99, 0x1b,
 	0x78, 0x52, 0xb8, 0x55}
@@ -321,11 +321,11 @@ func TestHeaderHash(t *testing.T) {
 		expectHash bytes.HexBytes
 	}{
 		{"Generates expected hash", &Header{
-			Version:                      tmversion.Consensus{Block: 1, App: 2},
-			ChainID:                      "chainId",
-			Height:                       3,
-			Time:                         time.Date(2019, 10, 13, 16, 14, 44, 0, time.UTC),
-			LastBlockID:                  makeBlockID(make([]byte, tmhash.Size), 6, make([]byte, tmhash.Size)),
+			Version:     tmversion.Consensus{Block: 1, App: 2},
+			ChainID:     "chainId",
+			Height:      3,
+			Time:        time.Date(2019, 10, 13, 16, 14, 44, 0, time.UTC),
+			LastBlockID: makeBlockID(make([]byte, tmhash.Size), 6, make([]byte, tmhash.Size)),
 
 			LastCommitHash:               tmhash.Sum([]byte("last_commit_hash")),
 			DataHash:                     tmhash.Sum([]byte("data_hash")),
@@ -383,7 +383,6 @@ func TestHeaderHash(t *testing.T) {
 						s.Type().Field(i).Name)
 
 					fmt.Println(s.Type().Field(i).Name)
-				
 
 					switch f := f.Interface().(type) {
 					case int64, bytes.HexBytes, string, ConsensusRound:
