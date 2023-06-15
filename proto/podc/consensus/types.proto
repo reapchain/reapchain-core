@@ -26,14 +26,14 @@ message NewRoundStep {
 message NewValidBlock {
   int64                          height                = 1;
   int32                          round                 = 2;
-  reapchain.types.PartSetHeader block_part_set_header = 3 [(gogoproto.nullable) = false];
+  podc.types.PartSetHeader block_part_set_header = 3 [(gogoproto.nullable) = false];
   reapchain.libs.bits.BitArray  block_parts           = 4;
   bool                           is_commit             = 5;
 }
 
 // Proposal is sent when a new block is proposed.
 message Proposal {
-  reapchain.types.Proposal proposal = 1 [(gogoproto.nullable) = false];
+  podc.types.Proposal proposal = 1 [(gogoproto.nullable) = false];
 }
 
 // ProposalPOL is sent when a previous proposal is re-proposed.
@@ -47,20 +47,20 @@ message ProposalPOL {
 message BlockPart {
   int64                 height = 1;
   int32                 round  = 2;
-  reapchain.types.Part part   = 3 [(gogoproto.nullable) = false];
+  podc.types.Part part   = 3 [(gogoproto.nullable) = false];
 }
 
 // Vote is sent when voting for a proposal (or lack thereof).
 message Vote {
-  reapchain.types.Vote vote = 1;
+  podc.types.Vote vote = 1;
 }
 
 message SettingSteeringMember {
-  reapchain.types.SettingSteeringMember setting_steering_member = 1;
+  podc.types.SettingSteeringMember setting_steering_member = 1;
 }
 
 message Qrn {
-  reapchain.types.Qrn qrn = 1;
+  podc.types.Qrn qrn = 1;
 }
 
 message HasQrn {
@@ -69,7 +69,7 @@ message HasQrn {
 }
 
 message Vrf {
-  reapchain.types.Vrf vrf = 1;
+  podc.types.Vrf vrf = 1;
 }
 
 message HasVrf {
@@ -85,7 +85,7 @@ message HasSettingSteeringMember {
 message HasVote {
   int64                          height = 1;
   int32                          round  = 2;
-  reapchain.types.SignedMsgType type   = 3;
+  podc.types.SignedMsgType type   = 3;
   int32                          index  = 4;
 }
 
@@ -93,16 +93,16 @@ message HasVote {
 message VoteSetMaj23 {
   int64                          height   = 1;
   int32                          round    = 2;
-  reapchain.types.SignedMsgType type     = 3;
-  reapchain.types.BlockID       block_id = 4 [(gogoproto.customname) = "BlockID", (gogoproto.nullable) = false];
+  podc.types.SignedMsgType type     = 3;
+  podc.types.BlockID       block_id = 4 [(gogoproto.customname) = "BlockID", (gogoproto.nullable) = false];
 }
 
 // VoteSetBits is sent to communicate the bit-array of votes seen for the BlockID.
 message VoteSetBits {
   int64                          height   = 1;
   int32                          round    = 2;
-  reapchain.types.SignedMsgType type     = 3;
-  reapchain.types.BlockID       block_id = 4 [(gogoproto.customname) = "BlockID", (gogoproto.nullable) = false];
+  podc.types.SignedMsgType type     = 3;
+  podc.types.BlockID       block_id = 4 [(gogoproto.customname) = "BlockID", (gogoproto.nullable) = false];
   reapchain.libs.bits.BitArray  votes    = 5 [(gogoproto.nullable) = false];
 }
 

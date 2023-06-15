@@ -18,7 +18,7 @@ message NoBlockResponse {
 
 // BlockResponse returns block to the requested
 message BlockResponse {
-  reapchain.types.Block block = 1;
+  podc.types.Block block = 1;
 }
 
 // StatusRequest requests the status of a peer.

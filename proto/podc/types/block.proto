@@ -1,5 +1,5 @@
 syntax = "proto3";
-package reapchain.types;
+package podc.types;
 
 option go_package = "github.com/reapchain/reapchain-core/proto/podc/types";
 
@@ -10,6 +10,6 @@ import "podc/types/evidence.proto";
 message Block {
   Header                        header      = 1 [(gogoproto.nullable) = false];
   Data                          data        = 2 [(gogoproto.nullable) = false];
-  reapchain.types.EvidenceList evidence    = 3 [(gogoproto.nullable) = false];
+  podc.types.EvidenceList evidence    = 3 [(gogoproto.nullable) = false];
   Commit                        last_commit = 4;
 }

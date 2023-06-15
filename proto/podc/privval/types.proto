@@ -48,52 +48,52 @@ message TypeResponse {
 
 // SignVoteRequest is a request to sign a vote
 message SignVoteRequest {
-  reapchain.types.Vote vote     = 1;
+  podc.types.Vote vote     = 1;
   string                chain_id = 2;
 }
 
 // SignedVoteResponse is a response containing a signed vote or an error
 message SignedVoteResponse {
-  reapchain.types.Vote vote  = 1 [(gogoproto.nullable) = false];
+  podc.types.Vote vote  = 1 [(gogoproto.nullable) = false];
   RemoteSignerError     error = 2;
 }
 
 message SignQrnRequest {
-  reapchain.types.Qrn qrn     = 1;
+  podc.types.Qrn qrn     = 1;
 }
 
 message SignSettingSteeringMemberRequest {
-  reapchain.types.SettingSteeringMember setting_steering_member     = 1;
+  podc.types.SettingSteeringMember setting_steering_member     = 1;
 }
 
 message SignVrfRequest {
-  reapchain.types.Vrf vrf     = 1;
+  podc.types.Vrf vrf     = 1;
 }
 
 message SignedQrnResponse {
-  reapchain.types.Qrn qrn  = 1 [(gogoproto.nullable) = false];
+  podc.types.Qrn qrn  = 1 [(gogoproto.nullable) = false];
   RemoteSignerError     error = 2;
 }
 
 message SignedSettingSteeringMemberResponse {
-  reapchain.types.SettingSteeringMember setting_steering_member  = 1 [(gogoproto.nullable) = false];
+  podc.types.SettingSteeringMember setting_steering_member  = 1 [(gogoproto.nullable) = false];
   RemoteSignerError     error = 2;
 }
 
 message SignedVrfResponse {
-  reapchain.types.Vrf vrf  = 1 [(gogoproto.nullable) = false];
+  podc.types.Vrf vrf  = 1 [(gogoproto.nullable) = false];
   RemoteSignerError     error = 2;
 }
 
 // SignProposalRequest is a request to sign a proposal
 message SignProposalRequest {
-  reapchain.types.Proposal proposal = 1;
+  podc.types.Proposal proposal = 1;
   string                    chain_id = 2;
 }
 
 // SignedProposalResponse is response containing a signed proposal or an error
 message SignedProposalResponse {
-  reapchain.types.Proposal proposal = 1 [(gogoproto.nullable) = false];
+  podc.types.Proposal proposal = 1 [(gogoproto.nullable) = false];
   RemoteSignerError         error    = 2;
 }
 

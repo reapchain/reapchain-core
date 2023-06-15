@@ -999,7 +999,9 @@ func (cs *State) handleTxsAvailable() {
 // Used internally by handleTimeout and handleMsg to make state transitions
 
 // Enter: `timeoutNewHeight` by startTime (commitTime+timeoutCommit),
-// 	or, if SkipTimeoutCommit==true, after receiving all precommits from (height,round-1)
+//
+//	or, if SkipTimeoutCommit==true, after receiving all precommits from (height,round-1)
+//
 // Enter: `timeoutPrecommits` after any +2/3 precommits from (height,round-1)
 // Enter: +2/3 precommits for nil at (height,round-1)
 // Enter: +2/3 prevotes any or +2/3 precommits for block or any from (height, round)
@@ -1094,7 +1096,9 @@ func (cs *State) needProofBlock(height int64) bool {
 
 // Enter (CreateEmptyBlocks): from enterNewRound(height,round)
 // Enter (CreateEmptyBlocks, CreateEmptyBlocksInterval > 0 ):
-// 		after enterNewRound(height,round), after timeout of CreateEmptyBlocksInterval
+//
+//	after enterNewRound(height,round), after timeout of CreateEmptyBlocksInterval
+//
 // Enter (!CreateEmptyBlocks) : after enterNewRound(height,round), once txs are in the mempool
 func (cs *State) enterPropose(height int64, round int32) {
 	logger := cs.Logger.With("height", height, "round", round)
@@ -1691,27 +1695,26 @@ func (cs *State) finalizeCommit(height int64) {
 	// Create a copy of the state for staging and an event cache for txs.
 	stateCopy := cs.state.Copy()
 
-	if(len(cs.CatchupStates) != 0) {
+	if len(cs.CatchupStates) != 0 {
 		for i := 0; i < (len(cs.CatchupStates) - 1); {
 			cs.CatchupStates = append(cs.CatchupStates[:i], cs.CatchupStates[i+1:]...)
 
-			if (block.Height == cs.CatchupStates[i].LastBlockHeight) {
-				for j :=0; j < (len(cs.CatchupStates[i].NextQrnSet.Qrns)); j++ {
+			if block.Height == cs.CatchupStates[i].LastBlockHeight {
+				for j := 0; j < (len(cs.CatchupStates[i].NextQrnSet.Qrns)); j++ {
 					stateCopy.NextQrnSet.AddQrn(cs.state.ChainID, cs.CatchupStates[i].NextQrnSet.Qrns[j])
 				}
 
-
-				for j :=0; j < (len(cs.CatchupStates[i].NextVrfSet.Vrfs)); j++ {
+				for j := 0; j < (len(cs.CatchupStates[i].NextVrfSet.Vrfs)); j++ {
 					stateCopy.NextVrfSet.AddVrf(cs.CatchupStates[i].NextVrfSet.Vrfs[j])
 				}
-				
+
 				if cs.CatchupStates[i].SettingSteeringMember != nil {
 					stateCopy.SettingSteeringMember = cs.CatchupStates[i].SettingSteeringMember.Copy()
 				}
 
-				break;
+				break
 			}
-    	}
+		}
 	}
 
 	// Execute and commit the block, update and save the state, and update the mempool.
@@ -1760,19 +1763,19 @@ func (cs *State) finalizeCommit(height int64) {
 	}
 
 	// When the qrnPeriod, if the node is a standing member, generate qrn information and send the qrn message to the internal message.
-	if cs.state.ConsensusRound.ConsensusStartBlockHeight - 1 == height || 1 == height {
+	if cs.state.ConsensusRound.ConsensusStartBlockHeight-1 == height || 1 == height {
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
 			// Check whether the node is standing member
 			if cs.state.NextQrnSet.HasAddress(address) == true {
 				var qrnValue uint64
-				
+
 				if cs.config.QrnGenerationMechanism == "qrng" {
 					qrnValue = qrnfunc.GenerateQrnValue(cs.config.QrnGeneratorFilePath)
 				} else {
 					qrnValue = tmrand.Uint64()
 				}
-				
+
 				qrn := types.NewQrn(cs.state.NextQrnSet.GetHeight(), cs.privValidatorPubKey, qrnValue)
 				err := cs.privValidator.SignQrn(cs.state.ChainID, qrn)
 
@@ -1783,11 +1786,11 @@ func (cs *State) finalizeCommit(height int64) {
 				}
 			}
 		}
-	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.QrnPeriod) - 1 == height {
+	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod)-1 == height {
 		// When the vrfPeriod, if the node is a steering member candidate, generate vrf information and send the vrf message to the internal message.
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
-			
+
 			// Check whether the node is steering member candidate
 			if cs.state.NextVrfSet.HasAddress(address) == true {
 				isFull := cs.state.NextQrnSet.QrnsBitArray.IsFull()
@@ -1811,11 +1814,11 @@ func (cs *State) finalizeCommit(height int64) {
 				}
 			}
 		}
-	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.QrnPeriod + cs.state.ConsensusRound.VrfPeriod) - 1 == height {
+	} else if cs.state.ConsensusRound.ConsensusStartBlockHeight+int64(cs.state.ConsensusRound.QrnPeriod+cs.state.ConsensusRound.VrfPeriod)-1 == height {
 		// When the validatorPeriod, if the node is a coordinator in a standing member set, select steering member based on VRF and send the message to the internal message.
 		if cs.privValidatorPubKey != nil {
 			address := cs.privValidatorPubKey.Address()
-			
+
 			// Check whether the node is coordinator
 			if cs.isProposer(address) {
 				settingSteeringMember := cs.state.NextVrfSet.GetSteeringMemberAddresses()
@@ -2072,7 +2075,7 @@ func (cs *State) addProposalBlockPart(msg *BlockPartMessage, peerID p2p.ID) (add
 			// than 1/3. We should trigger in the future accountability
 			// procedure at this point.
 		}
-		
+
 		if cs.Step <= cstypes.RoundStepPropose && cs.isProposalComplete() {
 			// Move onto the next step
 			cs.enterPrevote(height, cs.Round)
@@ -2574,11 +2577,11 @@ func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeri
 		cs.state.SettingSteeringMember = settingSteeringMember.Copy()
 		cs.state.IsSetSteeringMember = true
 		cs.state.LastHeightSettingSteeringMemberChanged = cs.state.LastBlockHeight + 1
-		
+
 		if err := cs.eventBus.PublishEventSettingSteeringMember(types.EventDataSettingSteeringMember{SettingSteeringMember: settingSteeringMember}); err != nil {
 			return err
 		}
-	
+
 		cs.evsw.FireEvent(types.EventSettingSteeringMember, settingSteeringMember)
 	}
 

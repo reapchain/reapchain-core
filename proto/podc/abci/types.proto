@@ -89,7 +89,7 @@ message RequestQuery {
 
 message RequestBeginBlock {
   bytes                   hash             = 1;
-  reapchain.types.Header header           = 2 [(gogoproto.nullable) = false];
+  podc.types.Header header           = 2 [(gogoproto.nullable) = false];
   LastCommitInfo          last_commit_info = 3 [(gogoproto.nullable) = false];
   repeated Evidence byzantine_validators   = 4 [(gogoproto.nullable) = false];
   VrfCheckList            vrf_check_list       = 5 [(gogoproto.nullable) = false];
@@ -271,14 +271,14 @@ message ResponseEndBlock {
 
 
 message ConsensusInfo {
-  reapchain.types.ConsensusRound consensus_round = 1;
+  podc.types.ConsensusRound consensus_round = 1;
   
-  reapchain.types.VrfSet vrf_set = 2;
-  reapchain.types.VrfSet next_vrf_set = 3;
+  podc.types.VrfSet vrf_set = 2;
+  podc.types.VrfSet next_vrf_set = 3;
 
-  reapchain.types.QrnSet qrn_set = 4;
-  reapchain.types.QrnSet next_qrn_set = 5;
-  reapchain.types.SettingSteeringMember setting_steering_member     = 6;
+  podc.types.QrnSet qrn_set = 4;
+  podc.types.QrnSet next_qrn_set = 5;
+  podc.types.SettingSteeringMember setting_steering_member     = 6;
 }
 
 message ResponseCommit {
@@ -330,9 +330,9 @@ message ResponseApplySnapshotChunk {
 // that can be adjusted by the abci app
 message ConsensusParams {
   BlockParams                      block     = 1;
-  reapchain.types.EvidenceParams  evidence  = 2;
-  reapchain.types.ValidatorParams validator = 3;
-  reapchain.types.VersionParams   version   = 4;
+  podc.types.EvidenceParams  evidence  = 2;
+  podc.types.ValidatorParams validator = 3;
+  podc.types.VersionParams   version   = 4;
 }
 
 message ConsensusRound {

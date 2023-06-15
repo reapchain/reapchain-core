@@ -126,7 +126,7 @@ func TestUnmarshal(t *testing.T) {
 		]}`, Struct{}, true},
 		"struct ptr null":  {`null`, structNil, false},
 		"custom value":     {`{"Value":"foo"}`, CustomValue{}, false},
-		"custom ptr":       {`"foo"`, &CustomPtr{Value: "custom"}, false},
+		"custom ptr":       {`"foo"`, &Cutr{Value: "custom"}, false},
 		"custom ptr value": {`"foo"`, CustomPtr{Value: "custom"}, false},
 		"invalid type":     {`"foo"`, Struct{}, true},
 	}

@@ -32,7 +32,7 @@ message EndHeight {
 
 message WALMessage {
   oneof sum {
-    reapchain.types.EventDataRoundState event_data_round_state = 1;
+    podc.types.EventDataRoundState event_data_round_state = 1;
     MsgInfo                              msg_info               = 2;
     TimeoutInfo                          timeout_info           = 3;
     EndHeight                            end_height             = 4;

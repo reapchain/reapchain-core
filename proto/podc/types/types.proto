@@ -1,5 +1,5 @@
 syntax = "proto3";
-package reapchain.types;
+package podc.types;
 
 option go_package = "github.com/reapchain/reapchain-core/proto/podc/types";
 
@@ -155,15 +155,15 @@ message SignedHeader {
 
 message LightBlock {
   SignedHeader                  signed_header = 1;
-  reapchain.types.ValidatorSet validator_set = 2;
-  reapchain.types.StandingMemberSet standing_member_set = 3;
-  reapchain.types.SteeringMemberCandidateSet steering_member_candidate_set = 4;
-  reapchain.types.QrnSet qrn_set = 5;
-  reapchain.types.VrfSet vrf_set = 6;
+  podc.types.ValidatorSet validator_set = 2;
+  podc.types.StandingMemberSet standing_member_set = 3;
+  podc.types.SteeringMemberCandidateSet steering_member_candidate_set = 4;
+  podc.types.QrnSet qrn_set = 5;
+  podc.types.VrfSet vrf_set = 6;
 
-  reapchain.types.QrnSet next_qrn_set = 7;
-  reapchain.types.VrfSet next_vrf_set = 8;
-  reapchain.types.SettingSteeringMember setting_steering_member     = 9;
+  podc.types.QrnSet next_qrn_set = 7;
+  podc.types.VrfSet next_vrf_set = 8;
+  podc.types.SettingSteeringMember setting_steering_member     = 9;
 }
 
 message BlockMeta {
