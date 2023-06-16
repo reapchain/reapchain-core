@@ -28,10 +28,10 @@ const (
 	SettingSteeringMemberChannel = byte(0x26)
 	CatchUpChannel               = byte(0x27)
 
-	maxMsgSize = 1048576 // 1MB; NOTE/TODO: keep in sync with types.PartSet sizes.
-
 	blocksToContributeToBecomeGoodPeer = 10000
 	votesToContributeToBecomeGoodPeer  = 10000
+	
+	maxMsgSize = 1048576 // 1MB; NOTE/TODO: keep in sync with types.PartSet sizes.
 )
 
 //-----------------------------------------------------------------------------
@@ -198,28 +198,28 @@ func (conR *Reactor) GetChannels() []*p2p.ChannelDescriptor {
 		},
 		{
 			ID:                  QrnChannel,
-			Priority:            30,
+			Priority:            10,
 			SendQueueCapacity:   100,
 			RecvBufferCapacity:  30 * 4096,
 			RecvMessageCapacity: maxMsgSize,
 		},
 		{
 			ID:                  VrfChannel,
-			Priority:            30,
+			Priority:            10,
 			SendQueueCapacity:   100,
 			RecvBufferCapacity:  30 * 4096,
 			RecvMessageCapacity: maxMsgSize,
 		},
 		{
 			ID:                  SettingSteeringMemberChannel,
-			Priority:            30,
+			Priority:            10,
 			SendQueueCapacity:   100,
 			RecvBufferCapacity:  50 * 4096,
 			RecvMessageCapacity: maxMsgSize,
 		},
 		{
 			ID:                  CatchUpChannel,
-			Priority:            40,
+			Priority:            10,
 			SendQueueCapacity:   100,
 			RecvBufferCapacity:  50 * 4096,
 			RecvMessageCapacity: maxMsgSize,
@@ -282,6 +282,44 @@ func (conR *Reactor) RemovePeer(peer p2p.Peer, reason interface{}) {
 // proposals, block parts, and votes are ordered by the receiveRoutine
 // NOTE: blocks on consensus state for proposals, block parts, and votes
 func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
+	
+	switch chID {
+	
+	case StateChannel: 
+			println("stompesi - Receive - StateChannel")
+	case DataChannel: 
+			msg, _ := decodeMsg(msgBytes)
+			println("stompesi - Receive - DataChannel")
+			if conR.WaitSync() {
+				println("stompesi - Receive - 싱크중")
+				return
+			}
+			switch msg := msg.(type) {
+			case *ProposalMessage:
+				println("stompesi - ProposalMessage")
+				conR.conS.peerMsgQueue <- msgInfo{msg, src.ID()}
+			case *ProposalPOLMessage:
+				println("stompesi - ProposalPOLMessage")
+			case *BlockPartMessage:
+				println("stompesi - BlockPartMessage", msg.Height)
+			default:
+				conR.Logger.Error(fmt.Sprintf("Unknown message type %v", reflect.TypeOf(msg)))
+			}
+			
+	case VoteChannel: 
+			println("stompesi - Receive - VoteChannel")
+	case VoteSetBitsChannel: 
+			println("stompesi - Receive - VoteSetBitsChannel")
+	case QrnChannel: 
+			println("stompesi - Receive - QrnChannel")
+	case VrfChannel: 
+			println("stompesi - Receive - VrfChannel")
+	case SettingSteeringMemberChannel: 
+			println("stompesi - Receive - SettingSteeringMemberChannel")
+	case CatchUpChannel: 
+			
+	}
+
 	if !conR.IsRunning() {
 		conR.Logger.Debug("Receive", "src", src, "chId", chID, "bytes", msgBytes)
 		return
@@ -295,6 +333,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 
 	switch chID {
 	case CatchUpChannel:
+		
 		msg, _ := bc.DecodeMsg(msgBytes)
 		switch msg := msg.(type) {
 		case *bcproto.StateResponse:
@@ -316,6 +355,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 				}
 				conR.conS.CatchupStates = append(conR.conS.CatchupStates, state)
 			} else { // fast sync is false
+				println("stompesi - Receive - CatchUpChannel", state.LastBlockHeight)
 				ps.EnsureQrnBitArrays(state.LastBlockHeight, len(state.NextQrnSet.Qrns))
 				
 				for j :=0; j < (len(state.NextQrnSet.Qrns)); j++ {
@@ -785,11 +825,6 @@ OUTER_LOOP:
 				continue OUTER_LOOP
 			}
 
-			// if the peer is on syncying
-			if prs.Height < rs.Height - 1 {
-				conR.respondStateToPeer(prs.Height, peer)
-			}
-
 			conR.gossipDataForCatchup(heightLogger, rs, prs, ps, peer)
 			continue OUTER_LOOP
 		}
@@ -865,6 +900,8 @@ func (conR *Reactor) gossipDataForCatchup(logger log.Logger, rs *cstypes.RoundSt
 			time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 			return
 		}
+		conR.respondConsensusStateToPeer(prs.Height - 1, peer)
+
 		// Send the part
 		msg := &BlockPartMessage{
 			Height: prs.Height, // Not our height, so it doesn't matter.

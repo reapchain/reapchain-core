@@ -9,7 +9,7 @@ import (
 
 // the reactor send the states of settingSteeringMember, nextVrfSet, nextQrnSet for sync.
 // these states are related to next consensus round's validators.
-func (conR *Reactor) respondStateToPeer(height int64,
+func (conR *Reactor) respondConsensusStateToPeer(height int64,
 	peer p2p.Peer) (queued bool) {
 	settingSteeringMember, err := conR.stateStore.LoadSettingSteeringMember(height + 1)
 	if err != nil {

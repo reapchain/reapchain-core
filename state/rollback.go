@@ -3,7 +3,6 @@ package state
 import (
 	"errors"
 	"fmt"
-
 )
 
 // Rollback overwrites the current ReapchainCore state (height n) with the most
@@ -26,10 +25,6 @@ func Rollback(bs BlockStore, ss Store) (int64, []byte, error) {
 	}
 
 	bs.SaveRollbackBlock(rollbackState.LastBlockHeight)
-	// bs.saveState()
-
-	// SaveBlockStoreState(&bss, bs.db)
-
 
 	return rollbackState.LastBlockHeight, rollbackState.AppHash, nil
 }
