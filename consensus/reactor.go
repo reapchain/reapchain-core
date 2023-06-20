@@ -30,7 +30,7 @@ const (
 
 	blocksToContributeToBecomeGoodPeer = 10000
 	votesToContributeToBecomeGoodPeer  = 10000
-	
+
 	maxMsgSize = 1048576 // 1MB; NOTE/TODO: keep in sync with types.PartSet sizes.
 )
 
@@ -282,42 +282,31 @@ func (conR *Reactor) RemovePeer(peer p2p.Peer, reason interface{}) {
 // proposals, block parts, and votes are ordered by the receiveRoutine
 // NOTE: blocks on consensus state for proposals, block parts, and votes
 func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
-	
+
 	switch chID {
-	
-	case StateChannel: 
-			println("stompesi - Receive - StateChannel")
-	case DataChannel: 
-			msg, _ := decodeMsg(msgBytes)
-			println("stompesi - Receive - DataChannel")
-			if conR.WaitSync() {
-				println("stompesi - Receive - 싱크중")
-				return
-			}
-			switch msg := msg.(type) {
-			case *ProposalMessage:
-				println("stompesi - ProposalMessage")
-				conR.conS.peerMsgQueue <- msgInfo{msg, src.ID()}
-			case *ProposalPOLMessage:
-				println("stompesi - ProposalPOLMessage")
-			case *BlockPartMessage:
-				println("stompesi - BlockPartMessage", msg.Height)
-			default:
-				conR.Logger.Error(fmt.Sprintf("Unknown message type %v", reflect.TypeOf(msg)))
-			}
-			
-	case VoteChannel: 
-			println("stompesi - Receive - VoteChannel")
-	case VoteSetBitsChannel: 
-			println("stompesi - Receive - VoteSetBitsChannel")
-	case QrnChannel: 
-			println("stompesi - Receive - QrnChannel")
-	case VrfChannel: 
-			println("stompesi - Receive - VrfChannel")
-	case SettingSteeringMemberChannel: 
-			println("stompesi - Receive - SettingSteeringMemberChannel")
-	case CatchUpChannel: 
-			
+
+	case StateChannel:
+	case DataChannel:
+		msg, _ := decodeMsg(msgBytes)
+		if conR.WaitSync() {
+			return
+		}
+		switch msg := msg.(type) {
+		case *ProposalMessage:
+			conR.conS.peerMsgQueue <- msgInfo{msg, src.ID()}
+		case *ProposalPOLMessage:
+		case *BlockPartMessage:
+		default:
+			conR.Logger.Error(fmt.Sprintf("Unknown message type %v", reflect.TypeOf(msg)))
+		}
+
+	case VoteChannel:
+	case VoteSetBitsChannel:
+	case QrnChannel:
+	case VrfChannel:
+	case SettingSteeringMemberChannel:
+	case CatchUpChannel:
+
 	}
 
 	if !conR.IsRunning() {
@@ -333,7 +322,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 
 	switch chID {
 	case CatchUpChannel:
-		
+
 		msg, _ := bc.DecodeMsg(msgBytes)
 		switch msg := msg.(type) {
 		case *bcproto.StateResponse:
@@ -355,10 +344,9 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 				}
 				conR.conS.CatchupStates = append(conR.conS.CatchupStates, state)
 			} else { // fast sync is false
-				println("stompesi - Receive - CatchUpChannel", state.LastBlockHeight)
 				ps.EnsureQrnBitArrays(state.LastBlockHeight, len(state.NextQrnSet.Qrns))
-				
-				for j :=0; j < (len(state.NextQrnSet.Qrns)); j++ {
+
+				for j := 0; j < (len(state.NextQrnSet.Qrns)); j++ {
 					if state.NextQrnSet.Qrns[j].Signature != nil {
 						qrn := state.NextQrnSet.Qrns[j]
 						ps.SetHasQrn(qrn)
@@ -367,14 +355,14 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 				}
 
 				ps.EnsureVrfBitArrays(state.LastBlockHeight, len(state.NextVrfSet.Vrfs))
-				for j :=0; j < (len(state.NextVrfSet.Vrfs)); j++ {
+				for j := 0; j < (len(state.NextVrfSet.Vrfs)); j++ {
 					if state.NextVrfSet.Vrfs[j].Proof != nil {
 						vrf := state.NextVrfSet.Vrfs[j]
 						ps.SetHasVrf(vrf)
 						conR.conS.sendInternalMessage(msgInfo{&VrfMessage{vrf}, ""})
 					}
 				}
-				
+
 				if state.SettingSteeringMember != nil {
 					ps.SetHasSettingSteeringMember(state.SettingSteeringMember.Height)
 					conR.conS.sendInternalMessage(msgInfo{&SettingSteeringMemberMessage{state.SettingSteeringMember}, ""})
@@ -397,7 +385,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 		return
 	}
 
-	conR.Logger.Debug("Receive", "src", src, "chId", chID, "msg", msg)	
+	conR.Logger.Debug("Receive", "src", src, "chId", chID, "msg", msg)
 
 	switch chID {
 	case StateChannel:
@@ -410,7 +398,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 				conR.Logger.Error("Peer sent us invalid msg1", "peer", src, "msg", msg, "err", err)
 				conR.Switch.StopPeerForError(src, err)
 				return
-			}	
+			}
 
 			if msg.Height < conR.conS.state.ConsensusRound.ConsensusStartBlockHeight {
 				consensusRound, _ := conR.stateStore.LoadConsensusRound(msg.Height)
@@ -900,7 +888,7 @@ func (conR *Reactor) gossipDataForCatchup(logger log.Logger, rs *cstypes.RoundSt
 			time.Sleep(conR.conS.config.PeerGossipSleepDuration)
 			return
 		}
-		conR.respondConsensusStateToPeer(prs.Height - 1, peer)
+		conR.respondConsensusStateToPeer(prs.Height-1, peer)
 
 		// Send the part
 		msg := &BlockPartMessage{
