@@ -282,33 +282,6 @@ func (conR *Reactor) RemovePeer(peer p2p.Peer, reason interface{}) {
 // proposals, block parts, and votes are ordered by the receiveRoutine
 // NOTE: blocks on consensus state for proposals, block parts, and votes
 func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
-
-	switch chID {
-
-	case StateChannel:
-	case DataChannel:
-		msg, _ := decodeMsg(msgBytes)
-		if conR.WaitSync() {
-			return
-		}
-		switch msg := msg.(type) {
-		case *ProposalMessage:
-			conR.conS.peerMsgQueue <- msgInfo{msg, src.ID()}
-		case *ProposalPOLMessage:
-		case *BlockPartMessage:
-		default:
-			conR.Logger.Error(fmt.Sprintf("Unknown message type %v", reflect.TypeOf(msg)))
-		}
-
-	case VoteChannel:
-	case VoteSetBitsChannel:
-	case QrnChannel:
-	case VrfChannel:
-	case SettingSteeringMemberChannel:
-	case CatchUpChannel:
-
-	}
-
 	if !conR.IsRunning() {
 		conR.Logger.Debug("Receive", "src", src, "chId", chID, "bytes", msgBytes)
 		return
