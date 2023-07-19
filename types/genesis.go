@@ -58,6 +58,8 @@ type GenesisDoc struct {
 	Qrns                     []Qrn                    `json:"qrns,omitempty"`
 	SteeringMemberCandidates []GenesisMember          `json:"steering_member_candidates"`
 	Vrfs                     []Vrf                    `json:"vrfs"`
+	NextQrns                     []Qrn                    `json:"next_qrns,omitempty"`
+	NextVrfs                     []Vrf                    `json:"next_vrfs"`
 }
 
 // SaveAs is a utility method for saving GenensisDoc as a JSON file.
@@ -126,17 +128,29 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 		}
 	}
 
-	for _, qrn := range genDoc.Qrns {
-		if qrn.Timestamp.Sub(genDoc.GenesisTime) > 0 {
-			return fmt.Errorf("Invalid qrn timestamp: qrnTimestamp = %v / genesisTimestamp = %v", qrn.Timestamp, genDoc.GenesisTime)
-		}
+	if genDoc.Qrns != nil {
+		for _, qrn := range genDoc.Qrns {
+			if err := qrn.ValidateBasic(); err != nil {
+				return fmt.Errorf("Qrn error: %v", err)
+			}
 
-		if err := qrn.ValidateBasic(); err != nil {
-			return fmt.Errorf("Qrn error: %v", err)
+			if qrn.Signature != nil {
+				if qrn.VerifySign(genDoc.ChainID) == false {
+					return fmt.Errorf("Incorrect sign of qrn")
+				}
+			}
 		}
+	}
 
-		if qrn.VerifySign(genDoc.ChainID) == false {
-			return fmt.Errorf("Incorrect sign of qrn")
+	if genDoc.Vrfs != nil {
+		for _, vrf := range genDoc.Vrfs {
+			if err := vrf.ValidateBasic(); err != nil {
+				return fmt.Errorf("Qrn error: %v", err)
+			}
+
+			if vrf.Verify() == false {
+				return fmt.Errorf("Incorrect sign of vrf")
+			}
 		}
 	}
 

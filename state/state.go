@@ -553,27 +553,43 @@ func MakeGenesisState(genDoc *types.GenesisDoc) (State, error) {
 	var qrnSet, nextQrnSet *types.QrnSet
 	if genDoc.Qrns == nil {
 		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, nil)
-		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), standingMemberSet, nil)
 	} else {
 		qrns := make([]*types.Qrn, len(genDoc.Qrns))
 		for i, qrn := range genDoc.Qrns {
 			qrns[i] = qrn.Copy()
 		}
 		qrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, qrns)
-		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), standingMemberSet, nil)
+	}
+
+	if genDoc.NextQrns == nil {
+		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, nil)
+	} else {
+		nextQrns := make([]*types.Qrn, len(genDoc.NextQrns))
+		for i, nextQrn := range genDoc.NextQrns {
+			nextQrns[i] = nextQrn.Copy()
+		}
+		nextQrnSet = types.NewQrnSet(genDoc.InitialHeight, standingMemberSet, nextQrns)
 	}
 
 	var vrfSet, nextVrfSet *types.VrfSet
 	if genDoc.Vrfs == nil {
 		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, nil)
-		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), steeringMemberCandidateSet, nil)
 	} else {
 		vrfs := make([]*types.Vrf, len(genDoc.Vrfs))
 		for i, vrf := range genDoc.Vrfs {
 			vrfs[i] = vrf.Copy()
 		}
 		vrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
-		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight+int64(genDoc.ConsensusRound.Period), steeringMemberCandidateSet, vrfs)
+	}
+
+	if genDoc.NextVrfs == nil {
+		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, nil)
+	} else {
+		nextVrfs := make([]*types.Vrf, len(genDoc.NextVrfs))
+		for i, nextVrf := range genDoc.NextVrfs {
+			nextVrfs[i] = nextVrf.Copy()
+		}
+		nextVrfSet = types.NewVrfSet(genDoc.InitialHeight, steeringMemberCandidateSet, nextVrfs)
 	}
 
 	standingMemberSet.SetCoordinator(qrnSet)
