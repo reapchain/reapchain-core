@@ -191,9 +191,6 @@ func ExportState(config *cfg.Config, height int64) (*State, error) {
 		return nil, fmt.Errorf("couldn't read vrfSet: %w", err)
 	}
 
-	fmt.Println("stompesi - nextVrfSet", nextVrfSet)
-	fmt.Println("stompesi - nextQrnSet", nextQrnSet)
-
 	qrnSet, err := stateStore.LoadQrnSet(height)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't read qrnSet: %w", err)
