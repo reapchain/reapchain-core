@@ -8,6 +8,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	abci "github.com/reapchain/reapchain-core/abci/types"
+	cfg "github.com/reapchain/reapchain-core/config"
 	tmmath "github.com/reapchain/reapchain-core/libs/math"
 	tmos "github.com/reapchain/reapchain-core/libs/os"
 	tmstate "github.com/reapchain/reapchain-core/proto/podc/state"
@@ -163,6 +164,62 @@ func (store dbStore) LoadFromDBOrGenesisDoc(genesisDoc *types.GenesisDoc) (State
 	}
 
 	return state, nil
+}
+
+func ExportState(config *cfg.Config, height int64) (*State, error) {
+	dbType := dbm.BackendType(config.DBBackend)
+	stateDB, err := dbm.NewDB("state", dbType, config.DBDir())
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	
+	stateStore := NewStore(stateDB)
+
+	nextVrfSet, err := stateStore.LoadNextVrfSet(height)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't read nextVrfSet: %w", err)
+	}
+
+
+	nextQrnSet, err := stateStore.LoadNextQrnSet(height)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't read nextQrnSet: %w", err)
+	}
+
+	vrfSet, err := stateStore.LoadVrfSet(height)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't read vrfSet: %w", err)
+	}
+
+	qrnSet, err := stateStore.LoadQrnSet(height)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't read qrnSet: %w", err)
+	}
+
+	consensusRound, err := stateStore.LoadConsensusRound(height)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't read consensusRound: %w", err)
+	}
+
+	standingMemberSet, err := stateStore.LoadStandingMemberSet(height)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't read standingMemberSet: %w", err)
+	}
+
+	steeringMemberCandidateSet, err := stateStore.LoadSteeringMemberCandidateSet(height)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't read steeringMemberCandidateSet: %w", err)
+	}
+
+	return &State{
+		NextVrfSet: nextVrfSet,
+		NextQrnSet: nextQrnSet,
+		VrfSet: vrfSet,
+		QrnSet: qrnSet,
+		ConsensusRound: consensusRound,
+		StandingMemberSet: standingMemberSet,
+		SteeringMemberCandidateSet: steeringMemberCandidateSet,
+	}, nil
 }
 
 // LoadState loads the State from the database.

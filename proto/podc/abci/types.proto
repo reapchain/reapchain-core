@@ -77,7 +77,8 @@ message RequestInitChain {
   repeated QrnUpdate qrn_updates       = 9 [(gogoproto.nullable) = false];
   repeated SteeringMemberCandidateUpdate steering_member_candidate_updates       = 10 [(gogoproto.nullable) = false];
   repeated VrfUpdate vrf_updates       = 11 [(gogoproto.nullable) = false];
-
+  repeated QrnUpdate next_qrn_updates       = 12 [(gogoproto.nullable) = false];
+  repeated VrfUpdate next_vrf_updates       = 13 [(gogoproto.nullable) = false];
 }
 
 message RequestQuery {
@@ -200,7 +201,8 @@ message ResponseInitChain {
   repeated QrnUpdate qrn_updates       = 6 [(gogoproto.nullable) = false];
   repeated SteeringMemberCandidateUpdate steering_member_candidate_updates       = 7 [(gogoproto.nullable) = false];
   repeated VrfUpdate vrf_updates       = 8 [(gogoproto.nullable) = false];
-
+  repeated QrnUpdate next_qrn_updates       = 9 [(gogoproto.nullable) = false];
+  repeated VrfUpdate next_vrf_updates       = 10 [(gogoproto.nullable) = false];
 }
 
 message ResponseQuery {

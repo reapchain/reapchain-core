@@ -123,6 +123,9 @@ func initFilesWithConfig(config *cfg.Config) error {
 
 		genDoc.Vrfs = []types.Vrf{}
 
+		genDoc.NextVrfs = []types.Vrf{}
+		genDoc.NextQrns = []types.Qrn{}
+
 		logger.Info("Generated genesis file", "path", genFile)
 	}
 

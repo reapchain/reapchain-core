@@ -140,6 +140,10 @@ func (vrf *Vrf) GetVrfBytes() []byte {
 
 // Verify of vrf
 func (vrf *Vrf) Verify() bool {
+	if vrf.Seed == nil && vrf.Value == nil {
+		return true
+	}
+
 	publicKey := vrfunc.PublicKey(vrf.SteeringMemberCandidatePubKey.Bytes())
 
 	return publicKey.Verify(vrf.Seed, vrf.Value, vrf.Proof)

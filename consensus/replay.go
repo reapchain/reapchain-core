@@ -345,6 +345,14 @@ func (h *Handshaker) ReplayBlocks(
 		_, proposer := validatorSet.GetByAddress(standingMemberSet.Coordinator.PubKey.Address())
 		validatorSet.Proposer = proposer
 		qrnUpdates := types.TM2PB.QrnSetUpdate(qrnSet)
+		
+		nextQrns := make([]*types.Qrn, len(h.genDoc.NextQrns))
+		for i, nextQrn := range h.genDoc.NextQrns {
+			nextQrns[i] = &nextQrn
+		}
+
+		nextQrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, nextQrns)
+		nextQrnUpdates := types.TM2PB.QrnSetUpdate(nextQrnSet)
 
 		vrfs := make([]*types.Vrf, len(h.genDoc.Vrfs))
 		for i, vrf := range h.genDoc.Vrfs {
@@ -352,6 +360,13 @@ func (h *Handshaker) ReplayBlocks(
 		}
 		vrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
 		vrfUpdates := types.TM2PB.VrfSetUpdate(vrfSet)
+
+		nextVrfs := make([]*types.Vrf, len(h.genDoc.NextVrfs))
+		for i, nextVrf := range h.genDoc.NextVrfs {
+			nextVrfs[i] = &nextVrf
+		}
+		nextVrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, nextVrfs)
+		nextVrfUpdates := types.TM2PB.VrfSetUpdate(nextVrfSet)
 
 
 		req := abci.RequestInitChain{
@@ -366,7 +381,10 @@ func (h *Handshaker) ReplayBlocks(
 			ConsensusRound:                 consensudRoundAbci,
 			QrnUpdates:                     qrnUpdates,
 			VrfUpdates:                     vrfUpdates,
+			NextQrnUpdates:                 nextQrnUpdates,
+			NextVrfUpdates:                 nextVrfUpdates,
 		}
+		
 		res, err := proxyApp.Consensus().InitChainSync(req)
 		if err != nil {
 			return nil, err
@@ -443,8 +461,8 @@ func (h *Handshaker) ReplayBlocks(
 				if err != nil {
 					return nil, err
 				}
-				state.QrnSet = types.NewQrnSet(h.genDoc.InitialHeight, state.StandingMemberSet, qrns)
-				state.NextQrnSet = types.NewQrnSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.StandingMemberSet, nil).Copy()
+
+				state.QrnSet = types.NewQrnSet(res.ConsensusRound.ConsensusStartBlockHeight, state.StandingMemberSet, qrns)
 
 				state.StandingMemberSet.SetCoordinator(state.QrnSet)
 				_, proposer := state.Validators.GetByAddress(state.StandingMemberSet.Coordinator.PubKey.Address())
@@ -454,16 +472,35 @@ func (h *Handshaker) ReplayBlocks(
 				return nil, fmt.Errorf("qrn set is nil in genesis and still empty after InitChain")
 			}
 
+			if len(res.NextQrnUpdates) > 0 {
+				nextQrns, err := types.PB2TM.QrnUpdates(res.NextQrnUpdates)
+				if err != nil {
+					return nil, err
+				}
+				state.NextQrnSet = types.NewQrnSet(res.ConsensusRound.ConsensusStartBlockHeight + int64(res.ConsensusRound.QrnPeriod) + int64(res.ConsensusRound.VrfPeriod) + int64(res.ConsensusRound.ValidatorPeriod), state.StandingMemberSet, nextQrns)
+			} else if len(h.genDoc.NextQrns) == 0 {
+				// If nextQrn set is not set in genesis and still empty after InitChain, exit.
+				return nil, fmt.Errorf("nextQrn set is nil in genesis and still empty after InitChain")
+			}
+
 			if len(res.VrfUpdates) > 0 {
 				vrfs, err := types.PB2TM.VrfUpdates(res.VrfUpdates)
 				if err != nil {
 					return nil, err
 				}
-				state.VrfSet = types.NewVrfSet(h.genDoc.InitialHeight, state.SteeringMemberCandidateSet, vrfs)
-				state.NextVrfSet = types.NewVrfSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.SteeringMemberCandidateSet, vrfs).Copy()
+				state.VrfSet = types.NewVrfSet(res.ConsensusRound.ConsensusStartBlockHeight, state.SteeringMemberCandidateSet, vrfs)
 			} else if len(h.genDoc.Vrfs) == 0 {
-				state.VrfSet = types.NewVrfSet(h.genDoc.InitialHeight, state.SteeringMemberCandidateSet, nil)
-				state.NextVrfSet = types.NewVrfSet(h.genDoc.InitialHeight+int64(h.genDoc.ConsensusRound.Period), state.SteeringMemberCandidateSet, nil).Copy()
+				state.VrfSet = types.NewVrfSet(res.ConsensusRound.ConsensusStartBlockHeight, state.SteeringMemberCandidateSet, nil)
+			}
+
+			if len(res.NextVrfUpdates) > 0 {
+				nextVrfs, err := types.PB2TM.VrfUpdates(res.NextVrfUpdates)
+				if err != nil {
+					return nil, err
+				}
+				state.NextVrfSet = types.NewVrfSet(res.ConsensusRound.ConsensusStartBlockHeight + int64(res.ConsensusRound.QrnPeriod) + int64(res.ConsensusRound.VrfPeriod) + int64(res.ConsensusRound.ValidatorPeriod), state.SteeringMemberCandidateSet, nextVrfs)
+			} else if len(h.genDoc.NextVrfs) == 0 {
+				state.NextVrfSet = types.NewVrfSet(res.ConsensusRound.ConsensusStartBlockHeight + int64(res.ConsensusRound.QrnPeriod) + int64(res.ConsensusRound.VrfPeriod) + int64(res.ConsensusRound.ValidatorPeriod), state.SteeringMemberCandidateSet, nil)
 			}
 
 			if res.ConsensusParams != nil {
