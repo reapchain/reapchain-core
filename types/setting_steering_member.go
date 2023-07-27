@@ -61,7 +61,7 @@ func (settingSteeringMember *SettingSteeringMember) Copy() *SettingSteeringMembe
 
 // It is called via coordinator for signing the steering members who are selected as validator next round.
 // It returns the bytes of the steering members
-func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberBytesForSign(chainID string) []byte {
+func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberBytesForSign() []byte {
 	if settingSteeringMember == nil {
 		return nil
 	}
@@ -79,7 +79,7 @@ func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberByte
 	}
 
 
-	pb := CanonicalizeSettingSteeringMember(chainID, &settingSteeringMemberProto)
+	pb := CanonicalizeSettingSteeringMember(&settingSteeringMemberProto)
 	SettingSteeringMemberignBytes, err := protoio.MarshalDelimited(&pb)
 	if err != nil {
 		panic(err)
@@ -91,8 +91,8 @@ func (settingSteeringMember *SettingSteeringMember) GetSettingSteeringMemberByte
 
 // Validate the coordinator sign.
 // Each node gets own cornidator information and checks the settingSteeringMember is valid with the signature which is included the type
-func (settingSteeringMember *SettingSteeringMember) VerifySign(chainID string) bool {
-	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign(chainID)
+func (settingSteeringMember *SettingSteeringMember) VerifySign() bool {
+	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign()
 	if signBytes == nil {
 		return false
 	}

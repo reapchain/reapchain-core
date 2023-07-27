@@ -442,8 +442,8 @@ func checkProposalsOnlyDifferByTimestamp(lastSignBytes, newSignBytes []byte) (ti
 }
 
 
-func (pv *FilePV) SignQrn(chainID string, qrn *types.Qrn) error {
-	signBytes := qrn.GetQrnBytesForSign(chainID)
+func (pv *FilePV) SignQrn(qrn *types.Qrn) error {
+	signBytes := qrn.GetQrnBytesForSign()
 	if signBytes == nil {
 		return fmt.Errorf("error signing qrn: qrn is nil")
 	}
@@ -466,8 +466,8 @@ func (pv *FilePV) ProveVrf(vrf *types.Vrf) error {
 	return nil
 }
 
-func (pv *FilePV) SignSettingSteeringMember(chainID string, settingSteeringMember *types.SettingSteeringMember) error {
-	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign(chainID)
+func (pv *FilePV) SignSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) error {
+	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign()
 	if signBytes == nil {
 		return fmt.Errorf("error signing settingSteeringMember: settingSteeringMember is nil")
 	}

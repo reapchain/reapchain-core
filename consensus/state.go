@@ -1701,7 +1701,7 @@ func (cs *State) finalizeCommit(height int64) {
 
 			if block.Height == cs.CatchupStates[i].LastBlockHeight {
 				for j := 0; j < (len(cs.CatchupStates[i].NextQrnSet.Qrns)); j++ {
-					stateCopy.NextQrnSet.AddQrn(cs.state.ChainID, cs.CatchupStates[i].NextQrnSet.Qrns[j])
+					stateCopy.NextQrnSet.AddQrn(cs.CatchupStates[i].NextQrnSet.Qrns[j])
 				}
 
 				for j := 0; j < (len(cs.CatchupStates[i].NextVrfSet.Vrfs)); j++ {
@@ -1777,7 +1777,7 @@ func (cs *State) finalizeCommit(height int64) {
 				}
 
 				qrn := types.NewQrn(cs.state.NextQrnSet.GetHeight(), cs.privValidatorPubKey, qrnValue)
-				err := cs.privValidator.SignQrn(cs.state.ChainID, qrn)
+				err := cs.privValidator.SignQrn(qrn)
 
 				if err != nil {
 					logger.Error("Can't sign qrn", "err", err)
@@ -1827,7 +1827,7 @@ func (cs *State) finalizeCommit(height int64) {
 					settingSteeringMember.Height = cs.state.ConsensusRound.ConsensusStartBlockHeight + int64(cs.state.ConsensusRound.Period)
 					settingSteeringMember.CoordinatorPubKey = cs.privValidatorPubKey
 
-					err := cs.privValidator.SignSettingSteeringMember(cs.state.ChainID, settingSteeringMember)
+					err := cs.privValidator.SignSettingSteeringMember(settingSteeringMember)
 					if err != nil {
 						cs.Logger.Error("Can't sign settingSteeringMember", "err", err)
 					} else {
@@ -2569,7 +2569,7 @@ func (cs *State) trySetSteeringMember(settingSteeringMember *types.SettingSteeri
 		return fmt.Errorf("Miss match coordinator")
 	}
 
-	if settingSteeringMember.VerifySign(cs.state.ChainID) == false {
+	if settingSteeringMember.VerifySign() == false {
 		return fmt.Errorf("Invalid seeting steering member sign")
 	}
 

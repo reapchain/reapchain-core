@@ -130,7 +130,7 @@ func (sc *SignerClient) SignVote(chainID string, vote *tmproto.Vote) error {
 	return nil
 }
 
-func (sc *SignerClient) SignQrn(chainID string, qrn *types.Qrn) error {
+func (sc *SignerClient) SignQrn(qrn *types.Qrn) error {
 	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignQrnRequest{Qrn: qrn.ToProto()}))
 	if err != nil {
 		return err
@@ -149,7 +149,7 @@ func (sc *SignerClient) SignQrn(chainID string, qrn *types.Qrn) error {
 	return nil
 }
 
-func (sc *SignerClient) SignSettingSteeringMember(chainID string, settingSteeringMember *types.SettingSteeringMember) error {
+func (sc *SignerClient) SignSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) error {
 	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignSettingSteeringMemberRequest{SettingSteeringMember: settingSteeringMember.ToProto()}))
 	if err != nil {
 		return err

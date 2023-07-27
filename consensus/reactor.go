@@ -123,7 +123,7 @@ func (conR *Reactor) SwitchToConsensus(state sm.State, skipWAL bool) {
 
 	// if we have CatchupQrnMessages, add the qrns
 	for _, currentQrnMessage := range conR.CatchupQrnMessages {
-		state.NextQrnSet.AddQrn(state.ChainID, currentQrnMessage.Qrn)
+		state.NextQrnSet.AddQrn(currentQrnMessage.Qrn)
 	}
 
 	// if we have CatchupVrfMessages, add the vrfs
@@ -448,7 +448,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			switch msg := msg.(type) {
 			case *QrnMessage:
 				conR.mtx.Lock()
-				conR.tryAddCatchupQrnMessage(conR.chainID, msg)
+				conR.tryAddCatchupQrnMessage(msg)
 				conR.mtx.Unlock()
 			}
 
@@ -508,7 +508,7 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			switch msg := msg.(type) {
 			case *SettingSteeringMemberMessage:
 				conR.mtx.Lock()
-				conR.tryAddCatchupSettingSteeringMemberMessage(conR.chainID, msg)
+				conR.tryAddCatchupSettingSteeringMemberMessage(msg)
 				conR.mtx.Unlock()
 			}
 			return

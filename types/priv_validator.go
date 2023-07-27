@@ -8,7 +8,7 @@ import (
 	"github.com/reapchain/reapchain-core/crypto"
 	"github.com/reapchain/reapchain-core/crypto/ed25519"
 	tmproto "github.com/reapchain/reapchain-core/proto/podc/types"
-	 "github.com/reapchain/reapchain-core/vrfunc"
+	"github.com/reapchain/reapchain-core/vrfunc"
 )
 
 // PrivValidator defines the functionality of a local ReapchainCore validator
@@ -20,8 +20,8 @@ type PrivValidator interface {
 	SignVote(chainID string, vote *tmproto.Vote) error
 	SignProposal(chainID string, proposal *tmproto.Proposal) error
 
-	SignQrn(chainID string, qrn *Qrn) error
-	SignSettingSteeringMember(chainID string, vrf *SettingSteeringMember) error
+	SignQrn(qrn *Qrn) error
+	SignSettingSteeringMember(vrf *SettingSteeringMember) error
 	ProveVrf(vrf *Vrf) error
 }
 
@@ -97,8 +97,8 @@ func (pv MockPV) SignVote(chainID string, vote *tmproto.Vote) error {
 	return nil
 }
 
-func (pv MockPV) SignQrn(chainID string, qrn *Qrn) error {
-	signBytes := qrn.GetQrnBytesForSign(chainID)
+func (pv MockPV) SignQrn(qrn *Qrn) error {
+	signBytes := qrn.GetQrnBytesForSign()
 	sig, err := pv.PrivKey.Sign(signBytes)
 	if err != nil {
 		return err
@@ -107,8 +107,8 @@ func (pv MockPV) SignQrn(chainID string, qrn *Qrn) error {
 	return nil
 }
 
-func (pv MockPV) SignSettingSteeringMember(chainID string, settingSteeringMember *SettingSteeringMember) error {
-	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign(chainID)
+func (pv MockPV) SignSettingSteeringMember(settingSteeringMember *SettingSteeringMember) error {
+	signBytes := settingSteeringMember.GetSettingSteeringMemberBytesForSign()
 	sig, err := pv.PrivKey.Sign(signBytes)
 	if err != nil {
 		return err

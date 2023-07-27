@@ -101,7 +101,7 @@ func (qrnSet *QrnSet) GetMaxValue() uint64 {
 }
 
 // Add qrn in the set
-func (qrnSet *QrnSet) AddQrn(chainID string, qrn *Qrn) bool {
+func (qrnSet *QrnSet) AddQrn(qrn *Qrn) bool {
 	qrnSet.mtx.Lock()
 	defer qrnSet.mtx.Unlock()
 
@@ -115,7 +115,7 @@ func (qrnSet *QrnSet) AddQrn(chainID string, qrn *Qrn) bool {
 	}
 	
 	if qrn.Value != 0 {
-		if qrn.VerifySign(chainID) == false {
+		if qrn.VerifySign() == false {
 			return false
 		}
 	

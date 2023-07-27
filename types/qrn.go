@@ -87,7 +87,7 @@ func (qrn *Qrn) String() string {
 }
 
 // Make QRN bytes for sign including height, timestamp, standing member public key, and value 
-func (qrn *Qrn) GetQrnBytesForSign(chainID string) []byte {
+func (qrn *Qrn) GetQrnBytesForSign() []byte {
 	if qrn == nil {
 		return nil
 	}
@@ -104,7 +104,7 @@ func (qrn *Qrn) GetQrnBytesForSign(chainID string) []byte {
 		Value:                qrn.Value,
 	}
 
-	pb := CanonicalizeQrn(chainID, &qrnProto)
+	pb := CanonicalizeQrn(&qrnProto)
 	QrnSignBytes, err := protoio.MarshalDelimited(&pb)
 	if err != nil {
 		panic(err)
@@ -140,8 +140,8 @@ func (qrn *Qrn) GetQrnBytes() []byte {
 }
 
 // Verify of qrn
-func (qrn *Qrn) VerifySign(chainID string) bool {
-	signBytes := qrn.GetQrnBytesForSign(chainID)
+func (qrn *Qrn) VerifySign() bool {
+	signBytes := qrn.GetQrnBytesForSign()
 	if signBytes == nil {
 		return false
 	}

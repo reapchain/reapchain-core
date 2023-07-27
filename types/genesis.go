@@ -135,7 +135,7 @@ func (genDoc *GenesisDoc) ValidateAndComplete() error {
 			}
 
 			if qrn.Signature != nil {
-				if qrn.VerifySign(genDoc.ChainID) == false {
+				if qrn.VerifySign() == false {
 					return fmt.Errorf("Incorrect sign of qrn")
 				}
 			}

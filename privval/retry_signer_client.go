@@ -99,10 +99,10 @@ func (sc *RetrySignerClient) SignVote(chainID string, vote *tmproto.Vote) error 
 	return fmt.Errorf("exhausted all attempts to sign vote: %w", err)
 }
 
-func (sc *RetrySignerClient) SignQrn(chainID string, qrn *types.Qrn) error {
+func (sc *RetrySignerClient) SignQrn(qrn *types.Qrn) error {
 	var err error
 	for i := 0; i < sc.retries || sc.retries == 0; i++ {
-		err = sc.next.SignQrn(chainID, qrn)
+		err = sc.next.SignQrn(qrn)
 		if err == nil {
 			return nil
 		}
@@ -131,10 +131,10 @@ func (sc *RetrySignerClient) ProveVrf(vrf *types.Vrf) error {
 	return fmt.Errorf("exhausted all attempts to sign vote: %w", err)
 }
 
-func (sc *RetrySignerClient) SignSettingSteeringMember(chainID string, settingSteeringMember *types.SettingSteeringMember) error {
+func (sc *RetrySignerClient) SignSettingSteeringMember(settingSteeringMember *types.SettingSteeringMember) error {
 	var err error
 	for i := 0; i < sc.retries || sc.retries == 0; i++ {
-		err = sc.next.SignSettingSteeringMember(chainID, settingSteeringMember)
+		err = sc.next.SignSettingSteeringMember(settingSteeringMember)
 		if err == nil {
 			return nil
 		}

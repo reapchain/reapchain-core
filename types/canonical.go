@@ -73,23 +73,21 @@ func CanonicalTime(t time.Time) string {
 }
 
 // CanonicalizeQrn transforms the given Qrn to a CanonicalQrn
-func CanonicalizeQrn(chainID string, qrn *tmproto.Qrn) tmproto.CanonicalQrn {
+func CanonicalizeQrn(qrn *tmproto.Qrn) tmproto.CanonicalQrn {
 	return tmproto.CanonicalQrn{
 		Height:    qrn.Height,
 		Timestamp: qrn.Timestamp,
 		StandingMemberPubKey:     qrn.StandingMemberPubKey,
 		Value:     qrn.Value,
-		ChainID:   chainID,
 	}
 }
 // CanonicalizeSettingSteeringMember transforms the given SettingSteeringMember to a CanonicalSettingSteeringMember
-func CanonicalizeSettingSteeringMember(chainID string, settingSteeringMember *tmproto.SettingSteeringMember) tmproto.CanonicalSettingSteeringMember {
+func CanonicalizeSettingSteeringMember(settingSteeringMember *tmproto.SettingSteeringMember) tmproto.CanonicalSettingSteeringMember {
 	return tmproto.CanonicalSettingSteeringMember{
 		Height:    settingSteeringMember.Height,
 		Timestamp: settingSteeringMember.Timestamp,
 		CoordinatorPubKey:     settingSteeringMember.CoordinatorPubKey,
 		SteeringMemberAddresses:     settingSteeringMember.SteeringMemberAddresses,
-		ChainID:   chainID,
 	}
 }
 
