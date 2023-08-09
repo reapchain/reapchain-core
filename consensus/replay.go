@@ -368,7 +368,6 @@ func (h *Handshaker) ReplayBlocks(
 		nextVrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, nextVrfs)
 		nextVrfUpdates := types.TM2PB.VrfSetUpdate(nextVrfSet)
 
-
 		req := abci.RequestInitChain{
 			Time:                           h.genDoc.GenesisTime,
 			ChainId:                        h.genDoc.ChainID,
@@ -479,8 +478,11 @@ func (h *Handshaker) ReplayBlocks(
 				}
 				state.NextQrnSet = types.NewQrnSet(res.ConsensusRound.ConsensusStartBlockHeight + int64(res.ConsensusRound.QrnPeriod) + int64(res.ConsensusRound.VrfPeriod) + int64(res.ConsensusRound.ValidatorPeriod), state.StandingMemberSet, nextQrns)
 			} else if len(h.genDoc.NextQrns) == 0 {
-				// If nextQrn set is not set in genesis and still empty after InitChain, exit.
-				return nil, fmt.Errorf("nextQrn set is nil in genesis and still empty after InitChain")
+				if res.ConsensusRound == nil {
+					state.NextQrnSet = types.NewQrnSet(h.genDoc.ConsensusRound.ConsensusStartBlockHeight + int64(h.genDoc.ConsensusRound.QrnPeriod) + int64(h.genDoc.ConsensusRound.VrfPeriod) + int64(h.genDoc.ConsensusRound.ValidatorPeriod), state.StandingMemberSet, nil)
+				} else {
+					state.NextQrnSet = types.NewQrnSet(res.ConsensusRound.ConsensusStartBlockHeight + int64(res.ConsensusRound.QrnPeriod) + int64(res.ConsensusRound.VrfPeriod) + int64(res.ConsensusRound.ValidatorPeriod), state.StandingMemberSet, nil)
+				}
 			}
 
 			if len(res.VrfUpdates) > 0 {
@@ -490,7 +492,11 @@ func (h *Handshaker) ReplayBlocks(
 				}
 				state.VrfSet = types.NewVrfSet(res.ConsensusRound.ConsensusStartBlockHeight, state.SteeringMemberCandidateSet, vrfs)
 			} else if len(h.genDoc.Vrfs) == 0 {
-				state.VrfSet = types.NewVrfSet(res.ConsensusRound.ConsensusStartBlockHeight, state.SteeringMemberCandidateSet, nil)
+				if res.ConsensusRound == nil {
+					state.VrfSet = types.NewVrfSet(h.genDoc.ConsensusRound.ConsensusStartBlockHeight, state.SteeringMemberCandidateSet, nil)
+				} else {
+					state.VrfSet = types.NewVrfSet(res.ConsensusRound.ConsensusStartBlockHeight, state.SteeringMemberCandidateSet, nil)
+				}
 			}
 
 			if len(res.NextVrfUpdates) > 0 {
@@ -500,7 +506,11 @@ func (h *Handshaker) ReplayBlocks(
 				}
 				state.NextVrfSet = types.NewVrfSet(res.ConsensusRound.ConsensusStartBlockHeight + int64(res.ConsensusRound.QrnPeriod) + int64(res.ConsensusRound.VrfPeriod) + int64(res.ConsensusRound.ValidatorPeriod), state.SteeringMemberCandidateSet, nextVrfs)
 			} else if len(h.genDoc.NextVrfs) == 0 {
-				state.NextVrfSet = types.NewVrfSet(res.ConsensusRound.ConsensusStartBlockHeight + int64(res.ConsensusRound.QrnPeriod) + int64(res.ConsensusRound.VrfPeriod) + int64(res.ConsensusRound.ValidatorPeriod), state.SteeringMemberCandidateSet, nil)
+				if res.ConsensusRound == nil {
+					state.NextVrfSet = types.NewVrfSet(h.genDoc.ConsensusRound.ConsensusStartBlockHeight + int64(h.genDoc.ConsensusRound.QrnPeriod) + int64(h.genDoc.ConsensusRound.VrfPeriod) + int64(h.genDoc.ConsensusRound.ValidatorPeriod), state.SteeringMemberCandidateSet, nil)
+				} else {
+					state.NextVrfSet = types.NewVrfSet(res.ConsensusRound.ConsensusStartBlockHeight + int64(res.ConsensusRound.QrnPeriod) + int64(res.ConsensusRound.VrfPeriod) + int64(res.ConsensusRound.ValidatorPeriod), state.SteeringMemberCandidateSet, nil)
+				}
 			}
 
 			if res.ConsensusParams != nil {
