@@ -18,8 +18,7 @@ OUTER_LOOP:
 			return
 		}
 
-
-		if conR.conS.state.SettingSteeringMember == nil {
+		if conR.conS.state.IsSetSteeringMember == false {
 			consensusStartBlockHeight := conR.conS.state.ConsensusRound.ConsensusStartBlockHeight
 			roundPeriod := conR.conS.state.ConsensusRound.Period
 
