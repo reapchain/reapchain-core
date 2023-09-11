@@ -59,6 +59,10 @@ message SettingSteeringMember {
   podc.types.SettingSteeringMember setting_steering_member = 1;
 }
 
+message ResponseSettingSteeringMember {
+  podc.types.SettingSteeringMember setting_steering_member = 1;
+}
+
 message Qrn {
   podc.types.Qrn qrn = 1;
 }
@@ -78,6 +82,10 @@ message HasVrf {
 }
 
 message HasSettingSteeringMember {
+  int64                          height = 1;
+}
+
+message RequestSettingSteeringMember {
   int64                          height = 1;
 }
 
@@ -125,5 +133,8 @@ message Message {
 
     SettingSteeringMember setting_steering_member = 14;
     HasSettingSteeringMember has_setting_steering_member = 15;
+    
+    RequestSettingSteeringMember request_setting_steering_member = 16;
+    ResponseSettingSteeringMember response_setting_steering_member = 17;
   }
 }

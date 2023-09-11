@@ -44,6 +44,8 @@ type BlockExecutor struct {
 	logger log.Logger
 
 	metrics *Metrics
+
+	vrfCheckList abci.VrfCheckList
 }
 
 type BlockExecutorOption func(executor *BlockExecutor)
@@ -140,9 +142,9 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	}
 
 	startTime := time.Now().UnixNano()
-	abciResponses, err := execBlockOnProxyApp(
+	abciResponses, err := execBlockOnProxyApp( 
 		//@@@logging: executed block
-		blockExec.logger, blockExec.proxyApp, block, blockExec.store, state.InitialHeight, state.VrfSet,
+		blockExec.logger, blockExec.proxyApp, block, blockExec.store, state.InitialHeight, blockExec.vrfCheckList,
 	)
 	endTime := time.Now().UnixNano()
 	blockExec.metrics.BlockProcessingTime.Observe(float64(endTime-startTime) / 1000000)
@@ -222,6 +224,7 @@ func (blockExec *BlockExecutor) ApplyBlock(
 	state.NextQrnSet, 
 	state.SettingSteeringMember)
 
+	blockExec.vrfCheckList = types.GetVrfCheckList(state.VrfSet)
 
 	return state, retainHeight, nil
 }
@@ -287,7 +290,7 @@ func execBlockOnProxyApp(
 	block *types.Block,
 	store Store,
 	initialHeight int64,
-	vrfSet *types.VrfSet,
+	vrfCheckList abci.VrfCheckList,
 ) (*tmstate.ABCIResponses, error) {
 	var validTxs, invalidTxs = 0, 0
 
@@ -330,8 +333,6 @@ func execBlockOnProxyApp(
 	if pbh == nil {
 		return nil, errors.New("nil header")
 	}
-
-	vrfCheckList := types.GetVrfCheckList(vrfSet)
 
 	abciResponses.BeginBlock, err = proxyAppConn.BeginBlockSync(abci.RequestBeginBlock{
 		Hash:                block.Hash(),
@@ -822,7 +823,8 @@ func ExecCommitBlock(
 	initialHeight int64,
 	state State,
 ) ([]byte, error) {
-	_, err := execBlockOnProxyApp(logger, appConnConsensus, block, store, initialHeight, state.VrfSet)
+	vrfCheckList := types.GetVrfCheckList(state.VrfSet)
+	_, err := execBlockOnProxyApp(logger, appConnConsensus, block, store, initialHeight, vrfCheckList)
 	if err != nil {
 		logger.Error("failed executing block on proxy app", "height", block.Height, "err", err)
 		return nil, err

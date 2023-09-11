@@ -40,5 +40,6 @@ func init() {
 
 	tmjson.RegisterType(&SettingSteeringMemberMessage{}, "reapchain/SettingSteeringMember")
 	tmjson.RegisterType(&HasSettingSteeringMemberMessage{}, "reapchain/HasSettingSteeringMemberMessage")
+	tmjson.RegisterType(&RequestSettingSteeringMemberMessage{}, "reapchain/RequestSettingSteeringMemberMessage")
 
 }

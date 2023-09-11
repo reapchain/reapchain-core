@@ -898,6 +898,22 @@ func (cs *State) handleMsg(mi msgInfo) {
 
 	case *SettingSteeringMemberMessage:
 		err = cs.trySetSteeringMember(msg.SettingSteeringMember, peerID)
+		
+		// address := cs.privValidatorPubKey.Address()
+
+		// fmt.Println("cs.StandingMemberSet.Coordinator.Address", cs.StandingMemberSet.Coordinator.Address)
+		// fmt.Println("cs.privValidatorPubKey.Address()", cs.privValidatorPubKey.Address())
+
+		// if bytes.Equal(cs.StandingMemberSet.Coordinator.Address, address) {
+		// 	cs.trySetSteeringMember(msg.SettingSteeringMember, peerID)
+		// 	fmt.Println("stompesi - coordinator set")
+		// } else {
+		// 	fmt.Println("stompesi - prevent SettingSteeringMemberMessage")
+		// }
+
+	case *ResponseSettingSteeringMemberMessage:
+		fmt.Println("stompesi - set ResponseSettingSteeringMemberMessage")
+		err = cs.trySetSteeringMember(msg.SettingSteeringMember, peerID)
 
 	case *VrfMessage:
 		added, err = cs.tryAddVrf(msg.Vrf, peerID)

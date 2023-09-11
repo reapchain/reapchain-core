@@ -17,10 +17,24 @@ OUTER_LOOP:
 			logger.Info("Stopping gossipSettingSteeringMemberRoutine for peer")
 			return
 		}
+
+
+		if conR.conS.state.SettingSteeringMember == nil {
+			consensusStartBlockHeight := conR.conS.state.ConsensusRound.ConsensusStartBlockHeight
+			roundPeriod := conR.conS.state.ConsensusRound.Period
+
+			if conR.conS.state.LastBlockHeight >=  consensusStartBlockHeight + int64(roundPeriod) - 2 ||
+			  conR.conS.state.LastBlockHeight <  consensusStartBlockHeight + int64(roundPeriod) {
+				
+				ps.RequestSettingSteeringMember(conR.conS.state.LastBlockHeight)
+			}
+		}
+
 		rs := conR.conS.GetRoundState()
 		prs := ps.GetRoundState()
 
 		if rs.LockedBlock != nil {
+			
 			consensusStartBlockHeight := rs.LockedBlock.ConsensusRound.ConsensusStartBlockHeight
 			roundPeriod := rs.LockedBlock.ConsensusRound.Period
 
