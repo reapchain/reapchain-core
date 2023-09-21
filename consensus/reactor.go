@@ -383,10 +383,13 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 
 		case *NewValidBlockMessage:
 			ps.ApplyNewValidBlockMessage(msg)
+		
 		case *HasVoteMessage:
 			ps.ApplyHasVoteMessage(msg)
+
 		case *HasSettingSteeringMemberMessage:
 			ps.ApplyHasSettingSteeringMemberMessage(msg)
+		
 		case *VoteSetMaj23Message:
 			cs := conR.conS
 			cs.mtx.Lock()
@@ -521,6 +524,22 @@ func (conR *Reactor) Receive(chID byte, src p2p.Peer, msgBytes []byte) {
 			ps.SetHasSettingSteeringMember(msg.SettingSteeringMember.Height)
 
 			cs.peerMsgQueue <- msgInfo{msg, src.ID()}
+		
+		case *RequestSettingSteeringMemberMessage:
+			cs := conR.conS
+			cs.mtx.RLock()
+			cs.mtx.RUnlock()
+			ps.ReSendSettingSteeringMember(cs.state.SettingSteeringMember);
+			ps.SetHasSettingSteeringMember(msg.Height)
+
+		case *ResponseSettingSteeringMemberMessage:
+			cs := conR.conS
+			cs.mtx.RLock()
+			cs.mtx.RUnlock()
+			
+			ps.SetHasSettingSteeringMember(msg.SettingSteeringMember.Height)
+			cs.peerMsgQueue <- msgInfo{msg, src.ID()}
+
 
 		default:
 			// don't punish (leave room for soft upgrades)

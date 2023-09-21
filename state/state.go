@@ -24,7 +24,7 @@ var (
 
 // rollback state key
 var (
-	previousConsensusRound tmproto.ConsensusRound
+	previousConsensusRound *tmproto.ConsensusRound = nil
 	rollbackStateKey = []byte("rollbackStateKey")
 )
 

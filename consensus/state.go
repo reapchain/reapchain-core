@@ -898,6 +898,8 @@ func (cs *State) handleMsg(mi msgInfo) {
 
 	case *SettingSteeringMemberMessage:
 		err = cs.trySetSteeringMember(msg.SettingSteeringMember, peerID)
+	case *ResponseSettingSteeringMemberMessage:
+		err = cs.trySetSteeringMember(msg.SettingSteeringMember, peerID)
 
 	case *VrfMessage:
 		added, err = cs.tryAddVrf(msg.Vrf, peerID)

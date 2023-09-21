@@ -309,7 +309,6 @@ func (m *CanonicalVote) GetChainID() string {
 	return ""
 }
 
-//
 type CanonicalQrn struct {
 	Height               int64            `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
 	Timestamp            time.Time        `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp"`

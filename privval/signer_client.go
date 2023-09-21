@@ -159,6 +159,7 @@ func (sc *SignerClient) SignSettingSteeringMember(settingSteeringMember *types.S
 	if resp == nil {
 		return ErrUnexpectedResponse
 	}
+	
 	if resp.Error != nil {
 		return &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
 	}
