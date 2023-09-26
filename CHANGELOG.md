@@ -1,6 +1,13 @@
 # Changelog
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/cosmos).
+## v0.34.20-reap.core.v0.1.20
+
+### BUG FIXES
+
+### FEATURES
+
+### IMPROVEMENTS
+
 
 ## v0.34.20
 
