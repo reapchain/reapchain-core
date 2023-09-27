@@ -1,22 +1,11 @@
 # Unreleased Changes
 
-## v0.34.21
+## v0.34.20-reap.core.v0.1.21
 
 Special thanks to external contributors on this release:
 
-Friendly reminder, we have a [bug bounty program](https://hackerone.com/reapchain-core).
 
 ### BREAKING CHANGES
-
-- CLI/RPC/Config
-
-- Apps
-
-- P2P Protocol
-
-- Go API
-
-- Blockchain Protocol
 
 ### FEATURES
 

@@ -1,11 +1,11 @@
 # Docs Build Workflow
 
-The documentation for ReapchainCore Core is hosted at:
+The documentation for Reapchain Core is hosted at:
 
-- <https://docs.reapchain-core.com/master/>
+- <https://docs.reapchain-core.com/main/>
 
 built from the files in this (`/docs`) directory for
-[master](https://github.com/reapchain/reapchain-core/tree/master/docs) respectively.
+[master](https://github.com/reapchain/reapchain-core/tree/main/docs) respectively.
 
 ## How It Works
 

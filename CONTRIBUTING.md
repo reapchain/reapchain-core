@@ -1,12 +1,12 @@
 # Contributing
 
-Thank you for your interest in contributing to ReapchainCore! Before
+Thank you for your interest in contributing to Reapchain Core! Before
 contributing, it may be helpful to understand the goal of the project. The goal
-of ReapchainCore is to develop a BFT consensus engine robust enough to
+of Reapchain Core is to develop a BFT consensus engine robust enough to
 support permissionless value-carrying networks. While all contributions are
 welcome, contributors should bear this goal in mind in deciding if they should
-target the main ReapchainCore project or a potential fork. When targeting the
-main ReapchainCore project, the following process leads to the best chance of
+target the main Reapchain Core project or a potential fork. When targeting the
+main Reapchain Core project, the following process leads to the best chance of
 landing changes in master.
 
 All work on the code base should be motivated by a [Github
@@ -71,7 +71,7 @@ For instance, to create a fork and work on a branch of it, I would:
 - `git remote rename origin upstream`
 - `git remote add origin git@github.com:ebuchman/basecoin.git`
 
-Now `origin` refers to my fork and `upstream` refers to the ReapchainCore version.
+Now `origin` refers to my fork and `upstream` refers to the Reapchain Core version.
 So I can `git push -u origin master` to update my fork, and make pull requests to reapchain-core from there.
 Of course, replace `ebuchman` with your git handle.
 
@@ -84,7 +84,7 @@ To pull in updates from the origin repo, run
 
 We use [go modules](https://github.com/golang/go/wiki/Modules) to manage dependencies.
 
-That said, the master branch of every ReapchainCore repository should just build
+That said, the master branch of every Reapchain Core repository should just build
 with `go get`, which means they should be kept up-to-date with their
 dependencies so we can get away with telling people they can just `go get` our
 software.
@@ -104,7 +104,7 @@ specify exactly the dependency you want to update, eg.
 
 ## Protobuf
 
-We use [Protocol Buffers](https://developers.google.com/protocol-buffers) along with [gogoproto](https://github.com/gogo/protobuf) to generate code for use across ReapchainCore Core.
+We use [Protocol Buffers](https://developers.google.com/protocol-buffers) along with [gogoproto](https://github.com/gogo/protobuf) to generate code for use across Reapchain Core.
 
 For linting and checking breaking changes, we use [buf](https://buf.build/). If you would like to run linting and check if the changes you have made are breaking then you will need to have docker running locally. Then the linting cmd will be `make proto-lint` and the breaking changes check will be `make proto-check-breaking`.
 
@@ -113,7 +113,7 @@ We use [Docker](https://www.docker.com/) to generate the protobuf stubs. To gene
 ## Vagrant
 
 If you are a [Vagrant](https://www.vagrantup.com/) user, you can get started
-hacking ReapchainCore with the commands below.
+hacking Reapchain Core with the commands below.
 
 NOTE: In case you installed Vagrant in 2017, you might need to run
 `vagrant box update` to upgrade to the latest `ubuntu/xenial64`.
@@ -171,15 +171,15 @@ easy to reference the pull request where a change was introduced.
 
 ### Development Procedure
 
-The latest state of development is on `master`, which must never fail `make test`. _Never_ force push `master`, unless fixing broken git history (which we rarely do anyways).
+The latest state of development is on `main`, which must never fail `make test`. _Never_ force push `main`, unless fixing broken git history (which we rarely do anyways).
 
 To begin contributing, create a development branch either on `github.com/reapchain/reapchain-core`, or your fork (using `git remote add origin`).
 
-Make changes, and before submitting a pull request, update the `CHANGELOG_PENDING.md` to record your change. Also, run either `git rebase` or `git merge` on top of the latest `master`. (Since pull requests are squash-merged, either is fine!)
+Make changes, and before submitting a pull request, update the `CHANGELOG_PENDING.md` to record your change. Also, run either `git rebase` or `git merge` on top of the latest `main`. (Since pull requests are squash-merged, either is fine!)
 
 Update the `UPGRADING.md` if the change you've made is breaking and the
 instructions should be in place for a user on how he/she can upgrade it's
-software (ABCI application, ReapchainCore-based blockchain, light client, wallet).
+software (ABCI application, Reapchain Core-based blockchain, light client, wallet).
 
 Once you have submitted a pull request label the pull request with either `R:minor`, if the change should be included in the next minor release, or `R:major`, if the change is meant for a major release.
 
@@ -191,7 +191,7 @@ It is also our convention that authors merge their own pull requests, when possi
 
 Before merging a pull request:
 
-- Ensure pull branch is up-to-date with a recent `master` (GitHub won't let you merge without this!)
+- Ensure pull branch is up-to-date with a recent `main` (GitHub won't let you merge without this!)
 - Run `make test` to ensure that all tests pass
 - [Squash](https://stackoverflow.com/questions/5189560/squash-my-last-x-commits-together-using-git) merge pull request
 
@@ -213,7 +213,7 @@ After this, you can open a PR. Please note in the PR body if there were merge co
 
 ### Git Commit Style
 
-We follow the [Go style guide on commit messages](https://tip.golang.org/doc/contribute.html#commit_messages). Write concise commits that start with the package name and have a description that finishes the sentence "This change modifies ReapchainCore to...". For example,
+We follow the [Go style guide on commit messages](https://tip.golang.org/doc/contribute.html#commit_messages). Write concise commits that start with the package name and have a description that finishes the sentence "This change modifies Reapchain Core to...". For example,
 
 ```sh
 cmd/debug: execute p.Signal only when p is not nil
@@ -223,15 +223,15 @@ cmd/debug: execute p.Signal only when p is not nil
 Fixes #nnnn
 ```
 
-Each PR should have one commit once it lands on `master`; this can be accomplished by using the "squash and merge" button on Github. Be sure to edit your commit message, though!
+Each PR should have one commit once it lands on `main`; this can be accomplished by using the "squash and merge" button on Github. Be sure to edit your commit message, though!
 
 ### Release Procedure
 
 #### Major Release
 
-1. Start on `master`
+1. Start on `main`
 2. Run integration tests (see `test_integrations` in Makefile)
-3. Prepare release in a pull request against `master` (to be squash merged):
+3. Prepare release in a pull request against `main` (to be squash merged):
    - Copy `CHANGELOG_PENDING.md` to top of `CHANGELOG.md`; if this release
       had release candidates, squash all the RC updates into one
    - Run `python ./scripts/linkify_changelog.py CHANGELOG.md` to add links for
@@ -300,12 +300,12 @@ the "standard" release naming conventions, with `-rcX` at the end (`vX.X.X-rcX`)
 have distinct names from the tags/release names.)
 
 1. Start from the RC branch (e.g. `RC0/v0.34.0`).
-2. Create the new tag, specifying a name and a tag "message":  
-   `git tag -a v0.34.0-rc0 -m "Release Candidate v0.34.0-rc0` 
-3. Push the tag back up to origin:  
-   `git push origin v0.34.0-rc4`  
-   Now the tag should be available on the repo's releases page. 
-4. Create a new release candidate branch for any possible updates to the RC:  
+2. Create the new tag, specifying a name and a tag "message":
+   `git tag -a v0.34.0-rc0 -m "Release Candidate v0.34.0-rc0`
+3. Push the tag back up to origin:
+   `git push origin v0.34.0-rc4`
+   Now the tag should be available on the repo's releases page.
+4. Create a new release candidate branch for any possible updates to the RC:
    `git checkout -b RC1/v0.34.0; git push origin RC1/v0.34.0`
 
 ## Testing
@@ -328,7 +328,7 @@ Run: `make test_integrations`
 
 ### End-to-end tests
 
-End-to-end tests are used to verify a fully integrated ReapchainCore network.
+End-to-end tests are used to verify a fully integrated Reapchain Core network.
 
 See [README](./test/e2e/README.md) for details.
 
@@ -387,7 +387,7 @@ most probably (99.9%)*.
 
 [Jepsen](http://jepsen.io/) tests are used to verify the
 [linearizability](https://jepsen.io/consistency/models/linearizable) property
-of the ReapchainCore consensus. They are located in a separate repository
+of the Reapchain Core consensus. They are located in a separate repository
 -> <https://github.com/reapchain-core/jepsen>. Please refer to its README for more
 information.
 
