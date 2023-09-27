@@ -2,7 +2,7 @@
 order: 3
 ---
 
-# Install ReapchainCore
+# Install Reapchain Core
 
 ## From Binary
 
@@ -39,16 +39,16 @@ make build
 
 to put the binary in `./build`.
 
-_DISCLAIMER_ The binary of ReapchainCore is build/installed without the DWARF
-symbol table. If you would like to build/install ReapchainCore with the DWARF
+_DISCLAIMER_ The binary of Reapchain Core is build/installed without the DWARF
+symbol table. If you would like to build/install Reapchain Core with the DWARF
 symbol and debug information, remove `-s -w` from `BUILD_FLAGS` in the make
 file.
 
-The latest ReapchainCore is now installed. You can verify the installation by
+The latest Reapchain Core is now installed. You can verify the installation by
 running:
 
 ```sh
-reapchain-core version
+podc version
 ```
 
 ## Run
@@ -62,7 +62,7 @@ podc node --proxy_app=kvstore
 
 ## Reinstall
 
-If you already have ReapchainCore installed, and you make updates, simply
+If you already have Reapchain Core installed, and you make updates, simply
 
 ```sh
 make install
@@ -71,7 +71,7 @@ make install
 To upgrade, run
 
 ```sh
-git pull origin master
+git pull origin main
 make install
 ```
 
@@ -105,7 +105,7 @@ Set a database backend to `cleveldb`:
 db_backend = "cleveldb"
 ```
 
-To install ReapchainCore, run:
+To install Reapchain Core, run:
 
 ```sh
 CGO_LDFLAGS="-lsnappy" make install REAPCHAIN_BUILD_OPTIONS=cleveldb
