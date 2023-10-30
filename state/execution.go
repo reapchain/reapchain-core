@@ -586,6 +586,11 @@ func updateState(
 
 	lastHeightQrnChanged := state.LastHeightQrnChanged
 	lastHeightVrfChanged := state.LastHeightVrfChanged
+
+	lastHeightNextQrnChanged := state.LastHeightNextQrnChanged
+	lastHeightNextVrfChanged := state.LastHeightNextVrfChanged
+
+	lastHeightSettingSteeringMemberChanged := state.LastHeightSettingSteeringMemberChanged
 	
 	// Change conensus round
 	if currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period) - 1 == header.Height {
@@ -608,8 +613,8 @@ func updateState(
 
 		lastHeightQrnChanged = header.Height + 1
 		lastHeightVrfChanged = header.Height + 1
-		state.LastHeightNextQrnChanged = header.Height + 1
-		state.LastHeightNextVrfChanged = header.Height + 1
+		lastHeightNextQrnChanged = header.Height + 1
+		lastHeightNextVrfChanged = header.Height + 1
 		lastHeightConsensusRoundChanged = header.Height + 1
 	}
 
@@ -655,17 +660,17 @@ func updateState(
 
 	// for store only the qrn period, it check the block height (in the qrn qeriod, it store the qrn information)
 	if (currentConsensusRound.ConsensusStartBlockHeight <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod)) {
-		state.LastHeightNextQrnChanged = header.Height + 1
+		lastHeightNextQrnChanged = header.Height + 1
 	}
 
 	// for store only the vrf period, it check the block height (in the vrf qeriod, it store the vrf information)
 	if (currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) + int64(currentConsensusRound.VrfPeriod)) {
-		state.LastHeightNextVrfChanged = header.Height + 1
+		lastHeightNextVrfChanged = header.Height + 1
 	}
 
 	// for store only the setting steering member period, it check the block height (in the setting steering member qeriod, it store the setting steering member information)
 	if (currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.QrnPeriod) + int64(currentConsensusRound.VrfPeriod) <= header.Height && header.Height < currentConsensusRound.ConsensusStartBlockHeight + int64(currentConsensusRound.Period)) {
-		state.LastHeightSettingSteeringMemberChanged = header.Height + 1
+		lastHeightSettingSteeringMemberChanged = header.Height + 1
 	}
 
 	// update coordinator with qrns
@@ -708,16 +713,16 @@ func updateState(
 		LastHeightQrnChanged: lastHeightQrnChanged,
 
 		NextQrnSet: state.NextQrnSet,
-		LastHeightNextQrnChanged: state.LastHeightNextQrnChanged,
+		LastHeightNextQrnChanged: lastHeightNextQrnChanged,
  
 		VrfSet:     state.VrfSet,
 		LastHeightVrfChanged: lastHeightVrfChanged,
 		
 		NextVrfSet: state.NextVrfSet,
-		LastHeightNextVrfChanged: state.LastHeightNextVrfChanged,
+		LastHeightNextVrfChanged: lastHeightNextVrfChanged,
 
 		SettingSteeringMember: state.SettingSteeringMember,
-		LastHeightSettingSteeringMemberChanged: state.LastHeightSettingSteeringMemberChanged,
+		LastHeightSettingSteeringMemberChanged: lastHeightSettingSteeringMemberChanged,
 
 		IsSetSteeringMember:   state.IsSetSteeringMember,
 	}, nil
