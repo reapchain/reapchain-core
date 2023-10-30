@@ -289,6 +289,10 @@ func (store dbStore) loadRollbackState(key []byte) (state State, err error) {
 // Save persists the State, the ValidatorsInfo, and the ConsensusParamsInfo to the database.
 // This flushes the writes (e.g. calls SetSync).
 func (store dbStore) Save(state State) error {
+	// if state.LastBlockHeight == 1 || previousConsensusRound.ConsensusStartBlockHeight+int64(previousConsensusRound.Period)+int64(state.ConsensusRound.Period)-1 == state.LastBlockHeight {
+	// 	previousConsensusRound = state.ConsensusRound
+	// 	store.save(state, rollbackStateKey)
+	// }
 	if previousConsensusRound == nil {
 		previousConsensusRound = &state.ConsensusRound
 	}
