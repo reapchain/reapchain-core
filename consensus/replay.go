@@ -337,7 +337,7 @@ func (h *Handshaker) ReplayBlocks(
 
 		qrns := make([]*types.Qrn, len(h.genDoc.Qrns))
 		for i, qrn := range h.genDoc.Qrns {
-			qrns[i] = &qrn
+			qrns[i] = qrn.Copy()
 		}
 
 		qrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, qrns)
@@ -348,7 +348,7 @@ func (h *Handshaker) ReplayBlocks(
 		
 		nextQrns := make([]*types.Qrn, len(h.genDoc.NextQrns))
 		for i, nextQrn := range h.genDoc.NextQrns {
-			nextQrns[i] = &nextQrn
+			nextQrns[i] = nextQrn.Copy()
 		}
 
 		nextQrnSet := types.NewQrnSet(h.genDoc.InitialHeight, standingMemberSet, nextQrns)
@@ -356,14 +356,14 @@ func (h *Handshaker) ReplayBlocks(
 
 		vrfs := make([]*types.Vrf, len(h.genDoc.Vrfs))
 		for i, vrf := range h.genDoc.Vrfs {
-			vrfs[i] = &vrf
+			vrfs[i] = vrf.Copy()
 		}
 		vrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, vrfs)
 		vrfUpdates := types.TM2PB.VrfSetUpdate(vrfSet)
 
 		nextVrfs := make([]*types.Vrf, len(h.genDoc.NextVrfs))
 		for i, nextVrf := range h.genDoc.NextVrfs {
-			nextVrfs[i] = &nextVrf
+			nextVrfs[i] = nextVrf.Copy()
 		}
 		nextVrfSet := types.NewVrfSet(h.genDoc.InitialHeight, steeringMemberCandidateSet, nextVrfs)
 		nextVrfUpdates := types.TM2PB.VrfSetUpdate(nextVrfSet)
