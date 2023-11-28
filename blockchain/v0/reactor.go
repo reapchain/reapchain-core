@@ -472,6 +472,12 @@ FOR_LOOP:
 				state.NextQrnSet = firstState.NextQrnSet.Copy()
 				state.NextVrfSet = firstState.NextVrfSet.Copy()
 
+				// it is releated to coordinator is changed (if a coordinator is down, the raound increases. At that time the CurrentCorrdinatorRanking is also increased.)
+				if second.LastCommit.Round != 0 {
+					state.StandingMemberSet.CurrentCoordinatorRanking = (state.StandingMemberSet.CurrentCoordinatorRanking + int64(second.LastCommit.Round)) % int64(state.StandingMemberSet.Size())
+				}
+
+				fmt.Println("stompesi - stomepesi", "first.LastCommit.Round", first.LastCommit.Round ,"second.LastCommit.Round", second.LastCommit.Round, "state.StandingMemberSet.CurrentCoordinatorRanking", state.StandingMemberSet.CurrentCoordinatorRanking, "first.Height", first.Height)
 				state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
 
 				if err != nil {
