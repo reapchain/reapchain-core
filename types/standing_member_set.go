@@ -339,6 +339,14 @@ func (standingMemberSet *StandingMemberSet) SetCoordinator(qrnSet *QrnSet) {
 	sort.Sort(QrnHashsByValue(qrnHashs))
 	_, standingMember := standingMemberSet.GetStandingMemberByAddress(qrnHashs[standingMemberSet.CurrentCoordinatorRanking].Address)
 
+	fmt.Println("==================================================================")
+	for i, hash := range qrnHashs {
+		fmt.Println(i, "HashValue", hash.HashValue, "address", hash.Address)
+	}
+	fmt.Println("standingMemberSet.CurrentCoordinatorRanking", standingMemberSet.CurrentCoordinatorRanking)
+	fmt.Println("standingMember", standingMember)
+	fmt.Println("==================================================================")
+
 	for standingMember == nil {
 		standingMemberSet.CurrentCoordinatorRanking++
 		if standingMemberSet.CurrentCoordinatorRanking == int64(qrnSet.Size()) {

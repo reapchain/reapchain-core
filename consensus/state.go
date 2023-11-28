@@ -1056,6 +1056,8 @@ func (cs *State) enterNewRound(height int64, round int32) {
 	}
 
 	cs.StandingMemberSet.SetCoordinator(cs.state.QrnSet)
+	fmt.Println("stompesi - cs.StandingMemberSet.CurrentCoordinatorRanking", cs.StandingMemberSet.CurrentCoordinatorRanking)
+	fmt.Println("current coordinator", cs.StandingMemberSet.Coordinator.PubKey.Address())
 	_, proposer := cs.Validators.GetByAddress(cs.StandingMemberSet.Coordinator.PubKey.Address())
 	cs.Validators.Proposer = proposer
 

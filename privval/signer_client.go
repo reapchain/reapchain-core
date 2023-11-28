@@ -164,6 +164,9 @@ func (sc *SignerClient) SignSettingSteeringMember(settingSteeringMember *types.S
 		return &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
 	}
 
+	// Update setting steering member
+	settingSteeringMember = types.SettingSteeringMemberFromProto(&resp.SettingSteeringMember)
+
 	return nil
 }
 
