@@ -33,7 +33,6 @@ OUTER_LOOP:
 		prs := ps.GetRoundState()
 
 		if rs.LockedBlock != nil {
-			
 			consensusStartBlockHeight := rs.LockedBlock.ConsensusRound.ConsensusStartBlockHeight
 			roundPeriod := rs.LockedBlock.ConsensusRound.Period
 

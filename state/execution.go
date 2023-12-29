@@ -708,19 +708,19 @@ func updateState(
 		ConsensusRound:                  currentConsensusRound,
 		LastHeightConsensusRoundChanged: lastHeightConsensusRoundChanged,
 
-		QrnSet:     state.QrnSet,
+		QrnSet:     state.QrnSet.Copy(),
 		LastHeightQrnChanged: lastHeightQrnChanged,
 
-		NextQrnSet: state.NextQrnSet,
+		NextQrnSet: state.NextQrnSet.Copy(),
 		LastHeightNextQrnChanged: lastHeightNextQrnChanged,
  
-		VrfSet:     state.VrfSet,
+		VrfSet:     state.VrfSet.Copy(),
 		LastHeightVrfChanged: lastHeightVrfChanged,
 		
-		NextVrfSet: state.NextVrfSet,
+		NextVrfSet: state.NextVrfSet.Copy(),
 		LastHeightNextVrfChanged: lastHeightNextVrfChanged,
 
-		SettingSteeringMember: state.SettingSteeringMember,
+		SettingSteeringMember: state.SettingSteeringMember.Copy(),
 		LastHeightSettingSteeringMemberChanged: lastHeightSettingSteeringMemberChanged,
 
 		IsSetSteeringMember:   state.IsSetSteeringMember,

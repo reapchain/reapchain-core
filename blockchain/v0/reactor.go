@@ -477,7 +477,6 @@ FOR_LOOP:
 					state.StandingMemberSet.CurrentCoordinatorRanking = (state.StandingMemberSet.CurrentCoordinatorRanking + int64(second.LastCommit.Round)) % int64(state.StandingMemberSet.Size())
 				}
 
-				fmt.Println("stompesi - stomepesi", "first.LastCommit.Round", first.LastCommit.Round ,"second.LastCommit.Round", second.LastCommit.Round, "state.StandingMemberSet.CurrentCoordinatorRanking", state.StandingMemberSet.CurrentCoordinatorRanking, "first.Height", first.Height)
 				state, _, err = bcR.blockExec.ApplyBlock(state, firstID, first)
 
 				if err != nil {
