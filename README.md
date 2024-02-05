@@ -1,3 +1,5 @@
+This is forked from Tendermint Core  [v0.34.9](https://github.com/tendermint/tendermint/tree/v0.34.9).
+
 # Reapchain Core
 
 ![banner](docs/reapchain_logo.png)
