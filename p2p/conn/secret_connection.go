@@ -48,7 +48,7 @@ var (
 	labelDHSecret                = []byte("DH_SECRET")
 	labelSecretConnectionMac     = []byte("SECRET_CONNECTION_MAC")
 
-	secretConnKeyAndChallengeGen = []byte("REAPCHAIN_SECRET_CONNECTION_KEY_AND_CHALLENGE_GEN")
+	secretConnKeyAndChallengeGen = []byte("TENDERMINT_SECRET_CONNECTION_KEY_AND_CHALLENGE_GEN")
 )
 
 // SecretConnection implements net.Conn.
@@ -108,7 +108,7 @@ func MakeSecretConnection(conn io.ReadWriteCloser, locPrivKey crypto.PrivKey) (*
 	// Sort by lexical order.
 	loEphPub, hiEphPub := sort32(locEphPub, remEphPub)
 
-	transcript := merlin.NewTranscript("REAPCHAIN_SECRET_CONNECTION_TRANSCRIPT_HASH")
+	transcript := merlin.NewTranscript("TENDERMINT_SECRET_CONNECTION_TRANSCRIPT_HASH")
 
 	transcript.AppendMessage(labelEphemeralLowerPublicKey, loEphPub[:])
 	transcript.AppendMessage(labelEphemeralUpperPublicKey, hiEphPub[:])

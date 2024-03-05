@@ -109,7 +109,6 @@ func (sc *SignerClient) GetType() (string, error) {
 	return resp.Type, nil
 }
 
-
 // SignVote requests a remote signer to sign a vote
 func (sc *SignerClient) SignVote(chainID string, vote *tmproto.Vote) error {
 	response, err := sc.endpoint.SendRequest(mustWrapMsg(&privvalproto.SignVoteRequest{Vote: vote, ChainId: chainID}))
@@ -159,7 +158,7 @@ func (sc *SignerClient) SignSettingSteeringMember(settingSteeringMember *types.S
 	if resp == nil {
 		return ErrUnexpectedResponse
 	}
-	
+
 	if resp.Error != nil {
 		return &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
 	}
@@ -185,7 +184,7 @@ func (sc *SignerClient) ProveVrf(vrf *types.Vrf) error {
 		return &RemoteSignerError{Code: int(resp.Error.Code), Description: resp.Error.Description}
 	}
 
-	vrf = types.VrfFromProto(&resp.Vrf)
+	*vrf = *types.VrfFromProto(&resp.Vrf)
 
 	return nil
 }
